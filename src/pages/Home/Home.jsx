@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 
 const Home = () => {
   return (
-    <div className="w-full flex-grow flex flex-col justify-center items-center  bg-cover bg-center bg-blue-950" >
+    <div className="w-full flex-grow flex flex-col justify-center items-center  bg-cover bg-center bg-blue-950 pb-16" >
       <div className="flex flex-col items-center justify-center  text-center text-white">
         <h1 className="text-4xl mt-10 font-bold mb-10">Faculty Appraisal Portal</h1>
         <h1 className="text-4xl font-bold mb-10">Login / Register</h1>
