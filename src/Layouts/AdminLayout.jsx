@@ -7,14 +7,14 @@ import AdminSideBar from '@/components/AdminSideBar/AdminSideBar';
 
 function AdminLayout() {
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header/>
-      {/* This flex-1 ensures the main content stretches to fill the available space */}
-      <main className="flex-1">
-        <AdminSideBar />
-        <Outlet />
+    <div className="flex h-full"> {/* Flex container for layout */}
+      {/* Sidebar Navigation */}
+<AdminSideBar/>
+      {/* Main Content Area */}
+      <main className="flex-1 p-4"> {/* Adjust padding and flex-grow here */}
+        <h1 className="text-xl font-bold">Faculty Portal</h1>
+        <Outlet /> {/* Render the BasicTable here */}
       </main>
-      <Footer />
     </div>
   );
 }
