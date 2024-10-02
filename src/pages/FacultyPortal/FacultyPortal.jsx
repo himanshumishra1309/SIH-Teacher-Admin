@@ -1,8 +1,11 @@
+import FacultySideBar from '@/components/FacultySidebar/FacultySidebar'
 import React from 'react'
 
 function FacultyPortal() {
   return (
-    <div>FacultyPortal</div>
+      <>
+      <FacultySideBar />
+      </>
   )
 }
 

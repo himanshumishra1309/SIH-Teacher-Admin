@@ -1,9 +1,12 @@
 import React from 'react'
+import FacultyNavigation from './FacultyNavigation'
 
-function FacultySideBar() {
+export default function FacultySideBar() {
   return (
-    <div>FacultySideBar</div>
+    <div className="p-4">
+      <FacultyNavigation />
+    </div>
   )
 }
 
-export default FacultySideBar
+
