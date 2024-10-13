@@ -42,7 +42,7 @@ const router = createBrowserRouter(
         <Route path="event-participation" errorElement={<NotFoundPage />} />
       </Route>
 
-      <Route path="faculty/:id/edit-profile" element={<EditFacultyProfile/>} /> {/* Add Edit Profile route */}
+      <Route path="faculty/edit-profile" element={<EditFacultyProfile/>} /> {/* Add Edit Profile route */}
 
 
       {/* Sign-Up and Login Pages */}

@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import TeacherAvatar from './TeacherAvatar'
 
 function Header() {
   return (
@@ -16,8 +17,12 @@ function Header() {
 
     </div>
 
-    <img  src='assets\icons\emblem.svg' alt="College Logo" className='h-20 w-20
+<div className='flex justify-between'>
+<img  src='assets\icons\emblem.svg' alt="College Logo" className='h-20 w-20
     ml-2 items-center' />
+<TeacherAvatar />
+</div>
+
 
    </header>
    </>
