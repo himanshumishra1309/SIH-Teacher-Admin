@@ -5,16 +5,18 @@ import { NavLink } from 'react-router-dom';
 
 export default function AdminNavigation() {
   const navigationItems = [
-    { name: "Research Papers Published", path: "/faculty/research-papers" },
-    { name: "Expert Lecture Delivered", path: "/faculty/expert-lectures" },
-    { name: "STTP Conducted As Coordinator", path: "/faculty/sttp-conducted" },
-    { name: "Portfolio At Institute Level", path: "/faculty/institute-portfolio" },
-    { name: "Portfolio At Department Level", path: "/faculty/department-portfolio" },
-    { name: "MTech/P.Hd Students Guided", path: "/faculty/students-guided" },
-    { name: "Event Participation", path: "/faculty/event-participation" },
-    { name: "Seminars", path: "/faculty/seminars" },
-    { name: "Projects", path: "/faculty/projects" },
-    { name: "Lectures", path: "/faculty/lectures" }
+    { name: "Personal Details", path: "/admin/presonal-details" },
+    { name: "Research Papers", path: "/admin/research-papers" },
+    { name: "Students Guided", path: "/admin/students-guided" },
+    { name: "Portfolio At Institute Level ", path: "/admin/institute-portfolio" },
+    { name: "Portfolio At Department Level", path: "/admin/department-portfolio" },
+    { name: "Expert Lecture Delivered", path: "/admin/expert-lecture" },
+    { name: 
+      
+      "Event Participation", path: "/admin/event-participation" },
+    { name: "Seminars", path: "/admin/seminars" },
+    { name: "Projects", path: "/admin/projects" },
+    { name: "Contribution Graph", path: "/admin/COntribution-graph" }
   ];
 
   return (

@@ -56,6 +56,18 @@ const router = createBrowserRouter(
 
       <Route path="admin" element={<AdminLayout />}> {/* Admin layout to wrap admin routes */}
         {/* You can add more admin-related routes here */}
+        <Route path="presonal-details" element={<BasicTable />} errorElement={<NotFoundPage/>} />
+        <Route path="presonal-details" element={<BasicTable />} errorElement={<NotFoundPage/>} />
+        <Route path="presonal-details" element={<BasicTable />} errorElement={<NotFoundPage/>} />
+        <Route path="presonal-details" element={<BasicTable />} errorElement={<NotFoundPage/>} />
+        <Route path="presonal-details" element={<BasicTable />} errorElement={<NotFoundPage/>} />
+        <Route path="presonal-details" element={<BasicTable />} errorElement={<NotFoundPage/>} />
+        <Route path="presonal-details" element={<BasicTable />} errorElement={<NotFoundPage/>} />
+        <Route path="presonal-details" element={<BasicTable />} errorElement={<NotFoundPage/>} />
+        <Route path="presonal-details" element={<BasicTable />} errorElement={<NotFoundPage/>} />
+        <Route path="presonal-details" element={<BasicTable />} errorElement={<NotFoundPage/>} />
+
+
       </Route>
 
       <Route path="student" element={<StudentPortal />} /> {/* Route for student portal */}
