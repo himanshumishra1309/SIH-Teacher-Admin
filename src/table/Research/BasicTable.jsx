@@ -121,7 +121,7 @@ setData((prevData) => [
       </div>
 
       {/* Render the table */}
-      <table className='m-10 '>
+      <table className='mt-10 '>
       <thead>
   {TableInstance.getHeaderGroups().map((headerGroup) => (
     <tr key={headerGroup.id}>

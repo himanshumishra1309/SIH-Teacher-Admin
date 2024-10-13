@@ -1,11 +1,10 @@
-@import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+/* @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800'); */
 
-.container{
-  margin-top: 90px;
-
-    position:relative;
+.fs-container {
+    margin-top: 90px;
+    position: relative;
     width: 768px;
-    max-width:100%;
+    max-width: 100%;
     min-height: 480px;
     background: #fff;
     border-radius: 10px;
@@ -14,26 +13,26 @@
                 0 10px 35px rgba(0,0,0,0.22);
 }
 
-.sign-up, .sign-in{
+.fs-sign-up, .fs-sign-in {
     position: absolute;
     top: 0;
     left: 0;
-    height:100%;
+    height: 100%;
     transition: all 0.6s ease-in-out;
 }
 
-.sign-up{
+.fs-sign-up {
     width: 50%;
-    opacity:0;
+    opacity: 0;
     z-index: 1;
 }
 
-.sign-in{
+.fs-sign-in {
     width: 50%;
     z-index: 2;
 }
 
-form{
+.fs-container form {
     background: #fff;
     display: flex;
     align-items: center;
@@ -44,35 +43,34 @@ form{
     text-align: center;
 }
 
-
-h1{
+.fs-container h1 {
     font-family: "Fredoka One", cursive;
     font-weight: bold;
     margin: 0;
 }
 
-p{
+.fs-container p {
     font-family: "Fredoka One", cursive;
     font-weight: bold;
 }
 
-input{
+.fs-container input {
     background: #eee;
     padding: 12px 15px;
     margin: 8px 15px;
     width: 100%;
     border-radius: 5px;
     border: none;
-    outline:none;
+    outline: none;
 }
 
-button{
+.fs-container button {
     color: #fff;
     background: #33a2ff;
     font-size: 12px;
     font-weight: bold;
     padding: 12px 55px;
-    margin:20px;
+    margin: 20px;
     border-radius: 20px;
     border: 1px solid #09b097;
     outline: none;
@@ -82,22 +80,22 @@ button{
     cursor: pointer;
 }
 
-#signIn, #signUp{
+.fs-container #fs-signIn, .fs-container #fs-signUp {
     background-color: transparent;
     border: 2px solid #fff;
 }
 
-.container.right-panel-active .sign-in{
+.fs-container.right-panel-active .fs-sign-in {
     transform: translateX(100%);
 }
 
-.container.right-panel-active .sign-up{
+.fs-container.right-panel-active .fs-sign-up {
     transform: translateX(100%);
     opacity: 1;
     z-index: 5;
 }
 
-.overlay-container{
+.fs-overlay-container {
     position: absolute;
     top: 0;
     left: 50%;
@@ -108,27 +106,27 @@ button{
     z-index: 100;
 }
 
-.container.right-panel-active .overlay-container{
+.fs-container.right-panel-active .fs-overlay-container {
     transform: translateX(-100%);
 }
 
-.overlay{
+.fs-overlay {
     position: relative;
-    color:#fff;
+    color: #fff;
     background: #09b097;
     left: -100%;
-    height:100%;
-    width:200%;
-    background: linear-gradient(to right, #33a2ff,#a7f8ed);
+    height: 100%;
+    width: 200%;
+    background: linear-gradient(to right, #33a2ff, #a7f8ed);
     transform: translateX(0);
     transition: transform 0.6s ease-in-out;
 }
 
-.container.right-panel-active .overlay{
+.fs-container.right-panel-active .fs-overlay {
     transform: translateX(50%);
 }
 
-.overlay-left, .overlay-right{
+.fs-overlay-left, .fs-overlay-right {
     position: absolute;
     display: flex;
     align-items: center;
@@ -137,26 +135,25 @@ button{
     padding: 0 40px;
     text-align: center;
     top: 0;
-    height:100%;
+    height: 100%;
     width: 50%;
     transform: translateX(0);
     transition: transform 0.6s ease-in-out;
 }
 
-.overlay-left{
+.fs-overlay-left {
     transform: translateX(-20%);
 }
 
-.overlay-right{
-    right:0;
+.fs-overlay-right {
+    right: 0;
     transform: translateX(0);
 }
 
-.container.right-panel-active .overlay-left{
+.fs-container.right-panel-active .fs-overlay-left {
     transform: translateX(-0%);
 }
 
-.container.right-panel-active .overlay-right{
+.fs-container.right-panel-active .fs-overlay-right {
     transform: translateX(20%);
 }
-
