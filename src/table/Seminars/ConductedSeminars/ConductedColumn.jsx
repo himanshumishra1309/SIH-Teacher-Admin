@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 
-export const columnDef = [ 
+export const ConductedColumn = [ 
     // {
     // accessorKey : "id",
     // Header: "Id",
@@ -13,19 +13,45 @@ export const columnDef = [
       Header: "Sr. No.",
       accessorFn: (row, index) => index + 1, // Dynamically generate Sr. No.
       id: "srNo", // Unique ID for the column
+      cell: ({ row }) => row.index + 1, // Correct Sr. No. after sorting/filtering
     },
     
      {
         accessorKey : "Title",
-        Header: "Title of Research/Publication",
+        Header: "Conducted Seminars",
+        "validation": {
+        "type": "string",
+        "min": 1,
+        "errorMessage": "Seminar Title is required"
+        
+    }
      },
      {
         accessorKey : "Type",
         Header: "Type",
+        "validation": {
+      "type": "string",
+      "min": 1,
+      "errorMessage": "Type is required"
+    }
      },
+     {
+      accessorKey : "Duration",
+      Header: "Duration",
+      "validation": {
+    "type": "string",
+    "min": 1,
+    "errorMessage": "Duration is required"
+  }
+   },
      {
         accessorKey : "Date",
         Header: "Date",
+        "validation": {
+        "type": "date",
+        "errorMessage": "Date is required"
+
+    }
      },
      {
         accessorKey : "View",

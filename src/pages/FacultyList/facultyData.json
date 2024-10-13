@@ -1,0 +1,23 @@
+[
+    {
+      "id": "1",
+      "name": "John Doe",
+      "department": "Computer Science",
+      "employeeCode": "CSE123",
+      "email": "john.doe@university.com",
+      "phone": "123-456-7890",
+      "avatarUrl": "https://example.com/avatars/john_doe.jpg"
+
+    },
+    {
+      "id": "2",
+      "name": "Jane Smith",
+      "department": "Mathematics",
+      "employeeCode": "MATH456",
+      "email": "jane.smith@university.com",
+      "phone": "987-654-3210",
+      "avatarUrl": "https://example.com/avatars/jane_smith.jpg"
+
+    }
+  ]
+  

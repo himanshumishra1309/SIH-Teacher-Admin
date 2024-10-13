@@ -6,9 +6,9 @@ import * as XLSX from 'xlsx/xlsx.mjs';
 function DownloadBtn({ data = [], fileName = 'data' }) {
   return (
     <Button 
-      className='download-btn'
-      onClick={() => {
-        console.log('Data being passed:', data); // Check if data is being passed correctly
+    className='download-btn'
+    onClick={() => {
+    console.log('Data being passed:', data); // Check if data is being passed correctly
         const sheetData = data.length ? data : []; // Use a different variable name
         const sheet = XLSX.utils.json_to_sheet(sheetData);
         const workbook = XLSX.utils.book_new();

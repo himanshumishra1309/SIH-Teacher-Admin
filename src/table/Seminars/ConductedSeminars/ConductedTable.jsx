@@ -1,26 +1,29 @@
 import React, { useMemo, useState } from 'react';
-import { flexRender, useReactTable, getCoreRowModel, getPaginationRowModel, getFilteredRowModel } from '@tanstack/react-table';
-import { columnDef } from "./column.jsx";
+import { flexRender, useReactTable, getCoreRowModel, getPaginationRowModel, getFilteredRowModel, getSortedRowModel } from '@tanstack/react-table';
 import dataJSON from "./data.json";
-import "./table.css";
-import DownloadBtn from './DownloadBtn';
-import DebouncedInput from './DebouncedInput';
+import "./table.css"
+import DownloadBtn from '@/table/DownloadBtn.jsx';
+import DebouncedInput from '@/table/DebouncedInput';
 import { SearchIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button.jsx';
-import DrawerComponent from './DrawerComponent.jsx';
-import DeleteDialog from './DeleteDialog.jsx';
+import DrawerComponent from '@/Forms/AddEntry/DrawerComponent.jsx';
+import DeleteDialog from '@/table/DeleteDialog';
+import ConductedMain from './ConductedMain.jsx';
+import { ConductedColumn } from './ConductedColumn';
 
 
-function BasicTable() {
+function ConductedTable() {
 
   // Wrap data in useMemo for avoiding unnecessary re-renders
-  const finalColumnDef = useMemo(() => columnDef, []);
+  const finalColumnDef = useMemo(() => ConductedColumn, []);
   const [data, setData] = useState(dataJSON); // Use dataJSON initially, but update with new entries
   const [globalFilter, setGlobalFilter] = useState("");
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false); // State for delete dialog
   const [rowToEdit, setRowToEdit] = useState(null); // State to hold the row being edited
   const [rowToDelete, setRowToDelete] = useState(null); // State to hold the row being deleted
+  const [sorting, setSorting] = useState([{ id: "Date", desc: true }]); // Default sort by Date, descending
+
 
 
   // Function to handle adding a new entry to the table
@@ -81,10 +84,14 @@ setData((prevData) => [
         data: data,  // Updated to use dynamic data state
     state: {
       globalFilter,
+      sorting, // Add sorting state
+
     },
     getFilteredRowModel: getFilteredRowModel(),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(), // Enable sorting functionality
+
   });
 
   return (
@@ -115,8 +122,15 @@ setData((prevData) => [
           {TableInstance.getHeaderGroups().map((headerEl) => (
             <tr key={headerEl.id}>
               {headerEl.headers.map(columnEl => (
-                <th key={columnEl.id} colSpan={columnEl.colSpan}>
-                  {flexRender(columnEl.column.columnDef.header, columnEl.getContext())}
+                <th key={columnEl.id} 
+                colSpan={columnEl.colSpan}
+                  onClick={columnEl.column.getToggleSortingHandler()} // Add sorting handler
+                className="cursor-pointer">
+          {flexRender(columnEl.column.columnDef.header, columnEl.getContext())}
+          {{
+            asc: ' 🔼',  // Ascending sort indicator
+            desc: ' 🔽', // Descending sort indicator
+          }[columnEl.column.getIsSorted()] ?? null} {/* Show sorting icon */}
                 </th>
               ))}
             </tr>
@@ -202,4 +216,4 @@ setData((prevData) => [
   );
 }
 
-export default BasicTable;
+export default ConductedTable;
