@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Input } from "../../components/ui/input";
 import { Button } from '../../components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 function StudentSISU() {
   const navigate = useNavigate();
@@ -111,7 +112,9 @@ function StudentSISU() {
       <div className='w-full flex justify-center items-center bg-slate-50'>
         <div className="fs-container w-1/2" id="fs-main">
           <div className="fs-sign-up">
-            <form onSubmit={handleSignUpSubmit}>
+            <form onSubmit={handleSignUpSubmit} >
+
+            <ScrollArea >
               <p className='mb-4'>Sign Up</p>
               <input 
                 className='border mb-2 p-2' 
@@ -169,12 +172,15 @@ function StudentSISU() {
               />
 
               <h2>Add Avatar:</h2>
-              <input type="file" onChange={handleChange} />
+              <input type="file" onChange={handleChange} accept="image/png, image/gif, image/jpeg"/>
               {file && <img src={file} alt="Avatar Preview" />}
 
-              <Button className="button pt-2 pb-2 pl-4 pr-4 w-2/4 bg-blue-400 text-white m-2 font-semibold hover:bg-blue-500">
+              <Button className="button pt-2 pb-2 pl-4 pr-4 w-3/4 bg-blue-400 text-white m-2 font-semibold hover:bg-blue-500">
                 Sign Up
               </Button>
+
+              </ScrollArea>
+
             </form>
           </div>
 
@@ -201,10 +207,11 @@ function StudentSISU() {
               />
               <button 
                 type="submit" 
-                className="button pt-2 pb-2 pl-4 pr-4 w-2/4 bg-blue-400 text-white m-2 font-semibold hover:bg-blue-400"
+                className="button pt-2 pb-2 pl-4 pr-4 w-3/4 bg-blue-400 text-white m-2 font-semibold hover:bg-blue-400"
               >
                 Sign In
               </button>
+
             </form>
           </div>
 
@@ -213,21 +220,17 @@ function StudentSISU() {
               <div className="fs-overlay-left">
                 <h1 className='mb-5 text-3xl font-semibold'>Already have an account?</h1>
                 <button 
-                  className='pt-2 pb-2 pl-4 pr-4 w-2/4 font-semibold' 
+                  className='pt-2 pb-2 pl-4 pr-4 w-3/4 font-semibold' 
                   id="fs-signIn"
-                >
-                  Sign In
-                </button>
+                > Sign In </button>
               </div>
 
               <div className="fs-overlay-right">
                 <h1 className='mb-5 text-3xl font-semibold'>New User?</h1>
                 <button 
-                  className='pt-2 pb-2 pl-4 pr-4 w-2/4 font-semibold' 
+                  className='pt-2 pb-2 pl-4 pr-4 w-3/4 font-semibold' 
                   id="fs-signUp"
-                >
-                  Sign Up
-                </button>
+                > Sign Up </button>
               </div>
             </div>
           </div>

@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import TeacherAvatar from './TeacherAvatar'
 
-function Header() {
+function TeacherHeader() {
   return (
    <>
    <header className='flex justify-between items-center py-1 m-0 bg-blue-600 shadow-md'>
@@ -19,7 +19,7 @@ function Header() {
 
 <div className='flex justify-between'>
 <img  src='assets\icons\emblem.svg' alt="College Logo" className='h-20 w-20
-    ml-2 items-center' />
+    ml-2 items-center ' />
 <TeacherAvatar />
 </div>
 
@@ -29,4 +29,4 @@ function Header() {
   )
 }
 
-export default Header
+export default TeacherHeader

@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';  // Import the hook for navigation
 
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../ui/dropdown-menu";
 
-export default function TeacherAvatar() {
+export default function AdminAvatar() {
   const navigate = useNavigate();  // Create a navigate function from the hook
 
   const handleLogout = () => {
@@ -22,8 +22,8 @@ export default function TeacherAvatar() {
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-              <Avatar className="h-8 w-8">
+            <Button variant="ghost" className="relative h-8 w-8 rounded-full m-5">
+              <Avatar className="h-10 w-10">
                 <AvatarImage src="/placeholder.svg?height=32&width=32" alt="Teacher" />
                 <AvatarFallback>TC</AvatarFallback>
               </Avatar>

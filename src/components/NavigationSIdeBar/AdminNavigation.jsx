@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom';
 
 export default function AdminNavigation() {
   const navigationItems = [
-    { name: "Personal Details", path: "/admin/presonal-details" },
+    { name: "Personal Details", path: "/admin/personal-details" },
     { name: "Research Papers", path: "/admin/research-papers" },
     { name: "Students Guided", path: "/admin/students-guided" },
     { name: "Portfolio At Institute Level ", path: "/admin/institute-portfolio" },
@@ -16,7 +16,7 @@ export default function AdminNavigation() {
       "Event Participation", path: "/admin/event-participation" },
     { name: "Seminars", path: "/admin/seminars" },
     { name: "Projects", path: "/admin/projects" },
-    { name: "Contribution Graph", path: "/admin/COntribution-graph" }
+    { name: "Contribution Graph", path: "/admin/Contribution-graph" }
   ];
 
   return (

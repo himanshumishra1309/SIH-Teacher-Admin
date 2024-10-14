@@ -17,6 +17,10 @@ import EditFacultyProfile from './pages/FacultyList/EditFacultyProfile';
 import FacultySISU from './pages/SISU/FacultySISU';
 import AdminSISU from './pages/SISU/AdminSISU';
 import StudentSISU from './pages/SISU/StudentSISU';
+import FacultyCards from './pages/FacultyList/FacultyCards';
+import StudentHome from './pages/StudentPortal/StudentHome';
+
+
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -56,21 +60,22 @@ const router = createBrowserRouter(
 
       <Route path="admin" element={<AdminLayout />}> {/* Admin layout to wrap admin routes */}
         {/* You can add more admin-related routes here */}
-        <Route path="presonal-details" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="presonal-details" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="presonal-details" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="presonal-details" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="presonal-details" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="presonal-details" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="presonal-details" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="presonal-details" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="presonal-details" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="presonal-details" element={<BasicTable />} errorElement={<NotFoundPage/>} />
+        <Route path="facultyList" element={<FacultyCards/>}/>
+        <Route path="personal-details" element={<BasicTable />} errorElement={<NotFoundPage/>} />
+        <Route path="research-papers" element={<BasicTable />} errorElement={<NotFoundPage/>} />
+        <Route path="students-guided" element={<BasicTable />} errorElement={<NotFoundPage/>} />
+        <Route path="institute-portfolio" element={<BasicTable />} errorElement={<NotFoundPage/>} />
+        <Route path="department-portfolio" element={<BasicTable />} errorElement={<NotFoundPage/>} />
+        <Route path="expert-lecture" element={<BasicTable />} errorElement={<NotFoundPage/>} />
+        <Route path="event-participation" element={<BasicTable />} errorElement={<NotFoundPage/>} />
+        <Route path="seminars" element={<BasicTable />} errorElement={<NotFoundPage/>} />
+        <Route path="projects" element={<BasicTable />} errorElement={<NotFoundPage/>} />
+        <Route path="Contribution-graph" element={<BasicTable />} errorElement={<NotFoundPage/>} />
 
 
       </Route>
 
-      <Route path="student" element={<StudentPortal />} /> {/* Route for student portal */}
+      <Route path="student" element={<StudentHome />} /> {/* Route for student portal */}
 
     </Route>
   )

@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Input } from "../../components/ui/input";
 import { Button } from '../../components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 function AdminSISU() {
   const navigate = useNavigate();
@@ -112,6 +113,9 @@ function AdminSISU() {
           <div className="fs-sign-up">
             <form onSubmit={handleSignUpSubmit}>
               <p className='mb-4'>Sign Up</p>
+
+              <ScrollArea>
+
               <input 
                 className='border mb-2 p-2' 
                 id="name" 
@@ -119,7 +123,6 @@ function AdminSISU() {
                 placeholder="Name*" 
                 value={signupData.name} 
                 onChange={handleSignupChange} 
-                required 
               />
               <input 
                 className='border mb-2 p-2' 
@@ -128,7 +131,6 @@ function AdminSISU() {
                 placeholder="Email*" 
                 value={signupData.email} 
                 onChange={handleSignupChange} 
-                required 
               />
               <input 
                 className='border mb-2 p-2' 
@@ -137,7 +139,6 @@ function AdminSISU() {
                 placeholder="Designation*" 
                 value={signupData.designation} 
                 onChange={handleSignupChange} 
-                required 
               />
               <input 
                 className='border mb-2 p-2' 
@@ -146,22 +147,29 @@ function AdminSISU() {
                 placeholder="Password*" 
                 value={signupData.password} 
                 onChange={handleSignupChange} 
-                required 
               />
 
               <h2>Add Avatar:</h2>
-              <input type="file" onChange={handleChange} />
+              <input type="file" onChange={handleChange} accept="image/png, image/gif, image/jpeg"/>
               {file && <img src={file} alt="Avatar Preview" />}
 
-              <Button className="button pt-2 pb-2 pl-4 pr-4 w-2/4 bg-blue-400 text-white m-2 font-semibold hover:bg-blue-500">
+              <Button className="button pt-2 pb-2 pl-4 pr-4 w-3/4 bg-blue-400 text-white m-2 font-semibold hover:bg-blue-500">
                 Sign Up
               </Button>
+
+              </ScrollArea>
+
             </form>
+
+
+
+              
+           
           </div>
 
           <div className="fs-sign-in">
             <form onSubmit={handleLoginSubmit}>
-              <p className='mb-4'>Sign In</p>
+              <p className='mb-4 w-3/4'>Sign In</p>
               <input 
                 className='border mb-2 p-2' 
                 type="email" 
@@ -169,7 +177,6 @@ function AdminSISU() {
                 placeholder="Email" 
                 value={loginData.email} 
                 onChange={handleLoginChange} 
-                required 
               />
               <input 
                 className='border mb-2 p-2' 
@@ -178,14 +185,11 @@ function AdminSISU() {
                 placeholder="Password" 
                 value={loginData.password} 
                 onChange={handleLoginChange} 
-                required 
               />
               <button 
                 type="submit" 
-                className="button pt-2 pb-2 pl-4 pr-4 w-2/4 bg-blue-400 text-white m-2 font-semibold hover:bg-blue-400"
-              >
-                Sign In
-              </button>
+                className="button pt-2 pb-2 pl-4 pr-4 w-3/4 bg-blue-400 text-white m-2 font-semibold hover:bg-blue-400"
+              >Sign In</button>
             </form>
           </div>
 
@@ -194,7 +198,7 @@ function AdminSISU() {
               <div className="fs-overlay-left">
                 <h1 className='mb-5 text-3xl font-semibold'>Already have an account?</h1>
                 <button 
-                  className='pt-2 pb-2 pl-4 pr-4 w-2/4 font-semibold' 
+                  className='pt-2 pb-2 pl-4 pr-4 w-3/4 font-semibold' 
                   id="fs-signIn"
                 >
                   Sign In
@@ -204,7 +208,7 @@ function AdminSISU() {
               <div className="fs-overlay-right">
                 <h1 className='mb-5 text-3xl font-semibold'>New User?</h1>
                 <button 
-                  className='pt-2 pb-2 pl-4 pr-4 w-2/4 font-semibold' 
+                  className='pt-2 pb-2 pl-4 pr-4 w-3/4 font-semibold' 
                   id="fs-signUp"
                 >
                   Sign Up
