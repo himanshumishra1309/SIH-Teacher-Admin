@@ -58,12 +58,12 @@ function StudentSISU() {
   const handleSignUpSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${URI}/api/v1/doctors/register`, signupData);
-      const accessToken = response?.data?.data?.accessToken;
+      // const response = await axios.post(`${URI}/api/v1/doctors/register`, signupData);
+      // const accessToken = response?.data?.data?.accessToken;
 
-      // Store user-specific data in sessionStorage
-      sessionStorage.setItem('doctorAccessToken', accessToken);
-      navigate('/student');
+      // // Store user-specific data in sessionStorage
+      // sessionStorage.setItem('doctorAccessToken', accessToken);
+      navigate('/student-home');
     } catch (error) {
       console.error('Error during signup:', error);
       alert('Signup failed. Please try again.');
@@ -86,12 +86,12 @@ function StudentSISU() {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     try {
-        const response = await axios.post(`${URI}/api/v1/doctors/login`, loginData);
-        const accessToken = response?.data?.data?.accessToken;
+        // const response = await axios.post(`${URI}/api/v1/doctors/login`, loginData);
+        // const accessToken = response?.data?.data?.accessToken;
               
-        // Store user-specific data in sessionStorage
-        sessionStorage.setItem('doctorAccessToken', accessToken);
-        navigate('/student');  // Redirect to profile page
+        // // Store user-specific data in sessionStorage
+        // sessionStorage.setItem('doctorAccessToken', accessToken);
+        navigate('/student-home');  // Redirect to profile page
     } catch (error) {
         if (error.response) {
             console.error('Error during login:', error.response.data); // Capture error message from backend
@@ -123,7 +123,6 @@ function StudentSISU() {
                 placeholder="Name*" 
                 value={signupData.name} 
                 onChange={handleSignupChange} 
-                required 
               />
               <input 
                 className='border mb-2 p-2' 
@@ -132,7 +131,6 @@ function StudentSISU() {
                 placeholder="Email*" 
                 value={signupData.email} 
                 onChange={handleSignupChange} 
-                required 
               />
               <input 
                 className='border mb-2 p-2' 
@@ -141,7 +139,6 @@ function StudentSISU() {
                 placeholder="Enrollment No*" 
                 value={signupData.roll_no} 
                 onChange={handleSignupChange} 
-                required 
               />
               <input 
                 className='border mb-2 p-2' 
@@ -150,7 +147,6 @@ function StudentSISU() {
                 placeholder="Branch*" 
                 value={signupData.branch} 
                 onChange={handleSignupChange} 
-                required 
               />
               <input 
                 className='border mb-2 p-2' 
@@ -159,7 +155,6 @@ function StudentSISU() {
                 placeholder="Year*" 
                 value={signupData.year} 
                 onChange={handleSignupChange} 
-                required 
               />
               <input 
                 className='border mb-2 p-2' 
@@ -168,7 +163,6 @@ function StudentSISU() {
                 placeholder="Password*" 
                 value={signupData.password} 
                 onChange={handleSignupChange} 
-                required 
               />
 
               <h2>Add Avatar:</h2>
@@ -194,7 +188,6 @@ function StudentSISU() {
                 placeholder="Email" 
                 value={loginData.email} 
                 onChange={handleLoginChange} 
-                required 
               />
               <input 
                 className='border mb-2 p-2' 
@@ -203,7 +196,6 @@ function StudentSISU() {
                 placeholder="Password" 
                 value={loginData.password} 
                 onChange={handleLoginChange} 
-                required 
               />
               <button 
                 type="submit" 

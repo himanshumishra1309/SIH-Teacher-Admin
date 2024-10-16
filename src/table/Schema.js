@@ -1,14 +1,18 @@
+// dynamicSchema.js
 import { z } from "zod";
 
 // Reusable function to generate validation schema dynamically
 export const Schema = (fields) => {
   const schema = {};
 
-  // Loop through fields and create a dynamic validation schema
   fields.forEach(({ name, type, validation }) => {
+    if (!name || !type) {
+      console.error("Error: Field is missing 'name' or 'type'", { name, type });
+      throw new Error(`Field is missing 'name' or 'type'. Received name: ${name}, type: ${type}`);
+    }
+
     let fieldSchema;
 
-    // Define the schema based on the field type and validations
     switch (type) {
       case "string":
         fieldSchema = z.string();
@@ -43,11 +47,10 @@ export const Schema = (fields) => {
       case "date":
         fieldSchema = z
           .string()
-          .nonempty("Date is required") // Non-empty validation
-          .refine((val) => !isNaN(new Date(val).getTime()), "Invalid date"); // Date validation
+          .nonempty("Date is required")
+          .refine((val) => !isNaN(new Date(val).getTime()), "Invalid date");
         break;
 
-      // Add more types if needed (number, boolean, etc.)
       default:
         throw new Error(`Unknown field type: ${type}`);
     }
@@ -57,5 +60,3 @@ export const Schema = (fields) => {
 
   return z.object(schema);
 };
-
-// Dynamic error messages will be handled appropriately based on type

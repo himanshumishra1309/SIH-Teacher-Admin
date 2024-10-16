@@ -5,18 +5,18 @@ import { NavLink } from 'react-router-dom';
 
 export default function AdminNavigation() {
   const navigationItems = [
-    { name: "Personal Details", path: "/admin/personal-details" },
-    { name: "Research Papers", path: "/admin/research-papers" },
-    { name: "Students Guided", path: "/admin/students-guided" },
-    { name: "Portfolio At Institute Level ", path: "/admin/institute-portfolio" },
-    { name: "Portfolio At Department Level", path: "/admin/department-portfolio" },
-    { name: "Expert Lecture Delivered", path: "/admin/expert-lecture" },
+    { name: "Personal Details", path: "/admin-info/personal-details" },
+    { name: "Research Papers", path: "/admin-info/research-papers" },
+    { name: "Students Guided", path: "/admin-info/students-guided" },
+    { name: "Portfolio At Institute Level ", path: "/admin-info/institute-portfolio" },
+    { name: "Portfolio At Department Level", path: "/admin-info/department-portfolio" },
+    { name: "Expert Lecture Delivered", path: "/admin-info/expert-lecture" },
     { name: 
       
-      "Event Participation", path: "/admin/event-participation" },
-    { name: "Seminars", path: "/admin/seminars" },
-    { name: "Projects", path: "/admin/projects" },
-    { name: "Contribution Graph", path: "/admin/Contribution-graph" }
+      "Event Participation", path: "/admin-info/event-participation" },
+    { name: "Seminars", path: "/admin-info/seminars" },
+    { name: "Projects", path: "/admin-info/projects" },
+    { name: "Contribution Graph", path: "/admin-info/Contribution-graph" }
   ];
 
   return (

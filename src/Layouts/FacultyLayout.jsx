@@ -17,9 +17,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"; //
 
 
 // Dummy JSON data (assuming the JSON file is placed correctly)
-import facultyData from "../pages/FacultyList/facultyData.json" // Adjust the path as needed
+import facultyData from "../pages/FacultyPortal/FacultyList/facultyData.json" // Adjust the path as needed
 
 const FacultyLayout = () => {
+  
   const [facultyInfo, setFacultyInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true); // Loading state
 

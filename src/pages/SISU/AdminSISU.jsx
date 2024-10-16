@@ -57,12 +57,12 @@ function AdminSISU() {
   const handleSignUpSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${URI}/api/v1/doctors/register`, signupData);
-      const accessToken = response?.data?.data?.accessToken;
+      // const response = await axios.post(`${URI}/api/v1/doctors/register`, signupData);
+      // const accessToken = response?.data?.data?.accessToken;
 
-      // Store user-specific data in sessionStorage
-      sessionStorage.setItem('doctorAccessToken', accessToken);
-      navigate('/admin');
+      // // Store user-specific data in sessionStorage
+      // sessionStorage.setItem('doctorAccessToken', accessToken);
+      navigate('/admin-home');
     } catch (error) {
       console.error('Error during signup:', error);
       alert('Signup failed. Please try again.');
@@ -85,12 +85,12 @@ function AdminSISU() {
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     try {
-        const response = await axios.post(`${URI}/api/v1/doctors/login`, loginData);
-        const accessToken = response?.data?.data?.accessToken;
+        // const response = await axios.post(`${URI}/api/v1/doctors/login`, loginData);
+        // const accessToken = response?.data?.data?.accessToken;
               
-        // Store user-specific data in sessionStorage
-        sessionStorage.setItem('doctorAccessToken', accessToken);
-        navigate('/admin');  // Redirect to profile page
+        // // Store user-specific data in sessionStorage
+        // sessionStorage.setItem('doctorAccessToken', accessToken);
+        navigate('/admin-home');  // Redirect to profile page
     } catch (error) {
         if (error.response) {
             console.error('Error during login:', error.response.data); // Capture error message from backend
@@ -162,11 +162,9 @@ function AdminSISU() {
             </form>
 
 
-
-              
+  
            
           </div>
-
           <div className="fs-sign-in">
             <form onSubmit={handleLoginSubmit}>
               <p className='mb-4 w-3/4'>Sign In</p>

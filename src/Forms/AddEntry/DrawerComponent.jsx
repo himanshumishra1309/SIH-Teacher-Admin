@@ -3,16 +3,21 @@ import { Drawer, DrawerContent } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { Schema } from '../Schema';
-import { columnDef } from '@/table/Research/ResearchColumn';
-import DatePicker from 'react-datepicker'; // Ensure this import is correct
-import 'react-datepicker/dist/react-datepicker.css'; // Ensure this import is correct
-
-const AddEntrySchema = Schema(columnDef);
 
 function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
+  // Dynamically generate Zod schema based on columns
+  const AddEntrySchema = Schema(
+    columns.map((col) => ({
+      name: col.accessorKey,
+      type: col.type || 'string', // Fallback to string if type is not provided
+      validation: col.validation || {}, // Use default validation object if not provided
+    }))
+  );
+
   const {
     register,
     handleSubmit,
@@ -21,8 +26,10 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(AddEntrySchema),
+    defaultValues: rowData || {}, // Set default values from rowData if editing
   });
 
+  // Handle form population when drawer opens
   useEffect(() => {
     if (isOpen) {
       if (!rowData) {
@@ -58,18 +65,18 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
                         Date
                       </label>
                       <DatePicker
-  id="entryDate"
-  selected={watch('entryDate') ? new Date(watch('entryDate')) : null}
-  onChange={(date) => {
-    setValue('entryDate', date); // Update the form state with the selected date
-  }}
-  className={`border ${errors.entryDate ? 'border-red-500' : ''} p-2 rounded`}
-  placeholderText="Select a date"
-  dateFormat="dd/MM/yyyy" // Customize your date format here
-  filterDate={(date) => date <= new Date()} // Disable future dates
-/>
+                        id="entryDate"
+                        selected={watch('entryDate') ? new Date(watch('entryDate')) : null}
+                        onChange={(date) => {
+                          setValue('entryDate', date); // Update the form state with the selected date
+                        }}
+                        className={`border ${errors.entryDate ? 'border-red-500' : ''} p-2 rounded`}
+                        placeholderText="Select a date"
+                        dateFormat="dd/MM/yyyy"
+                        filterDate={(date) => date <= new Date()} // Disable future dates
+                      />
                       {errors.entryDate && (
-                        <p className="text-red-500 text-sm">{errors.Date.message}</p>
+                        <p className="text-red-500 text-sm">{errors.entryDate.message}</p>
                       )}
                     </>
                   ) : (
@@ -84,7 +91,7 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
                         className={errors[col.accessorKey] ? 'border-red-500' : ''}
                       />
                       {errors[col.accessorKey] && (
-                        <p className="text-red-500 text-sm">{errors[col.accessorKey].message}</p>
+                        <p className="text-red-500 text-sm">{errors[col.accessorKey]?.message}</p>
                       )}
                     </>
                   )}

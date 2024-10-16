@@ -13,40 +13,54 @@ import ConductedTable from './table/Seminars/ConductedSeminars/ConductedMain';
 import ConductedMain from './table/Seminars/ConductedSeminars/ConductedMain';
 import UpcomingSeminars from './pages/UpcomingSeminars/UpcomingSeminars';
 import NotFoundPage from './pages/NotFound/NotFoundPage';
-import EditFacultyProfile from './pages/FacultyList/EditFacultyProfile';
+import EditFacultyProfile from './pages/FacultyPortal/FacultyList/EditFacultyProfile';
 import FacultySISU from './pages/SISU/FacultySISU';
 import AdminSISU from './pages/SISU/AdminSISU';
 import StudentSISU from './pages/SISU/StudentSISU';
-import FacultyCards from './pages/FacultyList/FacultyCards';
+import FacultyCards from './pages/AdminPortal/AdminList/FacultyCards';
 import StudentHome from './pages/StudentPortal/StudentHome';
+import AdminHome from './pages/AdminPortal/AdminList/AdminHome';
+import RouteTransitionWrapper from './Animations/RouteTransitionWrapper';
+import { AnimatePresence, motion } from "framer-motion";
+import LectureCards from './pages/StudentPortal/LectureCards';
+import UpcomingRsvp from './pages/StudentPortal/UpcomingRsvp';
+import SeminarCards from './pages/StudentPortal/SeminarCards';
+import StudentLayout from './Layouts/StudentLayout';
+import LectureFeedback from './pages/AdminPortal/AdminList/LectureFeedback';
+import BasicForm from './Forms/Student/BasicForm';
+
+
+
 
 
 
 const router = createBrowserRouter(
   createRoutesFromElements(
+
     <Route path="/" element={<Layout />}>
       <Route index element={<Home />} /> {/* Render Home on the root path */}
 
       <Route path="faculty" element={<FacultyLayout />}>
-      {/* Redirect to faculty/1 by default */}
         {/* <Route index element={<BasicTable />} /> Default to BasicTable */}
+        <Route index element={<BasicTable />} errorElement={<NotFoundPage/>} />
         <Route path="research-papers" element={<BasicTable />} errorElement={<NotFoundPage/>} />
         <Route path="expert-lectures" element={<BasicTable />}errorElement={<NotFoundPage/>}  />
         <Route path="sttp-conducted" element={<BasicTable />} errorElement={<NotFoundPage/>} />
         <Route path="institute-portfolio" element={<BasicTable />} errorElement={<NotFoundPage/>} />
         <Route path="department-portfolio" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="students-guided" element={<BasicTable />}errorElement={<NotFoundPage/>}  />
-        <Route path="seminars" element={<ConductedMain />}errorElement={<NotFoundPage/>}  >
-           <Route path="upcoming" element={<UpcomingSeminars />} errorElement={<NotFoundPage/>} /> 
+        <Route path="students-guided" element={<RouteTransitionWrapper><BasicTable /></RouteTransitionWrapper>}errorElement={<NotFoundPage/>}  />
+        <Route path="seminars" element={<RouteTransitionWrapper><ConductedMain /></RouteTransitionWrapper>}errorElement={<NotFoundPage/>}  >
+           <Route path="upcoming" element={<RouteTransitionWrapper><UpcomingSeminars /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} /> 
         </Route>
-
-        
         <Route path="projects" element={<BasicTable />} />
         <Route path="lectures" element={<BasicTable />} />
         <Route path="event-participation" errorElement={<NotFoundPage />} />
+
+
       </Route>
 
       <Route path="faculty/edit-profile" element={<EditFacultyProfile/>} /> {/* Add Edit Profile route */}
+
 
 
       {/* Sign-Up and Login Pages */}
@@ -56,10 +70,11 @@ const router = createBrowserRouter(
 
 
     
+      <Route path="admin-home" element={<AdminHome/>} />
 
+ 
+      <Route path="admin-info" element={<AdminLayout/>}> 
 
-      <Route path="admin" element={<AdminLayout />}> {/* Admin layout to wrap admin routes */}
-        {/* You can add more admin-related routes here */}
         <Route path="facultyList" element={<FacultyCards/>}/>
         <Route path="personal-details" element={<BasicTable />} errorElement={<NotFoundPage/>} />
         <Route path="research-papers" element={<BasicTable />} errorElement={<NotFoundPage/>} />
@@ -72,17 +87,25 @@ const router = createBrowserRouter(
         <Route path="projects" element={<BasicTable />} errorElement={<NotFoundPage/>} />
         <Route path="Contribution-graph" element={<BasicTable />} errorElement={<NotFoundPage/>} />
 
+      </Route>
+      
+
+      
+      <Route path="student-home" element={<StudentHome />} /> {/* Route for student portal */}
+      
+      <Route path="student" element={<StudentLayout/>}>
+      <Route path="lecture" element={<LectureCards/>} errorElement={<NotFoundPage/>} />
+      <Route path="upcoming-Rsvp" element={< UpcomingRsvp/>} errorElement={<NotFoundPage/>} />
+      <Route path="seminar" element={<SeminarCards />} errorElement={<NotFoundPage/>} />
 
       </Route>
 
-      <Route path="student" element={<StudentHome />} /> {/* Route for student portal */}
 
     </Route>
+
   )
 );
 
 createRoot(document.getElementById('root')).render(
-
-  <RouterProvider router={router} />
-
+<RouterProvider router={router} />
 );
