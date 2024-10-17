@@ -15,11 +15,11 @@ import facultyInfo from "./facultyData.json"; // Mock data
 
 export default function EditFacultyProfile() {
   const [facultyData, setFacultyData] = useState({
-    name: facultyInfo.name,
-    subject: facultyInfo.subject,
-    branch: facultyInfo.branch,
-    email: facultyInfo.email,
-    phone: facultyInfo.phone,
+    name: '',
+    subject: '',
+    branch: '',
+    email: '',
+    phone: '',
   });
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
