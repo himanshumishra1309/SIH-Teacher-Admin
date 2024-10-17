@@ -1,29 +1,96 @@
 table {
-    /* margin-top: 10px; */
   font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   width: 100%;
   overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 table td,
 table th {
   border: 1px solid #ddd;
-  padding: 8px;
+  padding: 12px;
+  transition: all 0.2s ease;
+}
+
+table tr {
+  transition: background-color 0.2s ease;
 }
 
 table tr:nth-child(even) {
-  background-color: #f2f2f2;
+  background-color: #f8f8f8;
 }
 
 table tr:hover {
-  background-color: #ddd;
+  background-color: #e8e8e8;
+  transform: scale(1.01);
 }
 
 table th, tfoot td {
   padding-top: 12px;
   padding-bottom: 12px;
   text-align: center;
-  background-color: blue;
+  background-color: #3498db;
   color: white;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: bold;
+}
+
+/* Animate new rows */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+table tr {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Style for buttons */
+button {
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  table {
+    font-size: 14px;
+  }
+
+  table td,
+  table th {
+    padding: 8px;
+  }
+}
+
+/* Scrollbar styling */
+.table-container {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.table-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
