@@ -19,8 +19,10 @@ app.use(cookieParser());
 
 
 import teacherRouter from './routes/teachers.routes.js'
+import adminRouter from './routes/admins.routes.js'
 
 app.use('/api/v1/teachers', teacherRouter)
+app.use('/api/v1/admins', adminRouter)
 
 
 export {app}

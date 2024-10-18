@@ -18,63 +18,63 @@ import { Lecture } from "../models/lectures.models.js";
 import { ExpertLecture } from "../models/expert-lectures.models.js";
 
 const generateAccessAndRefreshToken = async(userId) =>{
-    try {
-        const admin = Admin.findById(userId);
-        const adminAccessToken = admin.generateAccessToken();
-        const adminRefreshToken = admin.generateRefreshToken();
+  try {
+      const admin = Admin.findById(userId);
+      const adminAccessToken = admin.generateAccessToken();
+      const adminRefreshToken = admin.generateRefreshToken();
 
-        admin.adminRefreshToken = adminRefreshToken
+      admin.refreshToken = adminRefreshToken
 
-        await user.save({ validateBeforeSave: false }); // this is inbuilt in mongoDB to save the info, but there is one problem with this thing and that it will invoke the password field and to stop that we put an object and make it false the thing that we put in the object is validateBeforeSave
+      await admin.save({ validateBeforeSave: false }); // this is inbuilt in mongoDB to save the info, but there is one problem with this thing and that it will invoke the password field and to stop that we put an object and make it false the thing that we put in the object is validateBeforeSave
 
-        return {adminRefreshToken, adminAccessToken}
-    } catch (error) {
-        throw new ApiError(500, "Something went wrong while generating access and refresh token")
-    }
+      return {adminRefreshToken, adminAccessToken}
+  } catch (error) {
+      throw new ApiError(500, "Something went wrong while generating access and refresh token")
+  }
 }
 
 const registerAdmin = asyncHandler(async(req, res)=>{
-    const {name, email, designation, password} = req.body;
+  const {name, email, designation, password} = req.body;
 
-    if([name, email, designation, password].some((field) => field?.trim() === "")){
-        throw new ApiError(400, "All fields is required");
-    }
+  if([name, email, designation, password].some((field) => field?.trim() === "")){
+      throw new ApiError(400, "All fields is required");
+  }
 
-    const existedUser = await Admin.findOne({email});
+  const existedUser = await Admin.findOne({email});
 
-    if(existedUser){
-        throw new ApiError(400, "User with email already exists")
-    }
+  if(existedUser){
+      throw new ApiError(400, "User with email already exists")
+  }
 
-    console.log("request: ",req.file);
-    
-    const avatarLocalPath = req.file?.avatar[0]?.path;
+  console.log("request: ",req.file);
+  
+  const avatarLocalPath = req.file?.path;
 
-    if(!avatarLocalPath){
-        throw new ApiError(400, "Avatar is required")
-    }
+  if(!avatarLocalPath){
+      throw new ApiError(400, "Avatar is required")
+  }
 
-    const avatar = await uploadOnCloudinary(avatarLocalPath)
-    
-    if(!avatar){
-        throw new ApiError(400, "No avatar file found");
-    }
+  const avatar = await uploadOnCloudinary(avatarLocalPath)
+  
+  if(!avatar){
+      throw new ApiError(400, "No avatar file found");
+  }
 
-    const admin = Admin.create({
-        name,
-        email,
-        designation,
-        avatar: avatar.url,
-        password
-    })
+  const admin = await Admin.create({
+      name,
+      email,
+      designation,
+      avatar: avatar.url,
+      password
+  })
 
-    const createAdmin = await Admin.findById(admin._id).select("-password -refreshToken")
+  const createAdmin = await Admin.findById(admin._id).select("-password -refreshToken")
 
-    if(!createAdmin){
-        throw new ApiError(500, "Something went wrong while registering the user")
-    }
+  if(!createAdmin){
+      throw new ApiError(500, "Something went wrong while registering the user")
+  }
 
-    return res.status(200).json(new ApiResponse(200, createAdmin, "Admin successfully registered"));
+  return res.status(200).json(new ApiResponse(200, createAdmin, "Admin successfully registered"));
 });
 
 const loginAdmin = asyncHandler(async(req, res)=>{
