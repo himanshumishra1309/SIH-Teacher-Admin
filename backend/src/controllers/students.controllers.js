@@ -1,65 +1,69 @@
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
+import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { Student } from "../models/students.models.js";
 
 const generateAccessAndRefreshToken = async(userId) =>{
-    try {
-        const student = Student.findById(userId);
-        const studentAccessToken = student.generateAccessToken();
-        const studentRefreshToken = student.generateRefreshToken();
+  try {
+      const student = Student.findById(userId);
+      const studentAccessToken = student.generateAccessToken();
+      const studentRefreshToken = student.generateRefreshToken();
 
-        student.studentRefreshToken = studentRefreshToken
+      student.refreshToken = studentRefreshToken;
 
-        await user.save({ validateBeforeSave: false }); // this is inbuilt in mongoDB to save the info, but there is one problem with this thing and that it will invoke the password field and to stop that we put an object and make it false the thing that we put in the object is validateBeforeSave
+      await user.save({ validateBeforeSave: false }); // this is inbuilt in mongoDB to save the info, but there is one problem with this thing and that it will invoke the password field and to stop that we put an object and make it false the thing that we put in the object is validateBeforeSave
 
-        return {studentRefreshToken, studentAccessToken}
-    } catch (error) {
-        throw new ApiError(500, "Something went wrong while generating access and refresh token")
-    }
+      return {studentRefreshToken, studentAccessToken}
+  } catch (error) {
+      throw new ApiError(500, "Something went wrong while generating access and refresh token")
+  }
 }
 
 const registerStudent = asyncHandler(async(req, res)=>{
-    const {name, roll_no, email, branch, year, password} = req.body;
+  const {name, roll_no, email, branch, year, password} = req.body;
 
-    if([name, email, roll_no, branch, year, password].some((field) => field?.trim() === "")){
-        throw new ApiError(400, "All fields is required");
-    }
+  if([name, email, roll_no, branch, year, password].some((field) => field?.trim() === "")){
+      throw new ApiError(400, "All fields is required");
+  }
 
-    const existedUser = await Student.findOne({email});
+  const existedUser = await Student.findOne({email});
 
-    if(existedUser){
-        throw new ApiError(400, "User with email already exists")
-    }
+  if(existedUser){
+      throw new ApiError(400, "User with email already exists")
+  }
 
-    console.log("request(student): ",req.file);
-    
-    const avatarLocalPath = req.file?.avatar[0]?.path;
+  console.log("request(student): ",req.file);
+  
+  const avatarLocalPath = req.file?.avatar[0]?.path;
 
-    if(!avatarLocalPath){
-        throw new ApiError(400, "Avatar is required")
-    }
+  if(!avatarLocalPath){
+      throw new ApiError(400, "Avatar is required")
+  }
 
-    const avatar = await uploadOnCloudinary(avatarLocalPath)
-    
-    if(!avatar){
-        throw new ApiError(400, "No avatar file found");
-    }
+  const avatar = await uploadOnCloudinary(avatarLocalPath)
+  
+  if(!avatar){
+      throw new ApiError(400, "No avatar file found");
+  }
 
-    const student = Student.create({
-        name,roll_no, email, branch, year,
-        avatar: avatar.url,
-        password
-    })
+  const student = await Student.create({
+    name,
+    roll_no, 
+    email, 
+    branch, 
+    year,
+    avatar: avatar.url,
+    password
+  })
 
-    const createStudent = await Student.findById(student._id).select("-password -refreshToken")
+  const createStudent = await Student.findById(student._id).select("-password -refreshToken")
 
-    if(!createStudent){
-        throw new ApiError(500, "Something went wrong while registering the user")
-    }
+  if(!createStudent){
+      throw new ApiError(500, "Something went wrong while registering the user")
+  }
 
-    return res.status(200).json(new ApiResponse(200, createStudent, "Student successfully registered"));
+  return res.status(200).json(new ApiResponse(200, createStudent, "Student successfully registered"));
 })
 
 const loginStudent = asyncHandler(async(req, res)=>{
