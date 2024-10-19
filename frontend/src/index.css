@@ -54,6 +54,7 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%}
 }
+
 @layer base {
   * {
     @apply border-border;
@@ -61,6 +62,14 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@layer components{
+  .bg-gradient-ellipse {
+    @apply bg-[radial-gradient(ellipse_200%_100%_at_bottom_left,#183EC2,#EAEEFE_30%)];
+  }
+
+  /* you can create utilities or sub classes */
 }
 
 

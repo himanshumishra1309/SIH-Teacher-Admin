@@ -46,7 +46,7 @@ const registerTeacher = asyncHandler(async(req, res)=>{
     });
 
     if(existedUser){
-        throw new ApiError(400, "User with email or employee code already exists")
+      throw new ApiError(400, "User with email or employee code already exists")
     }
 
     console.log("request: ",req.file);
@@ -89,7 +89,11 @@ const registerTeacher = asyncHandler(async(req, res)=>{
       .status(200)
       .cookie("teacherAccessToken", teacherAccessToken, options)
       .cookie("teacherRefreshToken", teacherRefreshToken, options)
-      .json(new ApiResponse(200, createTeacher, "Teacher successfully registered"));
+      .json(new ApiResponse(200, 
+        {
+        teacher: createTeacher, teacherAccessToken, teacherRefreshToken
+        }
+      , "Teacher successfully registered"));
 })
 
 const loginTeacher = asyncHandler(async(req, res)=>{
