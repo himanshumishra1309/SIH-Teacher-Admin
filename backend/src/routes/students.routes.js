@@ -6,7 +6,7 @@ import {
   getCurrentStudent,
   updateAccountDetails,
   updateStudentAvatar,
-} from "../controllers/studentController.js";
+} from "../controllers/students.controllers.js";
 import { verifyStudentJWT } from "../middleware/student.auth.middleware.js";
 import { upload } from "../middleware/multer.middleware.js";
 

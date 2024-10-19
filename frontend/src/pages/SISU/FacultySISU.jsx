@@ -76,14 +76,16 @@ function FacultySISU() {
     formData.append('avatar', avatar);
 
     try {
-      const response = await axios.post('http://localhost:6005/api/v1/teachers/register', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      const accessToken = response?.data?.data?.teacherAccessToken;
-      sessionStorage.setItem('teacherAccessToken', accessToken);
-      console.log('Registration successful', response.data);
+      const response = await axios.post('http://localhost:6005/api/v1/teachers/register', formData);
+
+      console.log('Signup successful:', response);
+      console.log('Signup successful:', response.data);
+
+      const { teacherAccessToken } = response?.data?.data;
+      
+      // Store the access token in session storage
+      sessionStorage.setItem('teacherAccessToken', teacherAccessToken);
+
       navigate('/faculty');
     } catch (error) {
       console.error('Error during signup:', error.response?.data?.message || error.message);
