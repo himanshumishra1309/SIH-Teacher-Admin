@@ -63,7 +63,18 @@ const registerStudent = asyncHandler(async(req, res)=>{
       throw new ApiError(500, "Something went wrong while registering the user")
   }
 
-  return res.status(200).json(new ApiResponse(200, createStudent, "Student successfully registered"));
+  const { studentAccessToken, studentRefreshToken } = await generateAccessAndRefreshToken(student._id);
+
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    return res
+      .status(200)
+      .cookie("studentAccessToken", studentAccessToken, options)
+      .cookie("studentRefreshToken", studentRefreshToken, options)
+      .json(new ApiResponse(200, createStudent, "Student successfully registered"));
 })
 
 const loginStudent = asyncHandler(async(req, res)=>{
@@ -129,7 +140,7 @@ const loginStudent = asyncHandler(async(req, res)=>{
 
 const logoutStudent = asyncHandler(async(req, res)=>{
   Student.findByIdAndUpdate(
-    req.user._id,
+    req.student._id,
     // {
     //   refreshToken: undefined
     // }, dont use this approach, this dosent work well
@@ -153,7 +164,7 @@ const logoutStudent = asyncHandler(async(req, res)=>{
 }) // worked on postman
 
 const getCurrentStudent = asyncHandler(async (req, res)=>{
-    return res.status(200).json(new ApiResponse(200, req.user, "current user fetched successfully"))
+    return res.status(200).json(new ApiResponse(200, req.student, "current user fetched successfully"))
 })//worked on postman
   
 const updateAccountDetails = asyncHandler(async (req, res)=>{
@@ -191,8 +202,8 @@ const updateStudentAvatar = asyncHandler(async (req, res)=>{
       throw new ApiError(400, "Error while uploading on avatar")
     }
   
-    const user = await Student.findByIdAndUpdate(
-      req.user?._id,
+    const student = await Student.findByIdAndUpdate(
+      req.student?._id,
       {
         $set:{
           avatar: avatar.url
@@ -201,7 +212,7 @@ const updateStudentAvatar = asyncHandler(async (req, res)=>{
       {new: true}
     ).select("-password")
   
-    return res.status(200).json(new ApiResponse(200, user, "avatar image updated successfully"));
+    return res.status(200).json(new ApiResponse(200, student, "avatar image updated successfully"));
   
 })
 

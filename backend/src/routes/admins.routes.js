@@ -60,11 +60,11 @@ router.post('/logout', verifyAdminJWT, logoutAdmin);
 router.get('/me', verifyAdminJWT, getCurrentAdmin);
 
 /**
- * @route   PUT /admin/me/update
+ * @route   PATCH /admin/me/update
  * @desc    Update admin's account details
  * @access  Protected
  */
-router.put('/me/update', verifyAdminJWT, updateAccountDetails);
+router.patch('/me/update', verifyAdminJWT, updateAccountDetails);
 
 /**
  * @route   PUT /admin/me/avatar

@@ -14,14 +14,14 @@ export const verifyTeacherJWT = asyncHandler(async(req, res, next)=>{
         const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
         console.log("decoded token is: ", decodedToken);
     
-        const user = await Teacher.findById(decodedToken?._id).select("-password -refreshToken")
-        console.log("user in auth.middleware: ", user);
+        const teacher = await Teacher.findById(decodedToken?._id).select("-password -refreshToken")
+        console.log("teacher in auth.middleware: ", teacher);
     
-        if(!user){
+        if(!teacher){
             throw new ApiError(401, "Invalid Access Token")
         }
     
-        req.user = user;
+        req.teacher = teacher;
         next();
     } catch (error) {
         throw new ApiError(401, error?.message || "Invalid access token")

@@ -78,7 +78,18 @@ const registerTeacher = asyncHandler(async(req, res)=>{
       throw new ApiError(500, "Something went wrong while registering the user")
     }
 
-    return res.status(200).json(new ApiResponse(200, createTeacher, "Teacher successfully registered"));
+    const { teacherAccessToken, teacherRefreshToken } = await generateAccessAndRefreshToken(teacher._id);
+
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    return res
+      .status(200)
+      .cookie("teacherAccessToken", teacherAccessToken, options)
+      .cookie("teacherRefreshToken", teacherRefreshToken, options)
+      .json(new ApiResponse(200, createTeacher, "Teacher successfully registered"));
 })
 
 const loginTeacher = asyncHandler(async(req, res)=>{
@@ -136,7 +147,7 @@ const loginTeacher = asyncHandler(async(req, res)=>{
 
 const logoutTeacher = asyncHandler(async(req, res)=>{
   await Teacher.findByIdAndUpdate(
-    req.user._id,
+    req.teacher._id,
     // {
     //   refreshToken: undefined
     // }, dont use this approach, this dosent work well
@@ -160,26 +171,31 @@ const logoutTeacher = asyncHandler(async(req, res)=>{
 })
 
 const getCurrentTeacher = asyncHandler(async (req, res)=>{
-    return res.status(200).json(new ApiResponse(200, req.user, "current user fetched successfully"))
+    return res.status(200).json(new ApiResponse(200, req.teacher, "current user fetched successfully"))
 })//worked on postman
   
 const updateAccountDetails = asyncHandler(async (req, res)=>{
     console.log("req.body of update account details: ",req.body);
-    const {name, department, email} = req.body;
+    const {name, department, email, employee_code} = req.body;
   
-    if(!name || !department || !email){
+    if(!name || !department || !email || !employee_code){
       throw new ApiError(400, "All field are requires")
     }
   
-    const teacher = Teacher.findByIdAndUpdate(
+    console.log("req.teacher: ", req.teacher);
+    console.log("req.teacher._id: ", req.teacher?._id);
+
+    const teacher = await Teacher.findByIdAndUpdate(
       req.teacher?._id,
       {
         $set: {
-          name, department, email
+          name, email, employee_code, department
         }
       },
       {new: true} // this returns all the values after the fields are updated
     ).select("-password")
+
+    console.log("teacher: ", teacher);
   
     return res.status(200).json(new ApiResponse(200, teacher, "Account details updated successfully"))
 })
@@ -198,8 +214,8 @@ const updateTeacherAvatar = asyncHandler(async (req, res)=>{
       throw new ApiError(400, "Error while uploading on avatar")
     }
   
-    const user = await Teacher.findByIdAndUpdate(
-      req.user?._id,
+    const teacher = await Teacher.findByIdAndUpdate(
+      req.teacher?._id,
       {
         $set:{
           avatar: avatar.url
@@ -208,7 +224,7 @@ const updateTeacherAvatar = asyncHandler(async (req, res)=>{
       {new: true}
     ).select("-password")
   
-    return res.status(200).json(new ApiResponse(200, user, "avatar image updated successfully"));
+    return res.status(200).json(new ApiResponse(200, teacher, "avatar image updated successfully"));
   
 })
 

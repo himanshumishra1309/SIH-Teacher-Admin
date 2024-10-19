@@ -25,7 +25,7 @@ router.post("/logout", verifyStudentJWT, logoutStudent);
 router.get("/me", verifyStudentJWT, getCurrentStudent);
 
 // Route to update student account details
-router.put("/me/update", verifyStudentJWT, updateAccountDetails);
+router.patch("/me/update", verifyStudentJWT, updateAccountDetails);
 
 // Route to update student's avatar
 router.put("/me/avatar", verifyStudentJWT, upload.single("avatar"), updateStudentAvatar);

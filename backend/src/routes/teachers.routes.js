@@ -14,7 +14,7 @@ router.route('/register').post(
 router.route('/login').post(loginTeacher);
 router.route('/logout').post(verifyTeacherJWT, logoutTeacher);
 router.route('/me').get(verifyTeacherJWT, getCurrentTeacher);
-router.route('/me/update').put(verifyTeacherJWT, updateAccountDetails);
+router.route('/me/update').patch(verifyTeacherJWT, updateAccountDetails);
 router.route('/me/avatar').put(
     verifyTeacherJWT,
     upload.single('avatar'),

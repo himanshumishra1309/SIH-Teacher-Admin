@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
-import { Graph } from './graphs.models';
-import { domainPoints } from '../utils/domainPoints';
+import { Graph } from './graphs.models.js';
+import { domainPoints } from '../utils/domainPoints.js';
 
 const allocatedSubjectSchema = new Schema(
 {

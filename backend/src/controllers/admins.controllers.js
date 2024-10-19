@@ -74,7 +74,18 @@ const registerAdmin = asyncHandler(async(req, res)=>{
       throw new ApiError(500, "Something went wrong while registering the user")
   }
 
-  return res.status(200).json(new ApiResponse(200, createAdmin, "Admin successfully registered"));
+  const { adminAccessToken, adminRefreshToken } = await generateAccessAndRefreshToken(admin._id);
+
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    return res
+      .status(200)
+      .cookie("adminAccessToken", adminAccessToken, options)
+      .cookie("adminRefreshToken", adminRefreshToken, options)
+      .json(new ApiResponse(200, createAdmin, "Admin successfully registered"));
 });
 
 const loginAdmin = asyncHandler(async(req, res)=>{
@@ -140,7 +151,7 @@ const loginAdmin = asyncHandler(async(req, res)=>{
 
 const logoutAdmin = asyncHandler(async(req, res)=>{
   Admin.findByIdAndUpdate(
-    req.user._id,
+    req.admin._id,
     // {
     //   refreshToken: undefined
     // }, dont use this approach, this dosent work well
@@ -164,7 +175,7 @@ const logoutAdmin = asyncHandler(async(req, res)=>{
 });
 
 const getCurrentAdmin = asyncHandler(async (req, res)=>{
-    return res.status(200).json(new ApiResponse(200, req.user, "current user fetched successfully"))
+    return res.status(200).json(new ApiResponse(200, req.admin, "current user fetched successfully"))
 });
   
 const updateAccountDetails = asyncHandler(async (req, res)=>{
@@ -202,8 +213,8 @@ const updateAdminAvatar = asyncHandler(async (req, res)=>{
       throw new ApiError(400, "Error while uploading on avatar")
     }
   
-    const user = await Admin.findByIdAndUpdate(
-      req.user?._id,
+    const admin = await Admin.findByIdAndUpdate(
+      req.admin?._id,
       {
         $set:{
           avatar: avatar.url
@@ -212,7 +223,7 @@ const updateAdminAvatar = asyncHandler(async (req, res)=>{
       {new: true}
     ).select("-password")
   
-    return res.status(200).json(new ApiResponse(200, user, "avatar image updated successfully"));
+    return res.status(200).json(new ApiResponse(200, admin, "avatar image updated successfully"));
   
 })
 

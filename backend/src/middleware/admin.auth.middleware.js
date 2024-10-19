@@ -14,14 +14,14 @@ export const verifyAdminJWT = asyncHandler(async(req, res, next)=>{
         const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
         console.log("decoded token is: ", decodedToken);
     
-        const user = await Admin.findById(decodedToken?._id).select("-password -refreshToken")
-        console.log("user in auth.middleware: ", user);
+        const admin = await Admin.findById(decodedToken?._id).select("-password -refreshToken")
+        console.log("admin in auth.middleware: ", admin);
     
-        if(!user){
+        if(!admin){
             throw new ApiError(401, "Invalid Access Token")
         }
     
-        req.user = user;
+        req.admin = admin;
         next();
     } catch (error) {
         throw new ApiError(401, error?.message || "Invalid access token")
