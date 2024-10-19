@@ -11,17 +11,17 @@ import {
 } from "@/components/ui/dialog";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { AiOutlineEdit } from "react-icons/ai"; 
+import { AiOutlineEdit } from "react-icons/ai";
 import axios from "axios";
 
 export default function StudentEditProfile() {
-  const [facultyData, setFacultyData] = useState({
-    name: '',
-    email: '',
-    roll_no: '',
-    year: '',
-    branch: '',
-    avatar: '',
+  const [studentData, setStudentData] = useState({
+    name: "",
+    email: "",
+    roll_no: "",
+    year: "",
+    branch: "",
+    avatar: "",
   });
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -29,25 +29,27 @@ export default function StudentEditProfile() {
   const fileInputRef = useRef(null); // Reference to file input for clicking programmatically
 
   //Fetch faculty data from the backend
-  useEffect(()=>{
+  useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        // const accessToken = sessionStorage.getItem("teacherAccessToken");
-        // const headers= {
-        //   "Authorization": `Bearer ${accessToken}`
-        // };
-        // const response = await axios.get("http://localhost:6005/api/v1/teachers/me", {headers});
-        // console.log("Faculty data fetched:", response.data);
+        const accessToken = sessionStorage.getItem("studentAccessToken");
+        const headers = {
+          Authorization: `Bearer ${accessToken}`,
+        };
+        const response = await axios.get(
+          "http://localhost:6005/api/v1/students/me",
+          { headers }
+        );
+        console.log("Student data fetched:", response.data);
 
-        setFacultyData({
-          name: response.data.data.name || '',
-          email: response.data.data.email || '',
-          enrollment_no: response.data.data.enrollment_no || '',
-          branch: response.data.data.branch || '',
-          year: respone.data.data.year || '',
+        setStudentData({
+          name: response.data.data.name || "",
+          email: response.data.data.email || "",
+          roll_no: response.data.data.roll_no || "",
+          branch: response.data.data.branch || "",
+          year: response.data.data.year || "",
           avatar: response.data.data.avatar || "", // Set the avatar URL
         });
-
       } catch (error) {
         console.error("Error fetching faculty data:", error);
       }
@@ -58,7 +60,7 @@ export default function StudentEditProfile() {
   // Handle input change for the form
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setFacultyData((prevData) => ({
+    setStudentData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
@@ -73,19 +75,23 @@ export default function StudentEditProfile() {
 
   const handleSaveChanges = async () => {
     try {
-      const accessToken = sessionStorage.getItem("teacherAccessToken");
-      const headers= {
-        "Authorization": `Bearer ${accessToken}`
+      const accessToken = sessionStorage.getItem("studentAccessToken");
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
       };
-      console.log("Saving changes:", facultyData);
-      const response = axios.patch("http://localhost:6005/api/v1/teachers/me/update", facultyData ,{headers});
+      console.log("Saving changes:", studentData);
+      const response = axios.patch(
+        "http://localhost:6005/api/v1/students/me/update",
+        studentData,
+        { headers }
+      );
       console.log("Changes saved:", response);
 
       setIsDialogOpen(false);
     } catch (error) {
       console.error("Error saving changes:", error);
     }
-  }
+  };
 
   // Handle avatar upload immediately after file selection
   const handleAvatarChange = async (event) => {
@@ -96,20 +102,20 @@ export default function StudentEditProfile() {
     formData.append("avatar", file);
 
     try {
-      const accessToken = sessionStorage.getItem("teacherAccessToken");
+      const accessToken = sessionStorage.getItem("studentAccessToken");
       const headers = {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "multipart/form-data",
       };
 
       const response = await axios.put(
-        "http://localhost:6005/api/v1/teachers/me/avatar",
+        "http://localhost:6005/api/v1/students/me/avatar",
         formData,
         { headers }
       );
 
       console.log("Avatar updated:", response.data);
-      setFacultyData((prevData) => ({
+      setStudentData((prevData) => ({
         ...prevData,
         avatar: response.data.data.avatar,
       }));
@@ -128,40 +134,40 @@ export default function StudentEditProfile() {
 
       <Card className="w-full shadow-lg rounded-lg overflow-hidden">
         <CardHeader className="bg-gray-100 p-4">
-        <div className="relative flex items-center space-x-6">
-          {/* Avatar with pencil icon positioned relative to it */}
-          <div className="relative">
-            <Avatar className="w-24 h-24 border-2 border-blue-500 shadow-lg">
-              <AvatarImage
-                src={facultyData.avatar}
-                alt={`${facultyData.name}'s Avatar`}
-              />
-              <AvatarFallback>?</AvatarFallback>
-            </Avatar>
+          <div className="relative flex items-center space-x-6">
+            {/* Avatar with pencil icon positioned relative to it */}
+            <div className="relative">
+              <Avatar className="w-24 h-24 border-2 border-blue-500 shadow-lg">
+                <AvatarImage
+                  src={studentData.avatar}
+                  alt={`${studentData.name}'s Avatar`}
+                />
+                <AvatarFallback>?</AvatarFallback>
+              </Avatar>
 
-            {/* Pencil Icon positioned relative to the avatar */}
-            <div
-              className="absolute bottom-5 right-2 bg-gray-800 text-white rounded-full p-2 cursor-pointer"
-              onClick={triggerFileInput}
-              style={{ transform: "translate(50%, 50%)" }} // Moves it slightly outside the avatar
-            >
-              <AiOutlineEdit className="text-sm" />
+              {/* Pencil Icon positioned relative to the avatar */}
+              <div
+                className="absolute bottom-5 right-2 bg-gray-800 text-white rounded-full p-2 cursor-pointer"
+                onClick={triggerFileInput}
+                style={{ transform: "translate(50%, 50%)" }} // Moves it slightly outside the avatar
+              >
+                <AiOutlineEdit className="text-sm" />
+              </div>
             </div>
-          </div>
 
-          {/* Hidden file input */}
-          <input
-            type="file"
-            ref={fileInputRef}
-            style={{ display: "none" }}
-            onChange={handleAvatarChange}
-          />
+            {/* Hidden file input */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              onChange={handleAvatarChange}
+            />
 
-          {/* <div className="flex flex-col">
-            <p className="text-xl font-semibold text-gray-900">{facultyData.name}</p>
-            <p className="text-sm text-gray-500">{facultyData.department}</p>
+            {/* <div className="flex flex-col">
+            <p className="text-xl font-semibold text-gray-900">{student.name}</p>
+            <p className="text-sm text-gray-500">{student.department}</p>
           </div> */}
-        </div>
+          </div>
         </CardHeader>
         <CardContent className="p-4">
           <form onSubmit={handleFormSubmit}>
@@ -173,7 +179,7 @@ export default function StudentEditProfile() {
                 <Input
                   id="name"
                   name="name"
-                  value={facultyData.name}
+                  value={studentData.name}
                   onChange={handleInputChange}
                   className="col-span-3"
                 />
@@ -185,19 +191,19 @@ export default function StudentEditProfile() {
                 <Input
                   id="email"
                   name="email"
-                  value={facultyData.email}
+                  value={studentData.email}
                   onChange={handleInputChange}
                   className="col-span-3"
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="enrollment_no" className="text-right">
+                <Label htmlFor="roll_no" className="text-right">
                   Enrollment No:
                 </Label>
                 <Input
-                  id="enrollment_no"
-                  name="enrollment_no"
-                  value={facultyData.employee_code}
+                  id="roll_no"
+                  name="roll_no"
+                  value={studentData.roll_no}
                   onChange={handleInputChange}
                   className="col-span-3"
                 />
@@ -209,7 +215,7 @@ export default function StudentEditProfile() {
                 <Input
                   id="branch"
                   name="branch"
-                  value={facultyData.branch}
+                  value={studentData.branch}
                   onChange={handleInputChange}
                   className="col-span-3"
                 />
@@ -221,7 +227,7 @@ export default function StudentEditProfile() {
                 <Input
                   id="year"
                   name="year"
-                  value={facultyData.branch}
+                  value={studentData.year}
                   onChange={handleInputChange}
                   className="col-span-3"
                 />
@@ -239,10 +245,16 @@ export default function StudentEditProfile() {
                 <DialogHeader>Confirm Changes</DialogHeader>
                 <p>Are you sure you want to save the changes?</p>
                 <DialogFooter>
-                  <Button variant="ghost" onClick={() => setIsDialogOpen(false)}>
+                  <Button
+                    variant="ghost"
+                    onClick={() => setIsDialogOpen(false)}
+                  >
                     Cancel
                   </Button>
-                  <Button onClick={handleSaveChanges} className="bg-blue-500 text-white">
+                  <Button
+                    onClick={handleSaveChanges}
+                    className="bg-blue-500 text-white"
+                  >
                     Yes, Save
                   </Button>
                 </DialogFooter>
@@ -264,4 +276,3 @@ export default function StudentEditProfile() {
     </div>
   );
 }
- 

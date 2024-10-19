@@ -190,34 +190,34 @@ const getCurrentStudent = asyncHandler(async (req, res) => {
     );
 }); //worked on postman
 
-const updateAccountDetails = asyncHandler(async (req, res) => {
-  console.log("req.body of update account details: ", req.body);
-  const { name, roll_no, email, branch, year } = req.body;
+  const updateAccountDetails = asyncHandler(async (req, res) => {
+    console.log("req.body of update account details: ", req.body);
+    const { name, email, roll_no, branch, year } = req.body;
 
-  if (!name || !roll_no || !email || !branch || !year) {
-    throw new ApiError(400, "All field are requires");
-  }
+    if (!name || !roll_no || !email || !branch || !year) {
+      throw new ApiError(400, "All field are requires");
+    }
 
-  const student = Student.findByIdAndUpdate(
-    req.student?._id,
-    {
-      $set: {
-        name,
-        roll_no,
-        email,
-        branch,
-        year,
+    const student = await Student.findByIdAndUpdate(
+      req.student?._id,
+      {
+        $set: {
+          name,
+          roll_no,
+          email,
+          branch,
+          year,
+        },
       },
-    },
-    { new: true } // this returns all the values after the fields are updated
-  ).select("-password");
+      { new: true } // this returns all the values after the fields are updated
+    ).select("-password");
 
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(200, student, "Account details updated successfully")
-    );
-});
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, student, "Account details updated successfully")
+      );
+  });
 
 //todo: delete the previous avatar image from the db and cloudinary
 const updateStudentAvatar = asyncHandler(async (req, res) => {
