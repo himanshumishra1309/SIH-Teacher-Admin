@@ -1,8 +1,8 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import TeacherAvatar from './TeacherAvatar'
+import AdminAvatar from './TeacherAvatar'
 
-function TeacherHeader() {
+export default function AdminHeader() {
   return (
    <>
    <header className='flex justify-between items-center py-1 m-0 bg-blue-600 shadow-md'>
@@ -20,7 +20,7 @@ function TeacherHeader() {
 <div className='flex justify-between'>
 <img  src='assets\icons\emblem.svg' alt="College Logo" className='h-20 w-20
     ml-2 items-center ' />
-<TeacherAvatar />
+<AdminAvatar/>
 </div>
 
 
@@ -29,4 +29,3 @@ function TeacherHeader() {
   )
 }
 
-export default TeacherHeader

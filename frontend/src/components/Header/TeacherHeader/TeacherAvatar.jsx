@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../ui/dropdown-menu";
 
-export default function TeacherAvatar() {
+export default function AdminAvatar() {
   const navigate = useNavigate();  // Create a navigate function from the hook
 
   const handleLogout = () => {
@@ -14,7 +14,7 @@ export default function TeacherAvatar() {
   };
 
   const handleEditProfile = () => {
-    navigate('/faculty/edit-profile');  // Navigate to Edit Profile page
+    navigate('/admin/edit-profile');  // Navigate to Edit Profile page
   };
 
   return (
