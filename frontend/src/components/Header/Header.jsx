@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 function Header() {
   return (
    <>
-   <header className='flex justify-between items-center py-1 m-0 bg-blue-600 shadow-md'>
+   <header className='flex justify-between items-center py-1 m-0 bg-blue-600 shadow-md backdrop-blur-sm'>
     <div className='flex items-center'>
       <Link to={"#"}>
       <img  src='assets\icons\Logo.svg' alt="College Logo" className='h-20 w-20
