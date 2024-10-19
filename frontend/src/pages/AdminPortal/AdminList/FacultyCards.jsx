@@ -31,6 +31,16 @@ import {
     { value: 'Chemistry', label: 'Chemistry' },
     // Add more options as needed
   ];
+
+
+  const myAnimation = {
+    hover: { borderColor: 'transparent', scale: 1.1 },
+    tap: { borderColor: 'transparent', scale: 0.95 },
+    focus: { borderColor: 'white', 
+             scale: 1.1, 
+             transition: { duration: 0.15 } 
+           },
+   };
   
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from '@/components/ui/scroll-area';
