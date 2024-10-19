@@ -2,13 +2,14 @@ import React from 'react'
 import { Header } from '@/components'
 import { Footer } from '@/components'
 import { Link } from 'react-router-dom'
+import StudentHeader from '@/components/Header/StudentHeader/StudentHeader'
 
 
 function StudentHome() {
   return (
 
     <div className="flex flex-col min-h-screen">
-    <Header />
+    <StudentHeader/>
 
     <main className="flex-1">
     <div className="w-full flex-grow flex flex-col justify-center items-center  bg-cover bg-center bg-white" >
