@@ -19,7 +19,7 @@ import { ExpertLecture } from "../models/expert-lectures.models.js";
 
 const generateAccessAndRefreshToken = async(userId) =>{
   try {
-      const admin = Admin.findById(userId);
+      const admin = await Admin.findById(userId);
       const adminAccessToken = admin.generateAccessToken();
       const adminRefreshToken = admin.generateRefreshToken();
 
@@ -124,7 +124,7 @@ const loginAdmin = asyncHandler(async(req, res)=>{
 
   const {adminAccessToken, adminRefreshToken} = await generateAccessAndRefreshToken(user._id);
 
-  const loggedInUser = await Student.findById(user._id).select("-password -refreshToken")
+  const loggedInUser = await Admin.findById(user._id).select("-password -refreshToken")
 
   //now we will be adding functionality to return cookies, and for doing that securely such that the frontend could access those cookies but cannot modify them and also the cookies can only be modified using the backend server
   const options = {
@@ -150,7 +150,7 @@ const loginAdmin = asyncHandler(async(req, res)=>{
 });
 
 const logoutAdmin = asyncHandler(async(req, res)=>{
-  Admin.findByIdAndUpdate(
+  await Admin.findByIdAndUpdate(
     req.admin._id,
     // {
     //   refreshToken: undefined
