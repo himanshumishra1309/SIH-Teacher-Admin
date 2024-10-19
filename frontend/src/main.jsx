@@ -28,6 +28,8 @@ import SeminarCards from './pages/StudentPortal/SeminarCards';
 import StudentLayout from './Layouts/StudentLayout';
 import LectureFeedback from './pages/AdminPortal/AdminList/LectureFeedback';
 import BasicForm from './Forms/Student/BasicForm';
+import AdminEditProfile from './components/EditProfile/AdminEditProfile';
+import StudentEditProfile from './components/EditProfile/StudentEditProfile';
 
 
 
@@ -60,6 +62,10 @@ const router = createBrowserRouter(
       </Route>
 
       <Route path="faculty/edit-profile" element={<EditFacultyProfile/>} /> {/* Add Edit Profile route */}
+      <Route path="admin/edit-profile" element={<AdminEditProfile/>} /> {/* Add Edit Profile route */}
+
+      <Route path="student/edit-profile" element={<StudentEditProfile/>} /> {/* Add Edit Profile route */}
+
 
 
 
