@@ -4,13 +4,37 @@ import { useNavigate } from 'react-router-dom';  // Import the hook for navigati
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../ui/dropdown-menu";
+import axios from 'axios';
 
 export default function FacultyAvatar() {
   const navigate = useNavigate();  // Create a navigate function from the hook
 
-  const handleLogout = () => {
-    console.log('Logging out...');
-    // Implement logout logic
+  const handleLogout = async () => {
+    console.log("Logging out...");
+
+    try { 
+      await axios.post(
+        "http://localhost:6005/api/v1/teachers/logout",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem(
+              "teacherAccessToken"
+            )}`,
+          },
+        }
+      );
+
+      sessionStorage.removeItem("teacherAccessToken");
+
+      console.log("Logout successful");
+
+      navigate("/");
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message;
+      console.error("Error during logout:", errorMessage);
+      alert("Logout failed. Please try again.");
+    }
   };
 
   const handleEditProfile = () => {
