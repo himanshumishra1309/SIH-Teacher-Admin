@@ -260,8 +260,7 @@ const getAllTheTeachers = asyncHandler(async (req, res) => {
     name,
     email,
     department,
-    employee_code, // New search parameter for employee_code
-    avatar,
+    employee_code,
     page = 1,
     limit = 10,
     sortBy = "name",

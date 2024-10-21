@@ -1,57 +1,57 @@
 // models/seminar.model.js
-import mongoose, { Schema } from 'mongoose';
-import { Graph } from './graphs.models.js';
-import { domainPoints } from '../utils/domainPoints.js';
+import mongoose, { Schema } from "mongoose";
+import { Graph } from "./graphs.models.js";
+import { domainPoints } from "../utils/domainPoints.js";
 
 const seminarSchema = new Schema(
   {
     topic: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
     duration: {
       type: Number,
-      required: true
+      required: true,
     },
     date: {
       type: Date,
-      required: true
+      required: true,
     },
     report: {
       type: String, // Cloudinary URL
-      required: false
+      required: false,
     },
     owner: {
       type: Schema.Types.ObjectId,
       ref: "Teacher",
-      required: true
+      required: true,
     },
     status: {
       type: String,
-      enum: ['upcoming', 'conducted'],
-      default: 'upcoming'
-    }
+      enum: ["upcoming", "conducted"],
+      default: "upcoming",
+    },
   },
   { timestamps: true }
 );
 
 // Post-save hook to add points
-seminarSchema.post('save', async function(doc){
+seminarSchema.post("save", async function (doc) {
   await Graph.findOneAndUpdate(
-    {owner: doc.owner, date: doc.date},
-    {$inc: {points: domainPoints.Seminar}},
-    {upsert: true}
-  )
-})
+    { owner: doc.owner, date: doc.date },
+    { $inc: { points: domainPoints.Seminar } },
+    { upsert: true }
+  );
+});
 
 // Post-remove hook to deduct points
-seminarSchema.post('findOneAndDelete', async function(doc){
+seminarSchema.post("findOneAndDelete", async function (doc) {
   await Graph.findOneAndUpdate(
-    {owner: doc.owner, date: doc.date},
-    {$inc: {points: -domainPoints.Seminar}},
-    {new: true}
-  )
-})
+    { owner: doc.owner, date: doc.date },
+    { $inc: { points: -domainPoints.Seminar } },
+    { new: true }
+  );
+});
 
-export const Seminar = mongoose.model('Seminar', seminarSchema);
+export const Seminar = mongoose.model("Seminar", seminarSchema);

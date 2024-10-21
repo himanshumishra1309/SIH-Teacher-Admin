@@ -43,7 +43,7 @@ export default function AdminAvatar() {
   };
 
   const handleEditProfile = () => {
-    navigate("/faculty/edit-profile"); // Navigate to Edit Profile page
+    navigate("/admin/edit-profile"); // Navigate to Edit Profile page
   };
 
   return (
