@@ -56,7 +56,7 @@ const FacultyLayout = () => {
  <FacultyNavigation/>
       {/* Main Content Area */}
       <main className="flex-1 p-4"> {/* Adjust padding and flex-grow here */}
-        <h1 className="text-xl font-bold">Faculty Portal</h1>
+        <h1 className="text-xl font-bold text-center">Faculty Portal</h1>
         <Outlet /> {/* Render the BasicTable here */}
       </main>
     </div>

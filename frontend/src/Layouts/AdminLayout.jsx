@@ -42,7 +42,7 @@ function AdminLayout() {
           <main className="flex-1 p-4">
             {" "}
             {/* Adjust padding and flex-grow here */}
-            <h1 className="text-xl font-bold">Admin Portal</h1>
+            <h1 className="text-xl font-bold text-center">Admin Portal</h1>
             <Outlet /> {/* Render the BasicTable here */}
           </main>
         </div>

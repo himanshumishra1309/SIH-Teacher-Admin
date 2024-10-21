@@ -30,6 +30,8 @@ import LectureFeedback from './pages/AdminPortal/AdminList/LectureFeedback';
 import BasicForm from './Forms/Student/BasicForm';
 import AdminEditProfile from './components/EditProfile/AdminEditProfile';
 import StudentEditProfile from './components/EditProfile/StudentEditProfile';
+import FacultyDataDashboard from './pages/FacultyPortal/FacultyDataDashboard';
+import AdminDataDashboard from './pages/AdminPortal/AdminList/AdminDataDashboard';
 
 
 
@@ -44,7 +46,7 @@ const router = createBrowserRouter(
 
       <Route path="faculty" element={<FacultyLayout />}>
         {/* <Route index element={<BasicTable />} /> Default to BasicTable */}
-        <Route index element={<BasicTable />} errorElement={<NotFoundPage/>} />
+        <Route index element={<FacultyDataDashboard/>} errorElement={<NotFoundPage/>} />
         <Route path="research-papers" element={<BasicTable />} errorElement={<NotFoundPage/>} />
         <Route path="expert-lectures" element={<BasicTable />}errorElement={<NotFoundPage/>}  />
         <Route path="sttp-conducted" element={<BasicTable />} errorElement={<NotFoundPage/>} />
@@ -52,7 +54,7 @@ const router = createBrowserRouter(
         <Route path="department-portfolio" element={<BasicTable />} errorElement={<NotFoundPage/>} />
         <Route path="students-guided" element={<RouteTransitionWrapper><BasicTable /></RouteTransitionWrapper>}errorElement={<NotFoundPage/>}  />
         <Route path="seminars" element={<RouteTransitionWrapper><ConductedMain /></RouteTransitionWrapper>}errorElement={<NotFoundPage/>}  >
-           <Route path="upcoming" element={<RouteTransitionWrapper><UpcomingSeminars /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} /> 
+        <Route path="upcoming" element={<RouteTransitionWrapper><UpcomingSeminars /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} /> 
         </Route>
         <Route path="projects" element={<BasicTable />} />
         <Route path="lectures" element={<BasicTable />} />
@@ -91,7 +93,7 @@ const router = createBrowserRouter(
         <Route path="event-participation" element={<BasicTable />} errorElement={<NotFoundPage/>} />
         <Route path="seminars" element={<BasicTable />} errorElement={<NotFoundPage/>} />
         <Route path="projects" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="Contribution-graph" element={<BasicTable />} errorElement={<NotFoundPage/>} />
+        <Route path="Contribution-graph" element={<AdminDataDashboard/>} errorElement={<NotFoundPage/>} />
 
       </Route>
       
