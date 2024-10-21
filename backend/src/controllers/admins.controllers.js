@@ -180,17 +180,17 @@ const getCurrentAdmin = asyncHandler(async (req, res)=>{
   
 const updateAccountDetails = asyncHandler(async (req, res)=>{
     console.log("req.body of update account details: ",req.body);
-    const {name, designation, email, password} = req.body;
+    const {name, designation, email} = req.body;
   
-    if(!name || !designation || !email || !password){
+    if(!name || !designation || !email){
       throw new ApiError(400, "All field are requires")
     }
   
-    const admin = Admin.findByIdAndUpdate(
+    const admin = await Admin.findByIdAndUpdate(
       req.admin?._id,
       {
         $set: {
-          name, designation, email, password
+          name, designation, email
         }
       },
       {new: true} // this returns all the values after the fields are updated
