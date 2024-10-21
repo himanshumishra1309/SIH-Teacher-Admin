@@ -5,12 +5,13 @@ import dataJSON from "./data.json";
 import "../table.css"
 import DownloadBtn from '../DownloadBtn.jsx';
 import DebouncedInput from '../DebouncedInput.jsx';
-import { SearchIcon } from 'lucide-react';
+import { SearchIcon, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button.jsx';
+import { Checkbox } from '@/components/ui/checkbox.jsx';
 import DrawerComponent from '../../Forms/AddEntry/DrawerComponent.jsx';
 import DeleteDialog from '../DeleteDialog.jsx';
 
-function BasicTable() {
+export default function BasicTable() {
   const [data, setData] = useState(dataJSON);
   const [globalFilter, setGlobalFilter] = useState("");
   const [isDrawerOpen, setDrawerOpen] = useState(false);
@@ -63,6 +64,7 @@ function BasicTable() {
     state: {
       sorting,
       globalFilter,
+      columnVisibility,
     },
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
@@ -78,7 +80,7 @@ function BasicTable() {
   const handleAddEntry = (newData) => {
     setData((prevData) => [
       ...prevData,
-      { ...newData, id: Date.now(), srNo: prevData.length + 1 },
+      { ...newData, id: Date.now() },
     ]);
   };
 
@@ -89,77 +91,81 @@ function BasicTable() {
   };
 
   const handleDeleteRow = () => {
-    setData((prevData) => prevData.filter(row => row.id !== rowToDelete));
+    setData((prevData) => prevData.filter(row => row.id !== rowToDelete.id));
     setDeleteDialogOpen(false);
     setRowToDelete(null);
   };
 
   return (
-    <>
-      <div className='flex justify-between m-4'>
-        <div className='flex w-full items-center gap-1'>
-          <SearchIcon />
+    <div className="container mx-auto p-4">
+      <div className='flex justify-between mb-4'>
+        <div className='flex items-center gap-2'>
+          <SearchIcon className="text-gray-400" />
           <DebouncedInput
             value={globalFilter ?? ""}
             onChange={(value) => setGlobalFilter(String(value))}
-            className="p-2 bg-transparent outline-none border-b-2 w-1/5 focus:w-1/3 duration-300 border-indigo-500"
+            className="p-2 bg-transparent outline-none border-b-2 w-64 focus:w-96 duration-300 border-gray-300 focus:border-blue-500"
             placeholder="Search all columns..."
           />
         </div>
         <DownloadBtn data={data} fileName="Research" />
-
       </div>
 
-      <div className='flex justify-end m-4'>
+      <div className='flex justify-end mb-4'>
         <Button onClick={() => setDrawerOpen(true)} className="add-entry-btn">
           Add Entry
         </Button>
       </div>
       
-      <div className="mb-4">
+      <div className="mb-4 flex flex-wrap gap-2">
         {table.getAllLeafColumns().map(column => (
-          <div key={column.id} className="inline-block mr-2">
-            <label>
-              <input
-                type="checkbox"
-                checked={column.getIsVisible()}
-                onChange={column.getToggleVisibilityHandler()}
-              />
-              {" "}{column.id}
+          <div key={column.id} className="flex items-center">
+            <Checkbox
+              checked={column.getIsVisible()}
+              onCheckedChange={(value) => column.toggleVisibility(!!value)}
+              id={column.id}
+            />
+            <label htmlFor={column.id} className="ml-2 text-sm font-medium">
+              {column.id}
             </label>
           </div>
         ))}
+        <Button onClick={resetFilters} variant="outline" size="sm" className="ml-2">
+          Reset Filters
+        </Button>
       </div>
 
-      <table className='mt-10 w-full'>
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th key={header.id} className="px-4 py-2">
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="px-4 py-2">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="table-container">
+        <table className='w-full'>
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} className="px-4 py-2">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id} className="px-4 py-2">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <DrawerComponent
         isOpen={isDrawerOpen}
@@ -224,8 +230,6 @@ function BasicTable() {
           ))}
         </select>
       </div>
-    </>
+    </div>
   );
 }
-
-export default BasicTable;

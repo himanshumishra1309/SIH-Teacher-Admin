@@ -100,20 +100,18 @@ function AdminSISU() {
     e.preventDefault();
 
     try {
-      // Create FormData object and append the email and password
       const formData = {
         email: loginData.email,
         password: loginData.password,
       };
       console.log(formData);
 
-      // Send the FormData to the backend using axios
       const response = await axios.post(
         "http://localhost:6005/api/v1/admins/login",
         formData,
         {
           headers: {
-            "Content-Type": "application/json", // Set content type to application/json
+            "Content-Type": "application/json",
           },
         }
       );

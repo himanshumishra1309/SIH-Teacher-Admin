@@ -1,13 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, ExternalLink } from "lucide-react";
 
 export const columnDef = [
-  {
-    header: "Sr. No.",
-    accessorKey: "srNo",
-    cell: ({ row }) => row.index + 1,
-    enableSorting: false
-  },
   {
     accessorKey: "Title",
     header: "Title of Research/Publication",
@@ -42,14 +36,14 @@ export const columnDef = [
     enableSorting: true,
   },
   {
-    accessorKey: "View",
+    accessorKey: "URL",
     header: "View Report",
     cell: ({ row }) => (
       <Button
-        onClick={() => window.open(row.original.View, '_blank')}
+        onClick={() => window.open(row.getValue("URL"), '_blank')}
         className="view-btn"
       >
-        View
+        View <ExternalLink className="ml-2 h-4 w-4" />
       </Button>
     ),
     enableSorting: false,
@@ -58,21 +52,5 @@ export const columnDef = [
     accessorKey: "actions",
     header: "Actions",
     enableSorting: false,
-    cell: ({ row }) => (
-      <div className="flex gap-2">
-        <Button
-          onClick={() => row.original.onEdit(row.original)}
-          className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200"
-        >
-          <Edit size={16} />
-        </Button>
-        <Button
-          onClick={() => row.original.onDelete(row.original)}
-          className="p-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-200"
-        >
-          <Trash2 size={16} />
-        </Button>
-      </div>
-    ),
   },
 ];

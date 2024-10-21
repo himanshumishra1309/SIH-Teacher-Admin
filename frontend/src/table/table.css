@@ -1,43 +1,45 @@
+.table-container {
+  max-height: 600px;
+  overflow-y: auto;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 table {
-  font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;
+  font-family: 'Inter', sans-serif;
   border-collapse: separate;
   border-spacing: 0;
   width: 100%;
   overflow-x: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
 }
 
 table td,
 table th {
-  border: 1px solid #ddd;
-  padding: 12px;
-  transition: all 0.2s ease;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 12px 16px;
+  text-align: left;
 }
 
 table tr {
   transition: background-color 0.2s ease;
 }
 
-table tr:nth-child(even) {
-  background-color: #f8f8f8;
-}
-
 table tr:hover {
-  background-color: #e8e8e8;
-  transform: scale(1.01);
+  background-color: #f7fafc;
 }
 
-table th, tfoot td {
-  padding-top: 12px;
-  padding-bottom: 12px;
-  text-align: center;
-  background-color: #3498db;
-  color: white;
+table th {
+  background-color: #f8fafc;
+  color: #4a5568;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: bold;
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+}
+
+table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 /* Animate new rows */
@@ -57,7 +59,7 @@ button {
 
 button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Responsive design */
@@ -68,16 +70,11 @@ button:hover {
 
   table td,
   table th {
-    padding: 8px;
+    padding:  8px 12px;
   }
 }
 
 /* Scrollbar styling */
-.table-container {
-  max-height: 600px;
-  overflow-y: auto;
-}
-
 .table-container::-webkit-scrollbar {
   width: 8px;
 }
@@ -87,10 +84,43 @@ button:hover {
 }
 
 .table-container::-webkit-scrollbar-thumb {
-  background: #888;
+  background: #cbd5e0;
   border-radius: 4px;
 }
 
 .table-container::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #a0aec0;
+}
+
+/* Filter inputs */
+input[type="text"] {
+  padding: 0.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+}
+
+/* Pagination controls */
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.pagination-controls button,
+.pagination-controls input,
+.pagination-controls select {
+  margin-left: 0.5rem;
+}
+
+.pagination-controls input[type="number"] {
+  width: 3rem;
 }
