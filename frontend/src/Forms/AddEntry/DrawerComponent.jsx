@@ -12,9 +12,11 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
   const generateSchema = () => {
     const schemaFields = {};
     columns.forEach((col) => {
-      if (col.accessorKey && col.accessorKey !== 'actions' && col.accessorKey !== 'View') {
+      if (col.accessorKey && col.accessorKey !== 'actions') {
         if (col.accessorKey === 'Date') {
-          schemaFields[col.accessorKey] = z.date();
+          schemaFields[col.accessorKey] = z.date().max(new Date(), { message: "Date cannot be in the future" });
+        } else if (col.accessorKey === 'URL') {
+          schemaFields[col.accessorKey] = z.string().url({ message: "Invalid URL" });
         } else {
           schemaFields[col.accessorKey] = z.string().min(1, { message: `${col.header} is required` });
         }
@@ -56,7 +58,7 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
           <h3 className="text-lg font-semibold mb-4">{rowData ? 'Edit Entry' : 'Add a New Entry'}</h3>
           <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
             {columns.map((col) => {
-              if (col.accessorKey && col.accessorKey !== 'actions' && col.accessorKey !== 'View') {
+              if (col.accessorKey && col.accessorKey !== 'actions') {
                 return (
                   <div key={col.accessorKey}>
                     <label htmlFor={col.accessorKey} className="block text-sm font-medium mb-1">
@@ -66,13 +68,16 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
                       <DatePicker
                         selected={watch('Date')}
                         onChange={(date) => setValue('Date', date)}
+                        maxDate={new Date()}
                         className={`w-full p-2 border rounded ${errors.Date ? 'border-red-500' : 'border-gray-300'}`}
+                        placeholderText="Select a date"
                       />
                     ) : (
                       <Input
                         id={col.accessorKey}
                         {...register(col.accessorKey)}
                         className={errors[col.accessorKey] ? 'border-red-500' : ''}
+                        placeholder={`Enter ${col.header || col.accessorKey}`}
                       />
                     )}
                     {errors[col.accessorKey] && (

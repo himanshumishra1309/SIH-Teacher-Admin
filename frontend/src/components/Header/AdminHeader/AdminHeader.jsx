@@ -1,6 +1,6 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import AdminAvatar from "./AdminAvatar";
+import React from 'react'
+import { Link } from 'react-router-dom'
+import TeacherAvatar from '../TeacherHeader/TeacherAvatar'
 
 function AdminHeader() {
   return (
@@ -24,18 +24,16 @@ function AdminHeader() {
           </Link>
         </div>
 
-        <div className="flex justify-between">
-          <img
-            src="assets\icons\emblem.svg"
-            alt="College Logo"
-            className="h-20 w-20
-    ml-2 items-center"
-          />
-          <AdminAvatar />
-        </div>
-      </header>
-    </>
-  );
+<div className='flex justify-between'>
+<img  src='assets\icons\emblem.svg' alt="College Logo" className='h-20 w-20
+    ml-2 items-center' />
+<TeacherAvatar />
+</div>
+
+
+   </header>
+   </>
+  )
 }
 
 export default AdminHeader;

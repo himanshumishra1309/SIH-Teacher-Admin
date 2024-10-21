@@ -35,5 +35,10 @@ export default function FacultyHeader() {
         </div>
       </header>
     </>
+<<<<<<< HEAD
+  )
+}
+=======
   );
 }
+>>>>>>> b2e2eba9e0a5a6eea1bb3a88dce3ba8d9120b7d6
