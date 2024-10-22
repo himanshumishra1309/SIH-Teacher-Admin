@@ -27,7 +27,7 @@
     "@radix-ui/react-toast": "^1.2.2",
     "@tanstack/react-table": "^8.20.5",
     "axios": "^1.7.7",
-    "chart.js": "^4.4.4",
+    "chart.js": "^4.4.5",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "datatables.net": "^2.1.7",

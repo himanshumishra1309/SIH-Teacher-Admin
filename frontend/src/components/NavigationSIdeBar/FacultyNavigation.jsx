@@ -5,16 +5,16 @@ import { NavLink } from 'react-router-dom';
 
 export default function FacultyNavigation() {
   const navigationItems = [
-    { name: "Research Papers Published", path: "/faculty/research-papers" },
-    { name: "Expert Lecture Delivered", path: "/faculty/expert-lectures" },
-    { name: "STTP Conducted As Coordinator", path: "/faculty/sttp-conducted" },
-    { name: "Portfolio At Institute Level", path: "/faculty/institute-portfolio" },
-    { name: "Portfolio At Department Level", path: "/faculty/department-portfolio" },
-    { name: "MTech/P.Hd Students Guided", path: "/faculty/students-guided" },
-    { name: "Event Participation", path: "/faculty/event-participation" },
-    { name: "Seminars", path: "/faculty/seminars" },
-    { name: "Projects", path: "/faculty/projects" },
-    { name: "Lectures", path: "/faculty/lectures" }
+    { name: "Research Papers Published", path: "research-papers" },
+    { name: "Expert Lecture Delivered", path: "expert-lectures" },
+    { name: "STTP Conducted As Coordinator", path: "sttp-conducted" },
+    { name: "Portfolio At Institute Level", path: "institute-portfolio" },
+    { name: "Portfolio At Department Level", path: "department-portfolio" },
+    { name: "MTech/P.Hd Students Guided", path: "students-guided" },
+    { name: "Event Participation", path: "event-participation" },
+    { name: "Seminars", path: "seminars" },
+    { name: "Projects", path: "projects" },
+    { name: "Lectures", path: "lectures" }
   ];
 
   return (

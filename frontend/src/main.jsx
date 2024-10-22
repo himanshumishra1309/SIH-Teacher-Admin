@@ -28,10 +28,8 @@ import SeminarCards from './pages/StudentPortal/SeminarCards';
 import StudentLayout from './Layouts/StudentLayout';
 import LectureFeedback from './pages/AdminPortal/AdminList/LectureFeedback';
 import BasicForm from './Forms/Student/BasicForm';
-
-
-
-
+import AdminEditProfile from './components/EditProfile/AdminEditProfile';
+import StudentEditProfile from './components/EditProfile/StudentEditProfile';
 
 
 const router = createBrowserRouter(
@@ -40,7 +38,7 @@ const router = createBrowserRouter(
     <Route path="/" element={<Layout />}>
       <Route index element={<Home />} /> {/* Render Home on the root path */}
 
-      <Route path="faculty" element={<FacultyLayout />}>
+      <Route path="admin/faculty/:id" element={<FacultyLayout />}>
         {/* <Route index element={<BasicTable />} /> Default to BasicTable */}
         <Route index element={<BasicTable />} errorElement={<NotFoundPage/>} />
         <Route path="research-papers" element={<BasicTable />} errorElement={<NotFoundPage/>} />
@@ -60,6 +58,10 @@ const router = createBrowserRouter(
       </Route>
 
       <Route path="faculty/edit-profile" element={<EditFacultyProfile/>} /> {/* Add Edit Profile route */}
+      <Route path="admin/edit-profile" element={<AdminEditProfile/>} /> {/* Add Edit Profile route */}
+
+      <Route path="student/edit-profile" element={<StudentEditProfile/>} /> {/* Add Edit Profile route */}
+
 
 
 
