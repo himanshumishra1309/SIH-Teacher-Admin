@@ -1,17 +1,29 @@
-import React, { useMemo, useState } from 'react';
-import { useReactTable, getCoreRowModel, getPaginationRowModel, getFilteredRowModel, getSortedRowModel, flexRender } from '@tanstack/react-table';
+import React, { useEffect, useMemo, useState } from "react";
+import { useParams, Outlet } from "react-router-dom";
+
+import {
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  flexRender,
+} from "@tanstack/react-table";
 import { columnDef } from "./ResearchColumn.jsx";
 import dataJSON from "./data.json";
-import "../table.css"
-import DownloadBtn from '../DownloadBtn.jsx';
-import DebouncedInput from '../DebouncedInput.jsx';
-import { SearchIcon, Eye, EyeOff } from 'lucide-react';
-import { Button } from '@/components/ui/button.jsx';
-import { Checkbox } from '@/components/ui/checkbox.jsx';
-import DrawerComponent from '../../Forms/AddEntry/DrawerComponent.jsx';
-import DeleteDialog from '../DeleteDialog.jsx';
+import "../table.css";
+import DownloadBtn from "../DownloadBtn.jsx";
+import DebouncedInput from "../DebouncedInput.jsx";
+import { SearchIcon, Eye, EyeOff } from "lucide-react";
+import { Button } from "@/components/ui/button.jsx";
+import { Checkbox } from "@/components/ui/checkbox.jsx";
+import DrawerComponent from "../../Forms/AddEntry/DrawerComponent.jsx";
+import DeleteDialog from "../DeleteDialog.jsx";
+import axios from "axios";
 
 export default function BasicTable() {
+  const { id } = useParams();
+  console.log(id);
   const [data, setData] = useState(dataJSON);
   const [globalFilter, setGlobalFilter] = useState("");
   const [isDrawerOpen, setDrawerOpen] = useState(false);
@@ -20,10 +32,59 @@ export default function BasicTable() {
   const [rowToDelete, setRowToDelete] = useState(null);
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
+  const [teacherInfo, setTeacherInfo] = useState();
+
+  // useEffect(() => {
+  //   const fetchTeacherInfo = async () => {
+  //     try {
+  //       // Retrieve the token from session storage
+  //       const token = sessionStorage.getItem("adminAccessToken"); // Adjust this if using cookies
+
+  //       const response = await axios.get(
+  //         `http://localhost:6005/api/v1/admins/teachers/${id}`, // Adjust URL to your API endpoint
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`, // Set the Authorization header
+  //           },
+  //         }
+  //       );
+  //       console.log(response.data.data.teacher);
+  //       setTeacherInfo(response.data.data);
+  //     } catch (error) {
+  //       console.log("An error occurred while fetching teacher info.");
+  //     }
+  //   };
+
+  //   fetchTeacherInfo();
+  // }, [id]); // Runs when 'id' changes
+
+  useEffect(() => {
+    const fetchTeacherInfo = async () => {
+      try {
+        // Retrieve the token from session storage
+        const token = sessionStorage.getItem("adminAccessToken"); // Adjust this if using cookies
+
+        const response = await axios.get(
+          `http://localhost:6005/api/v1/admins/teachers/${id}/research-papers`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Set the Authorization header
+            },
+          }
+        );
+        console.log(response.data);
+        setTeacherInfo(response.data.data);
+      } catch (error) {
+        console.log("An error occurred while fetching teacher info.");
+      }
+    };
+
+    fetchTeacherInfo();
+  }, [id]);
 
   const columns = useMemo(() => {
-    return columnDef.map(col => {
-      if (col.accessorKey === 'actions') {
+    return columnDef.map((col) => {
+      if (col.accessorKey === "actions") {
         return {
           ...col,
           cell: ({ row }) => (
@@ -78,10 +139,7 @@ export default function BasicTable() {
   };
 
   const handleAddEntry = (newData) => {
-    setData((prevData) => [
-      ...prevData,
-      { ...newData, id: Date.now() },
-    ]);
+    setData((prevData) => [...prevData, { ...newData, id: Date.now() }]);
   };
 
   const handleEditEntry = (updatedData) => {
@@ -91,15 +149,15 @@ export default function BasicTable() {
   };
 
   const handleDeleteRow = () => {
-    setData((prevData) => prevData.filter(row => row.id !== rowToDelete.id));
+    setData((prevData) => prevData.filter((row) => row.id !== rowToDelete.id));
     setDeleteDialogOpen(false);
     setRowToDelete(null);
   };
 
   return (
     <div className="container mx-auto p-4">
-      <div className='flex justify-between mb-4'>
-        <div className='flex items-center gap-2'>
+      <div className="flex justify-between mb-4">
+        <div className="flex items-center gap-2">
           <SearchIcon className="text-gray-400" />
           <DebouncedInput
             value={globalFilter ?? ""}
@@ -111,14 +169,14 @@ export default function BasicTable() {
         <DownloadBtn data={data} fileName="Research" />
       </div>
 
-      <div className='flex justify-end mb-4'>
+      <div className="flex justify-end mb-4">
         <Button onClick={() => setDrawerOpen(true)} className="add-entry-btn">
           Add Entry
         </Button>
       </div>
-      
+
       <div className="mb-4 flex flex-wrap gap-2">
-        {table.getAllLeafColumns().map(column => (
+        {table.getAllLeafColumns().map((column) => (
           <div key={column.id} className="flex items-center">
             <Checkbox
               checked={column.getIsVisible()}
@@ -130,13 +188,18 @@ export default function BasicTable() {
             </label>
           </div>
         ))}
-        <Button onClick={resetFilters} variant="outline" size="sm" className="ml-2">
+        <Button
+          onClick={resetFilters}
+          variant="outline"
+          size="sm"
+          className="ml-2"
+        >
           Reset Filters
         </Button>
       </div>
 
       <div className="table-container">
-        <table className='w-full'>
+        <table className="w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>

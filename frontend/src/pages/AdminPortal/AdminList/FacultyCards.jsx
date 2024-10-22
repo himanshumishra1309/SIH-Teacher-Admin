@@ -62,7 +62,7 @@ export default function FacultyCards() {
           }
         );
 
-        // console.log(response.data.data.teachers);
+        console.log(response.data.data.teachers);
         setFacultyData(response.data.data.teachers); // Assuming the API response has a `teachers` array
       } catch (error) {
         console.error("Error fetching faculty data:", error);
@@ -88,7 +88,6 @@ export default function FacultyCards() {
 
   return (
     <>
-
       <div className="container mx-auto px-4 py-10">
         {/* Set ScrollArea with limited height for the cards */}
         {/* Search and Filter Section */}
@@ -171,7 +170,7 @@ export default function FacultyCards() {
                   <h2 className="text-base">Email: {faculty.email}</h2>
                 </CardContent>
                 <CardFooter className="flex justify-end">
-                  <Link to={`/admin/faculty/${faculty.id}`}>
+                  <Link to={`/admin/faculty/${faculty._id}`}>
                     <Button variant="default" className="text-white">
                       Check Profile
                     </Button>

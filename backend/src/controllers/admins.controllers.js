@@ -16,6 +16,7 @@ import { SeminarFeedback } from "../models/feedback-seminars.models.js";
 import { SeminarRSVP } from "../models/rsvp-seminar.models.js";
 import { Lecture } from "../models/lectures.models.js";
 import { ExpertLecture } from "../models/expert-lectures.models.js";
+import mongoose from "mongoose";
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -333,6 +334,7 @@ const getAllTheTeachers = asyncHandler(async (req, res) => {
 const getTeacherPersonalInfo = asyncHandler(async (req, res) => {
   // Step 1: Extract teacherId from request parameters
   const { teacherId } = req.params;
+  console.log(teacherId);
 
   // Validate teacherId as a valid MongoDB ObjectId
   if (!mongoose.Types.ObjectId.isValid(teacherId)) {
