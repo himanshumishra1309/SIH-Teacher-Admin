@@ -20,15 +20,9 @@ import mongoose from "mongoose";
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
-<<<<<<< HEAD
       const admin = await Admin.findById(userId);
       const adminAccessToken = admin.generateAccessToken();
       const adminRefreshToken = admin.generateRefreshToken();
-=======
-    const admin = await Admin.findById(userId);
-    const adminAccessToken = admin.generateAccessToken();
-    const adminRefreshToken = admin.generateRefreshToken();
->>>>>>> 10b078510d4dc7f51995c1ab297d35e015ebebb3
 
     admin.refreshToken = adminRefreshToken;
 
