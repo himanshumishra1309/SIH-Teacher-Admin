@@ -1,5 +1,5 @@
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
+import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { Project } from "../models/projects.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
@@ -32,7 +32,7 @@ const uploadProject = asyncHandler(async(req, res)=>{
         endDate,
         addedOn: Date.now(),
         report: uploadResponse.secure_url, // Store Cloudinary URL
-        owner: req.user._id // Assuming authenticated user's ID
+        owner: req.teacher._id // Assuming authenticated user's ID
     });
 
     return res.status(200).json(new ApiResponse(201, project, "Project event created successfully"));
@@ -44,8 +44,8 @@ const showAllProjects = asyncHandler(async(req, res)=>{
     const skip = (page - 1)* limit;
 
     const [total, projects] = await Promise.all([
-        Project.countDocuments({owner: req.user._id}),
-        Project.find({owner: req.user._id}).sort({createdAt: -1}).skip(skip).limit(limit),
+        Project.countDocuments({owner: req.teacher._id}),
+        Project.find({owner: req.teacher._id}).sort({createdAt: -1}).skip(skip).limit(limit),
     ]);
 
     return res.status(200).json(200, {

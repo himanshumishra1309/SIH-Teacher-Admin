@@ -1,5 +1,5 @@
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
+import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { ResearchPaper } from "../models/research-papers.models.js";
 
@@ -22,7 +22,7 @@ const uploadPaper = asyncHandler(async(req, res)=>{
         publication, 
         publishedDate, 
         viewUrl, 
-        owner: req.user._id,
+        owner: req.teacher._id,
     })
 
     if(!researchPaper){
@@ -38,8 +38,8 @@ const showAllResearchPaper = asyncHandler(async (req, res)=>{
     const skip = (page - 1)*limit;
 
     const [total, researchPapers] = await Promise.all([
-        ResearchPaper.countDocuments({owner: req.user._id}),
-        ResearchPaper.find({owner: req.user._id}).sort({createdAt: -1}).skip(skip).limit(limit),
+        ResearchPaper.countDocuments({owner: req.teacher._id}),
+        ResearchPaper.find({owner: req.teacher._id}).sort({createdAt: -1}).skip(skip).limit(limit),
     ]);
 
     return res.status(200).json(new ApiResponse(200, {
@@ -62,7 +62,7 @@ const updatePaper = asyncHandler(async (req, res) => {
     }
 
     // Check if the authenticated user is the owner of the paper
-    if (researchPaper.owner.toString() !== req.user._id.toString()) {
+    if (researchPaper.owner.toString() !== req.teacher._id.toString()) {
         throw new ApiError(403, "You are not authorized to update this research paper");
     }
 
@@ -95,7 +95,7 @@ const deletePaper = asyncHandler(async (req, res)=>{
     }
 
     // Check if the authenticated user is the owner of the paper
-    if (researchPaper.owner.toString() !== req.user._id.toString()) {
+    if (researchPaper.owner.toString() !== req.teacher._id.toString()) {
         throw new ApiError(403, "You are not authorized to delete this research paper");
     }
 

@@ -16,10 +16,11 @@ import { SeminarFeedback } from "../models/feedback-seminars.models.js";
 import { SeminarRSVP } from "../models/rsvp-seminar.models.js";
 import { Lecture } from "../models/lectures.models.js";
 import { ExpertLecture } from "../models/expert-lectures.models.js";
+import mongoose from "mongoose";
 
 const generateAccessAndRefreshToken = async(userId) =>{
   try {
-      const admin = Admin.findById(userId);
+      const admin = await Admin.findById(userId);
       const adminAccessToken = admin.generateAccessToken();
       const adminRefreshToken = admin.generateRefreshToken();
 
@@ -124,7 +125,7 @@ const loginAdmin = asyncHandler(async(req, res)=>{
 
   const {adminAccessToken, adminRefreshToken} = await generateAccessAndRefreshToken(user._id);
 
-  const loggedInUser = await Student.findById(user._id).select("-password -refreshToken")
+  const loggedInUser = await Admin.findById(user._id).select("-password -refreshToken")
 
   //now we will be adding functionality to return cookies, and for doing that securely such that the frontend could access those cookies but cannot modify them and also the cookies can only be modified using the backend server
   const options = {
@@ -150,7 +151,7 @@ const loginAdmin = asyncHandler(async(req, res)=>{
 });
 
 const logoutAdmin = asyncHandler(async(req, res)=>{
-  Admin.findByIdAndUpdate(
+  await Admin.findByIdAndUpdate(
     req.admin._id,
     // {
     //   refreshToken: undefined
@@ -171,7 +172,7 @@ const logoutAdmin = asyncHandler(async(req, res)=>{
     secure: true
   }
   
-  return res.status(200).clearCookie("studentAccessToken", options).clearCookie("studentRefreshToken", options).json(new ApiResponse(200, {}, "User logged out"))
+  return res.status(200).clearCookie("adminAccessToken", options).clearCookie("adminRefreshToken", options).json(new ApiResponse(200, {}, "User logged out"))
 });
 
 const getCurrentAdmin = asyncHandler(async (req, res)=>{

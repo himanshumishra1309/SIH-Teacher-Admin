@@ -21,10 +21,12 @@ app.use(cookieParser());
 import teacherRouter from './routes/teachers.routes.js'
 import adminRouter from './routes/admins.routes.js'
 import studentRouter from './routes/students.routes.js'
+import researchPaperRouter from './routes/research-papers.routes.js'
 
 app.use('/api/v1/teachers', teacherRouter)
 app.use('/api/v1/admins', adminRouter)
 app.use('/api/v1/students', studentRouter)
+app.use('/api/v1/research-papers', researchPaperRouter)
 
 
 export {app}

@@ -28,7 +28,7 @@ const uploadExpertLecture = asyncHandler(async(req, res)=>{
         duration, 
         date,
         report: uploadExpertLectureReport.secure_url,
-        owner: req.user.id
+        owner: req.teacher.id
     })
 
     return res.status(200).json(new ApiResponse(200, uploadedExpertLecture, "Expert Lecture Uploaded Successfully"))
@@ -40,8 +40,8 @@ const showAllExpertLecture = asyncHandler(async(req, res)=>{
     const skip = (page - 1)*limit;
 
     const [total, expertLectures] = await Promise.all([
-        ExpertLecture.countDocuments({owner: req.user._id}),
-        ExpertLecture.find({owner: req.user?._id}).sort({createdAt: -1}).skip(skip).limit(limit),
+        ExpertLecture.countDocuments({owner: req.teacher._id}),
+        ExpertLecture.find({owner: req.teacher?._id}).sort({createdAt: -1}).skip(skip).limit(limit),
     ]);
 
     return res.status(200).json(200, {

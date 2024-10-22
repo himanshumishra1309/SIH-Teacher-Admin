@@ -1,5 +1,5 @@
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
+import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { STTP } from "../models/sttp.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
@@ -32,7 +32,7 @@ const uploadEvent = asyncHandler(async(req, res)=>{
         venue,
         report: uploadResponse.secure_url, // Store Cloudinary URL
         addedOn: Date.now(),
-        owner: req.user._id // Assuming authenticated user's ID
+        owner: req.teacher._id // Assuming authenticated user's ID
     });
 
     return res.status(200).json(new ApiResponse(201, sttp, "STTP event created successfully"));
@@ -44,8 +44,8 @@ const showAllEvents = asyncHandler(async(req, res)=>{
     const skip = (page - 1)* limit;
 
     const [total, sttps] = await Promise.all([
-        STTP.countDocuments({owner: req.user._id}),
-        STTP.find({owner: req.user._id}).sort({createdAt: -1}).skip(skip).limit(limit),
+        STTP.countDocuments({owner: req.teacher._id}),
+        STTP.find({owner: req.teacher._id}).sort({createdAt: -1}).skip(skip).limit(limit),
     ]);
 
     return res.status(200).json(200, {

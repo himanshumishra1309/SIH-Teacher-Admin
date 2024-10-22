@@ -1,15 +1,16 @@
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
+import {asyncHandler} from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { EventParticipation } from "../models/events-participated.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
+import { asyncHandler } from "../utils/AsyncHandler.js";
 
 const uploadParticipatedEvent = asyncHandler(async(req, res)=>{
     const {role, event, date} = req.body;
     const report = req.file;
-    const owner = req.user._id;
+    const owner = req.teacher._id;
 
     if(!role || !event || !date || !report){
         throw new ApiError(400, "Please fill all fields");
@@ -36,8 +37,8 @@ const showAllParticipatedEvent = asyncHandler(async(req, res)=>{
     const skip = (page - 1) * limit;
 
     const [total, events] = await Promise.all([
-        EventParticipation.countDocuments({owner: req.user._id}),
-        EventParticipation.find({owner: req.user._id}).sort({createdAt: -1}).skip(skip).limit(limit)
+        EventParticipation.countDocuments({owner: req.teacher._id}),
+        EventParticipation.find({owner: req.teacher._id}).sort({createdAt: -1}).skip(skip).limit(limit)
     ]);
 
     return res.status(200).json(new ApiResponse(200, {

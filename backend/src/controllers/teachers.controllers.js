@@ -233,3 +233,16 @@ const updateTeacherAvatar = asyncHandler(async (req, res)=>{
 })
 
 export {registerTeacher, loginTeacher, logoutTeacher, getCurrentTeacher, updateTeacherAvatar, updateAccountDetails}
+
+// _id
+// 67168d450673dee0de3c03eb
+// name
+// "Dr. Aditi Sharma"
+// email
+// "aditi.sharma@university.edu"
+// employee_code
+// "EMP1001"
+// department
+// "Computer Science"
+// avatar
+// "https://example.com/avatars/aditi.png"
