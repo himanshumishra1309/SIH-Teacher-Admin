@@ -84,7 +84,7 @@ const registerStudent = asyncHandler(async (req, res) => {
     .cookie("studentAccessToken", studentAccessToken, options)
     .cookie("studentRefreshToken", studentRefreshToken, options)
     .json(
-      new ApiResponse(200, createStudent, "Student successfully registered")
+      new ApiResponse(200, {student: createStudent, studentAccessToken, studentRefreshToken}, "Student successfully registered")
     );
 });
 
