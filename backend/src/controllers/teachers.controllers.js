@@ -86,8 +86,7 @@ const registerTeacher = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Something went wrong while registering the user");
   }
 
-  const { teacherAccessToken, teacherRefreshToken } =
-    await generateAccessAndRefreshToken(teacher._id);
+  const { teacherAccessToken, teacherRefreshToken } = await generateAccessAndRefreshToken(teacher._id);
 
   const options = {
     httpOnly: true,
@@ -240,7 +239,6 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 //todo: delete the previous avatar image from the db and cloudinary
 const updateTeacherAvatar = asyncHandler(async (req, res) => {
   const avatarLocalPath = req.file?.path; // we are taking the file from multer middleware, also here we are only taking one file as input and therefore we are using 'file', whereas if we wanted to take multiple file we would have written 'files' instead of 'file'
-
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar is missing");
   }

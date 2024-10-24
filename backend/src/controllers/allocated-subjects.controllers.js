@@ -1,5 +1,5 @@
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
+import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { AllocatedSubject } from "../models/allocated-subjects.models.js";
 
@@ -12,7 +12,7 @@ const addSubject = asyncHandler(async(req, res)=>{
 
     const addedSubject = await AllocatedSubject.create({
         subject_name, subject_code, subject_credit, branch, year,
-        owner: req.user._id,
+        owner: req.teacher._id,
     })
 
     return res.status(200).json(new ApiResponse(200, addedSubject, "Subject added successfully"))
@@ -24,8 +24,8 @@ const showAllSubjects = asyncHandler(async(req, res)=>{
     const skip = (page - 1)* limit;
 
     const [total, subjects] = await Promise.all([
-        AllocatedSubject.countDocuments({owner: req.user?._id}),
-        AllocatedSubject.find({owner: req.user._id}).sort({createdAt: -1}).skip(skip).limit(limit)
+        AllocatedSubject.countDocuments({owner: req.teacher?._id}),
+        AllocatedSubject.find({owner: req.teacher._id}).sort({createdAt: -1}).skip(skip).limit(limit)
     ]);
 
     return res.status(200).json(new ApiResponse(200, {

@@ -1,8 +1,9 @@
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
+import {asyncHandler} from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { EventParticipation } from "../models/events-participated.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+<<<<<<< HEAD
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 
@@ -10,6 +11,16 @@ const uploadParticipatedEvent = asyncHandler(async (req, res) => {
   const { role, event, date } = req.body;
   const report = req.file;
   const owner = req.teacher._id;
+=======
+import { v2 as cloudinary } from 'cloudinary';
+import fs from 'fs';
+import { asyncHandler } from "../utils/AsyncHandler.js";
+
+const uploadParticipatedEvent = asyncHandler(async(req, res)=>{
+    const {role, event, date} = req.body;
+    const report = req.file;
+    const owner = req.teacher._id;
+>>>>>>> 7e30940de1038d7e21041c27abf9b49bea2797d7
 
   if (!role || !event || !date || !report) {
     throw new ApiError(400, "Please fill all fields");
@@ -102,9 +113,16 @@ const editParticipatedEvent = asyncHandler(async (req, res) => {
     { new: true }
   );
 
+<<<<<<< HEAD
   if (!updatedEventParticipation) {
     throw new ApiError(404, "Event not found");
   }
+=======
+    const [total, events] = await Promise.all([
+        EventParticipation.countDocuments({owner: req.teacher._id}),
+        EventParticipation.find({owner: req.teacher._id}).sort({createdAt: -1}).skip(skip).limit(limit)
+    ]);
+>>>>>>> 7e30940de1038d7e21041c27abf9b49bea2797d7
 
   return res
     .status(200)

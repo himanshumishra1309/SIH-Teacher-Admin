@@ -1,5 +1,5 @@
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
+import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { AllocatedSubject } from "../models/allocated-subjects.models.js";
 import { StudySubject } from "../models/studySubjects.models.js";
@@ -13,7 +13,7 @@ const releaseSingleFeedbackForm = asyncHandler(async (req, res) => {
     // Verify that the subject belongs to the teacher (owner)
     const subject = await AllocatedSubject.findOne({
       _id: subjectId,
-      owner: req.user._id,
+      owner: req.teacher._id,
     });
   
     if (!subject) {
@@ -53,7 +53,7 @@ const releaseSingleFeedbackForm = asyncHandler(async (req, res) => {
 
 const releaseAllFeedbackForm = asyncHandler(async(req, res)=>{
     // get all the subjects taught by that particular teacher:
-    const subjects = await AllocatedSubject.find({owner: req.user._id});
+    const subjects = await AllocatedSubject.find({owner: req.teacher._id});
 
     if(!subjects || subjects.length === 0){
         throw new ApiError(404, "No subjects found for this teacher");
@@ -104,7 +104,7 @@ const releaseAllFeedbackForm = asyncHandler(async(req, res)=>{
 
 const getReleasedFeedbackForms = asyncHandler(async(req, res)=>{
     // get the id of the logged in user:
-    const studentId = req.user._id;
+    const studentId = req.student._id;
 
     // get all the subjects of the student:
     const enrolledSubjects = await StudySubject.find({owner: studentId})
@@ -140,8 +140,8 @@ const getReleasedFeedbackForms = asyncHandler(async(req, res)=>{
           "subjectDetails.subject_code": subject.subject_code,
           "subjectDetails.subject_name": subject.subject_name,
           "subjectDetails.subject_credit": subject.subject_credit,
-          "subjectDetails.branch": req.user.branch, // Match student's branch
-          "subjectDetails.year": req.user.year,     // Match student's year
+          "subjectDetails.branch": req.student.branch, // Match student's branch
+          "subjectDetails.year": req.student.year,     // Match student's year
         })),
       },
     },
@@ -165,7 +165,7 @@ const getReleasedFeedbackForms = asyncHandler(async(req, res)=>{
 const fillFeedbackForm = asyncHandler(async (req, res) => {
   const { feedbackFormId } = req.params; // FeedbackForm ID from URL
   const { rating, comment } = req.body; // Feedback data
-  const studentId = req.user._id; // Logged-in student's ID
+  const studentId = req.student._id; // Logged-in student's ID
 
   // Validate input
   if (!rating || !comment) {
@@ -246,7 +246,7 @@ const fillFeedbackForm = asyncHandler(async (req, res) => {
 // Controller function to get feedback for a specific subject taught by a teacher
 const getFeedbackForSubject = asyncHandler(async (req, res) => {
   const { subject_name, subject_code, subject_credit, branch, year } = req.params; // Extract parameters from request
-  const teacherId = req.user._id; // Assuming teacher's user info is stored in req.user
+  const teacherId = req.teacher._id; // Assuming teacher's user info is stored in req.user
 
   // Step 1: Verify the teacher teaches the specified subject
   const subject = await AllocatedSubject.findOne({
@@ -281,7 +281,7 @@ const getFeedbackForSubject = asyncHandler(async (req, res) => {
 
 const getStudentDetails = asyncHandler(async (req, res) => {
   const { subject_name, subject_code, subject_credit, branch, year } = req.params; // Extract parameters from request
-  const teacherId = req.user._id; // Assuming teacher's user info is stored in req.user
+  const teacherId = req.teacher._id; // Assuming teacher's user info is stored in req.user
 
   // Step 1: Verify the teacher teaches the specified subject
   const subject = await AllocatedSubject.findOne({
