@@ -98,12 +98,14 @@ function FacultySISU() {
     try {
       console.log({loginData});
       const response = await axios.post('http://localhost:6005/api/v1/teachers/login', loginData);
+      // console.log({response});
       const { teacherAccessToken } = response?.data?.data;
+      // console.log(response.data.data.user._id);
       
       // Store the access token in session storage
       sessionStorage.setItem('teacherAccessToken', teacherAccessToken);
       
-      navigate('/faculty');  // Redirect to profile page
+      navigate(`/faculty/${response.data.data.user._id}`);  // Redirect to profile page
     } catch (error) {
       console.error('Error during login:', error.response?.data?.message || error.message);
       alert('Login failed. Please try again.');
