@@ -113,16 +113,13 @@ const editParticipatedEvent = asyncHandler(async (req, res) => {
     { new: true }
   );
 
-<<<<<<< HEAD
   if (!updatedEventParticipation) {
     throw new ApiError(404, "Event not found");
   }
-=======
     const [total, events] = await Promise.all([
         EventParticipation.countDocuments({owner: req.teacher._id}),
         EventParticipation.find({owner: req.teacher._id}).sort({createdAt: -1}).skip(skip).limit(limit)
     ]);
->>>>>>> 7e30940de1038d7e21041c27abf9b49bea2797d7
 
   return res
     .status(200)
