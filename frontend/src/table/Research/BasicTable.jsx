@@ -33,6 +33,8 @@ export default function BasicTable() {
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
 
+
+  // data of the teacher email wegera
   // useEffect(() => {
   //   const fetchTeacherInfo = async () => {
   //     try {
@@ -57,6 +59,8 @@ export default function BasicTable() {
   //   fetchTeacherInfo();
   // }, [id]); // Runs when 'id' changes
 
+
+  // dtaa of the reaserch paper of the teacher aditi sharma  
   useEffect(() => {
     const fetchTeacherInfo = async () => {
       try {
@@ -89,6 +93,8 @@ export default function BasicTable() {
     fetchTeacherInfo();
   }, [id]);
 
+
+  // data of the sttp of the teacher aditi shrma 
   const [sttData, setsttData] = useState("");
   useEffect(() => {
     const fetchTeacherInfo = async () => {
@@ -102,15 +108,38 @@ export default function BasicTable() {
         });
 
         setsttData(response.data.data.sttps);
-        console.log(sttData);
+        // console.log(sttData);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
       }
     };
 
     fetchTeacherInfo();
-  }, [id]);
+  }, []);
 
+  // data of the events of the teacher aditi shrma 
+  const [eventData, setEventData] = useState("");
+  useEffect(() => {
+    const fetchTeacherInfo = async () => {
+      try {
+        const token = sessionStorage.getItem("teacherAccessToken");
+
+        const response = await axios.get(`http://localhost:6005/api/v1/event/events`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        // console.log(response.data.data.events)
+        setEventData(response.data.data.events);
+        console.log(eventData);
+      } catch (error) {
+        console.log("An error occurred while fetching teacher info.");
+      }
+    };
+
+    fetchTeacherInfo();
+  }, []);
+  
   const columns = useMemo(() => {
     return columnDef.map((col) => {
       if (col.accessorKey === "actions") {

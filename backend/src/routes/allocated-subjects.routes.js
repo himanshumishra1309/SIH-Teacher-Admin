@@ -1,5 +1,5 @@
 import express from 'express';
-import { addSubject, showAllSubjects, editSubject, removeSubject } from '../controllers/allocatedSubjectsController.js';
+import { addSubject, showAllSubjects, editSubject, removeSubject } from '../controllers/allocated-subjects.controllers.js';
 import { verifyTeacherJWT } from '../middleware/teacher.auth.middleware.js';
 
 const router = express.Router();

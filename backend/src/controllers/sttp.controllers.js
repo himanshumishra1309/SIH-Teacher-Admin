@@ -28,7 +28,6 @@ const uploadEvent = asyncHandler(async (req, res) => {
     throw new ApiError(500, "error in uploading file to cloudinary");
   }
 
-<<<<<<< HEAD
   const sttp = await STTP.create({
     topic,
     duration,
@@ -39,18 +38,6 @@ const uploadEvent = asyncHandler(async (req, res) => {
     addedOn: Date.now(),
     owner: req.user._id, // Assuming authenticated user's ID
   });
-=======
-    const sttp = await STTP.create({
-        topic,
-        duration,
-        startDate,
-        endDate,
-        venue,
-        report: uploadResponse.secure_url, // Store Cloudinary URL
-        addedOn: Date.now(),
-        owner: req.teacher._id // Assuming authenticated user's ID
-    });
->>>>>>> 7e30940de1038d7e21041c27abf9b49bea2797d7
 
   return res
     .status(200)
@@ -62,8 +49,6 @@ const showAllEvents = asyncHandler(async (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;
 
-<<<<<<< HEAD
-  console.log(req.teacher);
   const [total, sttps] = await Promise.all([
     STTP.countDocuments({ owner: req.teacher._id }),
     STTP.find({ owner: req.teacher._id })
@@ -71,12 +56,6 @@ const showAllEvents = asyncHandler(async (req, res) => {
       .skip(skip)
       .limit(limit),
   ]);
-=======
-    const [total, sttps] = await Promise.all([
-        STTP.countDocuments({owner: req.teacher._id}),
-        STTP.find({owner: req.teacher._id}).sort({createdAt: -1}).skip(skip).limit(limit),
-    ]);
->>>>>>> 7e30940de1038d7e21041c27abf9b49bea2797d7
 
   return res.status(200).json(
     new ApiResponse(

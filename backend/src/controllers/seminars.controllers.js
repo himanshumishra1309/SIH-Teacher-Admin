@@ -9,7 +9,7 @@ import { Student } from "../models/students.models.js";
 // 1. Get All Conducted Seminars (with feedback and report)
 const getAllConductedSeminars = asyncHandler(async (req, res) => {
   const conductedSeminars = await Seminar.aggregate([
-    { $match: { status: "conducted", owner: req.user._id } },
+    { $match: { status: "conducted", owner: req.teacher._id } },
     {
       $lookup: {
         from: "seminarfeedbacks",
@@ -63,7 +63,7 @@ const postUpcomingSeminar = asyncHandler(async (req, res) => {
     topic,
     duration,
     date,
-    owner: req.user._id,
+    owner: req.teacher._id,
     status: "upcoming",
     report: "",
   });
