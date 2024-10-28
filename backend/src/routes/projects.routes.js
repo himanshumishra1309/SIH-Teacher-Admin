@@ -4,7 +4,7 @@ import {
     showAllProjects, 
     updateProject, 
     deleteProject 
-} from '../controllers/projectController.js';
+} from '../controllers/projects.controllers.js';
 import { verifyTeacherJWT } from '../middleware/teacher.auth.middleware.js';
 import { upload } from '../middleware/multer.middleware.js';
 

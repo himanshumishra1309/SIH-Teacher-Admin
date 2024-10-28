@@ -26,6 +26,10 @@ import seminarRouter from "./routes/seminars.routes.js";
 import sttpRouter from "./routes/sttp.routes.js";
 import eventRouter from "./routes/event-participated.routes.js";
 import subjectRouter from "./routes/allocated-subjects.routes.js";
+import expLectureRouter from "./routes/expert-lectures.routes.js";
+import teacherProject from "./routes/projects.routes.js";
+
+
 
 app.use("/api/v1/teachers", teacherRouter);
 app.use("/api/v1/admins", adminRouter);
@@ -34,5 +38,8 @@ app.use("/api/v1/seminars", seminarRouter);
 app.use("/api/v1/sttp", sttpRouter);
 app.use("/api/v1/event", eventRouter);
 app.use("/api/v1/subjects", subjectRouter);
+app.use("/api/v1/expertLectures", expLectureRouter);
+app.use("/api/v1/projects", teacherProject);
+
 
 export { app };

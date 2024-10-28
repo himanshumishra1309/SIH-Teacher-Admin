@@ -10,7 +10,7 @@ const expertLectureSchema = new Schema(
         trim: true
     },
     duration: {
-        type: Number,
+        type: String, // chnages
         required:true,
         trim: true
     },
