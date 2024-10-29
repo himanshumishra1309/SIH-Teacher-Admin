@@ -6,6 +6,8 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 
+// All the routes are done including update and delete also :)
+
 const uploadProject = asyncHandler(async (req, res) => {
   const { topic, branch_name, daily_duration, startDate, endDate } = req.body;
   const file = req.file;
@@ -124,13 +126,11 @@ const updateProject = asyncHandler(async (req, res) => {
 const deleteProject = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const result = await Project.findById(id);
+  const result = await Project.findOneAndDelete({ _id: id });
 
   if (!result) {
     throw new ApiError(400, "no such file found");
   }
-
-  await result.remove();
 
   return res
     .status(200)

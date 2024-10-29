@@ -1,6 +1,6 @@
 import express from 'express';
-import { uploadStudentInfo, showAllMtechStudent, showAllPhdStudent, editStudentInfo, deleteStudentInfo } from '../controllers/studentGuidedController.js'; // adjust the path accordingly
-import { verifyTeacherJWT } from '../middleware/authMiddleware.js'; // Middleware to verify the teacher's JWT token
+import { uploadStudentInfo, showAllMtechStudent, showAllPhdStudent, editStudentInfo, deleteStudentInfo } from '../controllers/students-guided.controllers.js'; // adjust the path accordingly
+import { verifyTeacherJWT } from '../middleware/teacher.auth.middleware.js'; // Middleware to verify the teacher's JWT token
 
 const router = express.Router();
 

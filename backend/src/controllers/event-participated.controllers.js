@@ -6,6 +6,8 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 
+// all rooutes cheked including delete and update.
+
 const uploadParticipatedEvent = asyncHandler(async (req, res) => {
   const { role, event, date } = req.body;
   const report = req.file;
@@ -105,6 +107,11 @@ const editParticipatedEvent = asyncHandler(async (req, res) => {
   if (!updatedEventParticipation) {
     throw new ApiError(404, "Event not found");
   }
+
+  // Define skip and limit for pagination
+  const limit = parseInt(req.query.limit) || 10; // default limit to 10
+  const skip = parseInt(req.query.skip) || 0;    // default skip to 0
+  
   const [total, events] = await Promise.all([
     EventParticipation.countDocuments({ owner: req.teacher._id }),
     EventParticipation.find({ owner: req.teacher._id })

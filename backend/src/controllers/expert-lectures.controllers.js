@@ -5,6 +5,8 @@ import { ExpertLecture } from "../models/expert-lectures.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { v2 as cloudinary } from "cloudinary";
 
+// all routes done including delete and update
+
 const uploadExpertLecture = asyncHandler(async (req, res) => {
   const { topic, duration, date } = req.body;
   const report = req.file;
@@ -97,7 +99,7 @@ const updateExpertLecture = asyncHandler(async (req, res) => {
     expertLecture.report = uploadExpertLectureReport.secure_url;
   }
 
-  const updatedExpertLecture = await EventParticipation.findByIdAndUpdate(
+  const updatedExpertLecture = await ExpertLecture.findByIdAndUpdate(
     id,
     { $set: updateFields },
     { new: true }
@@ -121,13 +123,11 @@ const updateExpertLecture = asyncHandler(async (req, res) => {
 const deleteExpertLecture = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const findExpertLecture = await ExpertLecture.findById(id);
+  const findExpertLecture = await ExpertLecture.findByIdAndDelete(id);
 
   if (!findExpertLecture) {
     throw new ApiError(404, "File not found");
   }
-
-  await findExpertLecture.remove();
 
   return res
     .status(200)

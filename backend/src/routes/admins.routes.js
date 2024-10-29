@@ -131,7 +131,7 @@ router.get('/teachers/:teacherId/sttps', verifyAdminJWT, getSTTPConductedByTheTe
  * @desc    Fetch M.Tech students guided by the teacher
  * @access  Protected
  */
-router.get('/teachers/:teacherId/students-guided/mtech', verifyAdminJWT, getMtechStudentsGuidedByTheTeacher);
+router.get('/teachers/:teacherId/students-guided/mtech', verifyAdminJWT, getMtechStudentsGuidedByTheTeacher); 
 
 /**
  * @route   GET /admin/teachers/:teacherId/students-guided/phd
