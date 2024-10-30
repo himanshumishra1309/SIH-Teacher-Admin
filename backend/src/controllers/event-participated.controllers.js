@@ -4,8 +4,6 @@ import { ApiError } from "../utils/ApiErrors.js";
 import { EventParticipation } from "../models/events-participated.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { v2 as cloudinary } from 'cloudinary';
-import fs from 'fs';
-import { asyncHandler } from "../utils/AsyncHandler.js";
 
 const uploadParticipatedEvent = asyncHandler(async(req, res)=>{
     const {role, event, date} = req.body;
@@ -29,6 +27,12 @@ const uploadParticipatedEvent = asyncHandler(async(req, res)=>{
         report: uploadedReport.secure_url,
         owner
     });
+
+    if(!eventParticipation){
+        throw new ApiError(500, "Could not create your document")
+    }
+
+    return res.status(200).json(new ApiResponse(200, eventParticipation, "Added successfully"))
 })
 
 const showAllParticipatedEvent = asyncHandler(async(req, res)=>{

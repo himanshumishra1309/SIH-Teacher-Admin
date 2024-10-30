@@ -1,7 +1,7 @@
 import express from 'express';
-import { uploadParticipatedEvent, showAllParticipatedEvent, editParticipatedEvent, deleteParticipatedEvent } from '../controllers/eventParticipationController.js';
-import { verifyTeacherJWT } from "../middleware/teacher.auth.middleware";
-import { upload } from "../middleware/multer.middleware"; // Assuming you're importing the multer config
+import { uploadParticipatedEvent, showAllParticipatedEvent, editParticipatedEvent, deleteParticipatedEvent } from '../controllers/event-participated.controllers.js';
+import { verifyTeacherJWT } from "../middleware/teacher.auth.middleware.js";
+import { upload } from "../middleware/multer.middleware.js"; // Assuming you're importing the multer config
 
 const router = express.Router();
 

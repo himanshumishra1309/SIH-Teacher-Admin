@@ -4,7 +4,6 @@ import { ApiError } from "../utils/ApiErrors.js";
 import { STTP } from "../models/sttp.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { v2 as cloudinary } from 'cloudinary';
-import fs from 'fs';
 
 const uploadEvent = asyncHandler(async(req, res)=>{
     const {topic, duration, startDate, endDate, venue} = req.body
@@ -48,12 +47,13 @@ const showAllEvents = asyncHandler(async(req, res)=>{
         STTP.find({owner: req.teacher._id}).sort({createdAt: -1}).skip(skip).limit(limit),
     ]);
 
-    return res.status(200).json(200, {
+    return res.status(200).json(
+    new ApiResponse(200, {
         total,
         page,
-        pages: Math.ceil(total/limit),
+        pages: Math.ceil(total / limit),
         sttps
-    }, "All the STTPs are now visible");
+    }, "All the STTPs are now visible"))
 })
 
 const updateEvent = asyncHandler(async(req, res)=>{
