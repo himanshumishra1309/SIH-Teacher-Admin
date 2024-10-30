@@ -23,8 +23,8 @@ import axios from "axios";
 
 export default function BasicTable() {
   const { id } = useParams();
-  console.log(id);
-  const [data, setData] = useState(dataJSON);
+  // console.log(id);
+  const [data, setData] = useState("");
   const [globalFilter, setGlobalFilter] = useState("");
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -32,8 +32,8 @@ export default function BasicTable() {
   const [rowToDelete, setRowToDelete] = useState(null);
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
-  const [teacherInfo, setTeacherInfo] = useState();
 
+  // data of the teacher email wegera
   // useEffect(() => {
   //   const fetchTeacherInfo = async () => {
   //     try {
@@ -58,22 +58,31 @@ export default function BasicTable() {
   //   fetchTeacherInfo();
   // }, [id]); // Runs when 'id' changes
 
+  // dtaa of the reaserch paper of the teacher aditi sharma
   useEffect(() => {
     const fetchTeacherInfo = async () => {
       try {
-        // Retrieve the token from session storage
-        const token = sessionStorage.getItem("adminAccessToken"); // Adjust this if using cookies
+        const token = sessionStorage.getItem("adminAccessToken");
 
         const response = await axios.get(
           `http://localhost:6005/api/v1/admins/teachers/${id}/research-papers`,
           {
             headers: {
-              Authorization: `Bearer ${token}`, // Set the Authorization header
+              Authorization: `Bearer ${token}`,
             },
           }
         );
-        console.log(response.data);
-        setTeacherInfo(response.data.data);
+
+        console.log("Teacher is HERE");
+        // console.log(response.data.data);
+        const formattedData = response.data.data.map((item) => ({
+          ...item,
+          publishedDate: item.publishedDate.split("T")[0],
+        }));
+
+        // console.log(formattedData)
+
+        setData(response.data.data);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
       }
@@ -81,6 +90,105 @@ export default function BasicTable() {
 
     fetchTeacherInfo();
   }, [id]);
+
+  // data of the sttp of the teacher aditi shrma
+  const [sttData, setsttData] = useState("");
+  useEffect(() => {
+    const fetchTeacherInfo = async () => {
+      try {
+        const token = sessionStorage.getItem("teacherAccessToken");
+
+        const response = await axios.get(`http://localhost:6005/api/v1/sttp/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setsttData(response.data.data.sttps);
+        console.log("STTPDATA IS HERE", sttData);
+      } catch (error) {
+        console.log("An error occurred while fetching teacher info.");
+      }
+    };
+
+    fetchTeacherInfo();
+  }, []);
+
+  // data of the events of the teacher aditi shrma
+  const [eventData, setEventData] = useState("");
+  useEffect(() => {
+    const fetchTeacherInfo = async () => {
+      try {
+        const token = sessionStorage.getItem("teacherAccessToken");
+
+        const response = await axios.get(
+          `http://localhost:6005/api/v1/event/events`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setEventData(response.data.data.events);
+        console.log("EVENT DATA Is", eventData);
+      } catch (error) {
+        console.log("An error occurred while fetching teacher info.");
+      }
+    };
+
+    fetchTeacherInfo();
+  }, []);
+
+  // get the data of the expert lectures of the teahcer
+  const [expertLectureData, setExpertLectureData] = useState("");
+  useEffect(() => {
+    const fetchTeacherInfo = async () => {
+      try {
+        const token = sessionStorage.getItem("teacherAccessToken");
+
+        const response = await axios.get(
+          `http://localhost:6005/api/v1/expertLectures/lectures`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setExpertLectureData(response.data.data.expertLectures);
+        console.log("Expert LEcture DATA Is", expertLectureData);
+      } catch (error) {
+        console.log("An error occurred while fetching teacher info.");
+      }
+    };
+
+    fetchTeacherInfo();
+  }, []);
+
+  // get the data of the projects of the teachers
+
+  const [teacherProjectData, setTeacherProjectData] = useState("");
+  useEffect(() => {
+    const fetchTeacherInfo = async () => {
+      try {
+        const token = sessionStorage.getItem("teacherAccessToken");
+
+        const response = await axios.get(
+          `http://localhost:6005/api/v1/projects/projects`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setTeacherProjectData(response.data.data.projects);
+        console.log("Tecaher Projects DATA Is", teacherProjectData);
+      } catch (error) {
+        console.log("An error occurred while fetching teacher info.");
+      }
+    };
+
+    fetchTeacherInfo();
+  }, []);
 
   const columns = useMemo(() => {
     return columnDef.map((col) => {

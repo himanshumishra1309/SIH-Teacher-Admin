@@ -38,7 +38,7 @@ const router = createBrowserRouter(
     <Route path="/" element={<Layout />}>
       <Route index element={<Home />} /> {/* Render Home on the root path */}
 
-      <Route path="admin/faculty/:id" element={<FacultyLayout />}>
+      <Route path="/faculty/:id" element={<FacultyLayout />}>
         {/* <Route index element={<BasicTable />} /> Default to BasicTable */}
         <Route index element={<BasicTable />} errorElement={<NotFoundPage/>} />
         <Route path="research-papers" element={<BasicTable />} errorElement={<NotFoundPage/>} />
@@ -62,15 +62,10 @@ const router = createBrowserRouter(
 
       <Route path="student/edit-profile" element={<StudentEditProfile/>} /> {/* Add Edit Profile route */}
 
-
-
-
       {/* Sign-Up and Login Pages */}
       <Route path="faculty-sign-up" element={<FacultySISU/>} />
       <Route path="admin-sign-up" element={<AdminSISU/>} />
       <Route path="student-sign-up" element={<StudentSISU/>} />
-
-
     
       <Route path="admin-home" element={<AdminHome/>} />
 
@@ -91,18 +86,14 @@ const router = createBrowserRouter(
 
       </Route>
       
-
       
       <Route path="student-home" element={<StudentHome />} /> {/* Route for student portal */}
-      
+    
       <Route path="student" element={<StudentLayout/>}>
       <Route path="lecture" element={<LectureCards/>} errorElement={<NotFoundPage/>} />
       <Route path="upcoming-Rsvp" element={< UpcomingRsvp/>} errorElement={<NotFoundPage/>} />
       <Route path="seminar" element={<SeminarCards />} errorElement={<NotFoundPage/>} />
-
       </Route>
-
-
     </Route>
 
   )

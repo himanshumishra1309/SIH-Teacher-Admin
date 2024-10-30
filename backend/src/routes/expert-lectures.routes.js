@@ -1,5 +1,5 @@
 import express from 'express';
-import { uploadExpertLecture, showAllExpertLecture, updateExpertLecture, deleteExpertLecture } from '../controllers/expertLectureController.js';
+import { uploadExpertLecture, showAllExpertLecture, updateExpertLecture, deleteExpertLecture } from '../controllers/expert-lectures.controllers.js';
 import { verifyTeacherJWT } from '../middleware/teacher.auth.middleware.js';
 import { upload } from '../middleware/multer.middleware.js'; // Assuming you're using Multer for file handling
 

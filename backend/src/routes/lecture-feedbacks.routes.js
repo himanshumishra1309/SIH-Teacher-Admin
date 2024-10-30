@@ -6,7 +6,7 @@ import {
     fillFeedbackForm, 
     getFeedbackForSubject, 
     getStudentDetails 
-} from '../controllers/feedbackController.js';
+} from '../controllers/lecture-feedbacks.controllers.js';
 import { verifyTeacherJWT } from '../middleware/teacher.auth.middleware.js';
 import { verifyStudentJWT } from '../middleware/student.auth.middleware.js'; // Assuming you have JWT middleware for students
 

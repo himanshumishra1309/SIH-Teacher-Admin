@@ -49,6 +49,8 @@ export default function EditFacultyProfile() {
           department: response.data.data.department || "",
           avatar: response.data.data.avatar || "", // Set the avatar URL
         });
+
+        
       } catch (error) {
         console.error("Error fetching faculty data:", error);
       }

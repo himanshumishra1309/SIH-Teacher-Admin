@@ -3,6 +3,8 @@ import { uploadParticipatedEvent, showAllParticipatedEvent, editParticipatedEven
 import { verifyTeacherJWT } from "../middleware/teacher.auth.middleware.js";
 import { upload } from "../middleware/multer.middleware.js"; // Assuming you're importing the multer config
 
+// All routes checked by Postman including delete and update also :)
+
 const router = express.Router();
 
 // Route to upload a participated event

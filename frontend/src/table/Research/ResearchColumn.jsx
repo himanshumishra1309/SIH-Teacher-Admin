@@ -3,17 +3,17 @@ import { ArrowUpDown, ExternalLink } from "lucide-react";
 
 export const columnDef = [
   {
-    accessorKey: "Title",
+    accessorKey: "name",
     header: "Title of Research/Publication",
     enableSorting: true
   },
   {
-    accessorKey: "Type",
+    accessorKey: "publication",
     header: "Type",
     enableSorting: true
   },
   {
-    accessorKey: "Date",
+    accessorKey: "publishedDate",
     header: ({ column }) => {
       return (
         <Button
@@ -26,7 +26,7 @@ export const columnDef = [
       )
     },
     cell: ({ row }) => {
-      const dateValue = row.getValue("Date");
+      const dateValue = row.getValue("publishedDate");
       if (dateValue) {
         const date = new Date(dateValue);
         return date.toLocaleDateString();
