@@ -3,6 +3,8 @@ import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { AllocatedSubject } from "../models/allocated-subjects.models.js";
 
+//All the controllers are working
+
 const addSubject = asyncHandler(async (req, res) => {
   const { subject_name, subject_code, subject_credit, branch, year } = req.body;
 
@@ -12,6 +14,18 @@ const addSubject = asyncHandler(async (req, res) => {
     )
   ) {
     throw new ApiError(400, "All Fields are required");
+  }
+
+  // Check for duplicate subject for the same branch and year by the same teacher
+  const existingSubject = await AllocatedSubject.findOne({
+    subject_code,
+    branch,
+    year,
+    owner: req.teacher._id,
+  });
+
+  if (existingSubject) {
+    throw new ApiError(400, "This subject is already added for the specified branch and year");
   }
 
   const addedSubject = await AllocatedSubject.create({
@@ -48,7 +62,7 @@ const showAllSubjects = asyncHandler(async (req, res) => {
         total,
         page,
         pages: Math.ceil(total / limit),
-        events,
+        subjects,
       },
       "All participated events are now visible"
     )
@@ -91,7 +105,7 @@ const removeSubject = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Subject not found");
   }
 
-  await findSubject.remove();
+  await findSubject.deleteOne();
 
   return res
     .status(200)

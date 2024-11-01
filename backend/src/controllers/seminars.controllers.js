@@ -5,6 +5,8 @@ import { Seminar } from "../models/seminars.models.js";
 import { SeminarRSVP } from "../models/rsvp-seminar.models.js";
 import { SeminarFeedback } from "../models/feedback-seminars.models.js";
 import { Student } from "../models/students.models.js";
+import { v2 as cloudinary } from "cloudinary";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 // 1. Get All Conducted Seminars (with feedback and report)
 const getAllConductedSeminars = asyncHandler(async (req, res) => {
@@ -49,7 +51,7 @@ const getAllConductedSeminars = asyncHandler(async (req, res) => {
         "Conducted seminars fetched successfully"
       )
     );
-});
+}); //worked on postman
 
 // 2. Post Upcoming Seminar
 const postUpcomingSeminar = asyncHandler(async (req, res) => {
@@ -57,6 +59,12 @@ const postUpcomingSeminar = asyncHandler(async (req, res) => {
 
   if (!topic || !duration || !date) {
     throw new ApiError(400, "Topic, duration, and date are required");
+  }
+
+  // Ensure duration is a number
+  const durationInHours = Number(duration);
+  if (isNaN(durationInHours)) {
+    throw new ApiError(400, "Duration must be a number");
   }
 
   const newSeminar = await Seminar.create({
@@ -73,7 +81,7 @@ const postUpcomingSeminar = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(201, newSeminar, "Upcoming seminar posted successfully")
     );
-});
+}); // worked on postman
 
 // 3. See Feedbacks of a Particular Seminar (Teacher)
 const seeFeedbacks = asyncHandler(async (req, res) => {
@@ -107,36 +115,51 @@ const seeFeedbacks = asyncHandler(async (req, res) => {
     },
   ]);
 
+  if(feedbacks.length === 0) {
+    throw new ApiError(404, "No feedbacks found for this seminar");
+  }
+
   return res
     .status(200)
     .json(new ApiResponse(200, feedbacks, "Feedbacks fetched successfully"));
 }); // send "_id"
 
 // 4. Edit Info of a Conducted Seminar
-const editConductedSeminar = asyncHandler(async (req, res) => {
+const editConductedSeminarReport = asyncHandler(async (req, res) => {
   const { seminarId } = req.params;
-  const { topic, duration, date, report } = req.body;
+  const file = req.file;
 
   const seminar = await Seminar.findOne({
     _id: seminarId,
     owner: req.teacher._id,
     status: "conducted",
   });
+
   if (!seminar) {
     throw new ApiError(404, "Conducted seminar not found or not owned by you");
   }
 
-  if (topic) seminar.topic = topic;
-  if (duration) seminar.duration = duration;
-  if (date) seminar.date = date;
-  if (report) seminar.report = report;
+  // Handle report file upload
+  if (file) {
+    // Remove the old report from Cloudinary if it exists
+    if (seminar.report) {
+      const publicId = seminar.report.split("/").pop().split(".")[0];
+      await cloudinary.uploader.destroy(publicId);
+    }
+
+    const uploadSeminarReport = await uploadOnCloudinary(file.path);
+    if (!uploadSeminarReport) {
+      throw new ApiError(500, "Couldn't upload your new file");
+    }
+    seminar.report = uploadSeminarReport.secure_url;
+  }
 
   await seminar.save();
 
   return res
     .status(200)
-    .json(new ApiResponse(200, seminar, "Seminar updated successfully"));
-});
+    .json(new ApiResponse(200, seminar, "Report updated successfully"));
+}); // worked on postman
 
 // 5. Delete a Conducted Seminar
 const deleteConductedSeminar = asyncHandler(async (req, res) => {
@@ -157,7 +180,7 @@ const deleteConductedSeminar = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, null, "Conducted seminar deleted successfully"));
-});
+}); // worked on postman
 
 // 6. See Who All RSVPed for the Upcoming Seminar (Teacher)
 const seeRSVPedStudents = asyncHandler(async (req, res) => {
@@ -317,34 +340,50 @@ const getAllUpcomingSeminarsByTeacher = asyncHandler(async (req, res) => {
         "Your upcoming seminars fetched successfully"
       )
     );
-});
+}); // worked on postman
 
 // 10. Mark Seminar as Conducted and Release Feedback Forms (Teacher)
 const conductSeminar = asyncHandler(async (req, res) => {
-  const { seminarId } = req.body;
+  const { seminarId } = req.params;
+  const file = req.file;
+
+  if (!file) {
+    throw new ApiError(400, "Report file is required");
+  }
 
   const seminar = await Seminar.findOne({
     _id: seminarId,
     owner: req.teacher._id,
     status: "upcoming",
   });
+
   if (!seminar) {
     throw new ApiError(404, "Upcoming seminar not found or not owned by you");
   }
 
+  // Handle the report upload
+  const uploadSeminarReport = await uploadOnCloudinary(file.path);
+  if (!uploadSeminarReport) {
+    throw new ApiError(500, "Couldn't upload your report file");
+  }
+  seminar.report = uploadSeminarReport.secure_url;
   seminar.status = "conducted";
+  
   await seminar.save();
 
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        seminar,
-        "Seminar marked as conducted and feedback forms released"
-      )
-    );
-});
+  // Fetch the seminar with additional data if needed
+  const updatedSeminar = await Seminar.findById(seminarId)
+    .populate("feedbacks")
+    .populate("owner", "name department");
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      updatedSeminar,
+      "Seminar marked as conducted and feedback forms released"
+    )
+  );
+}); // worked on postman
 
 // 11. Student RSVP for Seminars
 const studentRSVP = asyncHandler(async (req, res) => {
@@ -418,11 +457,82 @@ const studentSubmitFeedback = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, null, "Feedback submitted successfully"));
 });
 
+// 13. 
+const getPendingFeedbackFormsForConductedSeminars = asyncHandler(async (req, res) => {
+  const studentId = req.student._id;
+
+  // Find all RSVP'd seminars that are conducted and where feedback is not submitted
+  const rsvps = await SeminarRSVP.find({ student: studentId, submittedFeedback: false })
+    .populate({
+      path: "seminar",
+      match: { status: "conducted" },
+      select: "topic date"
+    })
+    .select("seminar submittedFeedback");
+
+  // Filter out RSVP entries where seminar is null (not conducted)
+  const pendingFeedbackForms = rsvps
+    .filter(rsvp => rsvp.seminar)
+    .map(rsvp => ({
+      seminar: rsvp.seminar,
+      submittedFeedback: rsvp.submittedFeedback
+    }));
+
+  return res.status(200).json(new ApiResponse(200, pendingFeedbackForms, "Pending feedback forms fetched successfully"));
+});
+
+// 14. Edit Upcoming Seminar
+const editUpcomingSeminar = asyncHandler(async (req, res) => {
+  const { seminarId } = req.params;
+  const { topic, duration, date } = req.body;
+
+  const seminar = await Seminar.findOne({
+    _id: seminarId,
+    owner: req.teacher._id,
+    status: "upcoming",
+  });
+
+  if (!seminar) {
+    throw new ApiError(404, "Upcoming seminar not found or not owned by you");
+  }
+
+  // Update seminar fields if provided in the request body
+  if (topic) seminar.topic = topic;
+  if (duration) seminar.duration = duration;
+  if (date) seminar.date = date;
+
+  await seminar.save();
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, seminar, "Seminar updated successfully"));
+});
+
+// 15. Cancel Upcoming Seminar
+const cancelUpcomingSeminar = asyncHandler(async (req, res) => {
+  const { seminarId } = req.params;
+
+  const seminar = await Seminar.findOneAndDelete({
+    _id: seminarId,
+    owner: req.teacher._id,
+    status: "upcoming",
+  });
+
+  if (!seminar) {
+    throw new ApiError(404, "Upcoming seminar not found or not owned by you");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Seminar cancelled successfully"));
+});
+
+
 export {
   getAllConductedSeminars,
   postUpcomingSeminar,
   seeFeedbacks,
-  editConductedSeminar,
+  editConductedSeminarReport,
   deleteConductedSeminar,
   seeRSVPedStudents,
   seeFeedbackSubmitters,
@@ -431,4 +541,7 @@ export {
   conductSeminar,
   studentRSVP,
   studentSubmitFeedback,
+  getPendingFeedbackFormsForConductedSeminars,
+  editUpcomingSeminar,
+  cancelUpcomingSeminar
 };

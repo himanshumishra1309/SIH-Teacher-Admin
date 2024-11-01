@@ -22,6 +22,7 @@ app.use(cookieParser());
 import teacherRouter from "./routes/teachers.routes.js";
 import adminRouter from "./routes/admins.routes.js";
 import studentRouter from "./routes/students.routes.js";
+import allocatedSubjectsRouter from "./routes/allocated-subjects.routes.js";
 import seminarRouter from "./routes/seminars.routes.js";
 import sttpRouter from "./routes/sttp.routes.js";
 import eventRouter from "./routes/event-participated.routes.js";
@@ -34,6 +35,11 @@ import lecture from "./routes/lecture-feedbacks.routes.js";
 app.use("/api/v1/teachers", teacherRouter);
 app.use("/api/v1/admins", adminRouter);
 app.use("/api/v1/students", studentRouter);
+<<<<<<< HEAD
+=======
+app.use("/api/v1/allocated-subjects", allocatedSubjectsRouter);
+app.use("/api/v1/seminars", seminarRouter);
+>>>>>>> 6b4ca625e67cc7c4ea4461dee01d504c2f7b1aaa
 app.use("/api/v1/sttp", sttpRouter);
 app.use("/api/v1/event", eventRouter);
 app.use("/api/v1/subjects", subjectRouter);
