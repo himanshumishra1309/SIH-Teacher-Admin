@@ -38,24 +38,24 @@ const allocatedSubjectSchema = new Schema(
 },
 { timestamps: true });
 
-// Post-save hook to add points
-allocatedSubjectSchema.post('save', async function(doc) {
-    await Graph.findOneAndUpdate(
-        { owner: doc.owner, date: doc.createdAt },
-        { $inc: { points: domainPoints.AllocatedSubject } },
-        { upsert: true }
-    );
-});
+// // Post-save hook to add points
+// allocatedSubjectSchema.post('save', async function(doc) {
+//     await Graph.findOneAndUpdate(
+//         { owner: doc.owner, date: doc.createdAt },
+//         { $inc: { points: domainPoints.AllocatedSubject } },
+//         { upsert: true }
+//     );
+// });
 
-// Post-remove hook to deduct points
-allocatedSubjectSchema.post('findOneAndDelete', async function(doc) {
-    if (doc) {
-        await Graph.findOneAndUpdate(
-            { owner: doc.owner, date: doc.createdAt },
-            { $inc: { points: -domainPoints.AllocatedSubject } },
-            { new: true }
-        );
-    }
-});
+// // Post-remove hook to deduct points
+// allocatedSubjectSchema.post('findOneAndDelete', async function(doc) {
+//     if (doc) {
+//         await Graph.findOneAndUpdate(
+//             { owner: doc.owner, date: doc.createdAt },
+//             { $inc: { points: -domainPoints.AllocatedSubject } },
+//             { new: true }
+//         );
+//     }
+// });
 
 export const AllocatedSubject = mongoose.model('AllocatedSubject', allocatedSubjectSchema);
