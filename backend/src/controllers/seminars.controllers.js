@@ -81,7 +81,7 @@ const seeFeedbacks = asyncHandler(async (req, res) => {
 
   const seminar = await Seminar.findOne({
     _id: seminarId,
-    owner: req.user._id,
+    owner: req.teacher._id,
     status: "conducted",
   });
   if (!seminar) {
@@ -119,7 +119,7 @@ const editConductedSeminar = asyncHandler(async (req, res) => {
 
   const seminar = await Seminar.findOne({
     _id: seminarId,
-    owner: req.user._id,
+    owner: req.teacher._id,
     status: "conducted",
   });
   if (!seminar) {
@@ -144,7 +144,7 @@ const deleteConductedSeminar = asyncHandler(async (req, res) => {
 
   const seminar = await Seminar.findOneAndDelete({
     _id: seminarId,
-    owner: req.user._id,
+    owner: req.teacher._id,
     status: "conducted",
   });
   if (!seminar) {
@@ -165,9 +165,10 @@ const seeRSVPedStudents = asyncHandler(async (req, res) => {
 
   const seminar = await Seminar.findOne({
     _id: seminarId,
-    owner: req.user._id,
+    owner: req.teacher._id,
     status: "upcoming",
   });
+  
   if (!seminar) {
     throw new ApiError(404, "Upcoming seminar not found or not owned by you");
   }
@@ -205,7 +206,7 @@ const seeFeedbackSubmitters = asyncHandler(async (req, res) => {
 
   const seminar = await Seminar.findOne({
     _id: seminarId,
-    owner: req.user._id,
+    owner: req.teacher._id,
     status: "conducted",
   });
   if (!seminar) {
@@ -286,7 +287,7 @@ const getAllUpcomingSeminarsForStudents = asyncHandler(async (req, res) => {
 // 9. See All Upcoming Seminars Posted by the Teacher (Teacher)
 const getAllUpcomingSeminarsByTeacher = asyncHandler(async (req, res) => {
   const seminars = await Seminar.aggregate([
-    { $match: { owner: req.user._id, status: "upcoming" } },
+    { $match: { owner: req.teacher._id, status: "upcoming" } },
     {
       $lookup: {
         from: "teachers",
@@ -324,7 +325,7 @@ const conductSeminar = asyncHandler(async (req, res) => {
 
   const seminar = await Seminar.findOne({
     _id: seminarId,
-    owner: req.user._id,
+    owner: req.teacher._id,
     status: "upcoming",
   });
   if (!seminar) {
@@ -360,7 +361,7 @@ const studentRSVP = asyncHandler(async (req, res) => {
 
   const existingRSVP = await SeminarRSVP.findOne({
     seminar: seminarId,
-    student: req.user._id,
+    student: req.student._id,
   });
   if (existingRSVP) {
     throw new ApiError(400, "Already RSVPed for this seminar");
@@ -368,7 +369,7 @@ const studentRSVP = asyncHandler(async (req, res) => {
 
   await SeminarRSVP.create({
     seminar: seminarId,
-    student: req.user._id,
+    student: req.student._id,
   });
 
   return res.status(200).json(new ApiResponse(200, null, "RSVP successful"));
@@ -392,7 +393,7 @@ const studentSubmitFeedback = asyncHandler(async (req, res) => {
 
   const rsvp = await SeminarRSVP.findOne({
     seminar: seminarId,
-    student: req.user._id,
+    student: req.student._id,
   });
   if (!rsvp) {
     throw new ApiError(400, "You have not RSVPed for this seminar");

@@ -34,7 +34,6 @@ import lecture from "./routes/lecture-feedbacks.routes.js";
 app.use("/api/v1/teachers", teacherRouter);
 app.use("/api/v1/admins", adminRouter);
 app.use("/api/v1/students", studentRouter);
-app.use("/api/v1/seminars", seminarRouter);
 app.use("/api/v1/sttp", sttpRouter);
 app.use("/api/v1/event", eventRouter);
 app.use("/api/v1/subjects", subjectRouter);
@@ -42,5 +41,6 @@ app.use("/api/v1/expertLectures", expLectureRouter);
 app.use("/api/v1/projects", teacherProject);
 app.use("/api/v1/student-guide", studentGuide);
 app.use("/api/v1/lecture", lecture);
+app.use("/api/v1/seminars", seminarRouter);
 
 export { app };
