@@ -9,8 +9,11 @@ const addSubject = asyncHandler(async (req, res) => {
   const { subject_name, subject_code, subject_credit, branch, year } = req.body;
 
   if (
-    [subject_name, subject_code, subject_credit, branch, year].some(
-      (field) => field.trim() === ""
+    [subject_name, subject_code, branch].some(
+      (field) => typeof field !== "string" || field.trim() === ""
+    ) ||
+    [subject_credit, year].some(
+      (field) => field === undefined || field === null || field === ""
     )
   ) {
     throw new ApiError(400, "All Fields are required");
@@ -25,7 +28,10 @@ const addSubject = asyncHandler(async (req, res) => {
   });
 
   if (existingSubject) {
-    throw new ApiError(400, "This subject is already added for the specified branch and year");
+    throw new ApiError(
+      400,
+      "This subject is already added for the specified branch and year"
+    );
   }
 
   const addedSubject = await AllocatedSubject.create({

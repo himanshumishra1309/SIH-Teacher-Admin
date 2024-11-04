@@ -549,7 +549,7 @@ const getMtechStudentsGuidedByTheTeacher = asyncHandler(async (req, res) => {
 
   const mtechStudentsGuided = await StudentGuided.find({
     owner: teacherId,
-    mOp: "M.Tech",
+    mOp: "MTech",
   })
     .select("topic student_name roll_no branch academic_year")
     .lean();
@@ -581,7 +581,7 @@ const getPhdStudentsGuidedByTheTeacher = asyncHandler(async (req, res) => {
 
   const phdStudentsGuided = await StudentGuided.find({
     owner: teacherId,
-    mOp: "Ph.D",
+    mOp: "Phd",
   })
     .select("topic student_name roll_no branch academic_year")
     .lean();

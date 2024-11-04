@@ -5,10 +5,10 @@ import { verifyTeacherJWT } from '../middleware/teacher.auth.middleware.js';
 const router = express.Router();
 
 // Route to add a new subject
-router.post('/subjects', verifyTeacherJWT, addSubject);
+router.post('/subjects', verifyTeacherJWT, addSubject); // done
 
 // Route to show all subjects
-router.get('/subjects', verifyTeacherJWT, showAllSubjects);
+router.get('/subjects', verifyTeacherJWT, showAllSubjects); // done
 
 // Route to edit a subject
 router.patch('/subjects/:id', verifyTeacherJWT, editSubject);
