@@ -8,8 +8,13 @@ export const columnDef = [
     enableSorting: true,
   },
   {
-    accessorKey: "role",
-    header: "Role",
+    accessorKey: "branch_name",
+    header: "Branch Name",
+    enableSorting: true,
+  },
+  {
+    accessorKey: "daily_duration",
+    header: "Duration",
     enableSorting: true,
   },
   {
@@ -20,7 +25,7 @@ export const columnDef = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Date
+          Start Date
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -43,7 +48,7 @@ export const columnDef = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Date
+          End Date
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -57,6 +62,19 @@ export const columnDef = [
       return "N/A";
     },
     enableSorting: true,
+  },
+  {
+    accessorKey: "report",
+    header: "View Report",
+    cell: ({ row }) => (
+      <Button
+        onClick={() => window.open(row.getValue("URL"), "_blank")}
+        className="view-btn"
+      >
+        View <ExternalLink className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    enableSorting: false,
   },
   {
     accessorKey: "actions",

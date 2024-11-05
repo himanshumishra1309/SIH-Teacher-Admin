@@ -8,30 +8,25 @@ export const columnDef = [
     enableSorting: true
 },
   {
-    accessorKey: "branch_name",
-    header: "Type",
+    accessorKey: "publication",
+    header: "publication",
     enableSorting: true
   },
   {
-    accessorKey: "daily_duration",
-    header: "Type",
-    enableSorting: true
-  },
-  {
-    accessorKey: "date",
+    accessorKey: "publishedDate",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Date
+          publishedDate
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
     cell: ({ row }) => {
-      const dateValue = row.getValue("date");
+      const dateValue = row.getValue("publishedDate");
       if (dateValue) {
         const date = new Date(dateValue);
         return date.toLocaleDateString();

@@ -32,49 +32,22 @@ export default function AdminProjectTable() {
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
 
-  // data of the teacher email wegera
-  // useEffect(() => {
-  //   const fetchTeacherInfo = async () => {
-  //     try {
-  //       // Retrieve the token from session storage
-  //       const token = sessionStorage.getItem("adminAccessToken"); // Adjust this if using cookies
-
-  //       const response = await axios.get(
-  //         `http://localhost:6005/api/v1/admins/teachers/${id}`, // Adjust URL to your API endpoint
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`, // Set the Authorization header
-  //           },
-  //         }
-  //       );
-  //       console.log(response.data.data.teacher);
-  //       setTeacherInfo(response.data.data);
-  //     } catch (error) {
-  //       console.log("An error occurred while fetching teacher info.");
-  //     }
-  //   };
-
-  //   fetchTeacherInfo();
-  // }, [id]); // Runs when 'id' changes
-
-  // dtaa of the reaserch paper of the teacher aditi sharma
-
-  const [expertLectureData, setExpertLectureData] = useState("");
+  // const [teacherProjectData, setTeacherProjectData] = useState("");
   useEffect(() => {
     const fetchTeacherInfo = async () => {
       try {
         const token = sessionStorage.getItem("adminAccessToken");
 
         const response = await axios.get(
-          `http://localhost:6005/api/v1/admins/teachers/${id}/expert-lectures`,
+          `http://localhost:6005/api/v1/admins/teachers/${id}/projects`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        console.log("Expert LEcture DATA Is", response.data.data);
         setData(response.data.data);
+        console.log("Tecaher Projects DATA Is", data);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
       }

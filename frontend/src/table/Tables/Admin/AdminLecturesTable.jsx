@@ -32,34 +32,7 @@ export default function AdminLecturesTable() {
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
 
-  // data of the teacher email wegera
-  // useEffect(() => {
-  //   const fetchTeacherInfo = async () => {
-  //     try {
-  //       // Retrieve the token from session storage
-  //       const token = sessionStorage.getItem("adminAccessToken"); // Adjust this if using cookies
-
-  //       const response = await axios.get(
-  //         `http://localhost:6005/api/v1/admins/teachers/${id}`, // Adjust URL to your API endpoint
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`, // Set the Authorization header
-  //           },
-  //         }
-  //       );
-  //       console.log(response.data.data.teacher);
-  //       setTeacherInfo(response.data.data);
-  //     } catch (error) {
-  //       console.log("An error occurred while fetching teacher info.");
-  //     }
-  //   };
-
-  //   fetchTeacherInfo();
-  // }, [id]); // Runs when 'id' changes
-
-  // dtaa of the reaserch paper of the teacher aditi sharma
-
-  const [expertLectureData, setExpertLectureData] = useState("");
+  // const [expertLectureData, setExpertLectureData] = useState("");
   useEffect(() => {
     const fetchTeacherInfo = async () => {
       try {

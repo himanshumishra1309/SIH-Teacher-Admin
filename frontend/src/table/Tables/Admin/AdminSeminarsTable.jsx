@@ -59,22 +59,22 @@ export default function AdminSeminarsTable() {
 
   // dtaa of the reaserch paper of the teacher aditi sharma
 
-  const [expertLectureData, setExpertLectureData] = useState("");
+  const [seminarData, setSeminarData] = useState("");
   useEffect(() => {
     const fetchTeacherInfo = async () => {
       try {
         const token = sessionStorage.getItem("adminAccessToken");
 
         const response = await axios.get(
-          `http://localhost:6005/api/v1/admins/teachers/${id}/expert-lectures`,
+          `http://localhost:6005/api/v1/admins/teachers/${id}/seminars/conducted`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        console.log("Expert LEcture DATA Is", response.data.data);
         setData(response.data.data);
+        console.log("Tecaher Seminar Data", seminarData);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
       }
