@@ -21,7 +21,7 @@ import DrawerComponent from "../../Forms/AddEntry/DrawerComponent.jsx";
 import DeleteDialog from "../DeleteDialog.jsx";
 import axios from "axios";
 
-export default function BasicTable() {
+export default function ResearchTable() {
   const { id } = useParams();
   // console.log(id);
   const [data, setData] = useState("");
