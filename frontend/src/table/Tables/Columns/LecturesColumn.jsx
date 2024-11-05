@@ -5,15 +5,15 @@ export const columnDef = [
   {
     accessorKey: "topic",
     header: "Topic",
-    enableSorting: true
+    enableSorting: true,
   },
   {
     accessorKey: "duration",
     header: "Duration",
-    enableSorting: true
+    enableSorting: true,
   },
   {
-    accessorKey: "publishedDate",
+    accessorKey: "date",
     header: ({ column }) => {
       return (
         <Button
@@ -23,10 +23,10 @@ export const columnDef = [
           Date
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => {
-      const dateValue = row.getValue("publishedDate");
+      const dateValue = row.getValue("date");
       if (dateValue) {
         const date = new Date(dateValue);
         return date.toLocaleDateString();
@@ -40,7 +40,7 @@ export const columnDef = [
     header: "View Report",
     cell: ({ row }) => (
       <Button
-        onClick={() => window.open(row.getValue("URL"), '_blank')}
+        onClick={() => window.open(row.getValue("URL"), "_blank")}
         className="view-btn"
       >
         View <ExternalLink className="ml-2 h-4 w-4" />

@@ -59,130 +59,22 @@ export default function AdminLecturesTable() {
 
   // dtaa of the reaserch paper of the teacher aditi sharma
 
-  useEffect(() => {
-    const fetchTeacherInfo = async () => {
-      try {
-        const token = sessionStorage.getItem("adminAccessToken");
-        
-
-        const response = await axios.get(
-          `http://localhost:6005/api/v1/admins/teachers/${id}/research-papers`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        console.log("Teacher is HERE");
-        // console.log(response.data.data);
-        const formattedData = response.data.data.map((item) => ({
-          ...item,
-          publishedDate: item.publishedDate.split("T")[0],
-        }));
-
-        // console.log(formattedData)
-
-        setData(response.data.data);
-      } catch (error) {
-        console.log("An error occurred while fetching teacher info.");
-      }
-    };
-
-    fetchTeacherInfo();
-  }, [id]);
-
-  // data of the sttp of the teacher aditi shrma
-  const [sttData, setsttData] = useState("");
-  useEffect(() => {
-    const fetchTeacherInfo = async () => {
-      try {
-        const token = sessionStorage.getItem("teacherAccessToken");
-
-        const response = await axios.get(`http://localhost:6005/api/v1/sttp/`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        setsttData(response.data.data.sttps);
-        console.log("STTPDATA IS HERE", sttData);
-      } catch (error) {
-        console.log("An error occurred while fetching teacher info.");
-      }
-    };
-
-    fetchTeacherInfo();
-  }, []);
-
-  // data of the events of the teacher aditi shrma
-  const [eventData, setEventData] = useState("");
-  useEffect(() => {
-    const fetchTeacherInfo = async () => {
-      try {
-        const token = sessionStorage.getItem("teacherAccessToken");
-
-        const response = await axios.get(
-          `http://localhost:6005/api/v1/event/events`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setEventData(response.data.data.events);
-        console.log("EVENT DATA Is", eventData);
-      } catch (error) {
-        console.log("An error occurred while fetching teacher info.");
-      }
-    };
-
-    fetchTeacherInfo();
-  }, []);
-
-  // get the data of the expert lectures of the teahcer
   const [expertLectureData, setExpertLectureData] = useState("");
   useEffect(() => {
     const fetchTeacherInfo = async () => {
       try {
-        const token = sessionStorage.getItem("teacherAccessToken");
+        const token = sessionStorage.getItem("adminAccessToken");
 
         const response = await axios.get(
-          `http://localhost:6005/api/v1/expertLectures/lectures`,
+          `http://localhost:6005/api/v1/admins/teachers/${id}/expert-lectures`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        setExpertLectureData(response.data.data.expertLectures);
-        console.log("Expert LEcture DATA Is", expertLectureData);
-      } catch (error) {
-        console.log("An error occurred while fetching teacher info.");
-      }
-    };
-
-    fetchTeacherInfo();
-  }, []);
-
-  // get the data of the projects of the teachers
-
-  const [teacherProjectData, setTeacherProjectData] = useState("");
-  useEffect(() => {
-    const fetchTeacherInfo = async () => {
-      try {
-        const token = sessionStorage.getItem("teacherAccessToken");
-
-        const response = await axios.get(
-          `http://localhost:6005/api/v1/projects/projects`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setTeacherProjectData(response.data.data.projects);
-        console.log("Teacher Projects DATA Is", teacherProjectData);
+        console.log("Expert LEcture DATA Is", response.data.data);
+        setData(response.data.data);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
       }
@@ -308,38 +200,43 @@ export default function AdminLecturesTable() {
       </div>
 
       <div className="table-container">
-      <table className="w-full">
-  <thead>
-    {table.getHeaderGroups().map((headerGroup) => (
-      <tr key={headerGroup.id}>
-        {headerGroup.headers
-          .filter((header) => header.column.id !== "actions") // Filter out the actions column
-          .map((header) => (
-            <th key={header.id} className="px-4 py-2">
-              {header.isPlaceholder
-                ? null
-                : flexRender(header.column.columnDef.header, header.getContext())}
-            </th>
-          ))}
-      </tr>
-    ))}
-  </thead>
-  <tbody>
-    {table.getRowModel().rows.map((row) => (
-      <tr key={row.id}>
-        {row
-          .getVisibleCells()
-          .filter((cell) => cell.column.id !== "actions") // Filter out the actions cell
-          .map((cell) => (
-            <td key={cell.id} className="px-4 py-2">
-              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-            </td>
-          ))}
-      </tr>
-    ))}
-  </tbody>
-</table>
-
+        <table className="w-full">
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers
+                  .filter((header) => header.column.id !== "actions") // Filter out the actions column
+                  .map((header) => (
+                    <th key={header.id} className="px-4 py-2">
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </th>
+                  ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id}>
+                {row
+                  .getVisibleCells()
+                  .filter((cell) => cell.column.id !== "actions") // Filter out the actions cell
+                  .map((cell) => (
+                    <td key={cell.id} className="px-4 py-2">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       <DrawerComponent
