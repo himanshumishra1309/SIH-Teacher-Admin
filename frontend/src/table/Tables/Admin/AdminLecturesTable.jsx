@@ -10,8 +10,7 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import { columnDef } from "../Columns/LecturesColumn.jsx";
-import dataJSON from "./data.json";
-import "../table.css";
+import "../../table.css";
 import DownloadBtn from "../../DownloadBtn.jsx";
 import DebouncedInput from "../../DebouncedInput.jsx";
 import { SearchIcon, Eye, EyeOff } from "lucide-react";

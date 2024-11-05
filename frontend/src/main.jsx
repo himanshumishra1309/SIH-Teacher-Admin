@@ -31,6 +31,7 @@ import BasicForm from './Forms/Student/BasicForm';
 import AdminEditProfile from './components/EditProfile/AdminEditProfile';
 import StudentEditProfile from './components/EditProfile/StudentEditProfile';
 import AdminLecturesTable from './table/Tables/Admin/AdminLecturesTable';
+import LecturesTable from './table/Tables/LecturesTable';
 
 
 const router = createBrowserRouter(
@@ -52,7 +53,7 @@ const router = createBrowserRouter(
            <Route path="upcoming" element={<RouteTransitionWrapper><UpcomingSeminars /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} /> 
         </Route>
         <Route path="projects" element={<ResearchTable />} />
-        <Route path="lectures" element={<ResearchTable />} />
+        <Route path="lectures" element={<LecturesTable />} />
         <Route path="event-participation" errorElement={<NotFoundPage />} />
 
 
