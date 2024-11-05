@@ -191,6 +191,9 @@ export default function ResearchTable() {
     fetchTeacherInfo();
   }, []);
 
+  
+  
+
   // get the data of the expert lectures of the teahcer
   // const [expertLectureData, setExpertLectureData] = useState("");
   // useEffect(() => {
@@ -230,7 +233,7 @@ export default function ResearchTable() {
             },
           }
         );
-        console.log("Expert LEcture DATA Is", response.data.data  );
+        console.log("Expert LEcture DATA Is", response.data.data);
         setExpertLectureData(response.data.data);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
@@ -242,22 +245,71 @@ export default function ResearchTable() {
 
   // get the data of the projects of the teachers
 
+  // const [teacherProjectData, setTeacherProjectData] = useState("");
+  // useEffect(() => {
+  //   const fetchTeacherInfo = async () => {
+  //     try {
+  //       const token = sessionStorage.getItem("teacherAccessToken");
+
+  //       const response = await axios.get(
+  //         `http://localhost:6005/api/v1/projects/projects`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //       setTeacherProjectData(response.data.data.projects);
+  //       console.log("Tecaher Projects DATA Is", teacherProjectData);
+  //     } catch (error) {
+  //       console.log("An error occurred while fetching teacher info.");
+  //     }
+  //   };
+
+  //   fetchTeacherInfo();
+  // }, []);
+
   const [teacherProjectData, setTeacherProjectData] = useState("");
   useEffect(() => {
     const fetchTeacherInfo = async () => {
       try {
-        const token = sessionStorage.getItem("teacherAccessToken");
+        const token = sessionStorage.getItem("adminAccessToken");
 
         const response = await axios.get(
-          `http://localhost:6005/api/v1/projects/projects`,
+          `http://localhost:6005/api/v1/admins/teachers/${id}/projects`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        setTeacherProjectData(response.data.data.projects);
+        setTeacherProjectData(response.data.data);
         console.log("Tecaher Projects DATA Is", teacherProjectData);
+      } catch (error) {
+        console.log("An error occurred while fetching teacher info.");
+      }
+    };
+
+    fetchTeacherInfo();
+  }, []);
+
+
+  const [seminarData, setSeminarData] = useState("");
+  useEffect(() => {
+    const fetchTeacherInfo = async () => {
+      try {
+        const token = sessionStorage.getItem("adminAccessToken");
+
+        const response = await axios.get(
+          `http://localhost:6005/api/v1/admins/teachers/${id}/seminars/conducted`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setSeminarData(response.data.data);
+        console.log("Tecaher Seminar Data", seminarData);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
       }
