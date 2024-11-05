@@ -191,9 +191,6 @@ export default function ResearchTable() {
     fetchTeacherInfo();
   }, []);
 
-  
-  
-
   // get the data of the expert lectures of the teahcer
   // const [expertLectureData, setExpertLectureData] = useState("");
   // useEffect(() => {
@@ -293,7 +290,6 @@ export default function ResearchTable() {
     fetchTeacherInfo();
   }, []);
 
-
   const [seminarData, setSeminarData] = useState("");
   useEffect(() => {
     const fetchTeacherInfo = async () => {
@@ -310,6 +306,30 @@ export default function ResearchTable() {
         );
         setSeminarData(response.data.data);
         console.log("Tecaher Seminar Data", seminarData);
+      } catch (error) {
+        console.log("An error occurred while fetching teacher info.");
+      }
+    };
+
+    fetchTeacherInfo();
+  }, []);
+
+  const [MguidData, setMguidData] = useState("");
+  useEffect(() => {
+    const fetchTeacherInfo = async () => {
+      try {
+        const token = sessionStorage.getItem("adminAccessToken");
+
+        const response = await axios.get(
+          `http://localhost:6005/api/v1/admins/teachers/${id}/students-guided/mtech`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log("Studetn guide", response.data.data);
+        // setSeminarData(response.data.data);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
       }
