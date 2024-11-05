@@ -3,19 +3,14 @@ import { ArrowUpDown, ExternalLink } from "lucide-react";
 
 export const columnDef = [
   {
-    accessorKey: "name",
-    header: "Title of Research/Publication",
-    enableSorting: true
-},
-  {
-    accessorKey: "branch_name",
-    header: "Type",
-    enableSorting: true
+    accessorKey: "event",
+    header: "Event",
+    enableSorting: true,
   },
   {
-    accessorKey: "daily_duration",
-    header: "Type",
-    enableSorting: true
+    accessorKey: "role",
+    header: "Role",
+    enableSorting: true,
   },
   {
     accessorKey: "date",
@@ -28,7 +23,7 @@ export const columnDef = [
           Date
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => {
       const dateValue = row.getValue("date");
@@ -41,11 +36,11 @@ export const columnDef = [
     enableSorting: true,
   },
   {
-    accessorKey: "URL",
+    accessorKey: "report",
     header: "View Report",
     cell: ({ row }) => (
       <Button
-        onClick={() => window.open(row.getValue("URL"), '_blank')}
+        onClick={() => window.open(row.getValue("URL"), "_blank")}
         className="view-btn"
       >
         View <ExternalLink className="ml-2 h-4 w-4" />

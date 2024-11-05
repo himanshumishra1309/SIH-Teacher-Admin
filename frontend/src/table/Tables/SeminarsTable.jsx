@@ -9,19 +9,18 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { columnDef } from "../Columns/ResearchColumn.jsx";
-// import dataJSON from "./data.json";
-import "../../table.css";
-import DownloadBtn from "../../DownloadBtn.jsx";
-import DebouncedInput from "../../DebouncedInput.jsx";
+import { columnDef } from "./Columns/LecturesColumn";
+import "../table.css";
+import DownloadBtn from "../DownloadBtn.jsx";
+import DebouncedInput from "../DebouncedInput.jsx";
 import { SearchIcon, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import { Checkbox } from "@/components/ui/checkbox.jsx";
-import DrawerComponent from "../../../Forms/AddEntry/DrawerComponent.jsx";
-import DeleteDialog from "../../DeleteDialog.jsx";
+import DrawerComponent from "../../Forms/AddEntry/DrawerComponent.jsx";
+import DeleteDialog from "../DeleteDialog.jsx";
 import axios from "axios";
 
-export default function AdminResearchTable() {
+export default function LecturesTable() {
   const { id } = useParams();
   // console.log(id);
   const [data, setData] = useState("");
@@ -310,37 +309,34 @@ export default function AdminResearchTable() {
 
       <div className="table-container">
       <table className="w-full">
-  <thead>
-    {table.getHeaderGroups().map((headerGroup) => (
-      <tr key={headerGroup.id}>
-        {headerGroup.headers
-          .filter((header) => header.column.id !== "actions") // Filter out the actions column
-          .map((header) => (
-            <th key={header.id} className="px-4 py-2">
-              {header.isPlaceholder
-                ? null
-                : flexRender(header.column.columnDef.header, header.getContext())}
-            </th>
-          ))}
-      </tr>
-    ))}
-  </thead>
-  <tbody>
-    {table.getRowModel().rows.map((row) => (
-      <tr key={row.id}>
-        {row
-          .getVisibleCells()
-          .filter((cell) => cell.column.id !== "actions") // Filter out the actions cell
-          .map((cell) => (
-            <td key={cell.id} className="px-4 py-2">
-              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-            </td>
-          ))}
-      </tr>
-    ))}
-  </tbody>
-</table>
-
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} className="px-4 py-2">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id} className="px-4 py-2">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       <DrawerComponent

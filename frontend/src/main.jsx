@@ -32,6 +32,11 @@ import AdminEditProfile from './components/EditProfile/AdminEditProfile';
 import StudentEditProfile from './components/EditProfile/StudentEditProfile';
 import AdminLecturesTable from './table/Tables/Admin/AdminLecturesTable';
 import LecturesTable from './table/Tables/LecturesTable';
+import AdminEventTable from './table/Tables/Admin/AdminEventTable';
+import AdminSeminarsTable from './table/Tables/Admin/AdminSeminarsTable';
+import AdminProjectTable from './table/Tables/Admin/AdminsProjectTable';
+import AdminStudentsGuidedTable from './table/Tables/Admin/AdminStudentsGuidedTable';
+import AdminResearchTable from './table/Tables/Admin/AdminResearchTable';
 
 
 const router = createBrowserRouter(
@@ -76,14 +81,14 @@ const router = createBrowserRouter(
 
         <Route path="facultyList" element={<FacultyCards/>}/>
         <Route path="personal-details" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
-        <Route path="research-papers" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
-        <Route path="students-guided" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
+        <Route path="research-papers" element={<AdminResearchTable />} errorElement={<NotFoundPage/>} />
+        <Route path="students-guided" element={<AdminStudentsGuidedTable />} errorElement={<NotFoundPage/>} />
         <Route path="institute-portfolio" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
         <Route path="department-portfolio" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
         <Route path="expert-lecture" element={<AdminLecturesTable />} errorElement={<NotFoundPage/>} />
-        <Route path="event-participation" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
-        <Route path="seminars" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
-        <Route path="projects" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
+        <Route path="event-participation" element={<AdminEventTable />} errorElement={<NotFoundPage/>} />
+        <Route path="seminars" element={<AdminSeminarsTable/>} errorElement={<NotFoundPage/>} />
+        <Route path="projects" element={<AdminProjectTable />} errorElement={<NotFoundPage/>} />
         <Route path="Contribution-graph" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
 
       </Route>
