@@ -115,7 +115,7 @@ const seeFeedbacks = asyncHandler(async (req, res) => {
     },
   ]);
 
-  if(feedbacks.length === 0) {
+  if (feedbacks.length === 0) {
     throw new ApiError(404, "No feedbacks found for this seminar");
   }
 
@@ -191,7 +191,7 @@ const seeRSVPedStudents = asyncHandler(async (req, res) => {
     owner: req.teacher._id,
     status: "upcoming",
   });
-  
+
   if (!seminar) {
     throw new ApiError(404, "Upcoming seminar not found or not owned by you");
   }
@@ -368,7 +368,7 @@ const conductSeminar = asyncHandler(async (req, res) => {
   }
   seminar.report = uploadSeminarReport.secure_url;
   seminar.status = "conducted";
-  
+
   await seminar.save();
 
   // Fetch the seminar with additional data if needed
@@ -376,13 +376,15 @@ const conductSeminar = asyncHandler(async (req, res) => {
     .populate("feedbacks")
     .populate("owner", "name department");
 
-  return res.status(200).json(
-    new ApiResponse(
-      200,
-      updatedSeminar,
-      "Seminar marked as conducted and feedback forms released"
-    )
-  );
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        updatedSeminar,
+        "Seminar marked as conducted and feedback forms released"
+      )
+    );
 }); // worked on postman
 
 // 11. Student RSVP for Seminars
@@ -457,29 +459,42 @@ const studentSubmitFeedback = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, null, "Feedback submitted successfully"));
 });
 
-// 13. 
-const getPendingFeedbackFormsForConductedSeminars = asyncHandler(async (req, res) => {
-  const studentId = req.student._id;
+// 13.
+const getPendingFeedbackFormsForConductedSeminars = asyncHandler(
+  async (req, res) => {
+    const studentId = req.student._id;
 
-  // Find all RSVP'd seminars that are conducted and where feedback is not submitted
-  const rsvps = await SeminarRSVP.find({ student: studentId, submittedFeedback: false })
-    .populate({
-      path: "seminar",
-      match: { status: "conducted" },
-      select: "topic date"
+    // Find all RSVP'd seminars that are conducted and where feedback is not submitted
+    const rsvps = await SeminarRSVP.find({
+      student: studentId,
+      submittedFeedback: false,
     })
-    .select("seminar submittedFeedback");
+      .populate({
+        path: "seminar",
+        match: { status: "conducted" },
+        select: "topic date",
+      })
+      .select("seminar submittedFeedback");
 
-  // Filter out RSVP entries where seminar is null (not conducted)
-  const pendingFeedbackForms = rsvps
-    .filter(rsvp => rsvp.seminar)
-    .map(rsvp => ({
-      seminar: rsvp.seminar,
-      submittedFeedback: rsvp.submittedFeedback
-    }));
+    // Filter out RSVP entries where seminar is null (not conducted)
+    const pendingFeedbackForms = rsvps
+      .filter((rsvp) => rsvp.seminar)
+      .map((rsvp) => ({
+        seminar: rsvp.seminar,
+        submittedFeedback: rsvp.submittedFeedback,
+      }));
 
-  return res.status(200).json(new ApiResponse(200, pendingFeedbackForms, "Pending feedback forms fetched successfully"));
-});
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          pendingFeedbackForms,
+          "Pending feedback forms fetched successfully"
+        )
+      );
+  }
+);
 
 // 14. Edit Upcoming Seminar
 const editUpcomingSeminar = asyncHandler(async (req, res) => {
@@ -527,7 +542,6 @@ const cancelUpcomingSeminar = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, null, "Seminar cancelled successfully"));
 });
 
-
 export {
   getAllConductedSeminars,
   postUpcomingSeminar,
@@ -543,5 +557,5 @@ export {
   studentSubmitFeedback,
   getPendingFeedbackFormsForConductedSeminars,
   editUpcomingSeminar,
-  cancelUpcomingSeminar
+  cancelUpcomingSeminar,
 };

@@ -59,10 +59,12 @@ export default function BasicTable() {
   // }, [id]); // Runs when 'id' changes
 
   // dtaa of the reaserch paper of the teacher aditi sharma
+
   useEffect(() => {
     const fetchTeacherInfo = async () => {
       try {
         const token = sessionStorage.getItem("adminAccessToken");
+        
 
         const response = await axios.get(
           `http://localhost:6005/api/v1/admins/teachers/${id}/research-papers`,

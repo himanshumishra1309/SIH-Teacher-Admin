@@ -31,6 +31,8 @@ import expLectureRouter from "./routes/expert-lectures.routes.js";
 import teacherProject from "./routes/projects.routes.js";
 import studentGuide from "./routes/students-guided.routes.js";
 import lecture from "./routes/lecture-feedbacks.routes.js";
+import research from "./routes/research-papers.routes.js";
+
 
 app.use("/api/v1/teachers", teacherRouter);
 app.use("/api/v1/admins", adminRouter);
@@ -44,5 +46,7 @@ app.use("/api/v1/expertLectures", expLectureRouter);
 app.use("/api/v1/projects", teacherProject);
 app.use("/api/v1/student-guide", studentGuide);
 app.use("/api/v1/lecture", lecture);
+app.use("/api/v1/research-paper", research);
+
 
 export { app };

@@ -95,7 +95,6 @@ const router = createBrowserRouter(
       <Route path="seminar" element={<SeminarCards />} errorElement={<NotFoundPage/>} />
       </Route>
     </Route>
-
   )
 );
 

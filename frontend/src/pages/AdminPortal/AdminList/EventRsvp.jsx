@@ -1,100 +1,164 @@
-'use client'
+"use client";
 
-import React, { useState } from 'react'
-import { z } from 'zod'
-import { X, Loader2, Star } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import React, { useEffect, useState } from "react";
+import { z } from "zod";
+import { X, Loader2, Star } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Dialog, DialogContent, DialogHeader, DialogFooter } from "@/components/ui/dialog"
-import { useToast , toast} from '@/components/ui/hooks/use-toast'
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { useToast, toast } from "@/components/ui/hooks/use-toast";
+import axios from "axios";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
   email: z.string().email({ message: "Invalid email address" }),
-  enrollmentNumber: z.string().min(1, { message: "Enrollment Number is required" }),
+  roll_no: z.string().min(1, { message: "Enrollment Number is required" }),
   branch: z.string().min(1, { message: "Branch is required" }),
   rating: z.number().min(1, { message: "Please provide a rating" }),
-  comment: z.string().optional()
-})
+  comment: z.string().optional(),
+});
 
-export default function EventRsvp() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [showDialog, setShowDialog] = useState(false)
+export default function EventRsvp({ seminarId }) {
+  // console.log(seminarId)
+  const [isOpen, setIsOpen] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    enrollmentNumber: '',
-    branch: '',
+    name: "",
+    email: "",
+    roll_no: "",
+    branch: "",
     rating: 0,
-    comment: ''
-  })
-  const [errors, setErrors] = useState({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false)
-  const { toast } = useToast()
+    comment: "",
+  });
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const accessToken = sessionStorage.getItem("studentAccessToken");
+        const headers = {
+          Authorization: `Bearer ${accessToken}`,
+        };
+        const response = await axios.get(
+          "http://localhost:6005/api/v1/students/me",
+          { headers }
+        );
+        console.log("Student data fetched:", response.data);
+
+        setFormData({
+          name: response.data.data.name || "",
+          email: response.data.data.email || "",
+          roll_no: response.data.data.roll_no || "",
+          branch: response.data.data.branch || "",
+        });
+      } catch (error) {
+        console.error("Error fetching faculty data:", error);
+      }
+    };
+    fetchProfileData();
+  }, []);
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: null }))
+      setErrors((prev) => ({ ...prev, [name]: null }));
     }
-  }
+  };
 
   const handleRatingChange = (rating) => {
-    setFormData(prev => ({ ...prev, rating }))
+    setFormData((prev) => ({ ...prev, rating }));
     if (errors.rating) {
-      setErrors(prev => ({ ...prev, rating: null }))
+      setErrors((prev) => ({ ...prev, rating: null }));
     }
-  }
+  };
 
   const handleSubmit = async () => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      formSchema.parse(formData)
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      console.log('Form submitted:', formData)
-      setIsOpen(false)
+      console.log("dkjfnndjfb");
+      const accessToken = sessionStorage.getItem("studentAccessToken");
+
+      const response = await axios.post(
+        "http://localhost:6005/api/v1/seminars/seminars/rsvp",
+        { seminarId },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("RSVP response:", response.data);
+
+      // Close the dialog with a delay to allow animation to complete
+      setShowDialog(false);
+      setTimeout(() => {
+        setIsOpen(false); // Close the RSVP modal
+      }, 300); // Adjust the timeout as necessary to match your animation duration
+
       setFormData({
-        name: '',
-        email: '',
-        enrollmentNumber: '',
-        branch: '',
-        rating: 0,
-        comment: ''
-      })
-      setErrors({})
-      setFeedbackSubmitted(true)
+        name: "",
+        email: "",
+        roll_no: "",
+        branch: "",
+        comment: "",
+      });
+      setErrors({});
+      setFeedbackSubmitted(true);
       toast({
-        title: "Feedback Submitted",
-        description: "Thank you for your feedback!",
+        title: "RSVP Successful",
+        description: "You have successfully RSVPed for the seminar!",
         duration: 3000,
-      })
+      });
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        setErrors(error.flatten().fieldErrors)
+      if (error.response) {
+        // If there is a response from the server
+        console.error("Error response:", error.response.data);
+        toast({
+          title: "Error",
+          description: error.response.data.message || "Something went wrong!",
+          duration: 3000,
+        });
+      } else if (error instanceof z.ZodError) {
+        setErrors(error.flatten().fieldErrors);
+      } else {
+        console.error("Error:", error.message);
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred.",
+          duration: 3000,
+        });
       }
     } finally {
-      setIsSubmitting(false)
-      setShowDialog(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleFormSubmit = (e) => {
-    e.preventDefault()
-    setShowDialog(true) // Open the confirmation dialog
-  }
+    e.preventDefault();
+    setShowDialog(true); // Open the confirmation dialog
+  };
 
   return (
     <div className="relative">
-      <Button 
-        onClick={() => setIsOpen(true)} 
-        className={feedbackSubmitted ? 'bg-green-500 text-white' : 'text-white'}
+      <Button
+        onClick={() => setIsOpen(true)}
+        className={feedbackSubmitted ? "bg-green-500 text-white" : "text-white"}
       >
-        {feedbackSubmitted ? 'Registered' : 'RSVP'}
+        {feedbackSubmitted ? "Registered" : "RSVP"}
       </Button>
 
       <AnimatePresence>
@@ -112,32 +176,46 @@ export default function EventRsvp() {
               transition={{ type: "spring", damping: 15 }}
               className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl relative"
             >
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 size="icon"
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" 
+                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                 onClick={() => setIsOpen(false)}
               >
                 <X className="h-4 w-4" />
                 <span className="sr-only">Close</span>
               </Button>
               <form onSubmit={handleFormSubmit} className="p-8">
-                <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-gray-200">Register For the Event</h2>
+                <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-gray-200">
+                  Register For the Event
+                </h2>
                 {/* Form inputs */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {['name', 'email', 'enrollmentNumber', 'branch'].map((field) => (
+                  {["name", "email", "roll_no", "branch"].map((field) => (
                     <div key={field}>
-                      <label htmlFor={field} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        {field === 'enrollmentNumber' ? 'Enrollment Number' : field.charAt(0).toUpperCase() + field.slice(1)}*
+                      <label
+                        htmlFor={field}
+                        className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                      >
+                        {field === "roll_no"
+                          ? "Enrollment Number"
+                          : field.charAt(0).toUpperCase() + field.slice(1)}
+                        *
                       </label>
                       <Input
                         id={field}
                         name={field}
-                        type={field === 'email' ? 'email' : 'text'}
+                        type={field === "email" ? "email" : "text"}
                         value={formData[field]}
                         onChange={handleInputChange}
-                        className={`transition-all duration-300 ${errors[field] ? 'border-red-500 dark:border-red-400 shake' : 'border-gray-300 dark:border-gray-600'}`}
-                        placeholder={`Enter your ${field === 'enrollmentNumber' ? 'enrollment number' : field}`}
+                        className={`transition-all duration-300 ${
+                          errors[field]
+                            ? "border-red-500 dark:border-red-400 shake"
+                            : "border-gray-300 dark:border-gray-600"
+                        }`}
+                        placeholder={`Enter your ${
+                          field === "roll_no" ? "enrollment number" : field
+                        }`}
                       />
                       {errors[field] && (
                         <p className="text-red-500 dark:text-red-400 text-xs mt-1">
@@ -147,10 +225,15 @@ export default function EventRsvp() {
                     </div>
                   ))}
                 </div>
-   
+
                 {/* Comment */}
                 <div className="mt-6">
-                  <label htmlFor="comment" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Any other comment</label>
+                  <label
+                    htmlFor="comment"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                  >
+                    Any other comment
+                  </label>
                   <Textarea
                     id="comment"
                     name="comment"
@@ -161,12 +244,16 @@ export default function EventRsvp() {
                     className="transition-all duration-300"
                   />
                 </div>
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="w-full mt-6 relative overflow-hidden group"
                   disabled={isSubmitting}
                 >
-                  <span className={`transition-all duration-300 ${isSubmitting ? 'opacity-0' : 'opacity-100'}`}>
+                  <span
+                    className={`transition-all duration-300 ${
+                      isSubmitting ? "opacity-0" : "opacity-100"
+                    }`}
+                  >
                     Send Feedback
                   </span>
                   {isSubmitting && (
@@ -187,13 +274,23 @@ export default function EventRsvp() {
             <p>Are you sure you want to submit this feedback?</p>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setShowDialog(false)}>Cancel</Button>
-            <Button variant="primary" onClick={handleSubmit} disabled={isSubmitting}>
-              {isSubmitting ? <Loader2 className="animate-spin h-5 w-5" /> : "Yes, Submit"}
+            <Button variant="ghost" onClick={() => setShowDialog(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <Loader2 className="animate-spin h-5 w-5" />
+              ) : (
+                "Yes, Submit"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
