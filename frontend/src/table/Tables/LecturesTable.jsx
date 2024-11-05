@@ -9,15 +9,15 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { columnDef } from "../Columns/LecturesColumn.jsx";
-import "../../table.css";
-import DownloadBtn from "../../DownloadBtn.jsx";
-import DebouncedInput from "../../DebouncedInput.jsx";
+import { columnDef } from "./Columns/LecturesColumn";
+import "../table.css";
+import DownloadBtn from "../DownloadBtn.jsx";
+import DebouncedInput from "../DebouncedInput.jsx";
 import { SearchIcon, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import { Checkbox } from "@/components/ui/checkbox.jsx";
-import DrawerComponent from "../../../Forms/AddEntry/DrawerComponent.jsx";
-import DeleteDialog from "../../DeleteDialog.jsx";
+import DrawerComponent from "../../Forms/AddEntry/DrawerComponent.jsx";
+import DeleteDialog from "../DeleteDialog.jsx";
 import axios from "axios";
 
 export default function LecturesTable() {
