@@ -64,7 +64,6 @@ export default function ResearchTable() {
     const fetchTeacherInfo = async () => {
       try {
         const token = sessionStorage.getItem("adminAccessToken");
-        
 
         const response = await axios.get(
           `http://localhost:6005/api/v1/admins/teachers/${id}/research-papers`,
@@ -75,8 +74,8 @@ export default function ResearchTable() {
           }
         );
 
-        console.log("Teacher is HERE");
-        // console.log(response.data.data);
+        // console.log("Teacher is HERE");
+        console.log(response.data.data);
         const formattedData = response.data.data.map((item) => ({
           ...item,
           publishedDate: item.publishedDate.split("T")[0],
@@ -94,20 +93,46 @@ export default function ResearchTable() {
   }, [id]);
 
   // data of the sttp of the teacher aditi shrma
+  // const [sttData, setsttData] = useState("");
+  // useEffect(() => {
+  //   const fetchTeacherInfo = async () => {
+  //     try {
+  //       const token = sessionStorage.getItem("teacherAccessToken");
+
+  //       const response = await axios.get(`http://localhost:6005/api/v1/sttp/`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+
+  //       setsttData(response.data.data.sttps);
+  //       console.log("STTPDATA IS HERE", sttData);
+  //     } catch (error) {
+  //       console.log("An error occurred while fetching teacher info.");
+  //     }
+  //   };
+
+  //   fetchTeacherInfo();
+  // }, []);
+
   const [sttData, setsttData] = useState("");
   useEffect(() => {
     const fetchTeacherInfo = async () => {
       try {
-        const token = sessionStorage.getItem("teacherAccessToken");
+        const token = sessionStorage.getItem("adminAccessToken");
 
-        const response = await axios.get(`http://localhost:6005/api/v1/sttp/`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get(
+          `http://localhost:6005/api/v1/admins/teachers/${id}/sttps`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log("Sttps", response.data.data);
 
         setsttData(response.data.data.sttps);
-        console.log("STTPDATA IS HERE", sttData);
+        // console.log("STTPDATA IS HERE", sttData);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
       }
@@ -117,21 +142,46 @@ export default function ResearchTable() {
   }, []);
 
   // data of the events of the teacher aditi shrma
+  // const [eventData, setEventData] = useState("");
+  // useEffect(() => {
+  //   const fetchTeacherInfo = async () => {
+  //     try {
+  //       const token = sessionStorage.getItem("teacherAccessToken");
+
+  //       const response = await axios.get(
+  //         `http://localhost:6005/api/v1/event/events`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //       setEventData(response.data.data.events);
+  //       console.log("EVENT DATA Is", eventData);
+  //     } catch (error) {
+  //       console.log("An error occurred while fetching teacher info.");
+  //     }
+  //   };
+
+  //   fetchTeacherInfo();
+  // }, []);
+
   const [eventData, setEventData] = useState("");
   useEffect(() => {
     const fetchTeacherInfo = async () => {
       try {
-        const token = sessionStorage.getItem("teacherAccessToken");
+        const token = sessionStorage.getItem("adminAccessToken");
 
         const response = await axios.get(
-          `http://localhost:6005/api/v1/event/events`,
+          `http://localhost:6005/api/v1/admins/teachers/${id}/events-participated`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        setEventData(response.data.data.events);
+        // console.log("EVENT DATA Is", response.data.data);
+        setEventData(response.data.data);
         console.log("EVENT DATA Is", eventData);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
@@ -142,22 +192,46 @@ export default function ResearchTable() {
   }, []);
 
   // get the data of the expert lectures of the teahcer
+  // const [expertLectureData, setExpertLectureData] = useState("");
+  // useEffect(() => {
+  //   const fetchTeacherInfo = async () => {
+  //     try {
+  //       const token = sessionStorage.getItem("teacherAccessToken");
+
+  //       const response = await axios.get(
+  //         `http://localhost:6005/api/v1/expertLectures/lectures`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //       setExpertLectureData(response.data.data.expertLectures);
+  //       console.log("Expert LEcture DATA Is", expertLectureData);
+  //     } catch (error) {
+  //       console.log("An error occurred while fetching teacher info.");
+  //     }
+  //   };
+
+  //   fetchTeacherInfo();
+  // }, []);
+
   const [expertLectureData, setExpertLectureData] = useState("");
   useEffect(() => {
     const fetchTeacherInfo = async () => {
       try {
-        const token = sessionStorage.getItem("teacherAccessToken");
+        const token = sessionStorage.getItem("adminAccessToken");
 
         const response = await axios.get(
-          `http://localhost:6005/api/v1/expertLectures/lectures`,
+          `http://localhost:6005/api/v1/admins/teachers/${id}/expert-lectures`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        setExpertLectureData(response.data.data.expertLectures);
-        console.log("Expert LEcture DATA Is", expertLectureData);
+        console.log("Expert LEcture DATA Is", response.data.data  );
+        setExpertLectureData(response.data.data);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
       }
