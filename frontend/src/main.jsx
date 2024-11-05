@@ -30,6 +30,7 @@ import LectureFeedback from './pages/AdminPortal/AdminList/LectureFeedback';
 import BasicForm from './Forms/Student/BasicForm';
 import AdminEditProfile from './components/EditProfile/AdminEditProfile';
 import StudentEditProfile from './components/EditProfile/StudentEditProfile';
+import AdminLecturesTable from './table/Tables/Admin/AdminLecturesTable';
 
 
 const router = createBrowserRouter(
@@ -78,7 +79,7 @@ const router = createBrowserRouter(
         <Route path="students-guided" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
         <Route path="institute-portfolio" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
         <Route path="department-portfolio" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
-        <Route path="expert-lecture" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
+        <Route path="expert-lecture" element={<AdminLecturesTable />} errorElement={<NotFoundPage/>} />
         <Route path="event-participation" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
         <Route path="seminars" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
         <Route path="projects" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
