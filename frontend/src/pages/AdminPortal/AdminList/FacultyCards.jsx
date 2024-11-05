@@ -170,9 +170,9 @@ export default function FacultyCards() {
                   <h2 className="text-base">Email: {faculty.email}</h2>
                 </CardContent>
                 <CardFooter className="flex justify-end">
-                  <Link to="/admin-info">
-                    <Button variant="default" className="text-white"  >
-                      Check Profile 
+                  <Link to={`/admin-info/${faculty._id}`}>
+                    <Button variant="default" className="text-white">
+                      Check Profile
                     </Button>
                   </Link>
                 </CardFooter>
