@@ -44,6 +44,8 @@ import FacultyEventTable from './table/Tables/Faculty/FacultyEventTable';
 import FacultySeminarsTable from './table/Tables/Faculty/FacultySeminarsTable';
 import FacultyProjectTable from './table/Tables/Faculty/FacultyProjectTable';
 import FacultyGuidedTable from './table/Tables/Faculty/FacultyGuidedTable';
+import FacultyDataDashboard from './pages/FacultyPortal/FacultyDataDashboard';
+import AdminDataDashboard from './pages/AdminPortal/AdminList/AdminDataDashboard';
 
 
 const router = createBrowserRouter(
@@ -54,7 +56,7 @@ const router = createBrowserRouter(
 
       <Route path="/faculty/:id" element={<FacultyLayout />}>
         {/* <Route index element={<ResearchTable />} /> Default to ResearchTable */}
-        <Route index element={<FacultyResearchTable />} errorElement={<NotFoundPage/>} />
+        <Route index element={<FacultyDataDashboard/>} errorElement={<NotFoundPage/>} />
         <Route path="research-papers" element={<RouteTransitionWrapper><FacultyResearchTable /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
         <Route path="expert-lectures" element={<RouteTransitionWrapper><FacultyLecturesTable /></RouteTransitionWrapper>}errorElement={<NotFoundPage/>}  />
         <Route path="sttp-conducted" element={<RouteTransitionWrapper><FacultySTTPTable /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
@@ -87,6 +89,8 @@ const router = createBrowserRouter(
       <Route path="admin-info/:id" element={<AdminLayout/>}> 
 
         <Route path="facultyList" element={<FacultyCards/>}/>
+        <Route index element={<AdminDataDashboard/>} errorElement={<NotFoundPage/>} />
+
         <Route path="personal-details" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
         <Route path="research-papers" element={<AdminResearchTable />} errorElement={<NotFoundPage/>} />
         <Route path="students-guided" element={<AdminStudentsGuidedTable />} errorElement={<NotFoundPage/>} />
