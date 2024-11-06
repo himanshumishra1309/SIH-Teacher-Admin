@@ -92,7 +92,7 @@ export default function FacultyResearchTable() {
       }
       return col;
     });
-  }, []);
+  }, [columnDef]);
 
   const table = useReactTable({
     data,

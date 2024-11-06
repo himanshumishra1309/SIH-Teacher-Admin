@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { z } from "zod";
+import axios from "axios";
 
 function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
   const [formData, setFormData] = useState({
@@ -55,11 +56,6 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
     if (isOpen && rowData) {
       Object.keys(rowData).forEach((key) => {
         setValue(key, rowData[key]);
-        // -----------------
-        setFormData((prev) => ({
-          ...prev,
-          [key]: rowData[key], // Sync state with incoming data
-        }));
       });
     }
   }, [isOpen, rowData, setValue]);
@@ -68,39 +64,43 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: value, // Sync formData with the input
     }));
   };
 
   const handleFormSubmit = async (data) => {
-    // Prepare data to send to backend
     const newData = {
       name: formData.name,
       publication: formData.publication,
       publishedDate: formData.publishedDate
-        ? formData.publishedDate.toISOString()
+        ? formData.publishedDate.toISOString() // Convert Date to string
         : undefined,
-      viewUrl: formData.viewUrl,
+      viewUrl: formData.viewUrl.trim(), // Make sure this URL is valid
     };
 
     try {
       // Retrieve the teacher access token from session storage
       const token = sessionStorage.getItem("teacherAccessToken");
 
-      // Replace '/your-endpoint' with your actual endpoint
+      // Send a POST request to the backend
+      console.log(newData);
       await axios.post(
         "http://localhost:6005/api/v1/research-paper/papers",
         newData,
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Include the token in the headers
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );
+
       onClose(); // Close the drawer after submission
     } catch (error) {
       console.error("Error submitting data:", error);
-      // Handle the error appropriately (e.g., show an error message)
+      if (error.response) {
+        console.error("Response data:", error.response.data);
+      }
     }
   };
 
@@ -122,11 +122,14 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
                     >
                       {col.header || col.accessorKey}
                     </label>
-                    {col.accessorKey === "Date" ? (
-                      <DatePicker   
-                        selected={watch("Date")}
+                    {col.accessorKey === "publishedDate" ? (
+                      <DatePicker
+                        selected={formData.publishedDate}
                         onChange={(date) => {
-                          setValue("Date", date);
+                          setValue(
+                            "publishedDate",
+                            date ? date.toISOString() : ""
+                          );
                           setFormData((prev) => ({
                             ...prev,
                             publishedDate: date,
@@ -134,7 +137,9 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
                         }}
                         maxDate={new Date()}
                         className={`w-full p-2 border rounded ${
-                          errors.Date ? "border-red-500" : "border-gray-300"
+                          errors.publishedDate
+                            ? "border-red-500"
+                            : "border-gray-300"
                         }`}
                         placeholderText="Select a date"
                       />
@@ -143,8 +148,8 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
                         id={col.accessorKey}
                         name={col.accessorKey}
                         {...register(col.accessorKey)}
-                        value={formData[col.accessorKey] || ""}
-                        onChange={handleInputChange} // Update the state when input changes
+                        value={formData[col.accessorKey] ?? ""} // Using ?? instead of || for more explicit null/undefined handling
+                        onChange={handleInputChange}
                         className={
                           errors[col.accessorKey] ? "border-red-500" : ""
                         }

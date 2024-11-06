@@ -36,11 +36,11 @@ export const columnDef = [
     enableSorting: true,
   },
   {
-    accessorKey: "URL",
+    accessorKey: "viewUrl",
     header: "View Report",
     cell: ({ row }) => (
       <Button
-        onClick={() => window.open(row.getValue("URL"), '_blank')}
+        onClick={() => window.open(row.getValue("viewUrl"), '_blank')}
         className="view-btn"
       >
         View <ExternalLink className="ml-2 h-4 w-4" />
