@@ -11,7 +11,8 @@ function AdminDataDashboard() {
   return (
     <div className="p-6 grid grid-cols-3 gap-6">
       {/* Row 1: Performance Bar Chart, Radar Research Impact, Pie Chart */}
-      <div className="col-span-1 bg-white shadow-md p-4 rounded-lg">
+      {/* 
+        <div className="col-span-1 bg-white shadow-md p-4 rounded-lg">
         <FacultyPerformanceBarChart />
       </div>
       <div className="col-span-1 bg-white shadow-md p-4 rounded-lg">
@@ -20,8 +21,6 @@ function AdminDataDashboard() {
       <div className="col-span-1 bg-white shadow-md p-4 rounded-lg">
         <GrantAllocationPieChart />
       </div>
-
-      {/* Row 2: Teaching Load, Monthly Submissions, Feedback Ratings */}
       <div className="col-span-1 bg-white shadow-md p-4 rounded-lg">
         <TeachingLoadBarChart />
       </div>
@@ -31,6 +30,7 @@ function AdminDataDashboard() {
       <div className="col-span-1 bg-white shadow-md p-4 rounded-lg">
         <FeedbackRatingsRadarChart />
       </div>
+      */}
 
       {/* Extra Row: Departmental Growth */}
       <div className="col-span-3 bg-white shadow-md p-4 rounded-lg">

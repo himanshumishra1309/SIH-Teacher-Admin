@@ -6,7 +6,7 @@ import * as XLSX from 'xlsx/xlsx.mjs';
 function DownloadBtn({ data = [], fileName = 'data' }) {
   return (
     <Button 
-    className='download-btn'
+    className='download-btn text-white'
     onClick={() => {
     console.log('Data being passed:', data); // Check if data is being passed correctly
         const sheetData = data.length ? data : []; // Use a different variable name

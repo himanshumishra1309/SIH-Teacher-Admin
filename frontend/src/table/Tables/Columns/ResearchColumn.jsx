@@ -41,7 +41,7 @@ export const columnDef = [
     cell: ({ row }) => (
       <Button
         onClick={() => window.open(row.getValue("viewUrl"), '_blank')}
-        className="view-btn"
+        className="view-btn text-white"
       >
         View <ExternalLink className="ml-2 h-4 w-4" />
       </Button>

@@ -8,13 +8,13 @@ export default function FacultyNavigation() {
     { name: "Research Papers Published", path: "research-papers" },
     { name: "Expert Lecture Delivered", path: "expert-lectures" },
     { name: "STTP Conducted As Coordinator", path: "sttp-conducted" },
-    { name: "Portfolio At Institute Level", path: "institute-portfolio" },
-    { name: "Portfolio At Department Level", path: "department-portfolio" },
+    // { name: "Portfolio At Institute Level", path: "institute-portfolio" },
+    // { name: "Portfolio At Department Level", path: "department-portfolio" },
     { name: "MTech/P.Hd Students Guided", path: "students-guided" },
     { name: "Event Participation", path: "event-participation" },
     { name: "Seminars", path: "seminars" },
     { name: "Projects", path: "projects" },
-    { name: "Lectures", path: "lectures" }
+    // { name: "Lectures", path: "lectures" }
   ];
 
   return (
