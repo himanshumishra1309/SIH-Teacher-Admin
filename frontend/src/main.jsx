@@ -54,7 +54,7 @@ const router = createBrowserRouter(
 
       <Route path="/faculty/:id" element={<FacultyLayout />}>
         {/* <Route index element={<ResearchTable />} /> Default to ResearchTable */}
-        {/* <Route index element={<ResearchTable />} errorElement={<NotFoundPage/>} /> */}
+        <Route index element={<FacultyResearchTable />} errorElement={<NotFoundPage/>} />
         <Route path="research-papers" element={<RouteTransitionWrapper><FacultyResearchTable /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
         <Route path="expert-lectures" element={<RouteTransitionWrapper><FacultyLecturesTable /></RouteTransitionWrapper>}errorElement={<NotFoundPage/>}  />
         <Route path="sttp-conducted" element={<RouteTransitionWrapper><FacultySTTPTable /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
