@@ -197,29 +197,29 @@ const updatePaper = asyncHandler(async (req, res) => {
 //     );
 // });
 
-// const deletePaper = asyncHandler(async (req, res) => {
-//   const { id } = req.params;
+const deletePaper = asyncHandler(async (req, res) => {
+  const { id } = req.params;
 
-//   const researchPaper = await ResearchPaper.findById(id);
+  const researchPaper = await ResearchPaper.findById(id);
 
-//   if (!researchPaper) {
-//     throw new ApiError(404, "Research Paper Not Found");
-//   }
+  if (!researchPaper) {
+    throw new ApiError(404, "Research Paper Not Found");
+  }
 
-//   // Check if the authenticated user is the owner of the paper
-//   if (researchPaper.owner.toString() !== req.user._id.toString()) {
-//     throw new ApiError(
-//       403,
-//       "You are not authorized to delete this research paper"
-//     );
-//   }
+  // Check if the authenticated user is the owner of the paper
+  if (researchPaper.owner.toString() !== req.user._id.toString()) {
+    throw new ApiError(
+      403,
+      "You are not authorized to delete this research paper"
+    );
+  }
 
-//   // Delete the research paper
-//   await researchPaper.remove();
+  // Delete the research paper
+  await researchPaper.remove();
 
-//   return res
-//     .status(200)
-//     .json(new ApiResponse(200, null, "Research paper deleted successfully"));
-// });
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Research paper deleted successfully"));
+});
 
 export { uploadPaper, showAllResearchPaper, updatePaper, deletePaper };

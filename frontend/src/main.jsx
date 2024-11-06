@@ -8,7 +8,7 @@ import AdminLayout from './Layouts/AdminLayout'; // Import AdminLayout
 import Home from './pages/Home/Home';
 import AdminPortal from './pages/AdminPortal/AdminList/AdminHomeList'; // This can be the main admin page
 import StudentPortal from './pages/StudentPortal/StudentPortal';
-import BasicTable from './table/Research/BasicTable';
+import ResearchTable from './table/Tables/ResearchTable';
 import ConductedTable from './table/Seminars/ConductedSeminars/ConductedMain';
 import ConductedMain from './table/Seminars/ConductedSeminars/ConductedMain';
 import UpcomingSeminars from './pages/UpcomingSeminars/UpcomingSeminars';
@@ -30,6 +30,20 @@ import LectureFeedback from './pages/AdminPortal/AdminList/LectureFeedback';
 import BasicForm from './Forms/Student/BasicForm';
 import AdminEditProfile from './components/EditProfile/AdminEditProfile';
 import StudentEditProfile from './components/EditProfile/StudentEditProfile';
+import AdminLecturesTable from './table/Tables/Admin/AdminLecturesTable';
+import LecturesTable from './table/Tables/LecturesTable';
+import AdminEventTable from './table/Tables/Admin/AdminEventTable';
+import AdminSeminarsTable from './table/Tables/Admin/AdminSeminarsTable';
+import AdminProjectTable from './table/Tables/Admin/AdminsProjectTable';
+import AdminStudentsGuidedTable from './table/Tables/Admin/AdminStudentsGuidedTable';
+import AdminResearchTable from './table/Tables/Admin/AdminResearchTable';
+import FacultyResearchTable from './table/Tables/Faculty/FacultyResearchTable';
+import FacultyLecturesTable from './table/Tables/Faculty/FacultyLecturesTable';
+import FacultySTTPTable from './table/Tables/Faculty/FacultySTTPTable';
+import FacultyEventTable from './table/Tables/Faculty/FacultyEventTable';
+import FacultySeminarsTable from './table/Tables/Faculty/FacultySeminarsTable';
+import FacultyProjectTable from './table/Tables/Faculty/FacultyProjectTable';
+import FacultyGuidedTable from './table/Tables/Faculty/FacultyGuidedTable';
 
 
 const router = createBrowserRouter(
@@ -39,20 +53,20 @@ const router = createBrowserRouter(
       <Route index element={<Home />} /> {/* Render Home on the root path */}
 
       <Route path="/faculty/:id" element={<FacultyLayout />}>
-        {/* <Route index element={<BasicTable />} /> Default to BasicTable */}
-        <Route index element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="research-papers" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="expert-lectures" element={<BasicTable />}errorElement={<NotFoundPage/>}  />
-        <Route path="sttp-conducted" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="institute-portfolio" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="department-portfolio" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="students-guided" element={<RouteTransitionWrapper><BasicTable /></RouteTransitionWrapper>}errorElement={<NotFoundPage/>}  />
-        <Route path="seminars" element={<RouteTransitionWrapper><ConductedMain /></RouteTransitionWrapper>}errorElement={<NotFoundPage/>}  >
+        {/* <Route index element={<ResearchTable />} /> Default to ResearchTable */}
+        {/* <Route index element={<ResearchTable />} errorElement={<NotFoundPage/>} /> */}
+        <Route path="research-papers" element={<RouteTransitionWrapper><FacultyResearchTable /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
+        <Route path="expert-lectures" element={<RouteTransitionWrapper><FacultyLecturesTable /></RouteTransitionWrapper>}errorElement={<NotFoundPage/>}  />
+        <Route path="sttp-conducted" element={<RouteTransitionWrapper><FacultySTTPTable /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
+        <Route path="institute-portfolio" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
+        <Route path="department-portfolio" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
+        <Route path="students-guided" element={<RouteTransitionWrapper><FacultyGuidedTable /></RouteTransitionWrapper>}errorElement={<NotFoundPage/>}  />
+        <Route path="seminars" element={<RouteTransitionWrapper><FacultySeminarsTable /></RouteTransitionWrapper>}errorElement={<NotFoundPage/>}  >
            <Route path="upcoming" element={<RouteTransitionWrapper><UpcomingSeminars /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} /> 
         </Route>
-        <Route path="projects" element={<BasicTable />} />
-        <Route path="lectures" element={<BasicTable />} />
-        <Route path="event-participation" errorElement={<NotFoundPage />} />
+        <Route path="projects" element={<RouteTransitionWrapper><FacultyProjectTable /></RouteTransitionWrapper>} />
+        <Route path="lectures" element={<LecturesTable />} />
+        <Route path="event-participation" element={<RouteTransitionWrapper><FacultyEventTable /></RouteTransitionWrapper>} errorElement={<NotFoundPage />} />
 
 
       </Route>
@@ -70,19 +84,19 @@ const router = createBrowserRouter(
       <Route path="admin-home" element={<AdminHome/>} />
 
  
-      <Route path="admin-info" element={<AdminLayout/>}> 
+      <Route path="admin-info/:id" element={<AdminLayout/>}> 
 
         <Route path="facultyList" element={<FacultyCards/>}/>
-        <Route path="personal-details" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="research-papers" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="students-guided" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="institute-portfolio" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="department-portfolio" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="expert-lecture" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="event-participation" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="seminars" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="projects" element={<BasicTable />} errorElement={<NotFoundPage/>} />
-        <Route path="Contribution-graph" element={<BasicTable />} errorElement={<NotFoundPage/>} />
+        <Route path="personal-details" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
+        <Route path="research-papers" element={<AdminResearchTable />} errorElement={<NotFoundPage/>} />
+        <Route path="students-guided" element={<AdminStudentsGuidedTable />} errorElement={<NotFoundPage/>} />
+        <Route path="institute-portfolio" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
+        <Route path="department-portfolio" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
+        <Route path="expert-lecture" element={<AdminLecturesTable />} errorElement={<NotFoundPage/>} />
+        <Route path="event-participation" element={<AdminEventTable />} errorElement={<NotFoundPage/>} />
+        <Route path="seminars" element={<AdminSeminarsTable/>} errorElement={<NotFoundPage/>} />
+        <Route path="projects" element={<AdminProjectTable />} errorElement={<NotFoundPage/>} />
+        <Route path="Contribution-graph" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
 
       </Route>
       
@@ -95,7 +109,6 @@ const router = createBrowserRouter(
       <Route path="seminar" element={<SeminarCards />} errorElement={<NotFoundPage/>} />
       </Route>
     </Route>
-
   )
 );
 

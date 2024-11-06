@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "Title": "Impact of Climate Change on Biodiversity",
+    "Type": "Research Paper",
+    "Date": "2023-05-15",
+    "View": "https://example.com/research1.pdf"
+  },
+  {
+    "id": 2,
+    "Title": "Advancements in Quantum Computing",
+    "Type": "Conference Presentation",
+    "Date": "2023-07-22",
+    "View": "https://example.com/presentation2.pdf"
+  },
+  {
+    "id": 3,
+    "Title": "Novel Approaches to Sustainable Urban Planning",
+    "Type": "Journal Article",
+    "Date": "2023-09-10",
+    "View": "https://example.com/article3.pdf"
+  },
+  {
+    "id": 4,
+    "Title": "Artificial Intelligence in Healthcare Diagnostics",
+    "Type": "Research Paper",
+    "Date": "2023-11-05",
+    "View": "https://example.com/research4.pdf"
+  },
+  {
+    "id": 5,
+    "Title": "Exploring Dark Matter: New Observations",
+    "Type": "Conference Poster",
+    "Date": "2024-01-18",
+    "View": "https://example.com/poster5.pdf"
+  }
+]
