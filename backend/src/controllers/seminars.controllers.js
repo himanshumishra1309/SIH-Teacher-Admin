@@ -4,9 +4,8 @@ import { ApiError } from "../utils/ApiErrors.js";
 import { Seminar } from "../models/seminars.models.js";
 import { SeminarRSVP } from "../models/rsvp-seminar.models.js";
 import { SeminarFeedback } from "../models/feedback-seminars.models.js";
-import { Student } from "../models/students.models.js";
 import { v2 as cloudinary } from "cloudinary";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js"; 
 
 // 1. Get All Conducted Seminars (with feedback and report)
 const getAllConductedSeminars = asyncHandler(async (req, res) => {
@@ -278,11 +277,13 @@ const seeFeedbackSubmitters = asyncHandler(async (req, res) => {
 
 // 8. See All Upcoming Seminars (Student)
 const getAllUpcomingSeminarsForStudents = asyncHandler(async (req, res) => {
+  const studentId = req.student._id; // assuming `req.student` holds the authenticated student's info
+
   const seminars = await Seminar.aggregate([
-    { $match: { status: "upcoming", date: { $gte: new Date() } } },
+    { $match: { status: "upcoming" } },
     {
       $lookup: {
-        from: "teachers",
+        from: "students",
         localField: "owner",
         foreignField: "_id",
         as: "ownerDetails",
@@ -290,12 +291,37 @@ const getAllUpcomingSeminarsForStudents = asyncHandler(async (req, res) => {
     },
     { $unwind: "$ownerDetails" },
     {
+      $lookup: {
+        from: "seminarrsvps", // Matches with SeminarRSVP collection
+        let: { seminarId: "$_id", studentId: studentId },
+        pipeline: [
+          { 
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$seminar", "$$seminarId"] },
+                  { $eq: ["$student", "$$studentId"] }
+                ]
+              }
+            }
+          }
+        ],
+        as: "rsvpDetails",
+      },
+    },
+    {
+      $addFields: {
+        hasRSVPed: { $gt: [{ $size: "$rsvpDetails" }, 0] }
+      },
+    },
+    {
       $project: {
         topic: 1,
         duration: 1,
         date: 1,
         owner: "$ownerDetails.name",
         department: "$ownerDetails.department",
+        hasRSVPed: 1, // Indicates whether the student has already RSVP'd
       },
     },
   ]);
@@ -303,7 +329,11 @@ const getAllUpcomingSeminarsForStudents = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, seminars, "Upcoming seminars fetched successfully")
+      new ApiResponse(
+        200,
+        seminars,
+        "Your upcoming seminars fetched successfully"
+      )
     );
 });
 
@@ -402,6 +432,7 @@ const studentRSVP = asyncHandler(async (req, res) => {
 
   const existingRSVP = await SeminarRSVP.findOne({
     seminar: seminarId,
+    student: req.student._id,
     student: req.student._id,
   });
   if (existingRSVP) {
@@ -557,5 +588,5 @@ export {
   studentSubmitFeedback,
   getPendingFeedbackFormsForConductedSeminars,
   editUpcomingSeminar,
-  cancelUpcomingSeminar,
+  cancelUpcomingSeminar
 };
