@@ -8,6 +8,11 @@ export const columnDef = [
     enableSorting: true,
   },
   {
+    accessorKey: "department",
+    header: "Department",
+    enableSorting: true,
+  },
+  {
     accessorKey: "duration",
     header: "Duration",
     enableSorting: true,
@@ -33,6 +38,11 @@ export const columnDef = [
       }
       return "N/A";
     },
+    enableSorting: true,
+  },
+  {
+    accessorKey: "Feedbacks",
+    header: "feedback",
     enableSorting: true,
   },
   {

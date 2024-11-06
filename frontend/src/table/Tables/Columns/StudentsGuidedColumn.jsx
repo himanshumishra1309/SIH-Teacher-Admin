@@ -3,17 +3,33 @@ import { ArrowUpDown, ExternalLink } from "lucide-react";
 
 export const columnDef = [
   {
+    accessorKey: "student_name",
+    header: "Student Name",
+    enableSorting: true,
+  },
+  {
     accessorKey: "topic",
     header: "Topic",
     enableSorting: true,
   },
   {
-    accessorKey: "duration",
-    header: "Duration",
+    accessorKey: "branch",
+    header: "Branch",
     enableSorting: true,
   },
   {
-    accessorKey: "date",
+    accessorKey: "roll_no",
+    header: "Roll No",
+    enableSorting: true,
+  },
+  {
+    accessorKey: "mOp",
+    header: "Mop",
+    enableSorting: true,
+  },
+  
+  {
+    accessorKey: "addedOn",
     header: ({ column }) => {
       return (
         <Button
@@ -26,7 +42,7 @@ export const columnDef = [
       );
     },
     cell: ({ row }) => {
-      const dateValue = row.getValue("date");
+      const dateValue = row.getValue("addedOn");
       if (dateValue) {
         const date = new Date(dateValue);
         return date.toLocaleDateString();
