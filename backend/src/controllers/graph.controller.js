@@ -5,7 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiErrors.js";
 
 const getTeacherGraph = asyncHandler(async (req, res) => {
-  const { teacherId } = req.params;
+  const { teacherId } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(teacherId)) {
     throw new ApiError(400, "Invalid teacher ID format.");
