@@ -277,11 +277,13 @@ const seeFeedbackSubmitters = asyncHandler(async (req, res) => {
 
 // 8. See All Upcoming Seminars (Student)
 const getAllUpcomingSeminarsForStudents = asyncHandler(async (req, res) => {
+  const studentId = req.student._id; // assuming `req.student` holds the authenticated student's info
+
   const seminars = await Seminar.aggregate([
-    { $match: { status: "upcoming", date: { $gte: new Date() } } },
+    { $match: { status: "upcoming" } },
     {
       $lookup: {
-        from: "teachers",
+        from: "students",
         localField: "owner",
         foreignField: "_id",
         as: "ownerDetails",
@@ -289,12 +291,37 @@ const getAllUpcomingSeminarsForStudents = asyncHandler(async (req, res) => {
     },
     { $unwind: "$ownerDetails" },
     {
+      $lookup: {
+        from: "seminarrsvps", // Matches with SeminarRSVP collection
+        let: { seminarId: "$_id", studentId: studentId },
+        pipeline: [
+          { 
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$seminar", "$$seminarId"] },
+                  { $eq: ["$student", "$$studentId"] }
+                ]
+              }
+            }
+          }
+        ],
+        as: "rsvpDetails",
+      },
+    },
+    {
+      $addFields: {
+        hasRSVPed: { $gt: [{ $size: "$rsvpDetails" }, 0] }
+      },
+    },
+    {
       $project: {
         topic: 1,
         duration: 1,
         date: 1,
         owner: "$ownerDetails.name",
         department: "$ownerDetails.department",
+        hasRSVPed: 1, // Indicates whether the student has already RSVP'd
       },
     },
   ]);
@@ -302,7 +329,11 @@ const getAllUpcomingSeminarsForStudents = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, seminars, "Upcoming seminars fetched successfully")
+      new ApiResponse(
+        200,
+        seminars,
+        "Your upcoming seminars fetched successfully"
+      )
     );
 });
 
@@ -399,7 +430,7 @@ const studentRSVP = asyncHandler(async (req, res) => {
 
   const existingRSVP = await SeminarRSVP.findOne({
     seminar: seminarId,
-    student: req.teacher._id,
+    student: req.student._id,
   });
   if (existingRSVP) {
     throw new ApiError(400, "Already RSVPed for this seminar");
@@ -407,7 +438,7 @@ const studentRSVP = asyncHandler(async (req, res) => {
 
   await SeminarRSVP.create({
     seminar: seminarId,
-    student: req.teacher._id,
+    student: req.student._id,
   });
 
   return res.status(200).json(new ApiResponse(200, null, "RSVP successful"));

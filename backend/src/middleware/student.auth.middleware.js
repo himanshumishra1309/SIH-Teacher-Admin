@@ -5,7 +5,7 @@ import { Student } from "../models/students.models.js";
 
 export const verifyStudentJWT = asyncHandler(async(req, res, next)=>{
     try {
-        const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")
+        const token = req.cookies?.studentAccessToken || req.header("Authorization")?.replace("Bearer ", "")
     
         if(!token){
             throw new ApiError(401, "Unauthorized Request")
