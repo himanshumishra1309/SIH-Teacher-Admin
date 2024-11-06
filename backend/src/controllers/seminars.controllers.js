@@ -4,9 +4,8 @@ import { ApiError } from "../utils/ApiErrors.js";
 import { Seminar } from "../models/seminars.models.js";
 import { SeminarRSVP } from "../models/rsvp-seminar.models.js";
 import { SeminarFeedback } from "../models/feedback-seminars.models.js";
-import { Student } from "../models/students.models.js";
 import { v2 as cloudinary } from "cloudinary";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js"; 
 
 // 1. Get All Conducted Seminars (with feedback and report)
 const getAllConductedSeminars = asyncHandler(async (req, res) => {
