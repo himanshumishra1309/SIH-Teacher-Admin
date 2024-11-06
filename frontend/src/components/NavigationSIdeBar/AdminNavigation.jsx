@@ -9,15 +9,15 @@ export default function AdminNavigation() {
     { name: "Personal Details", path: "personal-details" },
     { name: "Research Papers", path: "research-papers" },
     { name: "Students Guided", path: "students-guided" },
-    { name: "Portfolio At Institute Level ", path: "institute-portfolio" },
-    { name: "Portfolio At Department Level", path: "department-portfolio" },
+    // { name: "Portfolio At Institute Level ", path: "institute-portfolio" },
+    // { name: "Portfolio At Department Level", path: "department-portfolio" },
     { name: "Expert Lecture Delivered", path: "expert-lecture" },
     { name: 
       
       "Event Participation", path: "event-participation" },
     { name: "Seminars", path: "seminars" },
     { name: "Projects", path: "projects" },
-    { name: "Contribution Graph", path: "Contribution-graph" }
+    // { name: "Contribution Graph", path: "Contribution-graph" }
   ];
 
   return (
