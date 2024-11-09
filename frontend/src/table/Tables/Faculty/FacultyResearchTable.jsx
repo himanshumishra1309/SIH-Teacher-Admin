@@ -149,7 +149,10 @@ export default function FacultyResearchTable() {
       </div>
 
       <div className="flex justify-end mb-4">
-        <Button onClick={() => setDrawerOpen(true)} className="add-entry-btn text-white">
+        <Button
+          onClick={() => setDrawerOpen(true)}
+          className="add-entry-btn text-white"
+        >
           Add Entry
         </Button>
       </div>
