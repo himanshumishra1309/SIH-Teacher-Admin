@@ -65,7 +65,7 @@ export default function SeminarCards() {
         );
 
         console.log(response.data.data);
-        setFacultyData(response.data.data); // Save the fetched data into state
+        setFacultyData(response.data.data);
       } catch (error) {
         console.error("Error fetching faculty data:", error);
       }
@@ -115,7 +115,7 @@ export default function SeminarCards() {
       {/* ScrollArea for Seminar Cards */}
       <ScrollArea className="h-[600px]">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {filteredSeminars.map(( seminar) => (
+          {filteredSeminars.map((seminar) => (
             <Card
               key={seminar._id}
               className="w-full bg-white rounded-lg shadow-lg border border-gray-200 hover:shadow-xl transition-shadow"
@@ -138,7 +138,7 @@ export default function SeminarCards() {
                 </p>
               </CardContent>
               <CardFooter className="flex justify-end">
-                <EventRsvp seminarId = {seminar._id} /> {/* RSVP Component */}
+                <EventRsvp seminarId={seminar._id} /> {/* RSVP Component */}
               </CardFooter>
             </Card>
           ))}

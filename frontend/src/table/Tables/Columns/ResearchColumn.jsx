@@ -5,12 +5,12 @@ export const columnDef = [
   {
     accessorKey: "name",
     header: "Title of Research/Publication",
-    enableSorting: true
-},
+    enableSorting: true,
+  },
   {
     accessorKey: "publication",
     header: "publication",
-    enableSorting: true
+    enableSorting: true,
   },
   {
     accessorKey: "publishedDate",
@@ -23,7 +23,7 @@ export const columnDef = [
           publishedDate
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => {
       const dateValue = row.getValue("publishedDate");
@@ -40,7 +40,7 @@ export const columnDef = [
     header: "View Report",
     cell: ({ row }) => (
       <Button
-        onClick={() => window.open(row.getValue("viewUrl"), '_blank')}
+        onClick={() => window.open(row.getValue("viewUrl"), "_blank")}
         className="view-btn text-white"
       >
         View <ExternalLink className="ml-2 h-4 w-4" />

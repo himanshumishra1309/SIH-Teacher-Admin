@@ -27,7 +27,6 @@ export const columnDef = [
     header: "Mop",
     enableSorting: true,
   },
-  
   {
     accessorKey: "addedOn",
     header: ({ column }) => {

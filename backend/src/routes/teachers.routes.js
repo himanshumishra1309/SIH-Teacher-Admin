@@ -22,6 +22,6 @@ router.route("/me/update").patch(verifyTeacherJWT, updateAccountDetails);
 router
   .route("/me/avatar")
   .put(verifyTeacherJWT, upload.single("avatar"), updateTeacherAvatar);
-router.get("/me/graph", verifyTeacherJWT, getTeacherGraph);
+router.post("/me/graph", verifyTeacherJWT, getTeacherGraph);
 
 export default router;

@@ -73,8 +73,8 @@ export default function AdminSeminarsTable() {
             },
           }
         );
+        console.log("Tecaher Seminar Data", response.data.data);
         setData(response.data.data);
-        console.log("Tecaher Seminar Data", seminarData);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
       }

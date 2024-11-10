@@ -551,7 +551,7 @@ const getMtechStudentsGuidedByTheTeacher = asyncHandler(async (req, res) => {
     owner: teacherId,
     mOp: "MTech",
   })
-    .select("topic student_name roll_no branch academic_year")
+    .select("topic student_name roll_no branch academic_year mOp createdAt addedOn")
     .lean();
 
   if (!mtechStudentsGuided || mtechStudentsGuided.length === 0) {

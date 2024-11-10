@@ -86,7 +86,8 @@ const registerTeacher = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Something went wrong while registering the user");
   }
 
-  const { teacherAccessToken, teacherRefreshToken } = await generateAccessAndRefreshToken(teacher._id);
+  const { teacherAccessToken, teacherRefreshToken } =
+    await generateAccessAndRefreshToken(teacher._id);
 
   const options = {
     httpOnly: true,
