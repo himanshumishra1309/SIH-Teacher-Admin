@@ -8,6 +8,7 @@ import { v2 as cloudinary } from "cloudinary";
 // all routes done including delete and update
 
 const uploadExpertLecture = asyncHandler(async (req, res) => {
+  console.log(req.body);
   const { topic, duration, date } = req.body;
   const report = req.file;
 
