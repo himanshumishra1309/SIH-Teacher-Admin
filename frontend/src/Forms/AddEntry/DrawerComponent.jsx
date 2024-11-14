@@ -17,8 +17,12 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
         col.accessorKey !== "actions" &&
         col.accessorKey !== "View"
       ) {
-        if (col.accessorKey === "Date") {
-          schemaFields[col.accessorKey] = z.date();
+        if (
+          ["Date", "startDate", "publishedDate", "addedOn", "date"].includes(
+            col.accessorKey
+          )
+        ) {
+          schemaFields[col.accessorKey] = z.date().nullable();
         } else {
           schemaFields[col.accessorKey] = z
             .string()
@@ -77,12 +81,18 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
                     >
                       {col.header || col.accessorKey}
                     </label>
-                    {col.accessorKey === "Date" ? (
+                    {col.accessorKey === "Date" ||
+                    col.accessorKey === "startDate" ||
+                    col.accessorKey === "publishedDate" ||
+                    col.accessorKey === "addedOn" ||
+                    col.accessorKey === "date" ? (
                       <DatePicker
-                        selected={watch("Date")}
-                        onChange={(date) => setValue("Date", date)}
+                        selected={watch(col.accessorKey)}
+                        onChange={(date) => setValue(col.accessorKey, date)}
                         className={`w-full p-2 border rounded ${
-                          errors.Date ? "border-red-500" : "border-gray-300"
+                          errors[col.accessorKey]
+                            ? "border-red-500"
+                            : "border-gray-300"
                         }`}
                       />
                     ) : (

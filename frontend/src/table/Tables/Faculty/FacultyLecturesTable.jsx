@@ -117,14 +117,52 @@ export default function FacultyLecturesTable() {
     table.resetColumnVisibility();
   };
 
-  const handleAddEntry = (newData) => {
-    setData((prevData) => [...prevData, { ...newData, id: Date.now() }]);
+  const handleAddEntry = async (newData) => {
+    try {
+      const token = sessionStorage.getItem("teacherAccessToken");
+
+      // Send a POST request to the backend
+      const response = await axios.post(
+        `http://localhost:6005/api/v1/expertLectures/lectures`,
+        newData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // If successful, add the new entry to the state
+      setData((prevData) => [...prevData, response.data.data]);
+    } catch (error) {
+      console.log("Error adding new entry:", error);
+    }
   };
 
-  const handleEditEntry = (updatedData) => {
-    setData((prevData) =>
-      prevData.map((row) => (row.id === updatedData.id ? updatedData : row))
-    );
+  const handleEditEntry = async (updatedData) => {
+    try {
+      const token = sessionStorage.getItem("teacherAccessToken");
+
+      // Send a PUT request to the backend
+      const response = await axios.put(
+        `http://localhost:6005/api/v1/expertLectures/lectures/${updatedData.id}`,
+        updatedData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // If successful, update the state with the edited entry
+      setData((prevData) =>
+        prevData.map((row) =>
+          row.id === updatedData.id ? response.data.updatedLecture : row
+        )
+      );
+    } catch (error) {
+      console.log("Error editing entry:", error);
+    }
   };
 
   const handleDeleteRow = () => {

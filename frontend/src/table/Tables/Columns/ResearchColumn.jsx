@@ -36,7 +36,7 @@ export const columnDef = [
     enableSorting: true,
   },
   {
-    accessorKey: "Url",
+    accessorKey: "viewUrl",
     header: "View Report",
     cell: ({ row }) => (
       <Button

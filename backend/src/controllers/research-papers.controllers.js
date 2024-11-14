@@ -5,6 +5,7 @@ import { ResearchPaper } from "../models/research-papers.models.js";
 
 const uploadPaper = asyncHandler(async (req, res) => {
   const { name, publication, publishedDate, viewUrl } = req.body;
+  console.log("viewUrl", viewUrl);
 
   if (
     [name, publication, publishedDate, viewUrl].some(
@@ -35,6 +36,8 @@ const uploadPaper = asyncHandler(async (req, res) => {
       "Something went wrong while adding the research paper"
     );
   }
+
+  console.log("researchPaper", researchPaper)
 
   return res
     .status(200)

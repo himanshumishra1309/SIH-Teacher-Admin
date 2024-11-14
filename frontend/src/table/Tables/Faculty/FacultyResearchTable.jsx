@@ -218,7 +218,45 @@ export default function FacultyResearchTable() {
           setDrawerOpen(false);
           setRowToEdit(null);
         }}
-        onSubmit={rowToEdit ? handleEditEntry : handleAddEntry}
+        onSubmit={async (formData) => {
+          const token = sessionStorage.getItem("teacherAccessToken");
+
+          try {
+            if (rowToEdit) {
+              // Edit (PUT Request)
+              console.log("editing  the data", formData);
+
+              const response = await axios.put(
+                `http://localhost:6005/api/v1/research-paper/${rowToEdit.id}`,
+                formData,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+              handleEditEntry(response.data.updatedPaper); // Update table data
+            } else {
+              // Add (POST Request)
+              console.log("posting the data", formData);
+              const response = await axios.post(
+                `http://localhost:6005/api/v1/research-paper/papers`,
+                formData,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+              console.log(response.data.data);
+              handleAddEntry(response.data.data);
+            }
+          } catch (error) {
+            console.error("Failed to submit research data:", error);
+          }
+
+          setDrawerOpen(false);
+        }}
         columns={columns}
         rowData={rowToEdit}
       />
