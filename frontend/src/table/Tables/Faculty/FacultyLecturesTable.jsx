@@ -127,12 +127,32 @@ export default function FacultyLecturesTable() {
     );
   };
 
-  const handleDeleteRow = () => {
-    setData((prevData) => prevData.filter((row) => row.id !== rowToDelete.id));
-    setDeleteDialogOpen(false);
-    setRowToDelete(null);
-  };
+  const handleDeleteRow = async () => {
+    console.log(rowToDelete);
+    try {
+      const token = sessionStorage.getItem("teacherAccessToken");
 
+      // Make DELETE request to the server
+      await axios.delete(
+        `http://localhost:6005/api/v1/expertLectures/lectures/${rowToDelete._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Remove the deleted item from the local state
+      setData((prevData) =>
+        prevData.filter((row) => row._id !== rowToDelete._id)
+      );
+
+      setDeleteDialogOpen(false);
+      setRowToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete Expert Lecture delivered:", error);
+    }
+  };
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between mb-4">

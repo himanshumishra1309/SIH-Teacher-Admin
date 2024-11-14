@@ -5,10 +5,6 @@ import { ResearchPaper } from "../models/research-papers.models.js";
 
 const uploadPaper = asyncHandler(async (req, res) => {
   const { name, publication, publishedDate, viewUrl } = req.body;
-  
-  console.log("viewUrl", viewUrl);
-  console.log("name", name);
-
 
   if (
     [name, publication, publishedDate, viewUrl].some(
@@ -206,22 +202,14 @@ const updatePaper = asyncHandler(async (req, res) => {
 const deletePaper = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const researchPaper = await ResearchPaper.findById(id);
+  const researchPaper = await ResearchPaper.findByIdAndDelete(id, {
+    // Ensure it only deletes if the owner matches
+    where: { owner: req.teacher._id },
+  });
 
   if (!researchPaper) {
-    throw new ApiError(404, "Research Paper Not Found");
+    throw new ApiError(404, "Research Paper Not Found or Unauthorized");
   }
-
-  // Check if the authenticated user is the owner of the paper
-  if (researchPaper.owner.toString() !== req.user._id.toString()) {
-    throw new ApiError(
-      403,
-      "You are not authorized to delete this research paper"
-    );
-  }
-
-  // Delete the research paper
-  await researchPaper.remove();
 
   return res
     .status(200)

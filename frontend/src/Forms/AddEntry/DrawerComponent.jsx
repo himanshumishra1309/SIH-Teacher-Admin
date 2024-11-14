@@ -120,6 +120,7 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
                     col.accessorKey === "startDate" ||
                     col.accessorKey === "publishedDate" ||
                     col.accessorKey === "addedOn" ||
+                    col.accessorKey === "endDate" || 
                     col.accessorKey === "date" ? (
                       <DatePicker
                         selected={watch(col.accessorKey)}

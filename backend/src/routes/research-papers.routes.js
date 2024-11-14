@@ -7,7 +7,7 @@ import {
 } from "../controllers/research-papers.controllers.js";
 import { verifyTeacherJWT } from "../middleware/teacher.auth.middleware.js";
 
-const router = Router();
+const   router = Router();
 router.use(verifyTeacherJWT);
 
 // router.route("/").post(uploadPaper);

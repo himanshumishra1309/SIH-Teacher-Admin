@@ -7,11 +7,12 @@ import { StudentGuided } from "../models/students-guided.models.js";
 
 const uploadStudentInfo = asyncHandler(async (req, res) => {
   const { topic, student_name, roll_no, branch, mOp, academic_year } = req.body;
-
   if (
-    [topic, student_name, roll_no, branch, mOp, academic_year].some(
-      (field) => field.trim() === ""
-    )
+    [topic, student_name, branch, mOp, academic_year].some(
+      (field) => typeof field !== "string" || field.trim() === ""
+    ) ||
+    roll_no == null ||
+    roll_no === ""
   ) {
     throw new ApiError(400, "All fields are required");
   }

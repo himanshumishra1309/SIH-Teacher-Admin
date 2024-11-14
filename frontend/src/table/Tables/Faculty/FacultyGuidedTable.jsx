@@ -154,7 +154,7 @@ export default function FacultyGuidedTable() {
 
   const handleEditEntry = (updatedData) => {
     setData((prevData) =>
-      prevData.map((row) => (row.id === updatedData.id ? updatedData : row))
+      prevData.map((row) => (row._id === updatedData._id ? updatedData : row))
     );
   };
 
@@ -246,7 +246,48 @@ export default function FacultyGuidedTable() {
           setDrawerOpen(false);
           setRowToEdit(null);
         }}
-        onSubmit={rowToEdit ? handleEditEntry : handleAddEntry}
+        onSubmit={async (formData) => {
+          console.log(formData);
+          const token = sessionStorage.getItem("teacherAccessToken");
+
+          try {
+            if (rowToEdit) {
+              console.log("editing  the data", formData);
+
+              const response = await axios.put(
+                `http://localhost:6005/api/v1/student-guide/${rowToEdit._id}`,
+                formData,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    // "Content-Type": "multipart/form-data",
+                  },
+                }
+              );
+              console.log(response.data.data);
+              handleEditEntry(response.data.data);
+            } else {
+              // Add (POST Request)
+              console.log("posting the data", formData);
+              const response = await axios.post(
+                `http://localhost:6005/api/v1/student-guide/upload`,
+                formData,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    // "Content-Type": "multipart/form-data",
+                  },
+                }
+              );
+              console.log(response.data.data);
+              handleAddEntry(response.data.data);
+            }
+          } catch (error) {
+            console.error("Failed to submit research data:", error);
+          }
+
+          setDrawerOpen(false);
+        }}
         columns={columns}
         rowData={rowToEdit}
       />

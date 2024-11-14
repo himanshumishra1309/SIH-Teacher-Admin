@@ -128,10 +128,31 @@ export default function FacultyResearchTable() {
     );
   };
 
-  const handleDeleteRow = () => {
-    setData((prevData) => prevData.filter((row) => row.id !== rowToDelete.id));
-    setDeleteDialogOpen(false);
-    setRowToDelete(null);
+  const handleDeleteRow = async () => {
+    console.log(rowToDelete);
+    try {
+      const token = sessionStorage.getItem("teacherAccessToken");
+
+      // Make DELETE request to the server
+      await axios.delete(
+        `http://localhost:6005/api/v1/research-paper/paper/${rowToDelete._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Remove the deleted item from the local state
+      setData((prevData) =>
+        prevData.filter((row) => row._id !== rowToDelete._id)
+      );
+
+      setDeleteDialogOpen(false);
+      setRowToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete research paper:", error);
+    }
   };
 
   return (
@@ -220,7 +241,7 @@ export default function FacultyResearchTable() {
           setRowToEdit(null);
         }}
         onSubmit={async (formData) => {
-          console.log(formData)
+          console.log(formData);
           const token = sessionStorage.getItem("teacherAccessToken");
 
           try {
@@ -235,11 +256,11 @@ export default function FacultyResearchTable() {
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,
-                    "Content-Type": "multipart/form-data",
+                    // "Content-Type": "multipart/form-data",
                   },
                 }
               );
-              console.log(response.data);
+              console.log(response.data.data);
               handleEditEntry(response.data.data); // Update table data
             } else {
               // Add (POST Request)
@@ -250,7 +271,7 @@ export default function FacultyResearchTable() {
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,
-                    "Content-Type": "multipart/form-data",
+                    // "Content-Type": "multipart/form-data",
                   },
                 }
               );
