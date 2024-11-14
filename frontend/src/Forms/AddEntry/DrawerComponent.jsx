@@ -66,15 +66,32 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
   }, [isOpen, rowData, setValue]);
 
   const handleFormSubmit = (data) => {
-    // console.log(data);
-    // const formData = new FormData();
-    // Object.entries(data).forEach(([key, value]) => {
-    //   formData.append(key, value);
-    // });
-    // console.log(formData)
+    console.log(data);
+    const formData = new FormData();
 
-    onSubmit(data); 
-    onClose();
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === "report") {
+        if (value instanceof File) {
+          // Append file if `report` is a file
+          formData.append(key, value);
+        } else if (typeof value === "string" && value.startsWith("http")) {
+          // Append URL if `report` is a string (URL)
+          formData.append(key, value);
+        }
+      } else {
+        // Append other data
+        formData.append(key, value);
+        console.log({ formData });
+      }
+    });
+
+    // // Debugging: Check contents of FormData
+    // for (let pair of formData.entries()) {
+    //   console.log(pair[0] + ":", pair[1]);
+    // }
+
+    onSubmit(data); // Pass FormData to onSubmit
+    onClose(); // Close the drawer/modal
   };
 
   return (

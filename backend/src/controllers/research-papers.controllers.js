@@ -5,7 +5,10 @@ import { ResearchPaper } from "../models/research-papers.models.js";
 
 const uploadPaper = asyncHandler(async (req, res) => {
   const { name, publication, publishedDate, viewUrl } = req.body;
+  
   console.log("viewUrl", viewUrl);
+  console.log("name", name);
+
 
   if (
     [name, publication, publishedDate, viewUrl].some(
@@ -37,7 +40,7 @@ const uploadPaper = asyncHandler(async (req, res) => {
     );
   }
 
-  console.log("researchPaper", researchPaper)
+  console.log("researchPaper", researchPaper);
 
   return res
     .status(200)

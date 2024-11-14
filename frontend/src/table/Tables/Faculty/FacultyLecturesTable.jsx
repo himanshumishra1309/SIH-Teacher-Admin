@@ -117,58 +117,14 @@ export default function FacultyLecturesTable() {
     table.resetColumnVisibility();
   };
 
-  const handleAddEntry = async (newData) => {
-    try {
-      const token = sessionStorage.getItem("teacherAccessToken");
-      console.log(newData);
-
-      // Send a POST request to the backend
-      const response = await axios.post(
-        `http://localhost:6005/api/v1/expertLectures/lectures`,
-        newData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      setData((prevData) => [...prevData, response.data.data]);
-      console.log("New entry added successfully:", response.data.data);
-    } catch (error) {
-      console.error(
-        "Error adding new entry:",
-        error.response?.data || error.message
-      );
-      alert("Failed to add new entry. Please try again.");
-    }
+  const handleAddEntry = (newData) => {
+    setData((prevData) => [...prevData, { ...newData, id: Date.now() }]);
   };
 
-  const handleEditEntry = async (updatedData) => {
-    try {
-      const token = sessionStorage.getItem("teacherAccessToken");
-
-      // Send a PUT request to the backend
-      const response = await axios.patch(
-        `http://localhost:6005/api/v1/expertLectures/lectures/${updatedData._id}`,
-        updatedData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      // If successful, update the state with the edited entry
-      setData((prevData) =>
-        prevData.map((row) =>
-          row.id === updatedData._id ? response.data.updatedLecture : row
-        )
-      );
-    } catch (error) {
-      console.log("Error editing entry:", error);
-    }
+  const handleEditEntry = (updatedData) => {
+    setData((prevData) =>
+      prevData.map((row) => (row._id === updatedData._id ? updatedData : row))
+    );
   };
 
   const handleDeleteRow = () => {
@@ -259,7 +215,48 @@ export default function FacultyLecturesTable() {
           setDrawerOpen(false);
           setRowToEdit(null);
         }}
-        onSubmit={rowToEdit ? handleEditEntry : handleAddEntry}
+        onSubmit={async (formData) => {
+          console.log(formData);
+          const token = sessionStorage.getItem("teacherAccessToken");
+
+          try {
+            if (rowToEdit) {
+              // console.log(rowToEdit);
+              // Edit (PUT Request)
+              console.log("editing  the data", formData);
+
+              const response = await axios.patch(
+                `http://localhost:6005/api/v1/expertLectures/lectures/${rowToEdit._id}`,
+                formData,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+              console.log(response.data);
+              handleEditEntry(response.data.data); // Update table data
+            } else {
+              // Add (POST Request)
+              console.log("posting the data", formData);
+              const response = await axios.post(
+                `http://localhost:6005/api/v1/expertLectures/lectures`,
+                formData,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+              console.log(response.data);
+              handleAddEntry(response.data.data);
+            }
+          } catch (error) {
+            console.error("Failed to submit research data:", error);
+          }
+
+          setDrawerOpen(false);
+        }}
         columns={columns}
         rowData={rowToEdit}
       />
