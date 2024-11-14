@@ -123,7 +123,7 @@ export default function FacultyLecturesTable() {
 
   const handleEditEntry = (updatedData) => {
     setData((prevData) =>
-      prevData.map((row) => (row.id === updatedData.id ? updatedData : row))
+      prevData.map((row) => (row._id === updatedData._id ? updatedData : row))
     );
   };
 
@@ -182,35 +182,27 @@ export default function FacultyLecturesTable() {
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
-                {headerGroup.headers
-                  .filter((header) => header.column.id !== "actions") // Filter out the actions column
-                  .map((header) => (
-                    <th key={header.id} className="px-4 py-2">
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </th>
-                  ))}
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} className="px-4 py-2">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </th>
+                ))}
               </tr>
             ))}
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id}>
-                {row
-                  .getVisibleCells()
-                  .filter((cell) => cell.column.id !== "actions") // Filter out the actions cell
-                  .map((cell) => (
-                    <td key={cell.id} className="px-4 py-2">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id} className="px-4 py-2">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>
@@ -223,7 +215,48 @@ export default function FacultyLecturesTable() {
           setDrawerOpen(false);
           setRowToEdit(null);
         }}
-        onSubmit={rowToEdit ? handleEditEntry : handleAddEntry}
+        onSubmit={async (formData) => {
+          console.log(formData);
+          const token = sessionStorage.getItem("teacherAccessToken");
+
+          try {
+            if (rowToEdit) {
+              // console.log(rowToEdit);
+              // Edit (PUT Request)
+              console.log("editing  the data", formData);
+
+              const response = await axios.patch(
+                `http://localhost:6005/api/v1/expertLectures/lectures/${rowToEdit._id}`,
+                formData,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+              console.log(response.data);
+              handleEditEntry(response.data.data); // Update table data
+            } else {
+              // Add (POST Request)
+              console.log("posting the data", formData);
+              const response = await axios.post(
+                `http://localhost:6005/api/v1/expertLectures/lectures`,
+                formData,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+              console.log(response.data);
+              handleAddEntry(response.data.data);
+            }
+          } catch (error) {
+            console.error("Failed to submit research data:", error);
+          }
+
+          setDrawerOpen(false);
+        }}
         columns={columns}
         rowData={rowToEdit}
       />

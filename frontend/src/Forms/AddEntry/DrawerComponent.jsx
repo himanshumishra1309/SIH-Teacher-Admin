@@ -17,8 +17,15 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
         col.accessorKey !== "actions" &&
         col.accessorKey !== "View"
       ) {
-        if (col.accessorKey === "Date") {
-          schemaFields[col.accessorKey] = z.date();
+        if (
+          ["Date", "startDate", "publishedDate", "addedOn", "date"].includes(
+            col.accessorKey
+          )
+        ) {
+          schemaFields[col.accessorKey] = z.date().nullable();
+        } else if (col.accessorKey === "report") {
+          // Assuming the key for report is 'reportFile'
+          schemaFields[col.accessorKey] = z.instanceof(File).optional();
         } else {
           schemaFields[col.accessorKey] = z
             .string()
@@ -45,14 +52,46 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
   useEffect(() => {
     if (isOpen && rowData) {
       Object.keys(rowData).forEach((key) => {
-        setValue(key, rowData[key]);
+        if (
+          ["Date", "startDate", "publishedDate", "addedOn", "date"].includes(
+            key
+          )
+        ) {
+          setValue(key, rowData[key] ? new Date(rowData[key]) : null);
+        } else {
+          setValue(key, rowData[key]);
+        }
       });
     }
   }, [isOpen, rowData, setValue]);
 
   const handleFormSubmit = (data) => {
-    onSubmit(data);
-    onClose();
+    console.log(data);
+    const formData = new FormData();
+
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === "report") {
+        if (value instanceof File) {
+          // Append file if `report` is a file
+          formData.append(key, value);
+        } else if (typeof value === "string" && value.startsWith("http")) {
+          // Append URL if `report` is a string (URL)
+          formData.append(key, value);
+        }
+      } else {
+        // Append other data
+        formData.append(key, value);
+        console.log({ formData });
+      }
+    });
+
+    // // Debugging: Check contents of FormData
+    // for (let pair of formData.entries()) {
+    //   console.log(pair[0] + ":", pair[1]);
+    // }
+
+    onSubmit(data); // Pass FormData to onSubmit
+    onClose(); // Close the drawer/modal
   };
 
   return (
@@ -77,12 +116,31 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
                     >
                       {col.header || col.accessorKey}
                     </label>
-                    {col.accessorKey === "Date" ? (
+                    {col.accessorKey === "Date" ||
+                    col.accessorKey === "startDate" ||
+                    col.accessorKey === "publishedDate" ||
+                    col.accessorKey === "addedOn" ||
+                    col.accessorKey === "date" ? (
                       <DatePicker
-                        selected={watch("Date")}
-                        onChange={(date) => setValue("Date", date)}
+                        selected={watch(col.accessorKey)}
+                        onChange={(date) => setValue(col.accessorKey, date)}
                         className={`w-full p-2 border rounded ${
-                          errors.Date ? "border-red-500" : "border-gray-300"
+                          errors[col.accessorKey]
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }`}
+                      />
+                    ) : col.accessorKey === "report" ? (
+                      <input
+                        type="file"
+                        id={col.accessorKey}
+                        onChange={(e) =>
+                          setValue(col.accessorKey, e.target.files[0] || null)
+                        }
+                        className={`w-full p-2 border rounded ${
+                          errors[col.accessorKey]
+                            ? "border-red-500"
+                            : "border-gray-300"
                         }`}
                       />
                     ) : (
