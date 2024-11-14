@@ -120,6 +120,7 @@ export default function FacultyLecturesTable() {
   const handleAddEntry = async (newData) => {
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
+      console.log(newData);
 
       // Send a POST request to the backend
       const response = await axios.post(
@@ -128,14 +129,19 @@ export default function FacultyLecturesTable() {
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
           },
         }
       );
 
-      // If successful, add the new entry to the state
       setData((prevData) => [...prevData, response.data.data]);
+      console.log("New entry added successfully:", response.data.data);
     } catch (error) {
-      console.log("Error adding new entry:", error);
+      console.error(
+        "Error adding new entry:",
+        error.response?.data || error.message
+      );
+      alert("Failed to add new entry. Please try again.");
     }
   };
 
@@ -144,8 +150,8 @@ export default function FacultyLecturesTable() {
       const token = sessionStorage.getItem("teacherAccessToken");
 
       // Send a PUT request to the backend
-      const response = await axios.put(
-        `http://localhost:6005/api/v1/expertLectures/lectures/${updatedData.id}`,
+      const response = await axios.patch(
+        `http://localhost:6005/api/v1/expertLectures/lectures/${updatedData._id}`,
         updatedData,
         {
           headers: {
@@ -157,7 +163,7 @@ export default function FacultyLecturesTable() {
       // If successful, update the state with the edited entry
       setData((prevData) =>
         prevData.map((row) =>
-          row.id === updatedData.id ? response.data.updatedLecture : row
+          row.id === updatedData._id ? response.data.updatedLecture : row
         )
       );
     } catch (error) {
@@ -220,35 +226,27 @@ export default function FacultyLecturesTable() {
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
-                {headerGroup.headers
-                  .filter((header) => header.column.id !== "actions") // Filter out the actions column
-                  .map((header) => (
-                    <th key={header.id} className="px-4 py-2">
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </th>
-                  ))}
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} className="px-4 py-2">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </th>
+                ))}
               </tr>
             ))}
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id}>
-                {row
-                  .getVisibleCells()
-                  .filter((cell) => cell.column.id !== "actions") // Filter out the actions cell
-                  .map((cell) => (
-                    <td key={cell.id} className="px-4 py-2">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id} className="px-4 py-2">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>

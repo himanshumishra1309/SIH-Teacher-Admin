@@ -70,13 +70,14 @@ export default function FacultyResearchTable() {
             <div className="flex gap-2">
               <Button
                 onClick={() => {
-                  setRowToEdit(row.original);
+                  setRowToEdit(row.original); // row.original contains the full data, including _id
                   setDrawerOpen(true);
                 }}
                 className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200"
               >
                 Edit
               </Button>
+
               <Button
                 onClick={() => {
                   setRowToDelete(row.original);
@@ -123,7 +124,7 @@ export default function FacultyResearchTable() {
 
   const handleEditEntry = (updatedData) => {
     setData((prevData) =>
-      prevData.map((row) => (row.id === updatedData.id ? updatedData : row))
+      prevData.map((row) => (row._id === updatedData._id ? updatedData : row))
     );
   };
 
@@ -200,7 +201,7 @@ export default function FacultyResearchTable() {
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
+              <tr key={row.original._id}>
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className="px-4 py-2">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -219,15 +220,17 @@ export default function FacultyResearchTable() {
           setRowToEdit(null);
         }}
         onSubmit={async (formData) => {
+          console.log(formData)
           const token = sessionStorage.getItem("teacherAccessToken");
 
           try {
             if (rowToEdit) {
+              // console.log(rowToEdit);
               // Edit (PUT Request)
               console.log("editing  the data", formData);
 
-              const response = await axios.put(
-                `http://localhost:6005/api/v1/research-paper/${rowToEdit.id}`,
+              const response = await axios.patch(
+                `http://localhost:6005/api/v1/research-paper/paper/${rowToEdit._id}`,
                 formData,
                 {
                   headers: {
@@ -235,7 +238,8 @@ export default function FacultyResearchTable() {
                   },
                 }
               );
-              handleEditEntry(response.data.updatedPaper); // Update table data
+              console.log(response.data);
+              handleEditEntry(response.data.data); // Update table data
             } else {
               // Add (POST Request)
               console.log("posting the data", formData);

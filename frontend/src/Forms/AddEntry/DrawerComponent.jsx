@@ -23,6 +23,9 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
           )
         ) {
           schemaFields[col.accessorKey] = z.date().nullable();
+        } else if (col.accessorKey === "report") {
+          // Assuming the key for report is 'reportFile'
+          schemaFields[col.accessorKey] = z.instanceof(File).optional();
         } else {
           schemaFields[col.accessorKey] = z
             .string()
@@ -49,13 +52,28 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
   useEffect(() => {
     if (isOpen && rowData) {
       Object.keys(rowData).forEach((key) => {
-        setValue(key, rowData[key]);
+        if (
+          ["Date", "startDate", "publishedDate", "addedOn", "date"].includes(
+            key
+          )
+        ) {
+          setValue(key, rowData[key] ? new Date(rowData[key]) : null);
+        } else {
+          setValue(key, rowData[key]);
+        }
       });
     }
   }, [isOpen, rowData, setValue]);
 
   const handleFormSubmit = (data) => {
-    onSubmit(data);
+    // console.log(data);
+    // const formData = new FormData();
+    // Object.entries(data).forEach(([key, value]) => {
+    //   formData.append(key, value);
+    // });
+    // console.log(formData)
+
+    onSubmit(data); 
     onClose();
   };
 
@@ -89,6 +107,19 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
                       <DatePicker
                         selected={watch(col.accessorKey)}
                         onChange={(date) => setValue(col.accessorKey, date)}
+                        className={`w-full p-2 border rounded ${
+                          errors[col.accessorKey]
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }`}
+                      />
+                    ) : col.accessorKey === "report" ? (
+                      <input
+                        type="file"
+                        id={col.accessorKey}
+                        onChange={(e) =>
+                          setValue(col.accessorKey, e.target.files[0] || null)
+                        }
                         className={`w-full p-2 border rounded ${
                           errors[col.accessorKey]
                             ? "border-red-500"
