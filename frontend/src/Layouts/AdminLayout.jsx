@@ -1,56 +1,46 @@
-// src/Layout.jsx
-import React from "react";
-import { Outlet } from "react-router-dom";
-import AdminNavigation from "@/components/NavigationSIdeBar/AdminNavigation";
-import "./loading.css";
-import { Footer } from "@/components";
+import { Outlet, useNavigation , useLocation} from "react-router-dom";
 import { useState, useEffect } from "react";
+import { Toaster } from "../components/ui/toaster";
+import { useToast } from "../components/ui/hooks/use-toast";
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import axios from 'axios';
+import FacultyNavigation from "@/components/NavigationSIdeBar/FacultyNavigation";
+import React from "react";
+import { Footer } from "@/components";
+import LoadingPage from "@/pages/LoadingPage";
+
+import "./loading.css";
+
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+
+import facultyData from "../pages/FacultyPortal/FacultyList/facultyData.json";
 import AdminHeader from "@/components/Header/AdminHeader/AdminHeader";
 
-function AdminLayout() {
-  // const [adminInfo, setAdminInfo] = useState(null);
-  // const [isLoading, setIsLoading] = useState(true); // Loading state
+const FacultyLayout = () => {
 
-  // useEffect(() => {
-  //   // Assume you're fetching the faculty data from an API or local storage for a specific user
-  //   const admin = adminData[0]; // For now, get the first faculty as an example
-  //   if (admin) {
-  //     setAdminInfo(admin);
-  //   }
-  // }, []);
 
-  // if(!facultyInfo) {
-  //   return (
-  //     <div className="spinner-container">
-  //       <div className="loading-spinner"></div>
-  //     </div>
-  //   );
-  // }
 
   return (
     <div className="flex flex-col min-h-screen">
-      {" "}
-      {/* Flex container for layout */}
-      <AdminHeader />
+      <AdminHeader/>
       <main className="flex-1">
         <div className="flex h-full">
-          {" "}
-          {/* Flex container for layout */}
-          {/* Sidebar Navigation */}
-          <AdminNavigation />
-          {/* Main Content Area */}
+          <FacultyNavigation />
           <main className="flex-1 p-4">
-            {" "}
-            {/* Adjust padding and flex-grow here */}
-            <h1 className="text-xl font-bold text-center">Admin Portal</h1>
-            <Outlet /> {/* Render the BasicTable here */}
+            <h1 className="text-xl font-bold m-2 text-center">Admin Portal</h1>
+            {navigation.state === "loading" ? <LoadingPage /> : <Outlet />}
           </main>
         </div>
       </main>
-      {/* Footer content */}
       <Footer />
     </div>
   );
-}
+};
 
-export default AdminLayout;
+export default FacultyLayout;

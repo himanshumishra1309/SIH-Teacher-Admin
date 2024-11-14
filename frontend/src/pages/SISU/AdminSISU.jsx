@@ -123,7 +123,7 @@ function AdminSISU() {
 
         console.log("Login successful", response.data);
 
-        navigate("/admin-home");
+        navigate("/admin-home", { state: { justLoggedIn: true }});
       } else {
         throw new Error("Access token is missing in the response");
       }
