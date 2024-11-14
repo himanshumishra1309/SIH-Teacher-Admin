@@ -105,7 +105,7 @@ function FacultySISU() {
       // Store the access token in session storage
       sessionStorage.setItem('teacherAccessToken', teacherAccessToken);
       
-      navigate(`/faculty/${response.data.data.user._id}`);  // Redirect to profile page
+      navigate(`/faculty/${response.data.data.user._id}`, { state: { justLoggedIn: true }});  // Redirect to profile page
     } catch (error) {
       console.error('Error during login:', error.response?.data?.message || error.message);
       alert('Login failed. Please try again.');

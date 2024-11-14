@@ -14,6 +14,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import facultyInfo from "./facultyData.json"; // Mock data
 import { AiOutlineEdit } from "react-icons/ai";
 import axios from "axios";
+import FacultyCourseTable from "@/table/Tables/FacultyCourseTable";
 
 export default function EditFacultyProfile() {
   const [facultyData, setFacultyData] = useState({
@@ -262,6 +263,8 @@ export default function EditFacultyProfile() {
           </div> */}
         </CardContent>
       </Card>
+
+      <FacultyCourseTable/>
     </div>
   );
 }

@@ -6,7 +6,6 @@ import Layout from './Layouts/Layout';
 import FacultyLayout from './Layouts/FacultyLayout'; // Import FacultyLayout
 import AdminLayout from './Layouts/AdminLayout'; // Import AdminLayout
 import Home from './pages/Home/Home';
-import AdminPortal from './pages/AdminPortal/AdminList/AdminHomeList'; // This can be the main admin page
 import StudentPortal from './pages/StudentPortal/StudentPortal';
 import ResearchTable from './table/Tables/ResearchTable';
 import ConductedTable from './table/Seminars/ConductedSeminars/ConductedMain';
