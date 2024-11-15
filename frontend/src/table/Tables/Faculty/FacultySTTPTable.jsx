@@ -212,12 +212,9 @@ export default function FacultySTTPTable() {
 
           try {
             if (rowToEdit) {
-              // console.log(rowToEdit);
-              // Edit (PUT Request)
-              console.log("editing  the data", formData);
-
-              const response = await axios.patch(
-                `http://localhost:6005/api/v1/sttp/paper/${rowToEdit._id}`,
+              console.log("editing  the data", formData); 
+              const response = await axios.put(
+                `http://localhost:6005/api/v1/sttp/${rowToEdit._id}`,
                 formData,
                 {
                   headers: {

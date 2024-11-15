@@ -50,7 +50,7 @@ const [totalPages, setTotalPages] = useState(0);
             },
           }
         );
-  
+        console.log(response.data.data.researchPapers)
         setData(response.data.data.researchPapers);
         setTotalPages(response.data.data.pages); // Set total pages from backend response
       } catch (error) {

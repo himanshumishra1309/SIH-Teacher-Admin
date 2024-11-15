@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigation, useLocation } from "react-router-dom";
-import axios from 'axios';
+import axios from "axios";
 
 import { Footer } from "@/components";
 import FacultyCards from "./FacultyCards";
@@ -33,7 +33,7 @@ export default function AdminHome() {
           "http://localhost:6005/api/v1/admins/me",
           { headers }
         );
-        console.log("Admin data fetched:", response.data);
+        // console.log("Admin data fetched:", response.data);
 
         const data = response.data.data;
         setAdminData({
@@ -55,16 +55,21 @@ export default function AdminHome() {
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col space-y-1">
-                  <p className="font-semibold text-lg text-gray-800">{data.name}</p>
+                  <p className="font-semibold text-lg text-gray-800">
+                    {data.name}
+                  </p>
                   <p className="text-sm text-black">{data.email}</p>
-                  <p className="text-sm text-black">Employee Code: {data.designation}</p>
+                  <p className="text-sm text-black">
+                    Employee Code: {data.designation}
+                  </p>
                 </div>
               </div>
             ),
             duration: 5000,
-            className: "bg-sky-200 border border-black shadow-lg rounded-lg p-4",
+            className:
+              "bg-sky-200 border border-black shadow-lg rounded-lg p-4",
             style: {
-              color: 'black',
+              color: "black",
             },
           });
         }
@@ -72,7 +77,8 @@ export default function AdminHome() {
         console.error("Error fetching admin data:", error);
         toast({
           title: "Error",
-          description: "Failed to load your profile data. Please try again later.",
+          description:
+            "Failed to load your profile data. Please try again later.",
           variant: "destructive",
           duration: 5000,
         });

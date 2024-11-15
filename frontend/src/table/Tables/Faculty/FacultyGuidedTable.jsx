@@ -158,10 +158,31 @@ export default function FacultyGuidedTable() {
     );
   };
 
-  const handleDeleteRow = () => {
-    setData((prevData) => prevData.filter((row) => row.id !== rowToDelete.id));
-    setDeleteDialogOpen(false);
-    setRowToDelete(null);
+  const handleDeleteRow = async () => {
+    try {
+      console.log(rowToDelete);
+      const token = sessionStorage.getItem("teacherAccessToken");
+
+      await axios.delete(
+        `http://localhost:6005/api/v1/student-guide/${rowToDelete._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // Remove the deleted item from the local state
+      setData((prevData) =>
+        prevData.filter((row) => row._id !== rowToDelete._id)
+      );
+
+      setDeleteDialogOpen(false);
+      setRowToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete sttps Data:", error);
+    }
   };
 
   return (
@@ -260,7 +281,7 @@ export default function FacultyGuidedTable() {
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,
-                    // "Content-Type": "multipart/form-data",
+                    "Content-Type": "application/json",
                   },
                 }
               );
@@ -275,7 +296,7 @@ export default function FacultyGuidedTable() {
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,
-                    // "Content-Type": "multipart/form-data",
+                    "Content-Type": "application.json",
                   },
                 }
               );

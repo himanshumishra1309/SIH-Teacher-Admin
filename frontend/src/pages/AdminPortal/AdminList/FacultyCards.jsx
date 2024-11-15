@@ -51,7 +51,7 @@ export default function FacultyCards() {
     const fetchData = async () => {
       try {
         // Retrieve the token from cookies or local storage
-        const token = sessionStorage.getItem("adminAccessToken"); // Adjust this if using cookies
+        const token = sessionStorage.getItem("adminAccessToken"); 
 
         const response = await axios.get(
           "http://localhost:6005/api/v1/admins/teachers",
@@ -171,8 +171,8 @@ export default function FacultyCards() {
                 </CardContent>
                 <CardFooter className="flex justify-end">
                   <Link to={`/admin-info/${faculty._id}`}>
-                    <Button variant="default" className="text-white"  >
-                      Check Profile 
+                    <Button variant="default" className="text-white">
+                      Check Profile
                     </Button>
                   </Link>
                 </CardFooter>

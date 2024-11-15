@@ -3,7 +3,7 @@ import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { EventParticipation } from "../models/events-participated.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { v2 as cloudinary } from 'cloudinary';
+import { v2 as cloudinary } from "cloudinary";
 
 // All routes checked, including delete and update
 
@@ -122,14 +122,11 @@ const editParticipatedEvent = asyncHandler(async (req, res) => {
 const deleteParticipatedEvent = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const event = await EventParticipation.findById(id);
+  const event = await EventParticipation.findByIdAndDelete(id);
 
   if (!event) {
     throw new ApiError(400, "No such file found");
   }
-
-  await event.remove();
-
   return res
     .status(200)
     .json(new ApiResponse(200, null, "Event details deleted successfully"));

@@ -3,7 +3,7 @@ import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { STTP } from "../models/sttp.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { v2 as cloudinary } from 'cloudinary';
+import { v2 as cloudinary } from "cloudinary";
 
 const uploadEvent = asyncHandler(async (req, res) => {
   const { topic, duration, startDate, endDate, venue } = req.body;
@@ -33,7 +33,7 @@ const uploadEvent = asyncHandler(async (req, res) => {
     startDate,
     endDate,
     venue,
-    report: uploadResponse.secure_url, 
+    report: uploadResponse.secure_url,
     addedOn: Date.now(),
     owner: req.teacher._id, // Assuming authenticated user's ID
   });
@@ -116,14 +116,13 @@ const updateEvent = asyncHandler(async (req, res) => {
 
 const deleteEvent = asyncHandler(async (req, res) => {
   const { id } = req.params;
+  console.log(id);
 
-  const result = await STTP.findById(id);
+  const result = await STTP.findByIdAndDelete(id);
 
   if (!result) {
     throw new ApiError(400, "no such file found");
   }
-
-  await result.remove();
 
   return res
     .status(200)

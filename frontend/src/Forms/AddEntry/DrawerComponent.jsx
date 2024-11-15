@@ -82,18 +82,15 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
     Object.entries(data).forEach(([key, value]) => {
       if (key === "report") {
         if (value instanceof File) {
-          // Append file if `report` is a file
           formData.append(key, value);
         } else if (typeof value === "string" && value.startsWith("http")) {
-          // Append URL if `report` is a string (URL)
           formData.append(key, value);
         }
       } else {
-        // Append other data
         formData.append(key, value);
-        console.log({ formData });
       }
     });
+
 
     onSubmit(formData);
     onClose();
