@@ -128,7 +128,6 @@ const updatePaper = asyncHandler(async (req, res) => {
     );
 });
 
-// const showAllResearchPaper = asyncHandler(async (req, res) => {
 //   const page = parseInt(req.query.page) || 1;
 //   const limit = parseInt(req.query.limit) || 10;
 //   const skip = (page - 1) * limit;

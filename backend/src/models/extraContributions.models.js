@@ -19,6 +19,10 @@ const contributonsSchema = new Schema(
     ],
     report: {
         type: String,
+    },
+    owner:{
+        type: Schema.Types.ObjectId,
+        ref: "Teacher"
     }
 },
 { timestamps: true });
