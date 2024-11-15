@@ -33,7 +33,7 @@ const uploadEvent = asyncHandler(async (req, res) => {
     startDate,
     endDate,
     venue,
-    report: uploadResponse.secure_url, // Store Cloudinary URL
+    report: uploadResponse.secure_url, 
     addedOn: Date.now(),
     owner: req.teacher._id, // Assuming authenticated user's ID
   });

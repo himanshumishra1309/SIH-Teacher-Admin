@@ -5,10 +5,14 @@ import { ResearchPaper } from "../models/research-papers.models.js";
 
 const uploadPaper = asyncHandler(async (req, res) => {
   const { name, publication, publishedDate, viewUrl } = req.body;
+  console.log(name, "name");
+  console.log(publication, "publication");
+  console.log(publishedDate, "publishedDate");
+  console.log(viewUrl, "viewURL");
 
   if (
     [name, publication, publishedDate, viewUrl].some(
-      (field) => field.trim() === ""
+      (field) => !field || typeof field !== "string" || field.trim() === ""
     )
   ) {
     throw new ApiError(400, "All fields are required");
@@ -201,10 +205,7 @@ const updatePaper = asyncHandler(async (req, res) => {
 const deletePaper = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const researchPaper = await ResearchPaper.findByIdAndDelete(id, {
-    // Ensure it only deletes if the owner matches
-    where: { owner: req.teacher._id },
-  });
+  const researchPaper = await ResearchPaper.findByIdAndDelete(id);
 
   if (!researchPaper) {
     throw new ApiError(404, "Research Paper Not Found or Unauthorized");

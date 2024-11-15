@@ -129,7 +129,7 @@ export default function FacultyResearchTable() {
   };
 
   const handleDeleteRow = async () => {
-    console.log(rowToDelete);
+    // console.log(rowToDelete);
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
 
@@ -271,7 +271,7 @@ export default function FacultyResearchTable() {
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,
-                    // "Content-Type": "multipart/form-data",
+                    "Content-Type": "application/json",
                   },
                 }
               );

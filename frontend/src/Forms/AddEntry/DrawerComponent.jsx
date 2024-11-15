@@ -85,13 +85,8 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
       }
     });
 
-    // // Debugging: Check contents of FormData
-    // for (let pair of formData.entries()) {
-    //   console.log(pair[0] + ":", pair[1]);
-    // }
-
-    onSubmit(data); // Pass FormData to onSubmit
-    onClose(); // Close the drawer/modal
+    onSubmit(formData); 
+    onClose();
   };
 
   return (
@@ -120,7 +115,7 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
                     col.accessorKey === "startDate" ||
                     col.accessorKey === "publishedDate" ||
                     col.accessorKey === "addedOn" ||
-                    col.accessorKey === "endDate" || 
+                    col.accessorKey === "endDate" ||
                     col.accessorKey === "date" ? (
                       <DatePicker
                         selected={watch(col.accessorKey)}
