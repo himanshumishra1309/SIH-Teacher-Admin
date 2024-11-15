@@ -129,7 +129,7 @@ export default function FacultyResearchTable() {
   };
 
   const handleDeleteRow = async () => {
-    console.log(rowToDelete);
+    // console.log(rowToDelete);
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
 

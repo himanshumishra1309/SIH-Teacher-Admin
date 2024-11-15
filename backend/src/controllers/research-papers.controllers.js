@@ -202,10 +202,7 @@ const updatePaper = asyncHandler(async (req, res) => {
 const deletePaper = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const researchPaper = await ResearchPaper.findByIdAndDelete(id, {
-    // Ensure it only deletes if the owner matches
-    where: { owner: req.teacher._id },
-  });
+  const researchPaper = await ResearchPaper.findByIdAndDelete(id);
 
   if (!researchPaper) {
     throw new ApiError(404, "Research Paper Not Found or Unauthorized");
