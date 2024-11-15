@@ -24,42 +24,43 @@ import axios from "axios";
 export default function FacultyResearchTable() {
   const { id } = useParams();
   // console.log(id);
-  const [data, setData] = useState("");
-  const [globalFilter, setGlobalFilter] = useState("");
-  const [isDrawerOpen, setDrawerOpen] = useState(false);
-  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [rowToEdit, setRowToEdit] = useState(null);
-  const [rowToDelete, setRowToDelete] = useState(null);
-  const [sorting, setSorting] = useState([]);
-  const [columnVisibility, setColumnVisibility] = useState({});
+  const [data, setData] = useState([]);
+const [globalFilter, setGlobalFilter] = useState("");
+const [isDrawerOpen, setDrawerOpen] = useState(false);
+const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
+const [rowToEdit, setRowToEdit] = useState(null);
+const [rowToDelete, setRowToDelete] = useState(null);
+const [sorting, setSorting] = useState([]);
+const [columnVisibility, setColumnVisibility] = useState({});
+const [page, setPage] = useState(1);
+const [pageSize, setPageSize] = useState(10);
+const [totalPages, setTotalPages] = useState(0);
+
 
   useEffect(() => {
     const fetchTeacherInfo = async () => {
       try {
         const token = sessionStorage.getItem("teacherAccessToken");
-
+  
         const response = await axios.get(
-          `http://localhost:6005/api/v1/research-paper/allPapers`,
+          `http://localhost:6005/api/v1/research-paper/allPapers?page=${page}&limit=${pageSize}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        console.log(response.data.data.researchPapers);
-        // const formattedData = response.data.data.map((item) => ({
-        //   ...item,
-        //   publishedDate: item.publishedDate.split("T")[0],
-        // }));
-
+  
         setData(response.data.data.researchPapers);
+        setTotalPages(response.data.data.pages); // Set total pages from backend response
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
       }
     };
-
+  
     fetchTeacherInfo();
-  }, [id]);
+  }, [id, page, pageSize]); // Re-fetch data on page or pageSize change
+  
 
   const columns = useMemo(() => {
     return columnDef.map((col) => {
@@ -296,49 +297,49 @@ export default function FacultyResearchTable() {
       />
 
       <div className="flex items-center justify-end mt-4 gap-2">
-        <Button
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
-        <span className="flex items-center gap-1">
-          <div>Page</div>
-          <strong>
-            {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
-          </strong>
-        </span>
-        <span className="flex items-center gap-1">
-          | Go to page:
-          <input
-            type="number"
-            defaultValue={table.getState().pagination.pageIndex + 1}
-            onChange={(e) => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0;
-              table.setPageIndex(page);
-            }}
-            className="border p-1 rounded w-16"
-          />
-        </span>
-        <select
-          value={table.getState().pagination.pageSize}
+      <Button
+        onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+        disabled={page === 1}
+      >
+        Previous
+      </Button>
+      <Button
+        onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+        disabled={page === totalPages}
+      >
+        Next
+      </Button>
+      <span className="flex items-center gap-1">
+        <div>Page</div>
+        <strong>
+          {page} of {totalPages}
+        </strong>
+      </span>
+      <span className="flex items-center gap-1">
+        | Go to page:
+        <input
+          type="number"
+          value={page}
           onChange={(e) => {
-            table.setPageSize(Number(e.target.value));
+            const pageNumber = Math.max(1, Math.min(totalPages, Number(e.target.value)));
+            setPage(pageNumber);
           }}
-        >
-          {[10, 20, 30, 40, 50].map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              Show {pageSize}
-            </option>
-          ))}
-        </select>
+          className="border p-1 rounded w-16"
+        />
+      </span>
+      <select
+        value={pageSize}
+        onChange={(e) => {
+          setPageSize(Number(e.target.value));
+          setPage(1); // Reset to the first page when page size changes
+        }}
+      >
+        {[10, 20, 30, 40, 50].map((size) => (
+          <option key={size} value={size}>
+            Show {size}
+          </option>
+        ))}
+      </select>
       </div>
     </div>
   );
