@@ -18,9 +18,14 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
         col.accessorKey !== "View"
       ) {
         if (
-          ["Date", "startDate", "publishedDate", "addedOn", "date"].includes(
-            col.accessorKey
-          )
+          [
+            "Date",
+            "startDate",
+            "publishedDate",
+            "addedOn",
+            "date",
+            "endDate",
+          ].includes(col.accessorKey)
         ) {
           schemaFields[col.accessorKey] = z.date().nullable();
         } else if (col.accessorKey === "report") {
@@ -53,9 +58,14 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
     if (isOpen && rowData) {
       Object.keys(rowData).forEach((key) => {
         if (
-          ["Date", "startDate", "publishedDate", "addedOn", "date"].includes(
-            key
-          )
+          [
+            "Date",
+            "startDate",
+            "publishedDate",
+            "addedOn",
+            "date",
+            "endDate",
+          ].includes(key)
         ) {
           setValue(key, rowData[key] ? new Date(rowData[key]) : null);
         } else {
@@ -85,7 +95,7 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
       }
     });
 
-    onSubmit(formData); 
+    onSubmit(formData);
     onClose();
   };
 

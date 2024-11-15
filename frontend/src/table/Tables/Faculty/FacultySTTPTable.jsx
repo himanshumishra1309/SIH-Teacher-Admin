@@ -182,7 +182,7 @@ export default function FacultySTTPTable() {
                           header.getContext()
                         )}
                   </th>
-                ))} 
+                ))}
               </tr>
             ))}
           </thead>
