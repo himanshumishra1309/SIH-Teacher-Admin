@@ -5,10 +5,14 @@ import { ResearchPaper } from "../models/research-papers.models.js";
 
 const uploadPaper = asyncHandler(async (req, res) => {
   const { name, publication, publishedDate, viewUrl } = req.body;
+  console.log(name, "name");
+  console.log(publication, "publication");
+  console.log(publishedDate, "publishedDate");
+  console.log(viewUrl, "viewURL");
 
   if (
     [name, publication, publishedDate, viewUrl].some(
-      (field) => field.trim() === ""
+      (field) => !field || typeof field !== "string" || field.trim() === ""
     )
   ) {
     throw new ApiError(400, "All fields are required");
