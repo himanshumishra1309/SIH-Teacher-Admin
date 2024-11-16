@@ -278,11 +278,11 @@ export default function AdminResearchTable() {
         <DownloadBtn data={data} fileName="Research" />
       </div>
 
-      <div className="flex justify-end mb-4">
+      {/* <div className="flex justify-end mb-4">
         <Button onClick={() => setDrawerOpen(true)} className="add-entry-btn">
           Add Entry
         </Button>
-      </div>
+      </div> */}
 
       <div className="mb-4 flex flex-wrap gap-2">
         {table.getAllLeafColumns().map((column) => (

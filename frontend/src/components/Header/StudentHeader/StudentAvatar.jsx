@@ -1,18 +1,24 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';  // Import the hook for navigation
+import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import the hook for navigation
 
-import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../ui/dropdown-menu";
-import axios from 'axios';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../ui/dropdown-menu";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 export default function StudentAvatar() {
-  const navigate = useNavigate();  // Create a navigate function from the hook
+  const navigate = useNavigate(); // Create a navigate function from the hook
 
   const handleLogout = async () => {
-    console.log("Logging out...");
+    // console.log("Logging out...");
 
-    try { 
+    try {
       await axios.post(
         "http://localhost:6005/api/v1/students/logout",
         {},
@@ -27,19 +33,20 @@ export default function StudentAvatar() {
 
       sessionStorage.removeItem("studentAccessToken");
 
-      console.log("Logout successful");
+      toast.success("Logout successful");
+      // console.log("Logout successful");
 
       navigate("/");
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
       console.error("Error during logout:", errorMessage);
-      alert("Logout failed. Please try again.");
+      toast.error("Logout failed. Please try again.");
+      // alert("Logout failed. Please try again.");
     }
   };
 
-
   const handleEditProfile = () => {
-    navigate('/student/edit-profile');  // Navigate to Edit Profile page
+    navigate("/student/edit-profile"); // Navigate to Edit Profile page
   };
 
   return (
@@ -47,9 +54,15 @@ export default function StudentAvatar() {
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-8 w-8 rounded-full m-5">
+            <Button
+              variant="ghost"
+              className="relative h-8 w-8 rounded-full m-5"
+            >
               <Avatar className="h-10 w-10">
-                <AvatarImage src="/placeholder.svg?height=32&width=32" alt="Teacher" />
+                <AvatarImage
+                  src="/placeholder.svg?height=32&width=32"
+                  alt="Teacher"
+                />
                 <AvatarFallback>TC</AvatarFallback>
               </Avatar>
             </Button>
@@ -58,9 +71,7 @@ export default function StudentAvatar() {
             <DropdownMenuItem onSelect={handleEditProfile}>
               Edit Profile
             </DropdownMenuItem>
-            <DropdownMenuItem onSelect={handleLogout}>
-              Logout
-            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={handleLogout}>Logout</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

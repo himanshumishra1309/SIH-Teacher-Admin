@@ -5,6 +5,8 @@ import axios from "axios";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function StudentSISU() {
   const navigate = useNavigate();
@@ -80,11 +82,14 @@ function StudentSISU() {
 
       const accessToken = response?.data?.data?.studentAccessToken;
       sessionStorage.setItem("studentAccessToken", accessToken);
-      console.log("Registration successful", response.data);
-      navigate("/student-home");
+      // console.log("Registration successful", response.data);
+      toast.success("Registration successful");
+      navigate;
+      ("/student-home");
     } catch (error) {
       console.error("Error during signup:", error.message);
-      alert("Signup failed. Please try again.");
+      toast.success("Signup failed. Please try again.");
+      // alert("Signup failed. Please try again.");
     }
   };
 
@@ -128,7 +133,8 @@ function StudentSISU() {
       if (studentAccessToken) {
         sessionStorage.setItem("studentAccessToken", studentAccessToken);
 
-        console.log("Login successful", response.data);
+        toast.success("Login successful");
+        // console.log("Login successful", response.data);
 
         navigate("/student-home");
       } else {
@@ -137,7 +143,8 @@ function StudentSISU() {
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
       console.error("Error during login:", errorMessage);
-      alert("Login failed. Please try again.");
+      toast.error("Login failed. Please try again.");
+      // alert("Login failed. Please try again.");
     }
   };
 

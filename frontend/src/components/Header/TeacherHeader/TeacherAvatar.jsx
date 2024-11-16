@@ -10,12 +10,13 @@ import {
   DropdownMenuTrigger,
 } from "../../ui/dropdown-menu";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 export default function TeacherAvatar() {
   const navigate = useNavigate(); // Create a navigate function from the hook
 
   const handleLogout = async () => {
-    console.log("Logging out...");
+    // console.log("Logging out...");
 
     try {
       await axios.post(
@@ -32,13 +33,15 @@ export default function TeacherAvatar() {
 
       sessionStorage.removeItem("teacherAccessToken");
 
-      console.log("Logout successful");
+      toast.success("Logout successful");
+      // console.log("Logout successful");
 
       navigate("/");
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
       console.error("Error during logout:", errorMessage);
-      alert("Logout failed. Please try again.");
+      toast.error("Logout failed. Please try again.");
+      // alert("Logout failed. Please try again.");
     }
   };
 
