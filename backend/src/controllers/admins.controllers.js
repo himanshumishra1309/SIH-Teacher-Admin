@@ -655,7 +655,7 @@ const getUpcomingSeminarByTheTeacher = asyncHandler(async (req, res) => {
   }
 
   const seminars = await Seminar.find({ owner: teacherId, status: "upcoming" })
-    .select("topic duration date")
+    .select("topic department duration date")
     .lean();
 
   if (!seminars || seminars.length === 0) {

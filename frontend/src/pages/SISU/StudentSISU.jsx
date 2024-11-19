@@ -4,6 +4,11 @@ import axios from "axios";
 import { UserPlus, UserCheck, GraduationCap } from 'lucide-react';
 import "../SISU/SISU.css";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Input } from "../../components/ui/input";
+import { Button } from "../../components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function StudentSISU() {
   const navigate = useNavigate();
@@ -56,6 +61,44 @@ export default function StudentSISU() {
     setLoginData({ ...loginData, [id]: value });
   };
 
+
+  const handleSignUpSubmit = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("name", signupData.name);
+    formData.append("email", signupData.email);
+    formData.append("roll_no", signupData.roll_no);
+    formData.append("branch", signupData.branch);
+    formData.append("year", signupData.year);
+    formData.append("avatar", avatar);
+    formData.append("password", signupData.password);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:6005/api/v1/students/register",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Proper headers for file uploads
+          },
+        }
+      );
+
+      const accessToken = response?.data?.data?.studentAccessToken;
+      sessionStorage.setItem("studentAccessToken", accessToken);
+      // console.log("Registration successful", response.data);
+      toast.success("Registration successful");
+      navigate;
+      ("/student-home");
+    } catch (error) {
+      console.error("Error during signup:", error.message);
+      toast.success("Signup failed. Please try again.");
+      // alert("Signup failed. Please try again.");
+    }
+  };
+
+  // Handle avatar change
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     setAvatar(file);
@@ -114,6 +157,11 @@ export default function StudentSISU() {
 
       if (studentAccessToken) {
         sessionStorage.setItem("studentAccessToken", studentAccessToken);
+
+
+        toast.success("Login successful");
+        // console.log("Login successful", response.data);
+
         navigate("/student-home");
       } else {
         throw new Error("Access token is missing in the response");
@@ -121,7 +169,8 @@ export default function StudentSISU() {
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
       console.error("Error during login:", errorMessage);
-      alert("Login failed. Please try again.");
+      toast.error("Login failed. Please try again.");
+      // alert("Login failed. Please try again.");
     }
   };
 
