@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { useToast } from "@/components/ui/hooks/use-toast";
+import { useToast } from "../../../components/ui/hooks/use-toast";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
 
@@ -154,6 +154,12 @@ export default function EnhancedLectureFeedback() {
     } catch (error) {
       if (error instanceof z.ZodError) {
         setErrors(error.flatten().fieldErrors);
+        toast({
+          title: "Error",
+          description: "Please fill in all mandatory fields.",
+          duration: 3000,
+          variant: "destructive",
+        });
       } else {
         console.error("Error submitting feedback:", error);
         const errorMessage =
@@ -174,6 +180,15 @@ export default function EnhancedLectureFeedback() {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
+    if (formData.ratings.some(rating => rating === 0)) {
+      toast({
+        title: "Error",
+        description: "Please provide ratings for all criteria.",
+        duration: 3000,
+        variant: "destructive",
+      });
+      return;
+    }
     setShowDialog(true);
   };
 
