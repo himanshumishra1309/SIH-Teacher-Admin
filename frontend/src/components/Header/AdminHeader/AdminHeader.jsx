@@ -5,7 +5,7 @@ import AdminAvatar from "./AdminAvatar";
 function AdminHeader() {
   return (
     <>
-      <header className="flex justify-between items-center py-1 m-0 bg-blue-600 shadow-md">
+      <header className="flex justify-between items-center py-1 m-0  from-blue-700 to-blue-900 shadow-lg shadow-md">
         <div className="flex items-center">
           <Link to={"#"}>
             <img
@@ -24,15 +24,15 @@ function AdminHeader() {
           </Link>
         </div>
 
-        <div className="flex justify-between">
-          <img
-            src="../../assets/icons/emblem.svg"
-            alt="College Logo"
-            className="h-20 w-20
-    ml-2 items-center"
-          />
-          <AdminAvatar />
-        </div>
+        <div className="flex items-center space-x-4">
+        <Link to="/home">
+          <Button variant="ghost" size="sm" className="text-white hover:text-blue-400">
+            <Home className="mr-2 h-4 w-4" />
+            <span className="hidden sm:inline">Home Portal</span>
+          </Button>
+        </Link>
+        <TeacherAvatar />
+      </div>
       </header>
     </>
   );

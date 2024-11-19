@@ -58,7 +58,7 @@ const router = createBrowserRouter(
         {/* <Route index element={<ResearchTable />} /> Default to ResearchTable */}
         <Route index element={<FacultyDataDashboard/>} errorElement={<NotFoundPage/>} />
         
-
+        <Route path="contribution" element={<RouteTransitionWrapper><FacultyDataDashboard/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
         <Route path="teaching-process" element={<RouteTransitionWrapper><FacultyTeachingProcessTable/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
         <Route path="research-papers" element={<RouteTransitionWrapper><FacultyResearchTable /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
         <Route path="expert-lectures" element={<RouteTransitionWrapper><FacultyLecturesTable /></RouteTransitionWrapper>}errorElement={<NotFoundPage/>}  />

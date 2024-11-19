@@ -6,7 +6,7 @@ import { Home } from 'lucide-react';
 
 export default function TeacherHeader() {
   return (
-    <header className="flex justify-between items-center py-2 px-4 bg-blue-600 text-white shadow-md">
+    <header className="flex justify-between items-center py-2 px-4 bg-gradient-to-r from-blue-700 to-blue-900 shadow-lg text-white shadow-md">
       <div className="flex items-center space-x-4">
         <Link to="/faculty-home" className="flex items-center space-x-2">
           <img
@@ -30,11 +30,6 @@ export default function TeacherHeader() {
             <span className="hidden sm:inline">Home Portal</span>
           </Button>
         </Link>
-        <img
-          src="/assets/icons/emblem.svg"
-          alt="Emblem"
-          className="h-12 w-12 hidden md:block"
-        />
         <TeacherAvatar />
       </div>
     </header>

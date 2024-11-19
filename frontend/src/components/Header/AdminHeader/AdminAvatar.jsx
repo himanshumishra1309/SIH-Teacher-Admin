@@ -48,7 +48,7 @@ export default function AdminAvatar() {
 
   return (
     <header>
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
+      <div className="max-w-7xl mx-auto flex justify-between bg-gradient-to-r from-blue-700 to-blue-900 shadow-lg items-center">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button

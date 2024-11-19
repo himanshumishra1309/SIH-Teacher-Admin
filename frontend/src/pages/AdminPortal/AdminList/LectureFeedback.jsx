@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { z } from "zod";
-import { X, Loader2, Star } from "lucide-react";
+import { X, Loader2, Star } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
@@ -14,17 +14,47 @@ import {
   DialogHeader,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { useToast, toast } from "@/components/ui/hooks/use-toast";
+import { useToast } from "@/components/ui/hooks/use-toast";
+import { Label } from "@/components/ui/label";
 import axios from "axios";
+
+const feedbackCriteria = [
+  "Has the Teacher covered entire Syllabus as prescribed by University/College/Board?",
+  "Has the Teacher covered relevant topics beyond syllabus",
+  "Effectiveness of Teacher in terms of Technical content, Communication skills and Use of teaching aids",
+  "Pace on which contents were covered",
+  "Motivation and inspiration for students to learn",
+  "Support for development of Students' skill in terms of Practical demonstration and Hands on training",
+  "Clarity of expectations of students",
+  "Feedback provided on Students' progress",
+  "Willingness to offer help and advice to students.",
+  "Overall performance of the student",
+];
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
   email: z.string().email({ message: "Invalid email address" }),
   roll_no: z.string().min(1, { message: "Enrollment Number is required" }),
   branch: z.string().min(1, { message: "Branch is required" }),
-  rating: z.number().min(1, { message: "Please provide a rating" }),
+  ratings: z.array(z.number().min(1).max(5)).length(feedbackCriteria.length),
   comment: z.string().optional(),
 });
+
+function StarRating({ rating, onRatingChange }) {
+  return (
+    <div className="flex items-center">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          className={`h-6 w-6 cursor-pointer transition-all duration-200 ${
+            star <= rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+          }`}
+          onClick={() => onRatingChange(star)}
+        />
+      ))}
+    </div>
+  );
+}
 
 export default function EnhancedLectureFeedback() {
   const [isOpen, setIsOpen] = useState(false);
@@ -34,7 +64,7 @@ export default function EnhancedLectureFeedback() {
     email: "",
     roll_no: "",
     branch: "",
-    rating: 0,
+    ratings: new Array(feedbackCriteria.length).fill(0),
     studentId: "",
     comment: "",
   });
@@ -56,13 +86,13 @@ export default function EnhancedLectureFeedback() {
         );
         console.log("Student data fetched:", response.data);
 
-        setFormData({
+        setFormData((prev) => ({
+          ...prev,
           name: response.data.data.name || "",
           email: response.data.data.email || "",
           roll_no: response.data.data.roll_no || "",
           branch: response.data.data.branch || "",
-          // studentId: response.data.data._id || "",
-        });
+        }));
       } catch (error) {
         console.error("Error fetching student data:", error);
       }
@@ -78,33 +108,30 @@ export default function EnhancedLectureFeedback() {
     }
   };
 
-  const handleRatingChange = (rating) => {
-    setFormData((prev) => ({ ...prev, rating }));
-    if (errors.rating) {
-      setErrors((prev) => ({ ...prev, rating: null }));
-    }
+  const handleRatingChange = (index, rating) => {
+    setFormData((prev) => {
+      const newRatings = [...prev.ratings];
+      newRatings[index] = rating;
+      return { ...prev, ratings: newRatings };
+    });
   };
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
-      // Validate form data with Zod schema
       formSchema.parse(formData);
 
-      // Prepare the feedback data to send, including student ID
       const feedbackData = {
         seminarId: formData.studentId,
-        rating: formData.rating,
-        comments: formData.comment, // Use 'comment' instead of 'comments'
+        ratings: formData.ratings,
+        comments: formData.comment,
       };
 
-      // Get the student access token from sessionStorage
       const accessToken = sessionStorage.getItem("studentAccessToken");
       if (!accessToken) {
         throw new Error("You are not authenticated");
       }
 
-      // Sending feedback to the backend
       const response = await axios.post(
         "http://localhost:6005/api/v1/seminars/seminars/feedback",
         feedbackData,
@@ -115,12 +142,11 @@ export default function EnhancedLectureFeedback() {
         }
       );
 
-      // Handling success response
       console.log("Feedback submitted:", response.data);
       setFeedbackSubmitted(true);
       toast({
         title: "Feedback Submitted",
-        description: "Thank you for your feedback!",
+        description: "Thank you for your detailed feedback!",
         duration: 3000,
       });
 
@@ -148,7 +174,7 @@ export default function EnhancedLectureFeedback() {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    setShowDialog(true); // Open the confirmation dialog
+    setShowDialog(true);
   };
 
   return (
@@ -173,7 +199,7 @@ export default function EnhancedLectureFeedback() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ type: "spring", damping: 15 }}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl relative"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl h-[90vh] relative"
             >
               <Button
                 variant="ghost"
@@ -184,37 +210,33 @@ export default function EnhancedLectureFeedback() {
                 <X className="h-4 w-4" />
                 <span className="sr-only">Close</span>
               </Button>
-              <form onSubmit={handleFormSubmit} className="p-8">
+              <form onSubmit={handleFormSubmit} className="p-8 h-full overflow-y-auto">
                 <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-gray-200">
-                  Send us your feedback
+                  Faculty Feedback Form
                 </h2>
-                {/* Form inputs */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 text-center">
+                  Your feedback is valuable in maintaining and improving the quality of instruction.
+                  Please rate the following criteria on a scale of 1-5 stars.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   {["name", "email", "roll_no", "branch"].map((field) => (
                     <div key={field}>
-                      <label
-                        htmlFor={field}
-                        className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                      >
+                      <Label htmlFor={field} className="mb-1 block">
                         {field === "roll_no"
                           ? "Enrollment Number"
                           : field.charAt(0).toUpperCase() + field.slice(1)}
-                        *
-                      </label>
+                      </Label>
                       <Input
                         id={field}
                         name={field}
                         type={field === "email" ? "email" : "text"}
-                        value={formData[field]} // dynamically bind the formData
+                        value={formData[field]}
                         onChange={handleInputChange}
                         readOnly
                         className={`transition-all duration-300 ${
                           errors[field]
                             ? "border-red-500 dark:border-red-400 shake"
                             : "border-gray-300 dark:border-gray-600"
-                        }`}
-                        placeholder={`Enter your ${
-                          field === "roll_no" ? "enrollment number" : field
                         }`}
                       />
                       {errors[field] && (
@@ -225,45 +247,28 @@ export default function EnhancedLectureFeedback() {
                     </div>
                   ))}
                 </div>
-                {/* Rating */}
-                <div className="mt-6">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Rating*
-                  </label>
-                  <div className="flex items-center">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        className={`h-8 w-8 cursor-pointer transition-all duration-200 ${
-                          star <= formData.rating
-                            ? "text-yellow-400 fill-yellow-400"
-                            : "text-gray-300"
-                        }`}
-                        onClick={() => handleRatingChange(star)}
+                <div className="space-y-6">
+                  {feedbackCriteria.map((criterion, index) => (
+                    <div key={index} className="border-b border-gray-200 dark:border-gray-700 pb-4">
+                      <Label className="mb-2 block">{criterion}</Label>
+                      <StarRating
+                        rating={formData.ratings[index]}
+                        onRatingChange={(rating) => handleRatingChange(index, rating)}
                       />
-                    ))}
-                  </div>
-                  {errors.rating && (
-                    <p className="text-red-500 dark:text-red-400 text-xs mt-1">
-                      {errors.rating}
-                    </p>
-                  )}
+                    </div>
+                  ))}
                 </div>
-                {/* Comment */}
                 <div className="mt-6">
-                  <label
-                    htmlFor="comment"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-                  >
-                    Any other comment
-                  </label>
+                  <Label htmlFor="comment" className="mb-1 block">
+                    Additional Comments
+                  </Label>
                   <Textarea
                     id="comment"
                     name="comment"
                     value={formData.comment}
                     onChange={handleInputChange}
                     rows={4}
-                    placeholder="Enter any additional comments here"
+                    placeholder="Please provide any additional feedback or suggestions"
                     className="transition-all duration-300"
                   />
                 </div>
@@ -277,7 +282,7 @@ export default function EnhancedLectureFeedback() {
                       isSubmitting ? "opacity-0" : "opacity-100"
                     }`}
                   >
-                    Send Feedback
+                    Submit Feedback
                   </span>
                   {isSubmitting && (
                     <Loader2 className="h-5 w-5 animate-spin absolute inset-0 m-auto" />
@@ -289,7 +294,6 @@ export default function EnhancedLectureFeedback() {
         )}
       </AnimatePresence>
 
-      {/* Confirmation Dialog */}
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent>
           <DialogHeader>

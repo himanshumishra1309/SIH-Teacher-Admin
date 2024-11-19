@@ -13,7 +13,7 @@ export default {
                 sm: 'calc(var(--radius) - 4px)',
             },
             colors: {
-                DEFAULT: '#3b82f6', // Blue-500
+                primary: '#3b82f6', // Blue-500
                 foreground: '#ffffff', // White text on blue background
 
                 background: 'hsl(var(--background))',

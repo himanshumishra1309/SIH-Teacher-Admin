@@ -157,8 +157,8 @@ export default function StudentSISU() {
         sessionStorage.setItem("studentAccessToken", studentAccessToken);
 
 
-        toast.success("Login successful");
-        // console.log("Login successful", response.data);
+        // toast.success("Login successful");
+        console.log("Login successful", response.data);
 
         navigate("/student-home");
       } else {
@@ -167,8 +167,8 @@ export default function StudentSISU() {
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
       console.error("Error during login:", errorMessage);
-      toast.error("Login failed. Please try again.");
-      // alert("Login failed. Please try again.");
+      // toast.error("Login failed. Please try again.");
+      alert("Login failed. Please try again.");
     }
   };
 

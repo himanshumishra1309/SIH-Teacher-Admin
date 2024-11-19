@@ -27,6 +27,7 @@ export default function TeacherAvatar() {
             Authorization: `Bearer ${sessionStorage.getItem(
               "teacherAccessToken"
             )}`,
+            
           },
         }
       );
