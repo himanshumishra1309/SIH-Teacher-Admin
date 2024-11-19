@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { columnDef } from "../Columns/LecturesColumn.jsx";
+import { columnDef } from "../Columns/TeachingProcessColumn";
 import "../../table.css";
 import DownloadBtn from "../../DownloadBtn.jsx";
 import DebouncedInput from "../../DebouncedInput.jsx";
@@ -18,10 +18,11 @@ import { Button } from "@/components/ui/button.jsx";
 import { Checkbox } from "@/components/ui/checkbox.jsx";
 import DrawerComponent from "../../../Forms/AddEntry/DrawerComponent.jsx";
 import DeleteDialog from "../../DeleteDialog.jsx";
-import axios from "axios";
 import LoadingPage from "@/pages/LoadingPage.jsx";
 
-export default function FacultyLecturesTable() {
+import axios from "axios";
+
+export default function FacultyTeachingProcessTable() {
   const { id } = useParams();
   // console.log(id);
   const [data, setData] = useState("");
@@ -35,27 +36,48 @@ export default function FacultyLecturesTable() {
   const [isLoading, setIsLoading] = useState(true);
 
 
-  // const [expertLectureData, setExpertLectureData] = useState("");
+  // data of the teacher email wegera
+  // useEffect(() => {
+  //   const fetchTeacherInfo = async () => {
+  //     try {
+  //       // Retrieve the token from session storage
+  //       const token = sessionStorage.getItem("adminAccessToken"); // Adjust this if using cookies
+
+  //       const response = await axios.get(
+  //         `http://localhost:6005/api/v1/admins/teachers/${id}`, // Adjust URL to your API endpoint
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`, // Set the Authorization header
+  //           },
+  //         }
+  //       );
+  //       console.log(response.data.data.teacher);
+  //       setTeacherInfo(response.data.data);
+  //     } catch (error) {
+  //       console.log("An error occurred while fetching teacher info.");
+  //     }
+  //   };
+
+  //   fetchTeacherInfo();
+  // }, [id]); // Runs when 'id' changes
+
+  // dtaa of the reaserch paper of the teacher aditi sharma
+
   useEffect(() => {
     const fetchTeacherInfo = async () => {
       try {
         const token = sessionStorage.getItem("teacherAccessToken");
 
         const response = await axios.get(
-          `http://localhost:6005/api/v1/expertLectures/lectures`,
+          // `http://localhost:6005/api/v1/seminars/seminars/conducted`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        console.log(response.data.data.expertLectures);
-        // const formattedData = response.data.data.map((item) => ({
-        //   ...item,
-        //   publishedDate: item.publishedDate.split("T")[0],
-        // }));
-
-        setData(response.data.data.expertLectures);
+        console.log("Tecahing Process Data", response.data.data);
+        setData(response.data.data);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
       }
@@ -65,7 +87,7 @@ export default function FacultyLecturesTable() {
     };
 
     fetchTeacherInfo();
-  }, [id]);
+  }, []);
 
   const columns = useMemo(() => {
     return columnDef.map((col) => {
@@ -129,21 +151,21 @@ export default function FacultyLecturesTable() {
 
   const handleEditEntry = (updatedData) => {
     setData((prevData) =>
-      prevData.map((row) => (row._id === updatedData._id ? updatedData : row))
+      prevData.map((row) => (row.id === updatedData.id ? updatedData : row))
     );
   };
 
   const handleDeleteRow = async () => {
-    console.log(rowToDelete);
     try {
+      console.log(rowToDelete);
       const token = sessionStorage.getItem("teacherAccessToken");
 
-      // Make DELETE request to the server
       await axios.delete(
-        `http://localhost:6005/api/v1/expertLectures/lectures/${rowToDelete._id}`,
+        `http://localhost:6005/api/v1/seminars/${rowToDelete._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );
@@ -156,14 +178,17 @@ export default function FacultyLecturesTable() {
       setDeleteDialogOpen(false);
       setRowToDelete(null);
     } catch (error) {
-      console.error("Failed to delete Expert Lecture delivered:", error);
+      console.error("Failed to delete Seminar Data:", error);
     }
-    
+   
   };
+
 
   if (isLoading) {
     return <LoadingPage/>;
   }
+
+
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between mb-4">
@@ -180,7 +205,7 @@ export default function FacultyLecturesTable() {
       </div>
 
       <div className="flex justify-end mb-4">
-        <Button onClick={() => setDrawerOpen(true)} className="add-entry-btn">
+        <Button onClick={() => setDrawerOpen(true)} className="add-entry-btn text-white">
           Add Entry
         </Button>
       </div>
@@ -209,7 +234,7 @@ export default function FacultyLecturesTable() {
       </div>
 
       <div className="table-container">
-        <table className="w-full">
+      <table className="w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -252,38 +277,37 @@ export default function FacultyLecturesTable() {
 
           try {
             if (rowToEdit) {
-              // console.log(rowToEdit);
-              // Edit (PUT Request)
               console.log("editing  the data", formData);
-
               const response = await axios.patch(
-                `http://localhost:6005/api/v1/expertLectures/lectures/${rowToEdit._id}`,
+                // `http://localhost:6005/api/v1/seminars/${rowToEdit._id}`,
                 formData,
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
                   },
                 }
               );
-              console.log(response.data);
-              handleEditEntry(response.data.data); // Update table data
+              console.log(response.data.data);
+              handleEditEntry(response.data.data);
             } else {
               // Add (POST Request)
               console.log("posting the data", formData);
               const response = await axios.post(
-                `http://localhost:6005/api/v1/expertLectures/lectures`,
+                // `http://localhost:6005/api/v1/seminars/seminars/upcoming`,
                 formData,
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,
+                    "Content-Type": "application.json",
                   },
                 }
               );
-              console.log(response.data);
+              console.log(response.data.data);
               handleAddEntry(response.data.data);
             }
           } catch (error) {
-            console.error("Failed to submit research data:", error);
+            console.error("Failed to submit teaching data:", error);
           }
 
           setDrawerOpen(false);

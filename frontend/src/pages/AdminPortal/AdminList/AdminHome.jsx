@@ -45,32 +45,29 @@ export default function AdminHome() {
 
         if (location.state && location.state.justLoggedIn) {
           toast({
-            title: <h1 className="text-center text-lg">Welcome back!</h1>,
+            title: (
+              <h1 className="text-center text-xl font-semibold text-white mb-2">
+                Welcome back!
+              </h1>
+            ),
             description: (
               <div className="flex items-center space-x-4">
-                <Avatar className="h-12 w-12 border-2 border-white shadow-md">
+                <Avatar className="h-16 w-16 border-2 border-blue-300 shadow-md">
                   <AvatarImage src={data.avatar} alt={data.name} />
-                  <AvatarFallback className="bg-blue-400 text-white">
+                  <AvatarFallback className="bg-blue-600 text-white text-lg font-semibold">
                     {data.name.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col space-y-1">
-                  <p className="font-semibold text-lg text-gray-800">
-                    {data.name}
-                  </p>
-                  <p className="text-sm text-black">{data.email}</p>
-                  <p className="text-sm text-black">
-                    Employee Code: {data.designation}
-                  </p>
+                  <p className="font-semibold text-lg text-white">{data.name}</p>
+                  <p className="text-sm text-blue-100">{data.email}</p>
+                  <p className="text-sm text-blue-100">Employee Code: {data.employee_code}</p>
+                  <p className="text-sm text-blue-100">Department: {data.department}</p>
                 </div>
               </div>
             ),
             duration: 5000,
-            className:
-              "bg-sky-200 border border-black shadow-lg rounded-lg p-4",
-            style: {
-              color: "black",
-            },
+            className: "bg-gradient-to-r from-blue-700 to-blue-900 border border-blue-300 shadow-lg rounded-lg p-6",
           });
         }
       } catch (error) {

@@ -5,6 +5,7 @@ import { NavLink } from 'react-router-dom';
 
 export default function FacultyNavigation() {
   const navigationItems = [
+    { name: "Teaching Process", path: "teaching-process" },
     { name: "Research Papers Published", path: "research-papers" },
     { name: "Expert Lecture Delivered", path: "expert-lectures" },
     { name: "STTP Conducted As Coordinator", path: "sttp-conducted" },
@@ -14,6 +15,8 @@ export default function FacultyNavigation() {
     { name: "Event Participation", path: "event-participation" },
     { name: "Seminars", path: "seminars" },
     { name: "Projects", path: "projects" },
+    { name: "Posts", path: "posts" }
+
     // { name: "Lectures", path: "lectures" }
   ];
 

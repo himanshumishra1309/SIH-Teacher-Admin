@@ -1,111 +1,60 @@
-// src/pages/Home/Home.jsx
-"use-client";
-import { Footer, Header } from "@/components";
 import React from "react";
-import { Link } from "react-router-dom"; // Import Link from react-router-dom
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Footer, Header } from "@/components";
+
 const Home = () => {
-  const cardVariants = {};
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
 
   return (
-    <div className="container">
-      <div className="flex flex-col min-h-screen">
-        <Header />
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      <Header />
 
-        <main className="flex-1 bg-gradient-ellipse ">
-          <div className="w-full flex-grow flex flex-col justify-center items-center  bg-cover bg-center  ">
-            <div className="flex flex-col items-center justify-center  text-center text-white">
-              <div>
-                <h1 className="text-4xl tracking-tighter mt-10 font-bold mb-10 font-serif bg-gradient-to-r from-black to-[#001E80] text-transparent bg-clip-text">
-                  Appraisal Portal
-                </h1>
-                <h1 className="text-4xl font-bold mb-10 text-black font-serif">
-                  Login / Register
-                </h1>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-32 px-4 my-10">
-                {/* Admin Card */}
-
-                {/* Faculty Card */}
-                <Link to="/faculty-sign-up" className="block">
-                  <motion.div
-                    initial={{ opacity: 0, y: -50 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 50,
-                      damping: 5,
-                      duration: 0.1,
-                    }}
-                    whileHover={{ scale: [null, 1.05, 1.05] }}
-                    className="bg-white rounded-lg shadow-lg p-10 flex flex-col items-center hover:shadow-xl transition-shadow duration-300"
-                  >
-                    <img
-                      src="assets\icons\faculty.svg"
-                      alt="Faculty Icon"
-                      className="h-32 w-36 mb-4"
-                    />
-                    <h2 className="text-3xl text-black font-semibold">
-                      Faculty
-                    </h2>
-                  </motion.div>
-                </Link>
-
-                <Link to="/admin-sign-up" className="block">
-                  <motion.div
-                    initial={{ opacity: 0, y: -50 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 50,
-                      damping: 5,
-                      duration: 0.1,
-                    }}
-                    whileHover={{ scale: [null, 1.05, 1.05] }}
-                    className="bg-white rounded-lg shadow-lg p-10 flex flex-col items-center hover:shadow-xl transition-shadow duration-300 "
-                  >
-                    <img
-                      src="assets\icons\admin.svg"
-                      alt="Admin Icon"
-                      className="h-32 w-36 mb-4"
-                    />
-                    <h2 className="text-3xl font-semibold text-black">Admin</h2>
-                  </motion.div>
-                </Link>
-
-                {/* Student Card */}
-                <Link to="/student-sign-up" className="block">
-                  <motion.div
-                    initial={{ opacity: 0, y: -50 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 50,
-                      damping: 5,
-                      duration: 0.1,
-                    }}
-                    whileHover={{ scale: [null, 1.05, 1.05] }}
-                    layout
-                    className="bg-white rounded-lg shadow-lg p-10 flex flex-col items-center hover:shadow-xl transition-shadow duration-300 "
-                  >
-                    <img
-                      src="assets\icons\student.svg"
-                      alt="Student Icon"
-                      className="h-32 w-36 mb-4 "
-                    />
-                    <h2 className="text-3xl font-semibold text-black">
-                      Student
-                    </h2>
-                  </motion.div>
-                </Link>
-              </div>
-            </div>
+      <main className="flex-1 bg-gradient-to-b from-blue-50 to-white">
+        <div className="container mx-auto px-4 py-12">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-blue-900">
+              Faculty Appraisal Portal
+            </h1>
+            <p className="text-xl text-blue-700 mb-8">
+              Login or Register to Access the System
+            </p>
           </div>
-        </main>
 
-        <Footer className="" />
-      </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {[
+              { title: "Faculty", icon: "faculty.svg", link: "/faculty-sign-up" },
+              { title: "Admin", icon: "admin.svg", link: "/admin-sign-up" },
+              { title: "Student", icon: "student.svg", link: "/student-sign-up" },
+            ].map((item, index) => (
+              <Link to={item.link} key={item.title} className="block">
+                <motion.div
+                  variants={cardVariants}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ delay: index * 0.2 }}
+                  whileHover={{ scale: 1.05 }}
+                  className="bg-white rounded-lg shadow-lg p-8 flex flex-col items-center justify-center h-full border border-blue-100 hover:shadow-xl transition-all duration-300"
+                >
+                  <img
+                    src={`/assets/icons/${item.icon}`}
+                    alt={`${item.title} Icon`}
+                    className="h-24 w-24 mb-6 object-contain"
+                  />
+                  <h2 className="text-2xl font-semibold text-blue-800">
+                    {item.title}
+                  </h2>
+                </motion.div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </main>
+
+      <Footer />
     </div>
   );
 };

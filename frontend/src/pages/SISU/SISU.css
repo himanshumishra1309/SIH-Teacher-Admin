@@ -1,7 +1,4 @@
-/* @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800'); */
-
 .fs-container {
-    margin-top: 90px;
     position: relative;
     width: 768px;
     max-width: 100%;
@@ -9,8 +6,7 @@
     background: #fff;
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 30px 25px rgba(0,0,0,0.25),
-                0 10px 35px rgba(0,0,0,0.22);
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 }
 
 .fs-sign-up, .fs-sign-in {
@@ -44,40 +40,54 @@
 }
 
 .fs-container h1 {
-    font-family: "Fredoka One", cursive;
-    font-weight: bold;
-    margin: 0;
+    margin-bottom: 1rem;
+    color: #1e3a8a; /* Update 1 */
 }
 
-.fs-container p {
-    font-family: "Fredoka One", cursive;
-    font-weight: bold;
-}
-
-.fs-container input {
-    background: #eee;
+.fs-input {
+    background-color: #f0f9ff;
+    border: 1px solid #bfdbfe;
     padding: 12px 15px;
-    margin: 8px 15px;
+    margin: 8px 0;
     width: 100%;
     border-radius: 5px;
-    border: none;
     outline: none;
+    transition: border-color 0.3s ease;
+    color: #1e3a8a; /* Update 1 */
 }
 
-.fs-container button {
+.fs-input::placeholder { /* Update 1 */
+    color: #64748b;
+}
+
+.fs-input:focus {
+    border-color: #3b82f6;
+}
+
+.fs-button {
     color: #fff;
-    background: #33a2ff;
-    font-size: 12px;
-    font-weight: bold;
-    padding: 12px 55px;
-    margin: 20px;
+    background: #2563eb;
+    font-size: 14px;
+    font-weight: 600; /* Update 3 */
+    padding: 12px 45px;
+    margin: 20px 0;
     border-radius: 20px;
-    border: 1px solid #09b097;
+    border: 1px solid #1d4ed8;
     outline: none;
     letter-spacing: 1px;
     text-transform: uppercase;
-    transition: transform 80ms ease-in;
+    transition: all 0.3s ease; /* Update 3 */
     cursor: pointer;
+    color: #ffffff; /* Update 3 */
+}
+
+.fs-button:hover {
+    background-color: #1d4ed8;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Update 3 */
+}
+
+.fs-button:active {
+    transform: scale(0.95);
 }
 
 .fs-container #fs-signIn, .fs-container #fs-signUp {
@@ -113,13 +123,24 @@
 .fs-overlay {
     position: relative;
     color: #fff;
-    background: #09b097;
     left: -100%;
     height: 100%;
     width: 200%;
-    background: linear-gradient(to right, #33a2ff, #a7f8ed);
+    background: linear-gradient(to right, #1e40af, #2563eb); /* Update 2 */
     transform: translateX(0);
     transition: transform 0.6s ease-in-out;
+}
+
+.fs-overlay h1 { /* Update 2 */
+    color: #ffffff;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.fs-overlay p { /* Update 2 */
+    color: #e0f2fe;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .fs-container.right-panel-active .fs-overlay {
@@ -151,9 +172,35 @@
 }
 
 .fs-container.right-panel-active .fs-overlay-left {
-    transform: translateX(-0%);
+    transform: translateX(0);
 }
 
 .fs-container.right-panel-active .fs-overlay-right {
     transform: translateX(20%);
+}
+
+.fs-overlay-button {
+    background-color: transparent;
+    border: 2px solid #ffffff; /* Update 3 */
+    color: #ffffff; /* Update 3 */
+    font-size: 14px;
+    font-weight: 600; /* Update 3 */
+    padding: 12px 45px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.3s ease; /* Update 3 */
+    cursor: pointer;
+}
+
+.fs-overlay-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Update 3 */
+}
+
+.fs-overlay-button:active {
+    transform: scale(0.95);
+}
+
+.fs-icon {
+    margin-bottom: 20px;
 }

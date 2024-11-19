@@ -17,6 +17,8 @@ import DebouncedInput from "../../DebouncedInput.jsx";
 import { SearchIcon, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import { Checkbox } from "@/components/ui/checkbox.jsx";
+import LoadingPage from "@/pages/LoadingPage.jsx";
+
 import DrawerComponent from "../../../Forms/AddEntry/DrawerComponent.jsx";
 import DeleteDialog from "../../DeleteDialog.jsx";
 import axios from "axios";
@@ -35,6 +37,8 @@ const [columnVisibility, setColumnVisibility] = useState({});
 const [page, setPage] = useState(1);
 const [pageSize, setPageSize] = useState(10);
 const [totalPages, setTotalPages] = useState(0);
+const [isLoading, setIsLoading] = useState(true);
+
 
 
   useEffect(() => {
@@ -55,6 +59,9 @@ const [totalPages, setTotalPages] = useState(0);
         setTotalPages(response.data.data.pages); // Set total pages from backend response
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
+      }
+      finally {
+        setIsLoading(false);
       }
     };
   
@@ -155,6 +162,10 @@ const [totalPages, setTotalPages] = useState(0);
       console.error("Failed to delete research paper:", error);
     }
   };
+
+  if (isLoading) {
+    return <LoadingPage/>;
+  }
 
   return (
     <div className="container mx-auto p-4">

@@ -17,6 +17,8 @@ import { SearchIcon, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import { Checkbox } from "@/components/ui/checkbox.jsx";
 import DrawerComponent from "../../../Forms/AddEntry/DrawerComponent.jsx";
+import LoadingPage from "@/pages/LoadingPage.jsx";
+
 import DeleteDialog from "../../DeleteDialog.jsx";
 import axios from "axios";
 
@@ -31,6 +33,8 @@ export default function FacultySeminarsTable() {
   const [rowToDelete, setRowToDelete] = useState(null);
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+
 
   // data of the teacher email wegera
   // useEffect(() => {
@@ -76,6 +80,9 @@ export default function FacultySeminarsTable() {
         setData(response.data.data);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
+      }
+      finally {
+        setIsLoading(false);
       }
     };
 
@@ -175,6 +182,10 @@ export default function FacultySeminarsTable() {
     }
   };
 
+  if (isLoading) {
+    return <LoadingPage/>;
+  }
+  
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between mb-4">

@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, Outlet } from "react-router-dom";
-
 import {
   useReactTable,
   getCoreRowModel,
@@ -18,9 +17,12 @@ import { Button } from "@/components/ui/button.jsx";
 import { Checkbox } from "@/components/ui/checkbox.jsx";
 import DrawerComponent from "../../../Forms/AddEntry/DrawerComponent.jsx";
 import DeleteDialog from "../../DeleteDialog.jsx";
+import LoadingPage from "@/pages/LoadingPage.jsx";
 import axios from "axios";
 
 export default function FacultyEventTable() {
+
+
   const { id } = useParams();
   // console.log(id);
   const [data, setData] = useState("");
@@ -31,6 +33,8 @@ export default function FacultyEventTable() {
   const [rowToDelete, setRowToDelete] = useState(null);
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+
 
   // const [eventData, setEventData] = useState("");
   useEffect(() => {
@@ -50,6 +54,9 @@ export default function FacultyEventTable() {
         setData(response.data.data.events);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
+      }
+      finally {
+        setIsLoading(false);
       }
     };
 
@@ -148,6 +155,12 @@ export default function FacultyEventTable() {
       console.error("Failed to delete Event Data:", error);
     }
   };
+
+  
+
+  if (isLoading) {
+    return <LoadingPage/>;
+  }
 
   return (
     <div className="container mx-auto p-4">
