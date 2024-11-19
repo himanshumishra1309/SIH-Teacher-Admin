@@ -6,9 +6,7 @@ import "../SISU/SISU.css";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+// import "react-toastify/dist/ReactToastify.css";
 
 export default function StudentSISU() {
   const navigate = useNavigate();
@@ -110,34 +108,34 @@ export default function StudentSISU() {
     reader.readAsDataURL(file);
   };
 
-  const handleSignUpSubmit = async (e) => {
-    e.preventDefault();
+  // const handleSignUpSubmit = async (e) => {
+  //   e.preventDefault();
 
-    const formData = new FormData();
-    Object.keys(signupData).forEach(key => {
-      formData.append(key, signupData[key]);
-    });
-    if (avatar) formData.append("avatar", avatar);
+  //   const formData = new FormData();
+  //   Object.keys(signupData).forEach(key => {
+  //     formData.append(key, signupData[key]);
+  //   });
+  //   if (avatar) formData.append("avatar", avatar);
 
-    try {
-      const response = await axios.post(
-        "http://localhost:6005/api/v1/students/register",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+  //   try {
+  //     const response = await axios.post(
+  //       "http://localhost:6005/api/v1/students/register",
+  //       formData,
+  //       {
+  //         headers: {
+  //           "Content-Type": "multipart/form-data",
+  //         },
+  //       }
+  //     );
 
-      const accessToken = response?.data?.data?.studentAccessToken;
-      sessionStorage.setItem("studentAccessToken", accessToken);
-      navigate("/student-home");
-    } catch (error) {
-      console.error("Error during signup:", error.message);
-      alert("Signup failed. Please try again.");
-    }
-  };
+  //     const accessToken = response?.data?.data?.studentAccessToken;
+  //     sessionStorage.setItem("studentAccessToken", accessToken);
+  //     navigate("/student-home");
+  //   } catch (error) {
+  //     console.error("Error during signup:", error.message);
+  //     alert("Signup failed. Please try again.");
+  //   }
+  // };
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();

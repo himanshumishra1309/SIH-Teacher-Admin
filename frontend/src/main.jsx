@@ -44,10 +44,8 @@ import FacultySeminarsTable from './table/Tables/Faculty/FacultySeminarsTable';
 import FacultyProjectTable from './table/Tables/Faculty/FacultyProjectTable';
 import FacultyGuidedTable from './table/Tables/Faculty/FacultyGuidedTable';
 import FacultyDataDashboard from './pages/FacultyPortal/FacultyDataDashboard';
-import AdminDataDashboard from './pages/AdminPortal/AdminList/AdminDataDashboard';
 import PostsPage from './pages/FacultyPortal/PostsPage';
 import FacultyTeachingProcessTable from './table/Tables/Faculty/FacultyTeachingProcess';
-import { ToastContainer } from 'react-toastify';
 
 
 const router = createBrowserRouter(
@@ -126,5 +124,5 @@ const router = createBrowserRouter(
 );
 
 createRoot(document.getElementById('root')).render(
-  <><RouterProvider router={router} /><ToastContainer /></>
+  <RouterProvider router={router} />
 );

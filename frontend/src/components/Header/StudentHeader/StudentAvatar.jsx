@@ -10,7 +10,6 @@ import {
   DropdownMenuTrigger,
 } from "../../ui/dropdown-menu";
 import axios from "axios";
-import { toast } from "react-toastify";
 
 export default function StudentAvatar() {
   const navigate = useNavigate(); // Create a navigate function from the hook
