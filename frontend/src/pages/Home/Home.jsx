@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Footer, Header } from "@/components";
+import Ribbon from '/src/components/Ribbon/Ribbon';
 
 const Home = () => {
   const cardVariants = {
@@ -11,6 +12,7 @@ const Home = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
+      <Ribbon />
       <Header />
 
       <main className="flex-1 bg-gradient-to-b from-blue-50 to-white">

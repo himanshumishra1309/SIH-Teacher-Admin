@@ -46,14 +46,15 @@ import FacultyGuidedTable from './table/Tables/Faculty/FacultyGuidedTable';
 import FacultyDataDashboard from './pages/FacultyPortal/FacultyDataDashboard';
 import PostsPage from './pages/FacultyPortal/PostsPage';
 import FacultyTeachingProcessTable from './table/Tables/Faculty/FacultyTeachingProcess';
-
+import { FontSizeProvider } from './components/Ribbon/FontSizeContext';
+import FontSizeHandler from './components/Ribbon/FontSizeHandler';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
 
     <Route path="/" element={<Layout />}>
       <Route index element={<Home />} /> {/* Render Home on the root path */}
-
+      <Route path="font-size-handler" element={<FontSizeHandler />} />
       <Route path="/faculty/:id" element={<FacultyLayout />}>
         {/* <Route index element={<ResearchTable />} /> Default to ResearchTable */}
         <Route index element={<FacultyDataDashboard/>} errorElement={<NotFoundPage/>} />
@@ -124,5 +125,7 @@ const router = createBrowserRouter(
 );
 
 createRoot(document.getElementById('root')).render(
+  <FontSizeProvider>
   <RouterProvider router={router} />
+  </FontSizeProvider>
 );
