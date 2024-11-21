@@ -18,19 +18,18 @@ const seminarSchema = new Schema(
       type: Date,
       required: true,
     },
+    attendace:[{
+      type: Schema.Types.ObjectId,
+      ref: "Student",
+    }],
     report: {
-      type: String, // Cloudinary URL
+      type: String,
       required: false,
     },
     owner: {
       type: Schema.Types.ObjectId,
       ref: "Teacher",
       required: true,
-    },
-    status: {
-      type: String,
-      enum: ["upcoming", "conducted"],
-      default: "upcoming",
     },
   },
   { timestamps: true }

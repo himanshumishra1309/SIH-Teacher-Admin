@@ -15,6 +15,10 @@ const lectureFeedbackSchema = new Schema(
         type: Number,
         required: true,
     },
+    teacher: {
+        type: Schema.Types.ObjectId,
+        ref: 'Teacher',
+    },
     branch: {
         type: String,
         required: true,
@@ -23,7 +27,43 @@ const lectureFeedbackSchema = new Schema(
         type: Number,
         required: true,
     },
-    rating:{
+    question1_rating:{
+        type: Number,
+        required: true,
+    },
+    question2_rating:{
+        type: Number,
+        required: true,
+    },
+    question3_rating:{
+        type: Number,
+        required: true,
+    },
+    question4_rating:{
+        type: Number,
+        required: true,
+    },
+    question5_rating:{
+        type: Number,
+        required: true,
+    },
+    question6_rating:{
+        type: Number,
+        required: true,
+    },
+    question7_rating:{
+        type: Number,
+        required: true,
+    },
+    question8_rating:{
+        type: Number,
+        required: true,
+    },
+    question9_rating:{
+        type: Number,
+        required: true,
+    },
+    question10_rating:{
         type: Number,
         required: true,
     },
@@ -31,16 +71,32 @@ const lectureFeedbackSchema = new Schema(
         type: String,
         required: true,
     },
-    owner: {
+    submitter: {
         type: Schema.Types.ObjectId,
         ref: "Student",
         index: true,
     },
-    feedbackForm: {  // Optional field to link feedback to a specific feedback form
-        type: Schema.Types.ObjectId,
-        ref: 'FeedbackForm',
+    submissionTime: {
+        type: Date, // Record when the student submits the form
+        required: true,
+    },
+    releaseTime: {
+        type: Date, // Timestamp when the feedback form is released
+        required: true,
+    },
+    activeUntil: {
+        type: Date, // Automatically calculated to be 2 days from `releaseTime`
+        required: true,
     },
 },
 { timestamps: true });
+
+// Middleware to set `activeUntil` automatically
+lectureFeedbackSchema.pre('save', function (next) {
+    if (this.isNew) {
+        this.activeUntil = new Date(this.releaseTime.getTime() + 2 * 24 * 60 * 60 * 1000); // Add 2 days to releaseTime
+    }
+    next();
+});
 
 export const LectureFeedback = mongoose.model('LectureFeedback', lectureFeedbackSchema);

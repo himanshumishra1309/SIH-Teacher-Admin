@@ -4,6 +4,10 @@ import { domainPoints } from '../utils/domainPoints.js';
 
 const lectureSchema = new Schema(
 {
+    subject:{
+        type: Schema.Types.ObjectId,
+        ref:"AllocatedSubject",
+    },
     topic: {
         type: String,
         required:true,
