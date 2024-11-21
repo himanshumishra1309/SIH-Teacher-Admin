@@ -19,6 +19,7 @@ import { Checkbox } from "@/components/ui/checkbox.jsx";
 import DrawerComponent from "../../../Forms/AddEntry/DrawerComponent.jsx";
 import DeleteDialog from "../../DeleteDialog.jsx";
 import axios from "axios";
+import LoadingPage from "@/pages/LoadingPage.jsx";
 
 export default function FacultyProjectTable() {
   const { id } = useParams();
@@ -31,6 +32,8 @@ export default function FacultyProjectTable() {
   const [rowToDelete, setRowToDelete] = useState(null);
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+
 
   // const [teacherProjectData, setTeacherProjectData] = useState("");
   useEffect(() => {
@@ -50,6 +53,9 @@ export default function FacultyProjectTable() {
         setData(response.data.data.projects);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
+      }
+      finally {
+        setIsLoading(false);
       }
     };
 
@@ -122,11 +128,36 @@ export default function FacultyProjectTable() {
     );
   };
 
-  const handleDeleteRow = () => {
-    setData((prevData) => prevData.filter((row) => row.id !== rowToDelete.id));
-    setDeleteDialogOpen(false);
-    setRowToDelete(null);
+  const handleDeleteRow = async () => {
+    try {
+      console.log(rowToDelete);
+      const token = sessionStorage.getItem("teacherAccessToken");
+
+      await axios.delete(
+        `http://localhost:6005/api/v1/projects/projects/${rowToDelete._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // Remove the deleted item from the local state
+      setData((prevData) =>
+        prevData.filter((row) => row._id !== rowToDelete._id)
+      );
+
+      setDeleteDialogOpen(false);
+      setRowToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete projects Data:", error);
+    }
   };
+  
+  if (isLoading) {
+    return <LoadingPage/>;
+  }
 
   return (
     <div className="container mx-auto p-4">
@@ -178,7 +209,7 @@ export default function FacultyProjectTable() {
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers
-                  .filter((header) => header.column.id !== "actions") // Filter out the actions column
+                  // .filter((header) => header.column.id !== "actions") // Filter out the actions column
                   .map((header) => (
                     <th key={header.id} className="px-4 py-2">
                       {header.isPlaceholder
@@ -197,7 +228,7 @@ export default function FacultyProjectTable() {
               <tr key={row.id}>
                 {row
                   .getVisibleCells()
-                  .filter((cell) => cell.column.id !== "actions") // Filter out the actions cell
+                  // .filter((cell) => cell.column.id !== "actions") // Filter out the actions cell
                   .map((cell) => (
                     <td key={cell.id} className="px-4 py-2">
                       {flexRender(
@@ -218,7 +249,46 @@ export default function FacultyProjectTable() {
           setDrawerOpen(false);
           setRowToEdit(null);
         }}
-        onSubmit={rowToEdit ? handleEditEntry : handleAddEntry}
+        onSubmit={async (formData) => {
+          console.log(formData);
+          const token = sessionStorage.getItem("teacherAccessToken");
+
+          try {
+            if (rowToEdit) {
+              console.log("editing  the data", formData);
+              const response = await axios.patch(
+                `http://localhost:6005/api/v1/projects/projects/${rowToEdit._id}`,
+                formData,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                  },
+                }
+              );
+              console.log(response.data.data);
+              handleEditEntry(response.data.data);
+            } else {
+              console.log("posting the data", formData);
+              const response = await axios.post(
+                `http://localhost:6005/api/v1/projects/projects`,
+                formData,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application.json",
+                  },
+                }
+              );
+              console.log(response.data.data);
+              handleAddEntry(response.data.data);
+            }
+          } catch (error) {
+            console.error("Failed to submit Project data:", error);
+          }
+
+          setDrawerOpen(false);
+        }}
         columns={columns}
         rowData={rowToEdit}
       />

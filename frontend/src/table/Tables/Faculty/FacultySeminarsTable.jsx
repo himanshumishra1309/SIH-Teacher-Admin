@@ -17,6 +17,8 @@ import { SearchIcon, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import { Checkbox } from "@/components/ui/checkbox.jsx";
 import DrawerComponent from "../../../Forms/AddEntry/DrawerComponent.jsx";
+import LoadingPage from "@/pages/LoadingPage.jsx";
+
 import DeleteDialog from "../../DeleteDialog.jsx";
 import axios from "axios";
 
@@ -31,6 +33,8 @@ export default function FacultySeminarsTable() {
   const [rowToDelete, setRowToDelete] = useState(null);
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+
 
   // data of the teacher email wegera
   // useEffect(() => {
@@ -76,6 +80,9 @@ export default function FacultySeminarsTable() {
         setData(response.data.data);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
+      }
+      finally {
+        setIsLoading(false);
       }
     };
 
@@ -148,12 +155,37 @@ export default function FacultySeminarsTable() {
     );
   };
 
-  const handleDeleteRow = () => {
-    setData((prevData) => prevData.filter((row) => row.id !== rowToDelete.id));
-    setDeleteDialogOpen(false);
-    setRowToDelete(null);
+  const handleDeleteRow = async () => {
+    try {
+      console.log(rowToDelete);
+      const token = sessionStorage.getItem("teacherAccessToken");
+
+      await axios.delete(
+        `http://localhost:6005/api/v1/seminars/${rowToDelete._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // Remove the deleted item from the local state
+      setData((prevData) =>
+        prevData.filter((row) => row._id !== rowToDelete._id)
+      );
+
+      setDeleteDialogOpen(false);
+      setRowToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete Seminar Data:", error);
+    }
   };
 
+  if (isLoading) {
+    return <LoadingPage/>;
+  }
+  
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between mb-4">
@@ -244,7 +276,47 @@ export default function FacultySeminarsTable() {
           setDrawerOpen(false);
           setRowToEdit(null);
         }}
-        onSubmit={rowToEdit ? handleEditEntry : handleAddEntry}
+        onSubmit={async (formData) => {
+          console.log(formData);
+          const token = sessionStorage.getItem("teacherAccessToken");
+
+          try {
+            if (rowToEdit) {
+              console.log("editing  the data", formData);
+              const response = await axios.patch(
+                `http://localhost:6005/api/v1/seminars/${rowToEdit._id}`,
+                formData,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                  },
+                }
+              );
+              console.log(response.data.data);
+              handleEditEntry(response.data.data);
+            } else {
+              // Add (POST Request)
+              console.log("posting the data", formData);
+              const response = await axios.post(
+                `http://localhost:6005/api/v1/seminars/seminars/upcoming`,
+                formData,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application.json",
+                  },
+                }
+              );
+              console.log(response.data.data);
+              handleAddEntry(response.data.data);
+            }
+          } catch (error) {
+            console.error("Failed to submit Seminar data:", error);
+          }
+
+          setDrawerOpen(false);
+        }}
         columns={columns}
         rowData={rowToEdit}
       />

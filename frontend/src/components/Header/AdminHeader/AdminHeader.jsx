@@ -1,41 +1,37 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Home } from 'lucide-react';
 import AdminAvatar from "./AdminAvatar";
 
-function AdminHeader() {
+export default function AdminHeader() {
   return (
-    <>
-      <header className="flex justify-between items-center py-1 m-0 bg-blue-600 shadow-md">
-        <div className="flex items-center">
-          <Link to={"#"}>
-            <img
-              src="../../assets/icons/Logo.svg"
-              alt="College Logo"
-              className="h-20 w-20
-    ml-2 mr-2"
-            />
-          </Link>
-          <Link to={"#"}>
-            <h1 className="text-2xl text-white ">
-              Education Department
-              <br />
-              Govt. of NCT of Delhi
-            </h1>
-          </Link>
-        </div>
-
-        <div className="flex justify-between">
+    <header className="flex justify-between items-center py-2 px-4 bg-gradient-to-r from-blue-700 to-blue-900 shadow-lg text-white shadow-md">
+      <div className="flex items-center space-x-4">
+        <Link to="/faculty-home" className="flex items-center space-x-2">
           <img
-            src="../../assets/icons/emblem.svg"
+            src="/assets/icons/Logo.svg"
             alt="College Logo"
-            className="h-20 w-20
-    ml-2 items-center"
+            className="h-12 w-12"
           />
-          <AdminAvatar />
-        </div>
-      </header>
-    </>
+          <div className="hidden md:block">
+            <h1 className="text-lg font-semibold leading-tight">
+              Education Department
+            </h1>
+            <p className="text-sm">Govt. of NCT of Delhi</p>
+          </div>
+        </Link>
+      </div>
+
+      <div className="flex items-center space-x-4">
+        <Link to="/home">
+          <Button variant="ghost" size="sm" className="text-white hover:text-blue-400">
+            <Home className="mr-2 h-4 w-4" />
+            <span className="hidden sm:inline">Home Portal</span>
+          </Button>
+        </Link>
+        <AdminAvatar/>
+      </div>
+    </header>
   );
 }
-
-export default AdminHeader;

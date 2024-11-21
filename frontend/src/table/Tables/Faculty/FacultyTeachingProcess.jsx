@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { columnDef } from "../Columns/ProjectsColumn.jsx";
+import { columnDef } from "../Columns/TeachingProcessColumn";
 import "../../table.css";
 import DownloadBtn from "../../DownloadBtn.jsx";
 import DebouncedInput from "../../DebouncedInput.jsx";
@@ -18,9 +18,11 @@ import { Button } from "@/components/ui/button.jsx";
 import { Checkbox } from "@/components/ui/checkbox.jsx";
 import DrawerComponent from "../../../Forms/AddEntry/DrawerComponent.jsx";
 import DeleteDialog from "../../DeleteDialog.jsx";
+import LoadingPage from "@/pages/LoadingPage.jsx";
+
 import axios from "axios";
 
-export default function AdminProjectTable() {
+export default function FacultyTeachingProcessTable() {
   const { id } = useParams();
   // console.log(id);
   const [data, setData] = useState("");
@@ -31,25 +33,56 @@ export default function AdminProjectTable() {
   const [rowToDelete, setRowToDelete] = useState(null);
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
 
-  // const [teacherProjectData, setTeacherProjectData] = useState("");
+
+  // data of the teacher email wegera
+  // useEffect(() => {
+  //   const fetchTeacherInfo = async () => {
+  //     try {
+  //       // Retrieve the token from session storage
+  //       const token = sessionStorage.getItem("adminAccessToken"); // Adjust this if using cookies
+
+  //       const response = await axios.get(
+  //         `http://localhost:6005/api/v1/admins/teachers/${id}`, // Adjust URL to your API endpoint
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`, // Set the Authorization header
+  //           },
+  //         }
+  //       );
+  //       console.log(response.data.data.teacher);
+  //       setTeacherInfo(response.data.data);
+  //     } catch (error) {
+  //       console.log("An error occurred while fetching teacher info.");
+  //     }
+  //   };
+
+  //   fetchTeacherInfo();
+  // }, [id]); // Runs when 'id' changes
+
+  // dtaa of the reaserch paper of the teacher aditi sharma
+
   useEffect(() => {
     const fetchTeacherInfo = async () => {
       try {
-        const token = sessionStorage.getItem("adminAccessToken");
+        const token = sessionStorage.getItem("teacherAccessToken");
 
         const response = await axios.get(
-          `http://localhost:6005/api/v1/admins/teachers/${id}/projects`,
+          // `http://localhost:6005/api/v1/seminars/seminars/conducted`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
+        console.log("Tecahing Process Data", response.data.data);
         setData(response.data.data);
-        console.log("Tecaher Projects DATA Is", data);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
+      }
+      finally {
+        setIsLoading(false);
       }
     };
 
@@ -122,11 +155,39 @@ export default function AdminProjectTable() {
     );
   };
 
-  const handleDeleteRow = () => {
-    setData((prevData) => prevData.filter((row) => row.id !== rowToDelete.id));
-    setDeleteDialogOpen(false);
-    setRowToDelete(null);
+  const handleDeleteRow = async () => {
+    try {
+      console.log(rowToDelete);
+      const token = sessionStorage.getItem("teacherAccessToken");
+
+      await axios.delete(
+        `http://localhost:6005/api/v1/seminars/${rowToDelete._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // Remove the deleted item from the local state
+      setData((prevData) =>
+        prevData.filter((row) => row._id !== rowToDelete._id)
+      );
+
+      setDeleteDialogOpen(false);
+      setRowToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete Seminar Data:", error);
+    }
+   
   };
+
+
+  if (isLoading) {
+    return <LoadingPage/>;
+  }
+
 
   return (
     <div className="container mx-auto p-4">
@@ -142,12 +203,12 @@ export default function AdminProjectTable() {
         </div>
         <DownloadBtn data={data} fileName="Research" />
       </div>
-{/* 
+
       <div className="flex justify-end mb-4">
-        <Button onClick={() => setDrawerOpen(true)} className="add-entry-btn">
+        <Button onClick={() => setDrawerOpen(true)} className="add-entry-btn text-white">
           Add Entry
         </Button>
-      </div> */}
+      </div>
 
       <div className="mb-4 flex flex-wrap gap-2">
         {table.getAllLeafColumns().map((column) => (
@@ -173,39 +234,31 @@ export default function AdminProjectTable() {
       </div>
 
       <div className="table-container">
-        <table className="w-full">
+      <table className="w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
-                {headerGroup.headers
-                  .filter((header) => header.column.id !== "actions") // Filter out the actions column
-                  .map((header) => (
-                    <th key={header.id} className="px-4 py-2">
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </th>
-                  ))}
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} className="px-4 py-2">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </th>
+                ))}
               </tr>
             ))}
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id}>
-                {row
-                  .getVisibleCells()
-                  .filter((cell) => cell.column.id !== "actions") // Filter out the actions cell
-                  .map((cell) => (
-                    <td key={cell.id} className="px-4 py-2">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id} className="px-4 py-2">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>
@@ -218,7 +271,47 @@ export default function AdminProjectTable() {
           setDrawerOpen(false);
           setRowToEdit(null);
         }}
-        onSubmit={rowToEdit ? handleEditEntry : handleAddEntry}
+        onSubmit={async (formData) => {
+          console.log(formData);
+          const token = sessionStorage.getItem("teacherAccessToken");
+
+          try {
+            if (rowToEdit) {
+              console.log("editing  the data", formData);
+              const response = await axios.patch(
+                // `http://localhost:6005/api/v1/seminars/${rowToEdit._id}`,
+                formData,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                  },
+                }
+              );
+              console.log(response.data.data);
+              handleEditEntry(response.data.data);
+            } else {
+              // Add (POST Request)
+              console.log("posting the data", formData);
+              const response = await axios.post(
+                // `http://localhost:6005/api/v1/seminars/seminars/upcoming`,
+                formData,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application.json",
+                  },
+                }
+              );
+              console.log(response.data.data);
+              handleAddEntry(response.data.data);
+            }
+          } catch (error) {
+            console.error("Failed to submit teaching data:", error);
+          }
+
+          setDrawerOpen(false);
+        }}
         columns={columns}
         rowData={rowToEdit}
       />

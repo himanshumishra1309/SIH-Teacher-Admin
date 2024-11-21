@@ -18,9 +18,14 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
         col.accessorKey !== "View"
       ) {
         if (
-          ["Date", "startDate", "publishedDate", "addedOn", "date"].includes(
-            col.accessorKey
-          )
+          [
+            "Date",
+            "startDate",
+            "publishedDate",
+            "addedOn",
+            "date",
+            "endDate",
+          ].includes(col.accessorKey)
         ) {
           schemaFields[col.accessorKey] = z.date().nullable();
         } else if (col.accessorKey === "report") {
@@ -53,9 +58,14 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
     if (isOpen && rowData) {
       Object.keys(rowData).forEach((key) => {
         if (
-          ["Date", "startDate", "publishedDate", "addedOn", "date"].includes(
-            key
-          )
+          [
+            "Date",
+            "startDate",
+            "publishedDate",
+            "addedOn",
+            "date",
+            "endDate",
+          ].includes(key)
         ) {
           setValue(key, rowData[key] ? new Date(rowData[key]) : null);
         } else {
@@ -72,20 +82,17 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
     Object.entries(data).forEach(([key, value]) => {
       if (key === "report") {
         if (value instanceof File) {
-          // Append file if `report` is a file
           formData.append(key, value);
         } else if (typeof value === "string" && value.startsWith("http")) {
-          // Append URL if `report` is a string (URL)
           formData.append(key, value);
         }
       } else {
-        // Append other data
         formData.append(key, value);
-        console.log({ formData });
       }
     });
 
-    onSubmit(formData); 
+
+    onSubmit(formData);
     onClose();
   };
 

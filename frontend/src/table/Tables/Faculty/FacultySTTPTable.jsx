@@ -17,6 +17,8 @@ import { SearchIcon, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import { Checkbox } from "@/components/ui/checkbox.jsx";
 import DrawerComponent from "../../../Forms/AddEntry/DrawerComponent.jsx";
+import LoadingPage from "@/pages/LoadingPage.jsx";
+
 import DeleteDialog from "../../DeleteDialog.jsx";
 import axios from "axios";
 
@@ -31,6 +33,8 @@ export default function FacultySTTPTable() {
   const [rowToDelete, setRowToDelete] = useState(null);
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+
 
   useEffect(() => {
     const fetchTeacherInfo = async () => {
@@ -46,6 +50,9 @@ export default function FacultySTTPTable() {
         setData(response.data.data.sttps);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
+      }
+      finally {
+        setIsLoading(false);
       }
     };
 
@@ -124,6 +131,10 @@ export default function FacultySTTPTable() {
     setRowToDelete(null);
   };
 
+  if (isLoading) {
+    return <LoadingPage/>;
+  }
+
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between mb-4">
@@ -182,7 +193,7 @@ export default function FacultySTTPTable() {
                           header.getContext()
                         )}
                   </th>
-                ))} 
+                ))}
               </tr>
             ))}
           </thead>
@@ -212,12 +223,9 @@ export default function FacultySTTPTable() {
 
           try {
             if (rowToEdit) {
-              // console.log(rowToEdit);
-              // Edit (PUT Request)
-              console.log("editing  the data", formData);
-
-              const response = await axios.patch(
-                `http://localhost:6005/api/v1/sttp/paper/${rowToEdit._id}`,
+              console.log("editing  the data", formData); 
+              const response = await axios.put(
+                `http://localhost:6005/api/v1/sttp/${rowToEdit._id}`,
                 formData,
                 {
                   headers: {

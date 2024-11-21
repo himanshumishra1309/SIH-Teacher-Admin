@@ -19,6 +19,7 @@ import { Checkbox } from "@/components/ui/checkbox.jsx";
 import DrawerComponent from "../../../Forms/AddEntry/DrawerComponent.jsx";
 import DeleteDialog from "../../DeleteDialog.jsx";
 import axios from "axios";
+import LoadingPage from "@/pages/LoadingPage.jsx";
 
 export default function FacultyLecturesTable() {
   const { id } = useParams();
@@ -31,6 +32,8 @@ export default function FacultyLecturesTable() {
   const [rowToDelete, setRowToDelete] = useState(null);
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+
 
   // const [expertLectureData, setExpertLectureData] = useState("");
   useEffect(() => {
@@ -55,6 +58,9 @@ export default function FacultyLecturesTable() {
         setData(response.data.data.expertLectures);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
+      }
+      finally {
+        setIsLoading(false);
       }
     };
 
@@ -152,7 +158,12 @@ export default function FacultyLecturesTable() {
     } catch (error) {
       console.error("Failed to delete Expert Lecture delivered:", error);
     }
+    
   };
+
+  if (isLoading) {
+    return <LoadingPage/>;
+  }
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between mb-4">

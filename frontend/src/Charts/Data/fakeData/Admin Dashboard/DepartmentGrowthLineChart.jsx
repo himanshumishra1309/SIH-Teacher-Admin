@@ -12,6 +12,7 @@ import {
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 ChartJS.register(
   CategoryScale,
@@ -69,9 +70,14 @@ function DepartmentGrowthLineChart({ id }) {
             {
               label: "Performance Points",
               data: points,
-              borderColor: "rgba(54, 162, 235, 0.6)",
-              fill: false,
-              tension: 0.3,
+              borderColor: "rgba(37, 99, 235, 1)", // Darker blue color
+              backgroundColor: "rgba(37, 99, 235, 0.1)", // Light blue background
+              fill: true,
+              tension: 0.4,
+              pointBackgroundColor: "rgba(37, 99, 235, 1)",
+              pointBorderColor: "#fff",
+              pointHoverBackgroundColor: "#fff",
+              pointHoverBorderColor: "rgba(37, 99, 235, 1)",
             },
           ],
         });
@@ -116,29 +122,87 @@ function DepartmentGrowthLineChart({ id }) {
     plugins: {
       legend: {
         position: "top",
+        labels: {
+          font: {
+            size: 14,
+            weight: 'bold'
+          }
+        }
       },
       title: {
         display: true,
         text: "Department Growth Over Time",
+        font: {
+          size: 20,
+          weight: 'bold'
+        }
       },
+      tooltip: {
+        mode: 'index',
+        intersect: false,
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        titleColor: '#2563eb',
+        bodyColor: '#1e40af',
+        borderColor: '#2563eb',
+        borderWidth: 1,
+        padding: 10,
+        displayColors: false,
+      }
     },
     scales: {
       y: {
         beginAtZero: true,
         ticks: {
           stepSize: 10, // Adjust step size to space the y-axis labels
+          font: {
+            size: 12
+          }
+        },
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)',
         },
       },
       x: {
         title: {
           display: true,
           text: "Time (Year)",
+          font: {
+            size: 14,
+            weight: 'bold'
+          }
+        },
+        ticks: {
+          font: {
+            size: 12
+          }
+        },
+        grid: {
+          display: false,
         },
       },
     },
   };
 
-  return <Line data={chartData} options={options} />;
+  if (isLoading) {
+    return <div className="text-center py-10 text-blue-600">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center py-10 text-red-500">{error}</div>;
+  }
+
+  return (
+    <Card className="w-full shadow-lg">
+      <CardHeader>
+        <CardTitle className="text-2xl font-bold text-blue-700">Faculty Performance Trend</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="p-4">
+          <Line data={chartData} options={options} />
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
 
 export default DepartmentGrowthLineChart;
