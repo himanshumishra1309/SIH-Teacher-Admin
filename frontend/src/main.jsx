@@ -46,8 +46,14 @@ import FacultyGuidedTable from './table/Tables/Faculty/FacultyGuidedTable';
 import FacultyDataDashboard from './pages/FacultyPortal/FacultyDataDashboard';
 import PostsPage from './pages/FacultyPortal/PostsPage';
 import FacultyTeachingProcessTable from './table/Tables/Faculty/FacultyTeachingProcess';
+import AdminHomeLayout from './Layouts/AdminHomeLayout';
+import AdminReleaseFeedbacks from './pages/AdminPortal/AdminList/AdminFeedbacks';
+import AdminLectureAllocationPage from './pages/AdminPortal/AdminList/AdminLectureAllocation';
+
+
 import { FontSizeProvider } from './components/Ribbon/FontSizeContext';
 import FontSizeHandler from './components/Ribbon/FontSizeHandler';
+
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -89,13 +95,20 @@ const router = createBrowserRouter(
       <Route path="admin-sign-up" element={<AdminSISU/>} />
       <Route path="student-sign-up" element={<StudentSISU/>} />
     
-      <Route path="admin-home" element={<AdminHome/>} />
+    <Route path="admin" element={<AdminHomeLayout/>} errorElement={<NotFoundPage/>}>
+    <Route  index element={<AdminHome/>} errorElement={<NotFoundPage/>}/>
+
+    <Route path="faculty-data" element={<AdminHome/>} errorElement={<NotFoundPage/>}/>
+    <Route path="allocate-lectures" element={<AdminLectureAllocationPage/>} errorElement={<NotFoundPage/>}/>
+    <Route path="release-feedbacks" element={<AdminReleaseFeedbacks/>} errorElement={<NotFoundPage/>}/>
+
+
+    </Route>
 
  
       <Route path="admin-info/:id" element={<AdminLayout/>}> 
-
+        
         <Route path="facultyList" element={<FacultyCards/>}/>
-        {/* <Route index element={<AdminDataDashboard/>} errorElement={<NotFoundPage/>} /> */}
         <Route index element={<AdminResearchTable />} errorElement={<NotFoundPage/>} />
 
         <Route path="personal-details" element={<ResearchTable />} errorElement={<NotFoundPage/>} />
@@ -111,13 +124,13 @@ const router = createBrowserRouter(
 
 
       </Route>
-      
+       
       
       <Route path="student-home" element={<StudentHome />} /> {/* Route for student portal */}
     
       <Route path="student" element={<StudentLayout/>}>
       <Route path="lecture" element={<LectureCards/>} errorElement={<NotFoundPage/>} />
-      <Route path="upcoming-Rsvp" element={< UpcomingRsvp/>} errorElement={<NotFoundPage/>} />
+      <Route path="upcoming-rsvp" element={< UpcomingRsvp/>} errorElement={<NotFoundPage/>} />
       <Route path="seminar" element={<SeminarCards />} errorElement={<NotFoundPage/>} />
       </Route>
     </Route>

@@ -79,7 +79,7 @@ export default function AdminSISU() {
       );
       const accessToken = response?.data?.data?.adminAccessToken;
       sessionStorage.setItem("adminAccessToken", accessToken);
-      navigate("/admin-home");
+      navigate("/admin");
     } catch (error) {
       console.error("Error during signup:", error);
       alert("Signup failed. Please try again.");
@@ -97,7 +97,7 @@ export default function AdminSISU() {
       const accessToken = response?.data?.data?.adminAccessToken;
       if (accessToken) {
         sessionStorage.setItem("adminAccessToken", accessToken);
-        navigate("/admin-home", { state: { justLoggedIn: true } });
+        navigate("/admin", { state: { justLoggedIn: true } });
       } else {
         throw new Error("Access token is missing in the response");
       }

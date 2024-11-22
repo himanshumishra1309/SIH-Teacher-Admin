@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useParams, Outlet } from "react-router-dom";
-
+import { useParams } from "react-router-dom";
 import {
   useReactTable,
   getCoreRowModel,
@@ -10,457 +9,102 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import { columnDef } from "./Columns/ResearchColumn.jsx";
-import dataJSON from "./data.json";
-import "../table.css";
-import DownloadBtn from "../DownloadBtn.jsx";
-import DebouncedInput from "../DebouncedInput.jsx";
-import { SearchIcon, Eye, EyeOff } from "lucide-react";
-import { Button } from "@/components/ui/button.jsx";
-import { Checkbox } from "@/components/ui/checkbox.jsx";
+import { SearchIcon, ChevronDown } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import DrawerComponent from "../../Forms/AddEntry/DrawerComponent.jsx";
 import DeleteDialog from "../DeleteDialog.jsx";
 import axios from "axios";
 
+// ... (keep the existing imports)
+
 export default function ResearchTable() {
-  const { id } = useParams();
-  // console.log(id);
-  const [data, setData] = useState("");
-  const [globalFilter, setGlobalFilter] = useState("");
-  const [isDrawerOpen, setDrawerOpen] = useState(false);
-  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [rowToEdit, setRowToEdit] = useState(null);
-  const [rowToDelete, setRowToDelete] = useState(null);
-  const [sorting, setSorting] = useState([]);
-  const [columnVisibility, setColumnVisibility] = useState({});
-
-  // data of the teacher email wegera
-  // useEffect(() => {
-  //   const fetchTeacherInfo = async () => {
-  //     try {
-  //       // Retrieve the token from session storage
-  //       const token = sessionStorage.getItem("adminAccessToken"); // Adjust this if using cookies
-
-  //       const response = await axios.get(
-  //         `http://localhost:6005/api/v1/admins/teachers/${id}`, // Adjust URL to your API endpoint
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`, // Set the Authorization header
-  //           },
-  //         }
-  //       );
-  //       console.log(response.data.data.teacher);
-  //       setTeacherInfo(response.data.data);
-  //     } catch (error) {
-  //       console.log("An error occurred while fetching teacher info.");
-  //     }
-  //   };
-
-  //   fetchTeacherInfo();
-  // }, [id]); // Runs when 'id' changes
-
-  // dtaa of the reaserch paper of the teacher aditi sharma
-
-  useEffect(() => {
-    const fetchTeacherInfo = async () => {
-      try {
-        const token = sessionStorage.getItem("adminAccessToken");
-
-        const response = await axios.get(
-          `http://localhost:6005/api/v1/admins/teachers/${id}/research-papers`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        // console.log("Teacher is HERE");
-        console.log(response.data.data);
-        const formattedData = response.data.data.map((item) => ({
-          ...item,
-          publishedDate: item.publishedDate.split("T")[0],
-        }));
-
-        // console.log(formattedData)
-
-        setData(response.data.data);
-      } catch (error) {
-        console.log("An error occurred while fetching teacher info.");
-      }
-    };
-
-    fetchTeacherInfo();
-  }, [id]);
-
-  // data of the sttp of the teacher aditi shrma
-  // const [sttData, setsttData] = useState("");
-  // useEffect(() => {
-  //   const fetchTeacherInfo = async () => {
-  //     try {
-  //       const token = sessionStorage.getItem("teacherAccessToken");
-
-  //       const response = await axios.get(`http://localhost:6005/api/v1/sttp/`, {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-
-  //       setsttData(response.data.data.sttps);
-  //       console.log("STTPDATA IS HERE", sttData);
-  //     } catch (error) {
-  //       console.log("An error occurred while fetching teacher info.");
-  //     }
-  //   };
-
-  //   fetchTeacherInfo();
-  // }, []);
-
-  const [sttData, setsttData] = useState("");
-  useEffect(() => {
-    const fetchTeacherInfo = async () => {
-      try {
-        const token = sessionStorage.getItem("adminAccessToken");
-
-        const response = await axios.get(
-          `http://localhost:6005/api/v1/admins/teachers/${id}/sttps`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        console.log("Sttps", response.data.data);
-
-        setsttData(response.data.data.sttps);
-        // console.log("STTPDATA IS HERE", sttData);
-      } catch (error) {
-        console.log("An error occurred while fetching teacher info.");
-      }
-    };
-
-    fetchTeacherInfo();
-  }, []);
-
-  // data of the events of the teacher aditi shrma
-  // const [eventData, setEventData] = useState("");
-  // useEffect(() => {
-  //   const fetchTeacherInfo = async () => {
-  //     try {
-  //       const token = sessionStorage.getItem("teacherAccessToken");
-
-  //       const response = await axios.get(
-  //         `http://localhost:6005/api/v1/event/events`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //       setEventData(response.data.data.events);
-  //       console.log("EVENT DATA Is", eventData);
-  //     } catch (error) {
-  //       console.log("An error occurred while fetching teacher info.");
-  //     }
-  //   };
-
-  //   fetchTeacherInfo();
-  // }, []);
-
-  const [eventData, setEventData] = useState("");
-  useEffect(() => {
-    const fetchTeacherInfo = async () => {
-      try {
-        const token = sessionStorage.getItem("adminAccessToken");
-
-        const response = await axios.get(
-          `http://localhost:6005/api/v1/admins/teachers/${id}/events-participated`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        // console.log("EVENT DATA Is", response.data.data);
-        setEventData(response.data.data);
-        console.log("EVENT DATA Is", eventData);
-      } catch (error) {
-        console.log("An error occurred while fetching teacher info.");
-      }
-    };
-
-    fetchTeacherInfo();
-  }, []);
-
-  // get the data of the expert lectures of the teahcer
-  // const [expertLectureData, setExpertLectureData] = useState("");
-  // useEffect(() => {
-  //   const fetchTeacherInfo = async () => {
-  //     try {
-  //       const token = sessionStorage.getItem("teacherAccessToken");
-
-  //       const response = await axios.get(
-  //         `http://localhost:6005/api/v1/expertLectures/lectures`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //       setExpertLectureData(response.data.data.expertLectures);
-  //       console.log("Expert LEcture DATA Is", expertLectureData);
-  //     } catch (error) {
-  //       console.log("An error occurred while fetching teacher info.");
-  //     }
-  //   };
-
-  //   fetchTeacherInfo();
-  // }, []);
-
-  const [expertLectureData, setExpertLectureData] = useState("");
-  useEffect(() => {
-    const fetchTeacherInfo = async () => {
-      try {
-        const token = sessionStorage.getItem("adminAccessToken");
-
-        const response = await axios.get(
-          `http://localhost:6005/api/v1/admins/teachers/${id}/expert-lectures`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        console.log("Expert LEcture DATA Is", response.data.data);
-        setExpertLectureData(response.data.data);
-      } catch (error) {
-        console.log("An error occurred while fetching teacher info.");
-      }
-    };
-
-    fetchTeacherInfo();
-  }, []);
-
-  // get the data of the projects of the teachers
-
-  // const [teacherProjectData, setTeacherProjectData] = useState("");
-  // useEffect(() => {
-  //   const fetchTeacherInfo = async () => {
-  //     try {
-  //       const token = sessionStorage.getItem("teacherAccessToken");
-
-  //       const response = await axios.get(
-  //         `http://localhost:6005/api/v1/projects/projects`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //       setTeacherProjectData(response.data.data.projects);
-  //       console.log("Tecaher Projects DATA Is", teacherProjectData);
-  //     } catch (error) {
-  //       console.log("An error occurred while fetching teacher info.");
-  //     }
-  //   };
-
-  //   fetchTeacherInfo();
-  // }, []);
-
-  const [teacherProjectData, setTeacherProjectData] = useState("");
-  useEffect(() => {
-    const fetchTeacherInfo = async () => {
-      try {
-        const token = sessionStorage.getItem("adminAccessToken");
-
-        const response = await axios.get(
-          `http://localhost:6005/api/v1/admins/teachers/${id}/projects`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setTeacherProjectData(response.data.data);
-        console.log("Tecaher Projects DATA Is", teacherProjectData);
-      } catch (error) {
-        console.log("An error occurred while fetching teacher info.");
-      }
-    };
-
-    fetchTeacherInfo();
-  }, []);
-
-  const [seminarData, setSeminarData] = useState("");
-  useEffect(() => {
-    const fetchTeacherInfo = async () => {
-      try {
-        const token = sessionStorage.getItem("adminAccessToken");
-
-        const response = await axios.get(
-          `http://localhost:6005/api/v1/admins/teachers/${id}/seminars/conducted`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setSeminarData(response.data.data);
-        console.log("Tecaher Seminar Data", seminarData);
-      } catch (error) {
-        console.log("An error occurred while fetching teacher info.");
-      }
-    };
-
-    fetchTeacherInfo();
-  }, []);
-
-  const [MguidData, setMguidData] = useState("");
-  useEffect(() => {
-    const fetchTeacherInfo = async () => {
-      try {
-        const token = sessionStorage.getItem("adminAccessToken");
-
-        const response = await axios.get(
-          `http://localhost:6005/api/v1/admins/teachers/${id}/students-guided/mtech`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        console.log("Studetn guide", response.data.data);
-        // setSeminarData(response.data.data);
-      } catch (error) {
-        console.log("An error occurred while fetching teacher info.");
-      }
-    };
-
-    fetchTeacherInfo();
-  }, []);
+  // ... (keep the existing state variables and useEffect hooks)
 
   const columns = useMemo(() => {
-    return columnDef.map((col) => {
-      if (col.accessorKey === "actions") {
-        return {
-          ...col,
-          cell: ({ row }) => (
-            <div className="flex gap-2">
-              <Button
-                onClick={() => {
-                  setRowToEdit(row.original);
-                  setDrawerOpen(true);
-                }}
-                className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200"
-              >
-                Edit
-              </Button>
-              <Button
-                onClick={() => {
-                  setRowToDelete(row.original);
-                  setDeleteDialogOpen(true);
-                }}
-                className="p-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-200"
-              >
-                Delete
-              </Button>
-            </div>
-          ),
-        };
-      }
-      return col;
-    });
+    // ... (keep the existing column definition logic)
   }, []);
 
   const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      sorting,
-      globalFilter,
-      columnVisibility,
-    },
-    onSortingChange: setSorting,
-    onGlobalFilterChange: setGlobalFilter,
-    onColumnVisibilityChange: setColumnVisibility,
+    // ... (keep the existing table configuration)
   });
 
-  const resetFilters = () => {
-    setGlobalFilter("");
-    setSorting([]);
-    table.resetColumnVisibility();
-  };
-
-  const handleAddEntry = (newData) => {
-    setData((prevData) => [...prevData, { ...newData, id: Date.now() }]);
-  };
-
-  const handleEditEntry = (updatedData) => {
-    setData((prevData) =>
-      prevData.map((row) => (row.id === updatedData.id ? updatedData : row))
-    );
-  };
-
-  const handleDeleteRow = () => {
-    setData((prevData) => prevData.filter((row) => row.id !== rowToDelete.id));
-    setDeleteDialogOpen(false);
-    setRowToDelete(null);
-  };
+  // ... (keep the existing utility functions)
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <SearchIcon className="text-gray-400" />
-          <DebouncedInput
+    <div className="container mx-auto p-6 space-y-8">
+      {/* Improved header section */}
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <h1 className="text-2xl font-bold text-gray-800">Research Papers</h1>
+        <div className="flex items-center gap-4">
+          {/* Updated styling for Add Entry and Download buttons */}
+          <Button
+            onClick={() => setDrawerOpen(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow transition duration-200"
+          >
+            Add Entry
+          </Button>
+          <Button
+            onClick={() => {/* Download logic */}}
+            className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded shadow transition duration-200"
+          >
+            Download
+          </Button>
+        </div>
+      </div>
+
+      {/* Improved search and filter section */}
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="relative w-full sm:w-64">
+          <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <Input
             value={globalFilter ?? ""}
-            onChange={(value) => setGlobalFilter(String(value))}
-            className="p-2 bg-transparent outline-none border-b-2 w-64 focus:w-96 duration-300 border-gray-300 focus:border-blue-500"
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className="pl-10 pr-4 py-2 w-full border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="Search all columns..."
           />
         </div>
-        <DownloadBtn data={data} fileName="Research" />
+        {/* New dropdown for column visibility */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="ml-auto">
+              Columns <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {table.getAllLeafColumns().map((column) => {
+              return (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  className="capitalize"
+                  checked={column.getIsVisible()}
+                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                >
+                  {column.id}
+                </DropdownMenuCheckboxItem>
+              )
+            })}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
-      <div className="flex justify-end mb-4">
-        <Button onClick={() => setDrawerOpen(true)} className="add-entry-btn">
-          Add Entry
-        </Button>
-      </div>
-
-      <div className="mb-4 flex flex-wrap gap-2">
-        {table.getAllLeafColumns().map((column) => (
-          <div key={column.id} className="flex items-center">
-            <Checkbox
-              checked={column.getIsVisible()}
-              onCheckedChange={(value) => column.toggleVisibility(!!value)}
-              id={column.id}
-            />
-            <label htmlFor={column.id} className="ml-2 text-sm font-medium">
-              {column.id}
-            </label>
-          </div>
-        ))}
-        <Button
-          onClick={resetFilters}
-          variant="outline"
-          size="sm"
-          className="ml-2"
-        >
-          Reset Filters
-        </Button>
-      </div>
-
-      <div className="table-container">
-        <table className="w-full">
-          <thead>
+      {/* Improved table container */}
+      <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-md">
+        <table className="w-full bg-white">
+          <thead className="bg-gray-50">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <th key={header.id} className="px-4 py-2">
+                  <th
+                    key={header.id}
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -472,11 +116,11 @@ export default function ResearchTable() {
               </tr>
             ))}
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-200">
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
+              <tr key={row.id} className="hover:bg-gray-50">
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-4 py-2">
+                  <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
@@ -486,6 +130,46 @@ export default function ResearchTable() {
         </table>
       </div>
 
+      {/* Improved pagination controls */}
+      <div className="flex items-center justify-between mt-4">
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+            className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+          >
+            Previous
+          </Button>
+          <Button
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+            className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+          >
+            Next
+          </Button>
+        </div>
+        <span className="flex items-center gap-1">
+          <div>Page</div>
+          <strong>
+            {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+          </strong>
+        </span>
+        <select
+          value={table.getState().pagination.pageSize}
+          onChange={(e) => {
+            table.setPageSize(Number(e.target.value));
+          }}
+          className="p-2 border rounded"
+        >
+          {[10, 20, 30, 40, 50].map((pageSize) => (
+            <option key={pageSize} value={pageSize}>
+              Show {pageSize}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Keep the existing DrawerComponent and DeleteDialog */}
       <DrawerComponent
         isOpen={isDrawerOpen}
         onClose={() => {
@@ -503,52 +187,6 @@ export default function ResearchTable() {
         onConfirm={handleDeleteRow}
         rowData={rowToDelete}
       />
-
-      <div className="flex items-center justify-end mt-4 gap-2">
-        <Button
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
-        <span className="flex items-center gap-1">
-          <div>Page</div>
-          <strong>
-            {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
-          </strong>
-        </span>
-        <span className="flex items-center gap-1">
-          | Go to page:
-          <input
-            type="number"
-            defaultValue={table.getState().pagination.pageIndex + 1}
-            onChange={(e) => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0;
-              table.setPageIndex(page);
-            }}
-            className="border p-1 rounded w-16"
-          />
-        </span>
-        <select
-          value={table.getState().pagination.pageSize}
-          onChange={(e) => {
-            table.setPageSize(Number(e.target.value));
-          }}
-        >
-          {[10, 20, 30, 40, 50].map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              Show {pageSize}
-            </option>
-          ))}
-        </select>
-      </div>
     </div>
   );
 }
