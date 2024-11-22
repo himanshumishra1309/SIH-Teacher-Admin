@@ -85,13 +85,10 @@ export default function AdminHome() {
   }, [location.state, toast]);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <AdminHeader />
-      <div className="m-20">
+ 
+      <div className="m-2">
         {navigation.state === "loading" ? <LoadingPage /> : <FacultyCards />}
       </div>
-      <Footer />
-      <Toaster />
-    </div>
+   
   );
 }

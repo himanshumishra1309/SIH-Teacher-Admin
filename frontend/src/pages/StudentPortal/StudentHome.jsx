@@ -1,77 +1,58 @@
 import React from "react";
-import { Header } from "@/components";
 import { Footer } from "@/components";
 import { Link } from "react-router-dom";
 import StudentHeader from "@/components/Header/StudentHeader/StudentHeader";
+import { motion } from "framer-motion";
 
 function StudentHome() {
-
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
   return (
-    <div className="flex flex-col min-h-screen">
-      <StudentHeader />
+    <div className="flex flex-col min-h-screen bg-gray-50">
+    <StudentHeader/>
 
-      <main className="flex-1">
-        <div className="w-full flex-grow flex flex-col justify-center items-center  bg-cover bg-center bg-white">
-          <div className="flex flex-col items-center justify-center  text-center text-white">
-            <h1 className="text-4xl mt-10 font-bold mb-10 text-black font-serif">
-              Student Portal
-            </h1>
-
-            {/* <div className='flex justify-start'>
-    <Link to="student">
-    <img  src="assets\icons\back.svg" alt="Back Icon" className/>
-    </Link>
-</div> */}
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-20 px-4 mt-10">
-              {/* Admin Card */}
-              <Link to="/student/lecture" className="block">
-                <div className="bg-white rounded-lg shadow-lg p-10 flex flex-col items-center hover:shadow-xl transition-shadow duration-300 ">
-                  <img
-                    src="assets\icons\admin.svg"
-                    alt="Admin Icon"
-                    className="h-32 w-36 mb-4"
-                  />
-                  <h2 className="text-3xl font-semibold text-black">
-                    Lecture Feedbacks
-                  </h2>
-                </div>
-              </Link>
-
-              {/* Faculty Card */}
-              <Link to="/student/upcoming-Rsvp" className="block">
-                <div className="bg-white rounded-lg shadow-lg p-10 flex flex-col items-center hover:shadow-xl transition-shadow duration-300">
-                  <img
-                    src="assets\icons\faculty.svg"
-                    alt="Faculty Icon"
-                    className="h-32 w-36 mb-4"
-                  />
-                  <h2 className="text-3xl text-black font-semibold">
-                    RSVP Upcoming Sessions
-                  </h2>
-                </div>
-              </Link>
-
-              {/* Student Card */}
-              <Link to="/student/seminar" className="block">
-                <div className="bg-white rounded-lg shadow-lg p-10 flex flex-col items-center hover:shadow-xl transition-shadow duration-300 ">
-                  <img
-                    src="assets\icons\student.svg"
-                    alt="Student Icon"
-                    className="h-32 w-36 mb-4 "
-                  />
-                  <h2 className="text-3xl font-semibold text-black">
-                    Seminar Feedback
-                  </h2>
-                </div>
-              </Link>
-            </div>
-          </div>
+    <main className="flex-1 bg-gradient-to-b from-blue-50 to-white">
+      <div className="container mx-auto px-4 py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-blue-900">
+            Student Portal
+          </h1>
         </div>
-      </main>
 
-      <Footer />
-    </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          {[
+            { title: "Lecture Feedbacks", icon: "teachings.png", link: "/student/lecture" },
+            { title: "Upcoming RSVP", icon: "rsvp.png", link: "/student/upcoming-rsvp" },
+            { title: "Seminars", icon: "seminar.png", link: "/student/seminar" },
+          ].map((item, index) => (
+            <Link to={item.link} key={item.title} className="block">
+              <motion.div
+                variants={cardVariants}
+                initial="hidden"
+                animate="visible"
+                transition={{ delay: index * 0.2 }}
+                whileHover={{ scale: 1.05 }}
+                className="bg-white rounded-lg shadow-lg p-8 flex flex-col items-center justify-center h-full border border-blue-100 hover:shadow-xl transition-all duration-300"
+              >
+                <img
+                  src={`/assets/icons/${item.icon}`}
+                  alt={`${item.title} Icon`}
+                  className="h-24 w-24 mb-6 object-contain"
+                />
+                <h2 className="text-2xl font-semibold text-blue-800">
+                  {item.title}
+                </h2>
+              </motion.div>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </main>
+
+    <Footer />
+  </div>
   );
 }
 
