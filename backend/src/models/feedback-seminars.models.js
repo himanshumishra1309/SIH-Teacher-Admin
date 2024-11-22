@@ -3,7 +3,7 @@ import mongoose, { Schema } from 'mongoose';
 
 const feedbackSeminarSchema = new Schema(
   {
-    seminar: {
+    seminar: {  
       type: Schema.Types.ObjectId,
       ref: "Seminar",
       required: true

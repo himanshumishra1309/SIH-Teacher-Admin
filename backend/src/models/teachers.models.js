@@ -20,6 +20,14 @@ const teacherSchema = new Schema(
       required: true,
       index: true,
     },
+    experience: {
+      type: Number,
+      required: true,
+    },
+    qualification: {
+      type: String,
+      required: true,
+    },
     department: {
       type: String,
       required: true,

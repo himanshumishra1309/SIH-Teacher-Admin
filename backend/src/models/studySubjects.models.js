@@ -15,7 +15,11 @@ const studySubjectSchema = new Schema(
         type: Number,
         required: true,
     },
-    owner: {
+    teacher:{
+        type: Schema.Types.ObjectId,
+        ref: "Teacher",
+    },
+    student: {
         type: Schema.Types.ObjectId,
         ref: "Student",
     }

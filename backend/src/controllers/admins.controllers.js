@@ -16,6 +16,8 @@ import { SeminarFeedback } from "../models/feedback-seminars.models.js";
 import { SeminarRSVP } from "../models/rsvp-seminar.models.js";
 import { Lecture } from "../models/lectures.models.js";
 import { ExpertLecture } from "../models/expert-lectures.models.js";
+import { Student } from "../models/students.models.js";
+import { StudySubject } from "../models/studySubjects.models.js";
 import mongoose from "mongoose";
 
 const generateAccessAndRefreshToken = async (userId) => {
@@ -100,6 +102,555 @@ const registerAdmin = asyncHandler(async (req, res) => {
         { admin: createAdmin, adminAccessToken, adminRefreshToken },
         "Admin successfully registered"
       )
+    );
+});
+
+const registerTeacher = asyncHandler(async (req, res) => {
+  const { name, email, employee_code, experience, qualification, department, password } = req.body;
+  // console.log('req: ', req);
+
+  if (
+    [name, email, employee_code, experience, qualification, department, password].some(
+      (field) => field?.trim() === ""
+    )
+  ) {
+    throw new ApiError(400, "All fields is required");
+  }
+
+  const existedUser = await Teacher.findOne({
+    $or: [{ employee_code }, { email }],
+  });
+
+  if (existedUser) {
+    throw new ApiError(400, "User with email or employee code already exists");
+  }
+
+  console.log("request: ", req.file);
+
+  const avatarLocalPath = req.file?.path;
+
+  if (!avatarLocalPath) {
+    throw new ApiError(400, "Avatar is required");
+  }
+
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+  if (!avatar) {
+    throw new ApiError(400, "No avatar file found");
+  }
+
+  const teacher = await Teacher.create({
+    name,
+    email,
+    employee_code,
+    experience,
+    qualification,
+    department,
+    avatar: avatar.url,
+    password,
+  });
+
+  const createTeacher = await Teacher.findById(teacher._id).select(
+    "-password -refreshToken"
+  );
+
+  if (!createTeacher) {
+    throw new ApiError(500, "Something went wrong while registering the user");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        {
+          teacher: createTeacher,
+        },
+        "Teacher successfully registered"
+      )
+    );
+});
+
+const getCurrentTeacher = asyncHandler(async (req, res) => {
+  const {teacherId} = req.params;
+
+  const teachers = await Teacher.findById(teacherId);
+
+  if (!teachers) {
+    throw new ApiError(404, "Teacher not found");
+  }
+
+  const teacherInfo = teachers.select("name email employee_code experience qualification department avatar").lean();
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, teacherInfo, "current user fetched successfully")
+    );
+}); //worked on postman
+
+const updateTeacherAccountDetails = asyncHandler(async (req, res) => {
+  const {teacherId} = req.params;
+  const { name, department, email, employee_code, experience, qualification } = req.body;
+
+  if (!name || !department || !email || !employee_code || !experience || !qualification) {
+    throw new ApiError(400, "All field are requires");
+  }
+
+  // console.log("req.teacher: ", req.teacher);
+  // console.log("req.teacher._id: ", req.teacher?._id);
+
+  const teacher = await Teacher.findByIdAndUpdate(
+    teacherId,
+    {
+      $set: {
+        name,
+        email,
+        employee_code,
+        experience,
+        qualification,
+        department,
+      },
+    },
+    { new: true } // this returns all the values after the fields are updated
+  ).select("-password");
+
+  console.log("teacher: ", teacher);
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, teacher, "Account details updated successfully")
+    );
+});
+
+//todo: delete the previous avatar image from the db and cloudinary
+const updateTeacherAvatar = asyncHandler(async (req, res) => {
+  const {teacherId} = req.params;
+  const avatarLocalPath = req.file?.path; // we are taking the file from multer middleware, also here we are only taking one file as input and therefore we are using 'file', whereas if we wanted to take multiple file we would have written 'files' instead of 'file'
+  if (!avatarLocalPath) {
+    throw new ApiError(400, "Avatar is missing");
+  }
+
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+  if (!avatar.url) {
+    throw new ApiError(400, "Error while uploading on avatar");
+  }
+
+  const teacher = await Teacher.findByIdAndUpdate(
+    teacherId,
+    {
+      $set: {
+        avatar: avatar.url,
+      },
+    },
+    { new: true }
+  ).select("-password");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, teacher, "avatar image updated successfully"));
+});
+
+const allotSubjectsToTeachers = asyncHandler(async (req, res)=>{
+  const { subject_name, subject_code, subject_credit, branch, year, teacherId } = req.body;
+
+    // Validate input fields
+    if (!subject_name || !subject_code || !subject_credit || !branch || !year || !teacherId) {
+      return res.status(400).json({ error: "All fields are required." });
+    }
+
+    // Check if the teacher exists
+    const teacher = await Teacher.findById(teacherId);
+
+    if (!teacher) {
+      throw new ApiError(400, "Teacher not found.");
+    }
+
+    // Check if the subject is already allocated to the teacher
+    const existingAllocation = await AllocatedSubject.findOne({
+      subject_code,
+      branch,
+      year,
+      teacher: teacherId,
+    });
+
+    if (existingAllocation) {
+      throw new ApiError(400, "This subject is already allocated to this teacher")
+    }
+
+    // Create a new allocated subject record
+    const allocatedSubject = await AllocatedSubject.create({
+      subject_name,
+      subject_code,
+      subject_credit,
+      branch,
+      year,
+      teacher: teacherId,
+    });
+
+    return res.status(200).json(new ApiResponse(200, {allocatedSubject, teacher}, "Subject alloted"))
+});
+
+const viewAllAllocatedSubjectsOfTheTeacher = asyncHandler(async (req, res) => {
+  const { teacherId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+    throw new ApiError(400, "Invalid teacher ID format.");
+  }
+
+  const allocatedSubjects = await AllocatedSubject.find({ teacher: teacherId })
+    .select("subject_name subject_code subject_credit branch year")
+    .lean();
+
+  if (!allocatedSubjects || allocatedSubjects.length === 0) {
+    throw new ApiError(404, "No subjects allocated to this teacher.");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        allocatedSubjects,
+        "Allocated subjects fetched successfully."
+      )
+    );
+});
+
+const editAllocatedSubjectOfTheTeacher = asyncHandler(async (req, res) => {
+  const { teacherId, subjectId } = req.params;
+  const { subject_name, subject_code, subject_credit, branch, year } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+    throw new ApiError(400, "Invalid teacher ID format.");
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(subjectId)) {
+    throw new ApiError(400, "Invalid subject ID format.");
+  }
+
+  const updatedSubject = await AllocatedSubject.findByIdAndUpdate(
+    subjectId,
+    {
+      $set: {
+        subject_name,
+        subject_code,
+        subject_credit,
+        branch,
+        year,
+      },
+    },
+    { new: true }
+  );
+
+  if (!updatedSubject) {
+    throw new ApiError(404, "Subject not found.");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedSubject, "Subject updated successfully.")
+    );
+});
+
+const deleteAllocatedSubjectOfTheTeacher = asyncHandler(async (req, res) => {
+  const { teacherId, subjectId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+    throw new ApiError(400, "Invalid teacher ID format.");
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(subjectId)) {
+    throw new ApiError(400, "Invalid subject ID format.");
+  }
+
+  const deletedSubject = await AllocatedSubject.findByIdAndDelete(subjectId);
+
+  if (!deletedSubject) {
+    throw new ApiError(404, "Subject not found.");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, deletedSubject, "Subject deleted successfully.")
+    );
+});
+
+const registerStudent = asyncHandler(async (req, res) => {
+  const { name, email, roll_no, branch, year, password } = req.body;
+
+  if (
+    [name, email, roll_no, branch, year, password].some(
+      (field) => field?.trim() === ""
+    )
+  ) {
+    throw new ApiError(400, "All fields is required");
+  }
+
+  const existedUser = await Student.findOne({ email });
+
+  if (existedUser) {
+    throw new ApiError(400, "User with email already exists");
+  }
+  console.log("request(student): ", req.file);
+
+  const avatarLocalPath = req.file?.path;
+
+  if (!avatarLocalPath) {
+    throw new ApiError(400, "Avatar is required");
+  }
+
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+  if (!avatar) {
+    throw new ApiError(400, "No avatar file found");
+  }
+
+  const student = await Student.create({
+    name,
+    email,
+    roll_no,
+    branch,
+    year,
+    avatar: avatar.url,
+    password,
+  });
+
+  const createStudent = await Student.findById(student._id).select(
+    "-password -refreshToken"
+  );
+
+  if (!createStudent) {
+    throw new ApiError(500, "Something went wrong while registering the user");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { student: createStudent },
+        "Student successfully registered"
+      )
+    );
+});
+
+const getCurrentStudent = asyncHandler(async (req, res) => {
+  const {studentId} = req.params;
+
+  const students = await Student.findById(studentId);
+
+  if (!students) {
+    throw new ApiError(404, "Student not found");
+  }
+
+  const studentInfo = students.select("name email roll_no branch year avatar").lean();
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, studentInfo, "current user fetched successfully")
+    );
+}); //worked on postman
+
+const updateStudentAccountDetails = asyncHandler(async (req, res) => {
+  const {studentId} = req.params;
+  const { name, email, roll_no, branch, year } = req.body;
+
+  if (!name || !roll_no || !email || !branch || !year) {
+    throw new ApiError(400, "All field are requires");
+  }
+
+  const student = await Student.findByIdAndUpdate(
+    studentId,
+    {
+      $set: {
+        name,
+        roll_no,
+        email,
+        branch,
+        year,
+      },
+    },
+    { new: true } // this returns all the values after the fields are updated
+  ).select("-password");
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, student, "Account details updated successfully")
+    );
+});
+
+//todo: delete the previous avatar image from the db and cloudinary
+const updateStudentAvatar = asyncHandler(async (req, res) => {
+  const {studentId} = req.params;
+  const avatarLocalPath = req.file?.path; // we are taking the file from multer middleware, also here we are only taking one file as input and therefore we are using 'file', whereas if we wanted to take multiple file we would have written 'files' instead of 'file'
+
+  if (!avatarLocalPath) {
+    throw new ApiError(400, "Avatar is missing");
+  }
+
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+  if (!avatar.url) {
+    throw new ApiError(400, "Error while uploading on avatar");
+  }
+
+  const student = await Student.findByIdAndUpdate(
+    studentId,
+    {
+      $set: {
+        avatar: avatar.url,
+      },
+    },
+    { new: true }
+  ).select("-password");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, student, "avatar image updated successfully"));
+});
+
+const allottSubjectsToStudents = asyncHandler(async (req, res) => {
+  const { subject_name, subject_code, subject_credit, teacherId, studentId } = req.body;
+
+  // Validate inputs
+  if (!subject_name || !subject_code || !subject_credit || !teacherId || !studentId) {
+    return res.status(400).json({ error: "All fields are required." });
+  }
+
+  // Check if the teacher exists
+  const teacher = await Teacher.findById(teacherId);
+
+  if (!teacher) {
+    return res.status(404).json({ error: "Teacher not found." });
+  }
+
+  // Check if the student exists
+  const student = await Student.findById(studentId);
+
+  if (!student) {
+    return res.status(404).json({ error: "Student not found." });
+  }
+
+  // Check if the subject is already allotted to the student
+  const existingAllocation = await StudySubject.findOne({
+    subject_name,
+    subject_code,
+    student: studentId,
+  });
+
+  if (existingAllocation) {
+    return res
+      .status(400)
+      .json({ error: "Subject is already allotted to this student." });
+  }
+
+  // Create and save the subject allocation
+  const studySubject = await StudySubject.create({
+    subject_name,
+    subject_code,
+    subject_credit,
+    teacher: teacherId,
+    student: studentId,
+  });
+  
+  return res.status(200).json(new ApiResponse(200, { studySubject, teacher, student }, "Subject allotted to student successfully."));
+});
+
+const viewAllSubjectsAllottedToTheStudent = asyncHandler(async (req, res) => {
+  const { studentId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(studentId)) {
+    throw new ApiError(400, "Invalid student ID format.");
+  }
+
+  const studySubjects = await StudySubject.find({ student: studentId })
+    .select("subject_name subject_code subject_credit teacher")
+    .populate("teacher", "name department")
+    .lean();
+
+  if (!studySubjects || studySubjects.length === 0) {
+    throw new ApiError(404, "No subjects allotted to this student.");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        studySubjects,
+        "Subjects allotted to student fetched successfully."
+      )
+    );
+});
+
+const editAllottedSubjectOfTheStudent = asyncHandler(async (req, res) => {
+  const { studentId, subjectId } = req.params;
+  const { subject_name, subject_code, subject_credit, teacherId } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(studentId)) {
+    throw new ApiError(400, "Invalid student ID format.");
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+    throw new ApiError(400, "Invalid teacher ID format.");
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(subjectId)) {
+    throw new ApiError(400, "Invalid subject ID format.");
+  }
+
+  const updatedSubject = await StudySubject.findByIdAndUpdate(
+    subjectId,
+    {
+      $set: {
+        subject_name,
+        subject_code,
+        subject_credit,
+        teacher: teacherId,
+      },
+    },
+    { new: true }
+  );
+
+  if (!updatedSubject) {
+    throw new ApiError(404, "Subject not found.");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedSubject, "Subject updated successfully.")
+    );
+});
+
+const deleteAllottedSubjectOfTheStudent = asyncHandler(async (req, res) => {
+  const { studentId, subjectId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(studentId)) {
+    throw new ApiError(400, "Invalid student ID format.");
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(subjectId)) {
+    throw new ApiError(400, "Invalid subject ID format.");
+  }
+
+  const deletedSubject = await StudySubject.findByIdAndDelete(subjectId);
+
+  if (!deletedSubject) {
+    throw new ApiError(404, "Subject not found.");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, deletedSubject, "Subject deleted successfully.")
     );
 });
 
@@ -213,7 +764,6 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, admin, "Account details updated successfully"));
 });
 
-//todo: delete the previous avatar image from the db and cloudinary
 const updateAdminAvatar = asyncHandler(async (req, res) => {
   const avatarLocalPath = req.file?.path; // we are taking the file from multer middleware, also here we are only taking one file as input and therefore we are using 'file', whereas if we wanted to take multiple file we would have written 'files' instead of 'file'
 
@@ -242,10 +792,26 @@ const updateAdminAvatar = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, admin, "avatar image updated successfully"));
 });
 
-/**
- * Controller to fetch all teachers with optional search, pagination, and sorting.
- * Accessible only by authenticated admins.
- */
+const getAllTheBranches = asyncHandler(async (req, res) => {
+  const branches = await Student.distinct("branch");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, branches, "All branches fetched successfully"));
+});
+
+const getAllTheStudentsOfParticularBranch = asyncHandler(async (req, res) => {
+  const { branch } = req.params;
+
+  const students = await Student.find({ branch });
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, students, "All students of the branch fetched successfully")
+    );
+});
+
 const getAllTheTeachers = asyncHandler(async (req, res) => {
   // Extract query parameters for searching, pagination, and sorting
   const {
@@ -318,10 +884,6 @@ const getAllTheTeachers = asyncHandler(async (req, res) => {
     );
 });
 
-/**
- * Controller to fetch personal information of a specific teacher, including their subjects.
- * Accessible only by authenticated admins.
- */
 const getTeacherPersonalInfo = asyncHandler(async (req, res) => {
   // Step 1: Extract teacherId from request parameters
   const { teacherId } = req.params;
@@ -734,11 +1296,29 @@ const getLecturesConductedByTheTeacher = asyncHandler(async (req, res) => {
 
 export {
   registerAdmin,
+  registerTeacher,
+  getCurrentTeacher,
+  updateTeacherAccountDetails,
+  updateTeacherAvatar,
+  allotSubjectsToTeachers,
+  viewAllAllocatedSubjectsOfTheTeacher,
+  editAllocatedSubjectOfTheTeacher,
+  deleteAllocatedSubjectOfTheTeacher,
+  registerStudent,
+  getCurrentStudent,
+  updateStudentAccountDetails,
+  updateStudentAvatar,
+  allottSubjectsToStudents,
+  viewAllSubjectsAllottedToTheStudent,
+  editAllottedSubjectOfTheStudent,
+  deleteAllottedSubjectOfTheStudent,
   loginAdmin,
   logoutAdmin,
   getCurrentAdmin,
   updateAdminAvatar,
   updateAccountDetails,
+  getAllTheBranches,
+  getAllTheStudentsOfParticularBranch,
   getAllTheTeachers,
   getTeacherPersonalInfo,
   getSubjectFeedbacks,
