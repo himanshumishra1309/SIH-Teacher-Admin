@@ -2,7 +2,6 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { Seminar } from "../models/seminars.models.js";
-import { SeminarRSVP } from "../models/rsvp-seminar.models.js";
 import { SeminarFeedback } from "../models/feedback-seminars.models.js";
 import { v2 as cloudinary } from "cloudinary";
 import { uploadOnCloudinary } from "../utils/cloudinary.js"; 

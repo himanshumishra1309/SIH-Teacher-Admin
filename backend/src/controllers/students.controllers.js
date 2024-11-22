@@ -118,10 +118,6 @@ const logoutStudent = asyncHandler(async (req, res) => {
 });
 
 export {
-  registerStudent,
   loginStudent,
   logoutStudent,
-  getCurrentStudent,
-  updateStudentAvatar,
-  updateAccountDetails,
 };

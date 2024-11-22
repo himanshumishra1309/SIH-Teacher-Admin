@@ -3,7 +3,6 @@ import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { AllocatedSubject } from "../models/allocated-subjects.models.js";
 import { StudySubject } from "../models/studySubjects.models.js";
-import { FeedbackForm } from "../models/feedbackformstatus.models.js";
 import { LectureFeedback } from "../models/lectureFeedbacks.models.js";
 import { Student } from "../models/students.models.js";
 

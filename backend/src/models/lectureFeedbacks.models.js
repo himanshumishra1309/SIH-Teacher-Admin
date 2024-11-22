@@ -77,16 +77,24 @@ const lectureFeedbackSchema = new Schema(
         index: true,
     },
     submissionTime: {
-        type: Date, // Record when the student submits the form
+        type: Date, 
         required: true,
     },
     releaseTime: {
-        type: Date, // Timestamp when the feedback form is released
+        type: Date, 
         required: true,
     },
     activeUntil: {
-        type: Date, // Automatically calculated to be 2 days from `releaseTime`
+        type: Date, 
         required: true,
+    },
+    show: {
+        type: Boolean,
+        default: false, 
+    },
+    readonly: {
+        type: Boolean,
+        default: true, 
     },
 },
 { timestamps: true });

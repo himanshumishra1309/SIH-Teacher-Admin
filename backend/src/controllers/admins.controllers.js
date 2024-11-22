@@ -13,7 +13,6 @@ import { StudentGuided } from "../models/students-guided.models.js";
 import { Project } from "../models/projects.models.js";
 import { Seminar } from "../models/seminars.models.js";
 import { SeminarFeedback } from "../models/feedback-seminars.models.js";
-import { SeminarRSVP } from "../models/rsvp-seminar.models.js";
 import { Lecture } from "../models/lectures.models.js";
 import { ExpertLecture } from "../models/expert-lectures.models.js";
 import { Student } from "../models/students.models.js";
@@ -103,7 +102,7 @@ const registerAdmin = asyncHandler(async (req, res) => {
         "Admin successfully registered"
       )
     );
-});
+}); // worked on postman
 
 const registerTeacher = asyncHandler(async (req, res) => {
   const { name, email, employee_code, experience, qualification, department, password } = req.body;
@@ -125,7 +124,7 @@ const registerTeacher = asyncHandler(async (req, res) => {
     throw new ApiError(400, "User with email or employee code already exists");
   }
 
-  console.log("request: ", req.file);
+  // console.log("request: ", req.file);
 
   const avatarLocalPath = req.file?.path;
 
@@ -169,18 +168,18 @@ const registerTeacher = asyncHandler(async (req, res) => {
         "Teacher successfully registered"
       )
     );
-});
+}); // worked on postman
 
 const getCurrentTeacher = asyncHandler(async (req, res) => {
   const {teacherId} = req.params;
 
-  const teachers = await Teacher.findById(teacherId);
+  const teacherInfo = await Teacher.findById(teacherId)
+    .select("name email employee_code experience qualification department avatar")
+    .lean(); 
 
-  if (!teachers) {
+  if (!teacherInfo) {
     throw new ApiError(404, "Teacher not found");
   }
-
-  const teacherInfo = teachers.select("name email employee_code experience qualification department avatar").lean();
 
   return res
     .status(200)
@@ -197,8 +196,11 @@ const updateTeacherAccountDetails = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All field are requires");
   }
 
-  // console.log("req.teacher: ", req.teacher);
-  // console.log("req.teacher._id: ", req.teacher?._id);
+  const existedUser = await Admin.findOne({ email });
+
+  if (existedUser) {
+    throw new ApiError(400, "User with email already exists");
+  }
 
   const teacher = await Teacher.findByIdAndUpdate(
     teacherId,
@@ -222,12 +224,14 @@ const updateTeacherAccountDetails = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(200, teacher, "Account details updated successfully")
     );
-});
+}); //worked on postman
 
-//todo: delete the previous avatar image from the db and cloudinary
 const updateTeacherAvatar = asyncHandler(async (req, res) => {
   const {teacherId} = req.params;
+  console.log(req.file);
+  console.log(req.file.path);
   const avatarLocalPath = req.file?.path; // we are taking the file from multer middleware, also here we are only taking one file as input and therefore we are using 'file', whereas if we wanted to take multiple file we would have written 'files' instead of 'file'
+
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar is missing");
   }
@@ -251,13 +255,13 @@ const updateTeacherAvatar = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, teacher, "avatar image updated successfully"));
-});
+}); //did not work on postman
 
 const allotSubjectsToTeachers = asyncHandler(async (req, res)=>{
-  const { subject_name, subject_code, subject_credit, branch, year, teacherId } = req.body;
+  const { subject_name, subject_code, subject_credit, branch, year, min_lectures, teacherId } = req.body;
 
     // Validate input fields
-    if (!subject_name || !subject_code || !subject_credit || !branch || !year || !teacherId) {
+    if (!subject_name || !subject_code || !subject_credit || !branch || !year || !min_lectures || !teacherId) {
       return res.status(400).json({ error: "All fields are required." });
     }
 
@@ -287,11 +291,12 @@ const allotSubjectsToTeachers = asyncHandler(async (req, res)=>{
       subject_credit,
       branch,
       year,
+      min_lectures,
       teacher: teacherId,
     });
 
     return res.status(200).json(new ApiResponse(200, {allocatedSubject, teacher}, "Subject alloted"))
-});
+}); //worked on postman
 
 const viewAllAllocatedSubjectsOfTheTeacher = asyncHandler(async (req, res) => {
   const { teacherId } = req.params;
@@ -317,11 +322,11 @@ const viewAllAllocatedSubjectsOfTheTeacher = asyncHandler(async (req, res) => {
         "Allocated subjects fetched successfully."
       )
     );
-});
+}); //worked on postman
 
 const editAllocatedSubjectOfTheTeacher = asyncHandler(async (req, res) => {
   const { teacherId, subjectId } = req.params;
-  const { subject_name, subject_code, subject_credit, branch, year } = req.body;
+  const { subject_name, subject_code, subject_credit, min_lectures, branch, year } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(teacherId)) {
     throw new ApiError(400, "Invalid teacher ID format.");
@@ -329,6 +334,10 @@ const editAllocatedSubjectOfTheTeacher = asyncHandler(async (req, res) => {
 
   if (!mongoose.Types.ObjectId.isValid(subjectId)) {
     throw new ApiError(400, "Invalid subject ID format.");
+  }
+
+  if (!subject_name || !subject_code || !subject_credit || !branch || !year || !min_lectures || !teacherId) {
+    return res.status(400).json({ error: "All fields are required." });
   }
 
   const updatedSubject = await AllocatedSubject.findByIdAndUpdate(
@@ -340,6 +349,7 @@ const editAllocatedSubjectOfTheTeacher = asyncHandler(async (req, res) => {
         subject_credit,
         branch,
         year,
+        min_lectures,
       },
     },
     { new: true }
@@ -354,7 +364,7 @@ const editAllocatedSubjectOfTheTeacher = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(200, updatedSubject, "Subject updated successfully.")
     );
-});
+}); //worked on postman
 
 const deleteAllocatedSubjectOfTheTeacher = asyncHandler(async (req, res) => {
   const { teacherId, subjectId } = req.params;
@@ -378,7 +388,7 @@ const deleteAllocatedSubjectOfTheTeacher = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(200, deletedSubject, "Subject deleted successfully.")
     );
-});
+}); //worked on postman
 
 const registerStudent = asyncHandler(async (req, res) => {
   const { name, email, roll_no, branch, year, password } = req.body;
@@ -437,7 +447,7 @@ const registerStudent = asyncHandler(async (req, res) => {
         "Student successfully registered"
       )
     );
-});
+}); // worked on postman
 
 const getCurrentStudent = asyncHandler(async (req, res) => {
   const {studentId} = req.params;
@@ -484,7 +494,7 @@ const updateStudentAccountDetails = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(200, student, "Account details updated successfully")
     );
-});
+}); //worked on postman
 
 //todo: delete the previous avatar image from the db and cloudinary
 const updateStudentAvatar = asyncHandler(async (req, res) => {
@@ -654,6 +664,10 @@ const deleteAllottedSubjectOfTheStudent = asyncHandler(async (req, res) => {
     );
 });
 
+const releaseFeedbackForms = asyncHandler(async (req, res)=>{
+
+})
+
 const loginAdmin = asyncHandler(async (req, res) => {
   console.log("request : ", req);
   console.log("request's body : ", req.body);
@@ -701,7 +715,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
         "User Logged In Successfully"
       )
     );
-});
+}); // worked on postman
 
 const logoutAdmin = asyncHandler(async (req, res) => {
   await Admin.findByIdAndUpdate(
@@ -730,13 +744,13 @@ const logoutAdmin = asyncHandler(async (req, res) => {
     .clearCookie("adminAccessToken", options)
     .clearCookie("adminRefreshToken", options)
     .json(new ApiResponse(200, {}, "User logged out"));
-});
+}); // worked on postman
 
 const getCurrentAdmin = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, req.admin, "current user fetched successfully"));
-});
+}); // worked on postman
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
   console.log("req.body of update account details: ", req.body);
@@ -762,7 +776,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, admin, "Account details updated successfully"));
-});
+}); // worked on postman
 
 const updateAdminAvatar = asyncHandler(async (req, res) => {
   const avatarLocalPath = req.file?.path; // we are taking the file from multer middleware, also here we are only taking one file as input and therefore we are using 'file', whereas if we wanted to take multiple file we would have written 'files' instead of 'file'
