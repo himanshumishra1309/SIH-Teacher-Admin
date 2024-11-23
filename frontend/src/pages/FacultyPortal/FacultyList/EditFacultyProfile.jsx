@@ -131,7 +131,8 @@ export default function EditFacultyProfile() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-10">
+    <div className="w-full mx-auto p-10 flex">
+      <div className="flex flex-col w-full p-5">
       <h1 className="text-3xl font-bold mb-4">Edit Faculty Profile</h1>
 
       <Card className="w-full shadow-lg rounded-lg overflow-hidden">
@@ -263,8 +264,9 @@ export default function EditFacultyProfile() {
           </div> */}
         </CardContent>
       </Card>
+      </div>
 
-      <FacultyCourseTable/>
+      <FacultyCourseTable className="border"/>
     </div>
   );
 }

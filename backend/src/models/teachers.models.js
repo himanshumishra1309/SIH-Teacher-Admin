@@ -20,6 +20,11 @@ const teacherSchema = new Schema(
       required: true,
       index: true,
     },
+    designation: {
+      type: String,
+      required: true,
+      enum: ["Assistant Professor", "HOD", "Principal"], // Restrict values
+    },
     experience: {
       type: Number,
       required: true,

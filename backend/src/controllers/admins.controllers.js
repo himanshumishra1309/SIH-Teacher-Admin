@@ -105,11 +105,11 @@ const registerAdmin = asyncHandler(async (req, res) => {
 }); // worked on postman
 
 const registerTeacher = asyncHandler(async (req, res) => {
-  const { name, email, employee_code, experience, qualification, department, password } = req.body;
+  const { name, email, employee_code, designation, experience, qualification, department, password } = req.body;
   // console.log('req: ', req);
 
   if (
-    [name, email, employee_code, experience, qualification, department, password].some(
+    [name, email, employee_code, designation, experience, qualification, department, password].some(
       (field) => field?.trim() === ""
     )
   ) {
@@ -142,6 +142,7 @@ const registerTeacher = asyncHandler(async (req, res) => {
     name,
     email,
     employee_code,
+    designation,
     experience,
     qualification,
     department,
@@ -190,9 +191,9 @@ const getCurrentTeacher = asyncHandler(async (req, res) => {
 
 const updateTeacherAccountDetails = asyncHandler(async (req, res) => {
   const {teacherId} = req.params;
-  const { name, department, email, employee_code, experience, qualification } = req.body;
+  const { name, department, email, employee_code, designation, experience, qualification } = req.body;
 
-  if (!name || !department || !email || !employee_code || !experience || !qualification) {
+  if (!name || !department || !email || !employee_code || !designation || !experience || !qualification) {
     throw new ApiError(400, "All field are requires");
   }
 
@@ -209,6 +210,7 @@ const updateTeacherAccountDetails = asyncHandler(async (req, res) => {
         name,
         email,
         employee_code,
+        designation,
         experience,
         qualification,
         department,
@@ -447,7 +449,7 @@ const registerStudent = asyncHandler(async (req, res) => {
         "Student successfully registered"
       )
     );
-}); // worked on postman
+}); //worked on postman
 
 const getCurrentStudent = asyncHandler(async (req, res) => {
   const {studentId} = req.params;
@@ -571,7 +573,7 @@ const allottSubjectsToStudents = asyncHandler(async (req, res) => {
   });
   
   return res.status(200).json(new ApiResponse(200, { studySubject, teacher, student }, "Subject allotted to student successfully."));
-});
+}); //worked on postman
 
 const viewAllSubjectsAllottedToTheStudent = asyncHandler(async (req, res) => {
   const { studentId } = req.params;
@@ -598,7 +600,7 @@ const viewAllSubjectsAllottedToTheStudent = asyncHandler(async (req, res) => {
         "Subjects allotted to student fetched successfully."
       )
     );
-});
+}); //worked on postman
 
 const editAllottedSubjectOfTheStudent = asyncHandler(async (req, res) => {
   const { studentId, subjectId } = req.params;
@@ -638,7 +640,7 @@ const editAllottedSubjectOfTheStudent = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(200, updatedSubject, "Subject updated successfully.")
     );
-});
+}); //worked on postman
 
 const deleteAllottedSubjectOfTheStudent = asyncHandler(async (req, res) => {
   const { studentId, subjectId } = req.params;
@@ -662,7 +664,7 @@ const deleteAllottedSubjectOfTheStudent = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(200, deletedSubject, "Subject deleted successfully.")
     );
-});
+}); //worked on postman
 
 const releaseFeedbackForms = asyncHandler(async (req, res)=>{
 

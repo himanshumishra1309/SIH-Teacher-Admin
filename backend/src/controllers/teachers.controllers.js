@@ -90,6 +90,18 @@ const loginTeacher = asyncHandler(async (req, res) => {
     );
 });
 
+const getTeacherProfile = asyncHandler(async (req, res) => {
+  const teacher = await Teacher.findById(req.teacher._id).select(
+    "-password -refreshToken"
+  );
+
+  if (!teacher) {
+    throw new ApiError(404, "Teacher not found");
+  }
+
+  return res.status(200).json(new ApiResponse(200, teacher, "Teacher profile fetched successfully"));
+});
+
 const logoutTeacher = asyncHandler(async (req, res) => {
   await Teacher.findByIdAndUpdate(
     req.teacher._id,
@@ -122,4 +134,5 @@ const logoutTeacher = asyncHandler(async (req, res) => {
 export {
   loginTeacher,
   logoutTeacher,
+  getTeacherProfile,
 };

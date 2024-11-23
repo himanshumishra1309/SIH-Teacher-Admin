@@ -68,6 +68,14 @@ router.get('/student/:studentId', verifyAdminJWT, getCurrentStudent);
 
 router.patch('/student/:studentId/update', verifyAdminJWT, updateStudentAccountDetails);
 
+router.post('/subjects/student-allocate', verifyAdminJWT, allottSubjectsToStudents);
+
+router.get('/students/:studentId/subjects', verifyAdminJWT, viewAllSubjectsAllottedToTheStudent);
+
+router.put('/students/:studentId/subjects/:subjectId', verifyAdminJWT, editAllottedSubjectOfTheStudent);
+
+router.delete('/students/:studentId/subjects/:subjectId', verifyAdminJWT, deleteAllottedSubjectOfTheStudent);
+
 router.post('/login', loginAdmin);
 
 router.post('/logout', verifyAdminJWT, logoutAdmin);

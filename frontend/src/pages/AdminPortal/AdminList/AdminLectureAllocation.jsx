@@ -9,6 +9,7 @@ import axios from "axios";
 import DrawerComponent from "@/Forms/AddEntry/DrawerComponent";
 import DeleteDialog from "@/table/DeleteDialog";
 import AdminLectureAllocationTable from "@/table/Tables/Admin/AdminLectureAllocationTable";
+import { columnDef } from "../../../table/Tables/Columns/AdminLectureAllocationColumn";
 
 export default function AdminLectureAllocationPage() {
     const [course, setCourse] = useState("");

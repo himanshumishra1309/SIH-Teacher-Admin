@@ -88,6 +88,18 @@ const loginStudent = asyncHandler(async (req, res) => {
     );
 });
 
+const getStudentProfile = asyncHandler(async (req, res) => {
+  const student = await Student.findById(req.student._id).select(
+    "-password -refreshToken"
+  );
+
+  if (!student) {
+    throw new ApiError(404, "User does not exist");
+  }
+
+  return res.status(200).json(new ApiResponse(200, student, "User profile"));
+});
+
 const logoutStudent = asyncHandler(async (req, res) => {
   Student.findByIdAndUpdate(
     req.student._id,
@@ -120,4 +132,5 @@ const logoutStudent = asyncHandler(async (req, res) => {
 export {
   loginStudent,
   logoutStudent,
+  getStudentProfile,
 };

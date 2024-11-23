@@ -156,7 +156,7 @@ export default function FacultyCourseTable() {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 border rounded-md shadow-lg">
       <div className="flex justify-between mb-4">
         <div className="flex items-center gap-2">
           <SearchIcon className="text-gray-400" />
@@ -168,12 +168,6 @@ export default function FacultyCourseTable() {
           />
         </div>
         <DownloadBtn data={data} fileName="Research" />
-      </div>
-
-      <div className="flex justify-end mb-4">
-        <Button onClick={() => setDrawerOpen(true)} className="add-entry-btn text-white">
-          Add Course
-        </Button>
       </div>
 
       <div className="mb-4 flex flex-wrap gap-2">
@@ -193,7 +187,7 @@ export default function FacultyCourseTable() {
           onClick={resetFilters}
           variant="outline"
           size="sm"
-          className="ml-2 text-white"
+          className="ml-2 text-grey"
         >
           Reset Filters
         </Button>
