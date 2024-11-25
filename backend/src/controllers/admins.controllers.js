@@ -17,7 +17,19 @@ import { Lecture } from "../models/lectures.models.js";
 import { ExpertLecture } from "../models/expert-lectures.models.js";
 import { Student } from "../models/students.models.js";
 import { StudySubject } from "../models/studySubjects.models.js";
+import { Task } from "../models/tasks.modules.js";
 import mongoose from "mongoose";
+import nodemailer from 'nodemailer';
+
+const transport = nodemailer.createTransport({
+  host: 'smtp.gmail.com', // Gmail SMTP server
+  port: 587, // Secure connection
+  secure: false, // Use TLS
+  auth: {
+    user: process.env.EMAIL_USER, // Your Gmail email
+    pass: process.env.EMAIL_PASS, // Your Gmail password or app password
+  },
+})
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -808,6 +820,68 @@ const updateAdminAvatar = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, admin, "avatar image updated successfully"));
 });
 
+const assignTasks = asyncHandler(async (req, res) => {
+  const {title, description, deadline, assignedTo, points} = req.body;
+  const {assignedBy} = req.admin._id;
+
+  if(!title || !description || !deadline || !assignedTo || !points) {
+    throw new ApiError(400, "All fields are required");
+  }
+
+  if(!mongoose.Types.ObjectId.isValid(assignedTo)) {
+    throw new ApiError(400, "Invalid assignedTo ID format");
+  }
+
+  const task = await Task.create({
+    title,
+    description,
+    assignedAt: new Date(),
+    deadline,
+    status: "pending",
+    assignedBy,
+    assignedByModel: "Admin",
+    assignedTo,
+    points,
+  });
+
+  if(!task) {
+    throw new ApiError(500, "Something went wrong while assigning the task");
+  }
+
+  return res.status(200).json(new ApiResponse(200, task, "Task assigned successfully"));
+})
+
+const viewAssignedTasks = asyncHandler(async (req, res) => {
+  const { teacherId } = req.body;
+  const { adminId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(adminId)) {
+    throw new ApiError(400, "Invalid admin ID format.");
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+    throw new ApiError(400, "Invalid teacher ID format.");
+  }
+
+  const tasks = await Task.find({ assignedByModel: "Admin", assignedBy: adminId, assignedTo: teacherId })
+    .select("title description assignedAt deadline status points")
+    .lean();
+
+  if (!tasks || tasks.length === 0) {
+    throw new ApiError(404, "No tasks assigned to this teacher by you.");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        tasks,
+        "Tasks assigned to admin fetched successfully."
+      )
+    );
+});
+
 const getAllTheBranches = asyncHandler(async (req, res) => {
   const branches = await Student.distinct("branch");
 
@@ -1333,6 +1407,8 @@ export {
   getCurrentAdmin,
   updateAdminAvatar,
   updateAccountDetails,
+  assignTasks,
+  viewAssignedTasks,
   getAllTheBranches,
   getAllTheStudentsOfParticularBranch,
   getAllTheTeachers,

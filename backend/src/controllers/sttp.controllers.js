@@ -2,8 +2,8 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { STTP } from "../models/sttp.models.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { v2 as cloudinary } from "cloudinary";
+import { uploadToGCS } from "../utils/googleCloud.js";
+import path from "path";
 
 const uploadEvent = asyncHandler(async (req, res) => {
   const { topic, duration, startDate, endDate, venue } = req.body;
@@ -11,20 +11,25 @@ const uploadEvent = asyncHandler(async (req, res) => {
 
   if (
     [topic, duration, startDate, endDate, venue].some(
-      (field) => field.trim === ""
+      (field) => field.trim() === ''
     )
   ) {
-    throw new ApiError(400, "All the fields are required");
+    throw new ApiError(400, 'All fields are required');
   }
 
   if (!file) {
-    throw new ApiError(200, "PDF report file is required");
+    throw new ApiError(400, 'PDF report file is required');
   }
 
-  const uploadResponse = await uploadOnCloudinary(file.path);
+  // Detect file type and set folder
+  const fileExtension = path.extname(file.originalname).toLowerCase();
+  const folder = fileExtension === '.pdf' ? 'pdf-report' : 'images';
 
-  if (!uploadResponse) {
-    throw new ApiError(500, "error in uploading file to cloudinary");
+  // Upload file to the appropriate folder
+  const fileUrl = await uploadToGCS(file.path, folder);
+
+  if (!fileUrl) {
+    throw new ApiError(500, 'Error in uploading file to Google Cloud');
   }
 
   const sttp = await STTP.create({
@@ -33,14 +38,14 @@ const uploadEvent = asyncHandler(async (req, res) => {
     startDate,
     endDate,
     venue,
-    report: uploadResponse.secure_url,
+    report: fileUrl, // Save the public URL
     addedOn: Date.now(),
-    owner: req.teacher._id, // Assuming authenticated user's ID
+    owner: req.teacher._id,
   });
 
   return res
-    .status(200)
-    .json(new ApiResponse(201, sttp, "STTP event created successfully"));
+    .status(201)
+    .json(new ApiResponse(201, sttp, 'STTP event created successfully'));
 });
 
 const showAllEvents = asyncHandler(async (req, res) => {
@@ -78,7 +83,7 @@ const updateEvent = asyncHandler(async (req, res) => {
   const sttp = await STTP.findById(id);
 
   if (!sttp) {
-    throw new ApiError(400, "No such record found in sttp");
+    throw new ApiError(400, 'No such record found in STTP');
   }
 
   if (topic) sttp.topic = topic;
@@ -89,29 +94,34 @@ const updateEvent = asyncHandler(async (req, res) => {
 
   // Handle file upload if a new file is provided
   if (file) {
-    // Delete the previous file from Cloudinary if it exists
+    // Delete the previous file from GCS if it exists
     if (sttp.report) {
-      const publicId = sttp.report.split("/").pop().split(".")[0]; // Extract the public_id from the Cloudinary URL
-      await cloudinary.uploader.destroy(publicId);
+      const publicUrlParts = sttp.report.split('/');
+      const fileName = publicUrlParts.slice(-2).join('/'); // Extract folder and filename
+      await storage.bucket(bucketName).file(fileName).delete();
     }
 
-    // Upload the new file to Cloudinary
-    const uploadResponse = await uploadOnCloudinary(file.path);
+    // Detect file type and set folder
+    const fileExtension = path.extname(file.originalname).toLowerCase();
+    const folder = fileExtension === '.pdf' ? 'pdf-reports' : 'images';
+
+    // Upload the new file to the appropriate folder
+    const fileUrl = await uploadToGCS(file.path, folder);
 
     // Check if the upload was successful
-    if (!uploadResponse) {
-      throw new ApiError(500, "Error in uploading new file to Cloudinary");
+    if (!fileUrl) {
+      throw new ApiError(500, 'Error in uploading new file to Google Cloud');
     }
 
-    // Update the report field with the new Cloudinary URL
-    sttp.report = uploadResponse.secure_url;
+    // Update the report field with the new public URL
+    sttp.report = fileUrl;
   }
 
   await sttp.save();
 
   return res
     .status(200)
-    .json(new ApiResponse(200, sttp, "STTP event updated successfully"));
+    .json(new ApiResponse(200, sttp, 'STTP event updated successfully'));
 });
 
 const deleteEvent = asyncHandler(async (req, res) => {
