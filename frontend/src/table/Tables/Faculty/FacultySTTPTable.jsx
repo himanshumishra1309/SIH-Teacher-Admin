@@ -35,7 +35,6 @@ export default function FacultySTTPTable() {
   const [columnVisibility, setColumnVisibility] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
-
   useEffect(() => {
     const fetchTeacherInfo = async () => {
       try {
@@ -50,8 +49,7 @@ export default function FacultySTTPTable() {
         setData(response.data.data.sttps);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
-      }
-      finally {
+      } finally {
         setIsLoading(false);
       }
     };
@@ -121,18 +119,39 @@ export default function FacultySTTPTable() {
 
   const handleEditEntry = (updatedData) => {
     setData((prevData) =>
-      prevData.map((row) => (row.id === updatedData.id ? updatedData : row))
+      prevData.map((row) => (row._id === updatedData._id ? updatedData : row))
     );
   };
 
-  const handleDeleteRow = () => {
-    setData((prevData) => prevData.filter((row) => row.id !== rowToDelete.id));
-    setDeleteDialogOpen(false);
-    setRowToDelete(null);
+  const handleDeleteRow = async () => {
+    // console.log(rowToDelete);
+    try {
+      const token = sessionStorage.getItem("teacherAccessToken");
+
+      // Make DELETE request to the server
+      await axios.delete(
+        `http://localhost:6005/api/v1/sttp/${rowToDelete._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Remove the deleted item from the local state
+      setData((prevData) =>
+        prevData.filter((row) => row._id !== rowToDelete._id)
+      );
+
+      setDeleteDialogOpen(false);
+      setRowToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete STTP data:", error);
+    }
   };
 
   if (isLoading) {
-    return <LoadingPage/>;
+    return <LoadingPage />;
   }
 
   return (
@@ -223,13 +242,14 @@ export default function FacultySTTPTable() {
 
           try {
             if (rowToEdit) {
-              console.log("editing  the data", formData); 
+              console.log("editing  the data", formData);
               const response = await axios.put(
                 `http://localhost:6005/api/v1/sttp/${rowToEdit._id}`,
                 formData,
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
                     // "Content-Type": "multipart/form-data",
                   },
                 }
