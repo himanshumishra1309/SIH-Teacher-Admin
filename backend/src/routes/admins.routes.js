@@ -62,6 +62,7 @@ router.put('/teacher/:teacherId/allocated-subject/:subjectId', verifyAdminJWT, e
 
 router.delete('/teacher/:teacherId/allocated-subject/:subjectId', verifyAdminJWT, deleteAllocatedSubjectOfTheTeacher);
 
+// register the student throught the admin login.
 router.post('/register-student', verifyAdminJWT, upload.single('avatar'), registerStudent);
 
 router.get('/student/:studentId', verifyAdminJWT, getCurrentStudent);
