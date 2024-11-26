@@ -1,7 +1,8 @@
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErrors.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import mongoose from "mongoose";
+import { Task } from "../models/tasks.modules.js";
 import { Teacher } from "../models/teachers.models.js";
 
 const generateAccessAndRefreshToken = async (userId) => {
@@ -102,6 +103,52 @@ const getTeacherProfile = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, teacher, "Teacher profile fetched successfully"));
 });
 
+const assignTasks = asyncHandler(async (req, res) => {
+  const {title, description, deadline, assignedTo} = req.body;
+  const {assignedBy} = req.teacher._id;
+
+  if(!title || !description || !deadline || !assignedTo) {
+    throw new ApiError(400, "All fields are required");
+  }
+
+  if(!mongoose.Types.ObjectId.isValid(assignedTo)) {
+    throw new ApiError(400, "Invalid assignedTo ID format");
+  }
+
+  const valid = await Teacher.findById(assignedBy);
+
+  if(valid.designation === "Assistant Professor"){
+    throw new ApiError(401, "Only HOD and Principal can assign tasks");
+  }
+
+  const task = await Task.create({
+    title,
+    description,
+    assignedAt: new Date(),
+    deadline,
+    status: "pending",
+    assignedBy,
+    assignedByModel: "Teacher",
+    assignedTo,
+  });
+
+  if(!task) {
+    throw new ApiError(500, "Something went wrong while assigning the task");
+  }
+
+  return res.status(200).json(new ApiResponse(200, task, "Task assigned successfully"));
+});
+
+const getTasks = asyncHandler(async (req, res) => {
+  const tasks = await Task.find({assignedTo: req.teacher._id});
+
+  if(!tasks) {
+    throw new ApiError(404, "No tasks found");
+  }
+
+  return res.status(200).json(new ApiResponse(200, tasks, "Tasks fetched successfully"));
+})
+
 const logoutTeacher = asyncHandler(async (req, res) => {
   await Teacher.findByIdAndUpdate(
     req.teacher._id,
@@ -135,4 +182,6 @@ export {
   loginTeacher,
   logoutTeacher,
   getTeacherProfile,
+  assignTasks,
+  getTasks,
 };
