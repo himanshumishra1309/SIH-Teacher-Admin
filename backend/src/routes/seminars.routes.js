@@ -10,7 +10,6 @@ import {
   getFeedbackSubmitters,
   markAttendance,
   viewSeminarFeedbackFormsAvailable,
-  
 } from "../controllers/seminars.controllers.js";
 import { verifyTeacherJWT } from "../middleware/teacher.auth.middleware.js";
 import {verifyStudentJWT} from "../middleware/student.auth.middleware.js";

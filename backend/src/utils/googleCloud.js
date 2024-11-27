@@ -21,14 +21,16 @@ const uploadToGCS = async (localFilePath, folder) => {
     const fileName = path.basename(localFilePath);
 
     // Set destination folder based on file type
-    const destinationFolder = folder ? `${folder}/${fileName}` : fileName;
+    const destinationFolder =
+      folder === 'images'
+        ? `images/${fileName}`
+        : `pdf-report/${fileName}`;
 
     const bucket = storage.bucket(bucketName);
 
     // Upload file to the specified folder in the bucket
     const [response] = await bucket.upload(localFilePath, {
       destination: destinationFolder,
-      public: true, // Make file publicly accessible
     });
 
     // Delete the file from local storage
@@ -39,28 +41,34 @@ const uploadToGCS = async (localFilePath, folder) => {
     return publicUrl;
   } catch (error) {
     console.error('GCS Upload Error Details:', error);
-    // Attempt to delete the local file even on error
-    if (fs.existsSync(localFilePath)) fs.unlinkSync(localFilePath);
+    fs.unlinkSync(localFilePath);
     return null;
   }
 };
 
-// Function to delete file from Google Cloud Storage
-const deleteFromGCS = async (fileUrl) => {
+// Function to delete a file from Google Cloud Storage
+const deleteFromGCS = async (fileName, folder) => {
   try {
-    if (!fileUrl) return;
+    if (!fileName || !folder) {
+      throw new Error('File name and folder are required to delete a file.');
+    }
 
-    // Extract file name from the URL
-    const filePath = fileUrl.replace(`https://storage.googleapis.com/${bucketName}/`, '');
+    // Set the file path based on the folder
+    const filePath =
+      folder === 'images'
+        ? `images/${fileName}`
+        : `pdf-report/${fileName}`;
+
     const bucket = storage.bucket(bucketName);
 
     // Delete the file from the bucket
     await bucket.file(filePath).delete();
 
-    console.log(`File deleted successfully: ${filePath}`);
+    console.log(`File ${filePath} deleted successfully from bucket ${bucketName}.`);
+    return true;
   } catch (error) {
     console.error('GCS Delete Error Details:', error);
-    throw new Error('Failed to delete file from GCS');
+    return false;
   }
 };
 
