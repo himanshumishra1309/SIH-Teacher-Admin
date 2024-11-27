@@ -130,9 +130,16 @@ const registerTeacher = asyncHandler(async (req, res) => {
   } = req.body;
 
   if (
-    [name, email, employee_code, designation, experience, qualification, department, password].some(
-      (field) => field?.trim() === ""
-    )
+    [
+      name,
+      email,
+      employee_code,
+      designation,
+      experience,
+      qualification,
+      department,
+      password,
+    ].some((field) => field?.trim() === "")
   ) {
     throw new ApiError(400, "All fields are required");
   }
@@ -181,25 +188,25 @@ const registerTeacher = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Something went wrong while registering the user");
   }
 
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        {
-          teacher: createTeacher,
-        },
-        "Teacher successfully registered"
-      )
-    );
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        teacher: createTeacher,
+      },
+      "Teacher successfully registered"
+    )
+  );
 }); // worked on postman
 
 const getCurrentTeacher = asyncHandler(async (req, res) => {
-  const {teacherId} = req.params;
+  const { teacherId } = req.params;
 
   const teacherInfo = await Teacher.findById(teacherId)
-    .select("name email employee_code experience qualification department avatar")
-    .lean(); 
+    .select(
+      "name email employee_code experience qualification department avatar"
+    )
+    .lean();
 
   if (!teacherInfo) {
     throw new ApiError(404, "Teacher not found");
@@ -213,10 +220,26 @@ const getCurrentTeacher = asyncHandler(async (req, res) => {
 }); //worked on postman
 
 const updateTeacherAccountDetails = asyncHandler(async (req, res) => {
-  const {teacherId} = req.params;
-  const { name, department, email, employee_code, designation, experience, qualification } = req.body;
+  const { teacherId } = req.params;
+  const {
+    name,
+    department,
+    email,
+    employee_code,
+    designation,
+    experience,
+    qualification,
+  } = req.body;
 
-  if (!name || !department || !email || !employee_code || !designation || !experience || !qualification) {
+  if (
+    !name ||
+    !department ||
+    !email ||
+    !employee_code ||
+    !designation ||
+    !experience ||
+    !qualification
+  ) {
     throw new ApiError(400, "All field are requires");
   }
 
@@ -252,7 +275,7 @@ const updateTeacherAccountDetails = asyncHandler(async (req, res) => {
 }); //worked on postman
 
 const updateTeacherAvatar = asyncHandler(async (req, res) => {
-  const {teacherId} = req.params;
+  const { teacherId } = req.params;
   console.log(req.file);
   console.log(req.file.path);
   const avatarLocalPath = req.file?.path; // we are taking the file from multer middleware, also here we are only taking one file as input and therefore we are using 'file', whereas if we wanted to take multiple file we would have written 'files' instead of 'file'
@@ -282,32 +305,51 @@ const updateTeacherAvatar = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, teacher, "avatar image updated successfully"));
 }); //did not work on postman
 
-const allotSubjectsToTeachers = asyncHandler(async (req, res)=>{
-  const { subject_name, subject_code, subject_credit, branch, year, min_lectures, teacherId } = req.body;
+const allotSubjectsToTeachers = asyncHandler(async (req, res) => {
+  const {
+    subject_name,
+    subject_code,
+    subject_credit,
+    branch,
+    year,
+    min_lectures,
+    teacherId,
+  } = req.body;
 
-    // Validate input fields
-    if (!subject_name || !subject_code || !subject_credit || !branch || !year || !min_lectures || !teacherId) {
-      return res.status(400).json({ error: "All fields are required." });
-    }
+  // Validate input fields
+  if (
+    !subject_name ||
+    !subject_code ||
+    !subject_credit ||
+    !branch ||
+    !year ||
+    !min_lectures ||
+    !teacherId
+  ) {
+    return res.status(400).json({ error: "All fields are required." });
+  }
 
-    // Check if the teacher exists
-    const teacher = await Teacher.findById(teacherId);
+  // Check if the teacher exists
+  const teacher = await Teacher.findById(teacherId);
 
-    if (!teacher) {
-      throw new ApiError(400, "Teacher not found.");
-    }
+  if (!teacher) {
+    throw new ApiError(400, "Teacher not found.");
+  }
 
-    // Check if the subject is already allocated to the teacher
-    const existingAllocation = await AllocatedSubject.findOne({
-      subject_code,
-      branch,
-      year,
-      teacher: teacherId,
-    });
+  // Check if the subject is already allocated to the teacher
+  const existingAllocation = await AllocatedSubject.findOne({
+    subject_code,
+    branch,
+    year,
+    teacher: teacherId,
+  });
 
-    if (existingAllocation) {
-      throw new ApiError(400, "This subject is already allocated to this teacher")
-    }
+  if (existingAllocation) {
+    throw new ApiError(
+      400,
+      "This subject is already allocated to this teacher"
+    );
+  }
 
     // Create a new allocated subject record
     const allocatedSubject = await AllocatedSubject.create({
@@ -322,7 +364,11 @@ const allotSubjectsToTeachers = asyncHandler(async (req, res)=>{
       activeUntil: null,
     });
 
-    return res.status(200).json(new ApiResponse(200, {allocatedSubject, teacher}, "Subject alloted"))
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, { allocatedSubject, teacher }, "Subject alloted")
+    );
 }); //worked on postman
 
 const viewAllAllocatedSubjectsOfTheTeacher = asyncHandler(async (req, res) => {
@@ -353,7 +399,14 @@ const viewAllAllocatedSubjectsOfTheTeacher = asyncHandler(async (req, res) => {
 
 const editAllocatedSubjectOfTheTeacher = asyncHandler(async (req, res) => {
   const { teacherId, subjectId } = req.params;
-  const { subject_name, subject_code, subject_credit, min_lectures, branch, year } = req.body;
+  const {
+    subject_name,
+    subject_code,
+    subject_credit,
+    min_lectures,
+    branch,
+    year,
+  } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(teacherId)) {
     throw new ApiError(400, "Invalid teacher ID format.");
@@ -363,7 +416,15 @@ const editAllocatedSubjectOfTheTeacher = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid subject ID format.");
   }
 
-  if (!subject_name || !subject_code || !subject_credit || !branch || !year || !min_lectures || !teacherId) {
+  if (
+    !subject_name ||
+    !subject_code ||
+    !subject_credit ||
+    !branch ||
+    !year ||
+    !min_lectures ||
+    !teacherId
+  ) {
     return res.status(400).json({ error: "All fields are required." });
   }
 
@@ -482,7 +543,7 @@ const registerStudent = asyncHandler(async (req, res) => {
 }); //worked on postman
 
 const getCurrentStudent = asyncHandler(async (req, res) => {
-  const {studentId} = req.params;
+  const { studentId } = req.params;
 
   const students = await Student.findById(studentId);
 
@@ -490,7 +551,9 @@ const getCurrentStudent = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Student not found");
   }
 
-  const studentInfo = students.select("name email roll_no branch year avatar").lean();
+  const studentInfo = students
+    .select("name email roll_no branch year avatar")
+    .lean();
 
   return res
     .status(200)
@@ -500,7 +563,7 @@ const getCurrentStudent = asyncHandler(async (req, res) => {
 }); //worked on postman
 
 const updateStudentAccountDetails = asyncHandler(async (req, res) => {
-  const {studentId} = req.params;
+  const { studentId } = req.params;
   const { name, email, roll_no, branch, year } = req.body;
 
   if (!name || !roll_no || !email || !branch || !year) {
@@ -530,7 +593,7 @@ const updateStudentAccountDetails = asyncHandler(async (req, res) => {
 
 //todo: delete the previous avatar image from the db and cloudinary
 const updateStudentAvatar = asyncHandler(async (req, res) => {
-  const {studentId} = req.params;
+  const { studentId } = req.params;
   const avatarLocalPath = req.file?.path; // we are taking the file from multer middleware, also here we are only taking one file as input and therefore we are using 'file', whereas if we wanted to take multiple file we would have written 'files' instead of 'file'
 
   if (!avatarLocalPath) {
@@ -559,10 +622,17 @@ const updateStudentAvatar = asyncHandler(async (req, res) => {
 });
 
 const allottSubjectsToStudents = asyncHandler(async (req, res) => {
-  const { subject_name, subject_code, subject_credit, teacherId, studentId } = req.body;
+  const { subject_name, subject_code, subject_credit, teacherId, studentId } =
+    req.body;
 
   // Validate inputs
-  if (!subject_name || !subject_code || !subject_credit || !teacherId || !studentId) {
+  if (
+    !subject_name ||
+    !subject_code ||
+    !subject_credit ||
+    !teacherId ||
+    !studentId
+  ) {
     return res.status(400).json({ error: "All fields are required." });
   }
 
@@ -601,8 +671,16 @@ const allottSubjectsToStudents = asyncHandler(async (req, res) => {
     teacher: teacherId,
     student: studentId,
   });
-  
-  return res.status(200).json(new ApiResponse(200, { studySubject, teacher, student }, "Subject allotted to student successfully."));
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { studySubject, teacher, student },
+        "Subject allotted to student successfully."
+      )
+    );
 }); //worked on postman
 
 const viewAllSubjectsAllottedToTheStudent = asyncHandler(async (req, res) => {
@@ -1213,7 +1291,11 @@ const getAllTheStudentsOfParticularBranch = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, students, "All students of the branch fetched successfully")
+      new ApiResponse(
+        200,
+        students,
+        "All students of the branch fetched successfully"
+      )
     );
 });
 
@@ -1596,7 +1678,7 @@ const getSeminarsConductedByTheTeacher = asyncHandler(async (req, res) => {
   }
 
   const seminars = await Seminar.find({ owner: teacherId, status: "conducted" })
-    .select("topic duration date report")
+    .select("topic department duration date report")
     .lean();
 
   if (!seminars || seminars.length === 0) {
