@@ -18,10 +18,6 @@ const seminarSchema = new Schema(
       type: Date,
       required: true,
     },
-    attendace:[{
-      type: Schema.Types.ObjectId,
-      ref: "Student",
-    }],
     report: {
       type: String,
       required: false,

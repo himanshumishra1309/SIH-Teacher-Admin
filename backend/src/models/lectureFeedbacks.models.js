@@ -27,10 +27,10 @@ const lectureFeedbackSchema = new Schema(
         type: Number,
         required: true,
     },
-    semester: {
-        type: Number,
-        required: true,
-    },
+    // semester: {
+    //     type: Number,
+    //     required: true,
+    // },
     question1_rating:{
         type: Number,
         required: true,
@@ -91,15 +91,7 @@ const lectureFeedbackSchema = new Schema(
     activeUntil: {
         type: Date, 
         required: true,
-    },
-    show: {
-        type: Boolean,
-        default: false, 
-    },
-    readonly: {
-        type: Boolean,
-        default: true, 
-    },
+    }
 },
 { timestamps: true });
 
