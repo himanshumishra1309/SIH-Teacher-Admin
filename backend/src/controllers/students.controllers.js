@@ -5,6 +5,7 @@ import { Student } from "../models/students.models.js";
 import { StudySubject } from "../models/studySubjects.models.js";
 import { Attendance } from "../models/lectureAttendance.models.js";
 import { AllocatedSubject } from "../models/allocated-subjects.models.js";
+import { LectureFeedback } from "../models/lectureFeedbacks.models.js";
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -195,6 +196,66 @@ const getFeedbackForms = asyncHandler(async (req, res) => {
 });
 
 const fillFeedbackForm = asyncHandler(async (req, res) => {
+  const studentId = req.student._id;
+  const studentBranch = req.student.branch; 
+  const studentYear = req.student.year;
+  const { subject_name, subject_code, subject_credit, teacher, question1_rating, question2_rating, question3_rating, question4_rating, question5_rating, question6_rating, question7_rating, question8_rating, question9_rating, question10_rating, comments } = req.body;
+
+  // Step 1: Check if feedback form is available for the subject
+  const allocatedSubject = await AllocatedSubject.findOne({
+    subject_name,
+    subject_code,
+    subject_credit,
+    branch: studentBranch,
+    year: studentYear,
+    teacher
+  }).lean();
+
+  if (!allocatedSubject || !allocatedSubject.feedbackReleased) {
+    throw new ApiError(403, "Feedback form is not available for the subject.");
+  }
+
+  // Step 2: Check if the student has already submitted feedback for the subject
+  const existingFeedback = await LectureFeedback.findOne({
+    student: studentId,
+    subject_name,
+    subject_code,
+    subject_credit,
+    branch: studentBranch,
+    year: studentYear,
+    teacher,
+  }).lean();
+
+  if (existingFeedback) {
+    throw new ApiError(403, "Feedback form already submitted for the subject.");
+  }
+
+  // Step 3: Create feedback form
+  const feedback = await LectureFeedback.create({
+    subject_name,
+    subject_code,
+    subject_credit,
+    teacher,
+    branch: studentBranch,
+    year: studentYear,
+    question1_rating,
+    question2_rating,
+    question3_rating,
+    question4_rating,
+    question5_rating,
+    question6_rating,
+    question7_rating,
+    question8_rating,
+    question9_rating,
+    question10_rating,
+    comments,
+    submitter: studentId,
+    submissionTime: new Date(),
+  });
+
+  await feedback.save();
+
+  return res.status(201).json(new ApiResponse(201, feedback, "Feedback form submitted successfully."));
 });
 
 const logoutStudent = asyncHandler(async (req, res) => {
@@ -230,5 +291,6 @@ export {
   loginStudent,
   logoutStudent,
   getStudentProfile,
-  getFeedbackForms
+  getFeedbackForms,
+  fillFeedbackForm
 };

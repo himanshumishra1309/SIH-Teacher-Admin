@@ -8,11 +8,6 @@ const feedbackSeminarSchema = new Schema(
       ref: "Seminar",
       required: true
     },
-    rsvp: { // Reference to SeminarRSVP
-      type: Schema.Types.ObjectId,
-      ref: "SeminarRSVP",
-      required: true
-    },
     comments: {
       type: String,
       required: true,
@@ -23,7 +18,12 @@ const feedbackSeminarSchema = new Schema(
       required: true,
       min: 1,
       max: 5
-    }
+    },
+    student: {
+      type: Schema.Types.ObjectId,
+      ref: "Student",
+      required: true
+    },
   },
   { timestamps: true }
 );

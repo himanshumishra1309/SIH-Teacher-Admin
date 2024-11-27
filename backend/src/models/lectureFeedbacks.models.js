@@ -27,10 +27,6 @@ const lectureFeedbackSchema = new Schema(
         type: Number,
         required: true,
     },
-    // semester: {
-    //     type: Number,
-    //     required: true,
-    // },
     question1_rating:{
         type: Number,
         required: true,

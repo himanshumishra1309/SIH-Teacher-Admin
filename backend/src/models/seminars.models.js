@@ -27,6 +27,13 @@ const seminarSchema = new Schema(
       ref: "Teacher",
       required: true,
     },
+    feedbackReleased: {
+      type: Boolean,
+      default: false,
+    },
+    activeUntil:{
+      type: Date,
+    }
   },
   { timestamps: true }
 );

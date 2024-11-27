@@ -15,6 +15,11 @@ const seminarAttendanceSchema = new Schema(
             message: 'Date cannot be in the future.',
         },
     },
+    teacher: {
+        type: Schema.Types.ObjectId,
+        ref: 'Teacher',
+        required: true,
+    },
     studentsPresent:[{
         type: Schema.Types.ObjectId,
         ref: 'Student',

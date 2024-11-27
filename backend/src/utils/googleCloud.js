@@ -21,16 +21,14 @@ const uploadToGCS = async (localFilePath, folder) => {
     const fileName = path.basename(localFilePath);
 
     // Set destination folder based on file type
-    const destinationFolder =
-      folder === 'images'
-        ? `images/${fileName}`
-        : `pdf-report/${fileName}`;
+    const destinationFolder = folder ? `${folder}/${fileName}` : fileName;
 
     const bucket = storage.bucket(bucketName);
 
     // Upload file to the specified folder in the bucket
     const [response] = await bucket.upload(localFilePath, {
       destination: destinationFolder,
+      public: true, // Make file publicly accessible
     });
 
     // Delete the file from local storage
@@ -41,9 +39,29 @@ const uploadToGCS = async (localFilePath, folder) => {
     return publicUrl;
   } catch (error) {
     console.error('GCS Upload Error Details:', error);
-    fs.unlinkSync(localFilePath);
+    // Attempt to delete the local file even on error
+    if (fs.existsSync(localFilePath)) fs.unlinkSync(localFilePath);
     return null;
   }
 };
 
-export { uploadToGCS };
+// Function to delete file from Google Cloud Storage
+const deleteFromGCS = async (fileUrl) => {
+  try {
+    if (!fileUrl) return;
+
+    // Extract file name from the URL
+    const filePath = fileUrl.replace(`https://storage.googleapis.com/${bucketName}/`, '');
+    const bucket = storage.bucket(bucketName);
+
+    // Delete the file from the bucket
+    await bucket.file(filePath).delete();
+
+    console.log(`File deleted successfully: ${filePath}`);
+  } catch (error) {
+    console.error('GCS Delete Error Details:', error);
+    throw new Error('Failed to delete file from GCS');
+  }
+};
+
+export { uploadToGCS, deleteFromGCS };
