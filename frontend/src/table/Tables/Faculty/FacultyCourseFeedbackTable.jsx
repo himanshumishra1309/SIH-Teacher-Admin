@@ -7,7 +7,7 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { columnDef } from "../Columns/FacultyCourseColumn";
+import { columnDef } from "../Columns/FeedbackReleasedColumn";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
