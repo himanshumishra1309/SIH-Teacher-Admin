@@ -783,7 +783,6 @@ const deleteAllottedSubjectOfTheStudent = asyncHandler(async (req, res) => {
     );
 }); //worked on postman
 
-// API to release feedback form for a subject with an expiration time
 const releaseAllFeedbackForms = asyncHandler(async (req, res) => {
   const { activeUntil } = req.body;
 
