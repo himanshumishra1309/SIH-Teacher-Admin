@@ -591,7 +591,6 @@ const updateStudentAccountDetails = asyncHandler(async (req, res) => {
     );
 }); //worked on postman
 
-//todo: delete the previous avatar image from the db and cloudinary
 const updateStudentAvatar = asyncHandler(async (req, res) => {
   const { studentId } = req.params;
   const avatarLocalPath = req.file?.path; // we are taking the file from multer middleware, also here we are only taking one file as input and therefore we are using 'file', whereas if we wanted to take multiple file we would have written 'files' instead of 'file'
@@ -620,6 +619,16 @@ const updateStudentAvatar = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, student, "avatar image updated successfully"));
 });
+
+const getAllTheSubjects = asyncHandler(async (req, res) => {
+  const subjects = await AllocatedSubject.find()
+
+  if (!subjects) {
+    throw new ApiError(404, "No subjects found.");
+  }
+
+  return res.status(200).json(new ApiResponse(200, subjects ,"All the subjects fetched successfully"))
+})
 
 const allottSubjectsToStudents = asyncHandler(async (req, res) => {
   const { subject_name, subject_code, subject_credit, teacherId, studentId } =
@@ -775,35 +784,37 @@ const deleteAllottedSubjectOfTheStudent = asyncHandler(async (req, res) => {
 }); //worked on postman
 
 // API to release feedback form for a subject with an expiration time
-const releaseFeedbackForm = asyncHandler(async (req, res) => {
-  const { subjectId } = req.params;
+const releaseAllFeedbackForms = asyncHandler(async (req, res) => {
   const { activeUntil } = req.body;
 
-  // Validate subjectId
-  if (!mongoose.Types.ObjectId.isValid(subjectId)) {
-    throw new ApiError(400, 'Invalid subject ID format.');
-  }
-
+  // Validate activeUntil
   if (!activeUntil || new Date(activeUntil) <= new Date()) {
     throw new ApiError(400, 'Invalid or past activeUntil time.');
   }
 
-  activeUntil.setHours(23, 59, 59, 999);
+  // Ensure activeUntil ends at the end of the specified day
+  const activeUntilDate = new Date(activeUntil);
+  activeUntilDate.setHours(23, 59, 59, 999);
 
-  // Update feedbackReleased to true and set activeUntil
-  const updatedSubject = await AllocatedSubject.findByIdAndUpdate(
-    subjectId,
-    { feedbackReleased: true, activeUntil },
-    { new: true }
+  // Update feedbackReleased to true and set activeUntil for all subjects
+  const result = await AllocatedSubject.updateMany(
+    { feedbackReleased: false }, // Update only subjects where feedback hasn't been released
+    { feedbackReleased: true, activeUntil: activeUntilDate }
   );
 
-  if (!updatedSubject) {
-    throw new ApiError(404, 'Subject not found.');
+  if (result.length === 0) {
+    throw new ApiError(404, 'No subjects found to update.');
   }
 
   return res
     .status(200)
-    .json(new ApiResponse(200, updatedSubject, 'Feedback form released.'));
+    .json(
+      new ApiResponse(
+        200,
+        result,
+        'Feedback forms released for all subjects.'
+      )
+    );
 });
 
 const releaseFeedbackForSubjects = asyncHandler(async (req, res) => {
@@ -1791,11 +1802,12 @@ export {
   getCurrentStudent,
   updateStudentAccountDetails,
   updateStudentAvatar,
+  getAllTheSubjects,
   allottSubjectsToStudents,
   viewAllSubjectsAllottedToTheStudent,
   editAllottedSubjectOfTheStudent,
   deleteAllottedSubjectOfTheStudent,
-  releaseFeedbackForm,
+  releaseAllFeedbackForms,
   releaseFeedbackForSubjects,
   getAllFeedbackCards,
   getDetailedFeedback,
