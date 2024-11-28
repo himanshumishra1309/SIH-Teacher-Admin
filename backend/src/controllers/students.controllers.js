@@ -1,8 +1,11 @@
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErrors.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { Student } from "../models/students.models.js";
+import { StudySubject } from "../models/studySubjects.models.js";
+import { Attendance } from "../models/lectureAttendance.models.js";
+import { AllocatedSubject } from "../models/allocated-subjects.models.js";
+import { LectureFeedback } from "../models/lectureFeedbacks.models.js";
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -100,6 +103,161 @@ const getStudentProfile = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, student, "User profile"));
 });
 
+const getFeedbackForms = asyncHandler(async (req, res) => {
+  const studentId = req.student._id;
+
+  // Step 1: Fetch the student's branch and year from the Student model
+  const student = await Student.findById(studentId).select("branch year").lean();
+
+  if (!student) {
+    throw new ApiError(404, "Student not found.");
+  }
+
+  const { branch, year } = student;
+
+  // Step 2: Fetch all subjects the student is studying
+  const studentSubjects = await StudySubject.find({ student: studentId }).lean();
+
+  if (!studentSubjects || studentSubjects.length === 0) {
+    throw new ApiError(404, "No subjects found for the student.");
+  }
+
+  // Step 3: Initialize array to store eligible subjects for feedback
+  const eligibleSubjects = [];
+
+  for (const subject of studentSubjects) {
+    // Fetch total lectures for the subject
+    const totalLectures = await Attendance.find({
+      subject_name: subject.subject_name,
+      subject_code: subject.subject_code,
+      subject_credit: subject.subject_credit,
+      teacher: subject.teacher,
+      branch: branch,
+      year: year,
+    }).countDocuments();
+
+    if (totalLectures === 0) {
+      continue; // Skip if no lectures for the subject
+    }
+
+    // Fetch lectures attended by the student for this subject
+    const attendedLectures = await Attendance.find({
+      subject_name: subject.subject_name,
+      subject_code: subject.subject_code,
+      subject_credit: subject.subject_credit,
+      teacher: subject.teacher,
+      branch: branch,
+      year: year,
+      studentsPresent: studentId,
+    }).countDocuments();
+
+    // Calculate attendance percentage
+    const attendancePercentage = (attendedLectures / totalLectures) * 100;
+
+    if (attendancePercentage >= 60) {
+      // Check if feedback is released for this subject
+      const allocatedSubject = await AllocatedSubject.findOne({
+        subject_name: subject.subject_name,
+        subject_code: subject.subject_code,
+        subject_credit: subject.subject_credit,
+        branch: branch,
+        year: year,
+        teacher: subject.teacher,
+      }).lean();
+
+      if (allocatedSubject && allocatedSubject.feedbackReleased) {
+        eligibleSubjects.push({
+          subject_name: subject.subject_name,
+          subject_code: subject.subject_code,
+          subject_credit: subject.subject_credit,
+          teacher: subject.teacher,
+          attendancePercentage: attendancePercentage.toFixed(2),
+        });
+      }
+    }
+  }
+
+  if (eligibleSubjects.length === 0) {
+    throw new ApiError(
+      403,
+      "No feedback forms are available for the student due to attendance eligibility or unreleased feedback."
+    );
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        eligibleSubjects,
+        "Eligible feedback forms fetched successfully."
+      )
+    );
+});
+
+const fillFeedbackForm = asyncHandler(async (req, res) => {
+  const studentId = req.student._id;
+  const studentBranch = req.student.branch; 
+  const studentYear = req.student.year;
+  const { subject_name, subject_code, subject_credit, teacher, question1_rating, question2_rating, question3_rating, question4_rating, question5_rating, question6_rating, question7_rating, question8_rating, question9_rating, question10_rating, comments } = req.body;
+
+  // Step 1: Check if feedback form is available for the subject
+  const allocatedSubject = await AllocatedSubject.findOne({
+    subject_name,
+    subject_code,
+    subject_credit,
+    branch: studentBranch,
+    year: studentYear,
+    teacher
+  }).lean();
+
+  if (!allocatedSubject || !allocatedSubject.feedbackReleased) {
+    throw new ApiError(403, "Feedback form is not available for the subject.");
+  }
+
+  // Step 2: Check if the student has already submitted feedback for the subject
+  const existingFeedback = await LectureFeedback.findOne({
+    student: studentId,
+    subject_name,
+    subject_code,
+    subject_credit,
+    branch: studentBranch,
+    year: studentYear,
+    teacher,
+  }).lean();
+
+  if (existingFeedback) {
+    throw new ApiError(403, "Feedback form already submitted for the subject.");
+  }
+
+  // Step 3: Create feedback form
+  const feedback = await LectureFeedback.create({
+    subject_name,
+    subject_code,
+    subject_credit,
+    teacher,
+    branch: studentBranch,
+    year: studentYear,
+    question1_rating,
+    question2_rating,
+    question3_rating,
+    question4_rating,
+    question5_rating,
+    question6_rating,
+    question7_rating,
+    question8_rating,
+    question9_rating,
+    question10_rating,
+    comments,
+    submitter: studentId,
+    submissionTime: new Date(),
+  });
+
+  await feedback.save();
+
+  return res.status(201).json(new ApiResponse(201, feedback, "Feedback form submitted successfully."));
+});
+
 const logoutStudent = asyncHandler(async (req, res) => {
   Student.findByIdAndUpdate(
     req.student._id,
@@ -133,4 +291,6 @@ export {
   loginStudent,
   logoutStudent,
   getStudentProfile,
+  getFeedbackForms,
+  fillFeedbackForm
 };

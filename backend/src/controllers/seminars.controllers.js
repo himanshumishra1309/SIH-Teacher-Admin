@@ -3,589 +3,230 @@ import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { Seminar } from "../models/seminars.models.js";
 import { SeminarFeedback } from "../models/feedback-seminars.models.js";
-import { v2 as cloudinary } from "cloudinary";
-import { uploadOnCloudinary } from "../utils/cloudinary.js"; 
+import { uploadToGCS,deleteFromGCS } from "../utils/googleCloud.js";
+import { SAttendance } from "../models/seminarAttendance.models.js";
+import { Student } from "../models/students.models.js";
 
-// 1. Get All Conducted Seminars (with feedback and report)
-const getAllConductedSeminars = asyncHandler(async (req, res) => {
-  const conductedSeminars = await Seminar.aggregate([
-    { $match: { status: "conducted", owner: req.teacher._id } },
-    {
-      $lookup: {
-        from: "seminarfeedbacks",
-        localField: "_id",
-        foreignField: "seminar",
-        as: "feedbacks",
-      },
-    },
-    {
-      $lookup: {
-        from: "teachers",
-        localField: "owner",
-        foreignField: "_id",
-        as: "ownerDetails",
-      },
-    },
-    { $unwind: "$ownerDetails" },
-    {
-      $project: {
-        topic: 1,
-        duration: 1,
-        date: 1,
-        report: 1,
-        owner: "$ownerDetails.name",
-        department: "$ownerDetails.department",
-        feedbacks: 1,
-      },
-    },
-  ]);
-
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        conductedSeminars,
-        "Conducted seminars fetched successfully"
-      )
-    );
-}); //worked on postman
-
-// 2. Post Upcoming Seminar
-const postUpcomingSeminar = asyncHandler(async (req, res) => {
+const uploadConductedSeminar = asyncHandler(async (req, res) => {
   const { topic, duration, date } = req.body;
+  const owner = req.teacher._id;
 
   if (!topic || !duration || !date) {
-    throw new ApiError(400, "Topic, duration, and date are required");
+    throw new ApiError(400, "All fields (topic, duration, date) are required.");
   }
 
-  // Ensure duration is a number
-  const durationInHours = Number(duration);
-  if (isNaN(durationInHours)) {
-    throw new ApiError(400, "Duration must be a number");
+  const reportPath = req.file?.path;
+
+  if(!reportPath) {
+    throw new ApiError(400, "Report is required.");
   }
 
-  const newSeminar = await Seminar.create({
+  const reportUrl = reportPath 
+    ? await uploadToGCS(reportPath, "seminar-reports")
+    : null;
+
+  if(!reportUrl) {
+    throw new ApiError(500, "Failed to upload");
+  }
+
+  const seminar = await Seminar.create({
     topic,
     duration,
     date,
-    owner: req.teacher._id,
-    status: "upcoming",
-    report: "",
+    report: reportUrl,
+    owner,
+    feedbackReleased: false,
+    activeUntil: new Date(),
   });
 
-  return res
-    .status(201)
-    .json(
-      new ApiResponse(201, newSeminar, "Upcoming seminar posted successfully")
-    );
-}); // worked on postman
-
-// 3. See Feedbacks of a Particular Seminar (Teacher)
-const seeFeedbacks = asyncHandler(async (req, res) => {
-  const { seminarId } = req.params;
-
-  const seminar = await Seminar.findOne({
-    _id: seminarId,
-    owner: req.teacher._id,
-    status: "conducted",
-  });
-  if (!seminar) {
-    throw new ApiError(404, "Conducted seminar not found or not owned by you");
-  }
-
-  const feedbacks = await SeminarFeedback.aggregate([
-    { $match: { seminar: seminar._id } },
-    {
-      $lookup: {
-        from: "seminarrsvps",
-        localField: "rsvp",
-        foreignField: "_id",
-        as: "rsvpDetails",
-      },
-    },
-    { $unwind: "$rsvpDetails" },
-    {
-      $project: {
-        comments: 1,
-        rating: 1,
-      },
-    },
-  ]);
-
-  if (feedbacks.length === 0) {
-    throw new ApiError(404, "No feedbacks found for this seminar");
-  }
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, feedbacks, "Feedbacks fetched successfully"));
-}); // send "_id"
-
-// 4. Edit Info of a Conducted Seminar
-const editConductedSeminarReport = asyncHandler(async (req, res) => {
-  const { seminarId } = req.params;
-  const file = req.file;
-
-  const seminar = await Seminar.findOne({
-    _id: seminarId,
-    owner: req.teacher._id,
-    status: "conducted",
-  });
-
-  if (!seminar) {
-    throw new ApiError(404, "Conducted seminar not found or not owned by you");
-  }
-
-  // Handle report file upload
-  if (file) {
-    // Remove the old report from Cloudinary if it exists
-    if (seminar.report) {
-      const publicId = seminar.report.split("/").pop().split(".")[0];
-      await cloudinary.uploader.destroy(publicId);
-    }
-
-    const uploadSeminarReport = await uploadOnCloudinary(file.path);
-    if (!uploadSeminarReport) {
-      throw new ApiError(500, "Couldn't upload your new file");
-    }
-    seminar.report = uploadSeminarReport.secure_url;
-  }
-
-  await seminar.save();
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, seminar, "Report updated successfully"));
-}); // worked on postman
-
-// 5. Delete a Conducted Seminar
-const deleteConductedSeminar = asyncHandler(async (req, res) => {
-  const { seminarId } = req.params;
-
-  const seminar = await Seminar.findOneAndDelete({
-    _id: seminarId,
-    owner: req.teacher._id,
-    status: "conducted",
-  });
-  if (!seminar) {
-    throw new ApiError(404, "Conducted seminar not found or not owned by you");
-  }
-
-  await SeminarRSVP.deleteMany({ seminar: seminarId });
-  await SeminarFeedback.deleteMany({ seminar: seminarId });
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, null, "Conducted seminar deleted successfully"));
-}); // worked on postman
-
-// 6. See Who All RSVPed for the Upcoming Seminar (Teacher)
-const seeRSVPedStudents = asyncHandler(async (req, res) => {
-  const { seminarId } = req.params;
-
-  const seminar = await Seminar.findOne({
-    _id: seminarId,
-    owner: req.teacher._id,
-    status: "upcoming",
-  });
-
-  if (!seminar) {
-    throw new ApiError(404, "Upcoming seminar not found or not owned by you");
-  }
-
-  const rsvps = await SeminarRSVP.aggregate([
-    { $match: { seminar: seminar._id } },
-    {
-      $lookup: {
-        from: "students",
-        localField: "student",
-        foreignField: "_id",
-        as: "studentDetails",
-      },
-    },
-    { $unwind: "$studentDetails" },
-    {
-      $project: {
-        name: "$studentDetails.name",
-        branch: "$studentDetails.branch",
-        email: "$studentDetails.email",
-        roll_no: "$studentDetails.roll_no",
-        year: "$studentDetails.year",
-      },
-    },
-  ]);
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, rsvps, "RSVPed students fetched successfully"));
+  res.status(201).json(new ApiResponse(201, seminar, "Seminar uploaded successfully."));
 });
 
-// 7. See Who All Submitted Feedback for the Seminar (Teacher)
-const seeFeedbackSubmitters = asyncHandler(async (req, res) => {
+const getConductedSeminars = asyncHandler(async (req, res) => {
+  const owner = req.teacher._id;
+
+  const seminars = await Seminar.find({ owner }).sort({ date: -1 });
+
+  res.status(200).json(new ApiResponse(200, seminars, "Seminars fetched successfully."));
+});
+
+const editUploadedSeminar = asyncHandler(async (req, res) => {
   const { seminarId } = req.params;
+  const { topic, duration, date, deleteReport } = req.body;
 
-  const seminar = await Seminar.findOne({
-    _id: seminarId,
-    owner: req.teacher._id,
-    status: "conducted",
-  });
+  // Find the seminar
+  const seminar = await Seminar.findById(seminarId);
   if (!seminar) {
-    throw new ApiError(404, "Conducted seminar not found or not owned by you");
+    throw new ApiError(404, "Seminar not found");
   }
 
-  const feedbacks = await SeminarFeedback.aggregate([
-    { $match: { seminar: seminar._id } },
-    {
-      $lookup: {
-        from: "seminarrsvps",
-        localField: "rsvp",
-        foreignField: "_id",
-        as: "rsvpDetails",
-      },
-    },
-    { $unwind: "$rsvpDetails" },
-    {
-      $lookup: {
-        from: "students",
-        localField: "rsvpDetails.student",
-        foreignField: "_id",
-        as: "studentDetails",
-      },
-    },
-    { $unwind: "$studentDetails" },
-    {
-      $project: {
-        name: "$studentDetails.name",
-        branch: "$studentDetails.branch",
-        year: "$studentDetails.year",
-      },
-    },
-  ]);
-
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        feedbacks,
-        "Feedback submitters fetched successfully"
-      )
-    );
-});
-
-// 8. See All Upcoming Seminars (Student)
-const getAllUpcomingSeminarsForStudents = asyncHandler(async (req, res) => {
-  const studentId = req.student._id; // assuming `req.student` holds the authenticated student's info
-
-  const seminars = await Seminar.aggregate([
-    { $match: { status: "upcoming" } },
-    {
-      $lookup: {
-        from: "students",
-        localField: "owner",
-        foreignField: "_id",
-        as: "ownerDetails",
-      },
-    },
-    { $unwind: "$ownerDetails" },
-    {
-      $lookup: {
-        from: "seminarrsvps", // Matches with SeminarRSVP collection
-        let: { seminarId: "$_id", studentId: studentId },
-        pipeline: [
-          { 
-            $match: {
-              $expr: {
-                $and: [
-                  { $eq: ["$seminar", "$$seminarId"] },
-                  { $eq: ["$student", "$$studentId"] }
-                ]
-              }
-            }
-          }
-        ],
-        as: "rsvpDetails",
-      },
-    },
-    {
-      $addFields: {
-        hasRSVPed: { $gt: [{ $size: "$rsvpDetails" }, 0] }
-      },
-    },
-    {
-      $project: {
-        topic: 1,
-        duration: 1,
-        date: 1,
-        owner: "$ownerDetails.name",
-        department: "$ownerDetails.department",
-        hasRSVPed: 1, // Indicates whether the student has already RSVP'd
-      },
-    },
-  ]);
-
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        seminars,
-        "Your upcoming seminars fetched successfully"
-      )
-    );
-});
-
-// 9. See All Upcoming Seminars Posted by the Teacher (Teacher)
-const getAllUpcomingSeminarsByTeacher = asyncHandler(async (req, res) => {
-  const seminars = await Seminar.aggregate([
-    { $match: { owner: req.teacher._id, status: "upcoming" } },
-    {
-      $lookup: {
-        from: "teachers",
-        localField: "owner",
-        foreignField: "_id",
-        as: "ownerDetails",
-      },
-    },
-    { $unwind: "$ownerDetails" },
-    {
-      $project: {
-        topic: 1,
-        duration: 1,
-        date: 1,
-        owner: "$ownerDetails.name",
-        department: "$ownerDetails.department",
-      },
-    },
-  ]);
-
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        seminars,
-        "Your upcoming seminars fetched successfully"
-      )
-    );
-}); // worked on postman
-
-// 10. Mark Seminar as Conducted and Release Feedback Forms (Teacher)
-const conductSeminar = asyncHandler(async (req, res) => {
-  const { seminarId } = req.params;
-  const file = req.file;
-
-  if (!file) {
-    throw new ApiError(400, "Report file is required");
-  }
-
-  const seminar = await Seminar.findOne({
-    _id: seminarId,
-    owner: req.teacher._id,
-    status: "upcoming",
-  });
-
-  if (!seminar) {
-    throw new ApiError(404, "Upcoming seminar not found or not owned by you");
-  }
-
-  // Handle the report upload
-  const uploadSeminarReport = await uploadOnCloudinary(file.path);
-  if (!uploadSeminarReport) {
-    throw new ApiError(500, "Couldn't upload your report file");
-  }
-  seminar.report = uploadSeminarReport.secure_url;
-  seminar.status = "conducted";
-
-  await seminar.save();
-
-  // Fetch the seminar with additional data if needed
-  const updatedSeminar = await Seminar.findById(seminarId)
-    .populate("feedbacks")
-    .populate("owner", "name department");
-
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        updatedSeminar,
-        "Seminar marked as conducted and feedback forms released"
-      )
-    );
-}); // worked on postman
-
-// 11. Student RSVP for Seminars
-const studentRSVP = asyncHandler(async (req, res) => {
-  const { seminarId } = req.body;
-
-  if (!seminarId) {
-    throw new ApiError(400, "Seminar ID is required");
-  }
-
-  const seminar = await Seminar.findOne({ _id: seminarId, status: "upcoming" });
-  if (!seminar) {
-    throw new ApiError(404, "Upcoming seminar not found");
-  }
-
-  const existingRSVP = await SeminarRSVP.findOne({
-    seminar: seminarId,
-    student: req.student._id,
-    student: req.student._id,
-  });
-  if (existingRSVP) {
-    throw new ApiError(400, "Already RSVPed for this seminar");
-  }
-
-  await SeminarRSVP.create({
-    seminar: seminarId,
-    student: req.student._id,
-  });
-
-  return res.status(200).json(new ApiResponse(200, null, "RSVP successful"));
-});
-
-// 12. Student Fill Feedback Form
-const studentSubmitFeedback = asyncHandler(async (req, res) => {
-  const { seminarId, rating, comments } = req.body;
-
-  if (!seminarId || !rating || !comments) {
-    throw new ApiError(400, "Seminar ID, rating, and comments are required");
-  }
-
-  const seminar = await Seminar.findOne({
-    _id: seminarId,
-    status: "conducted",
-  });
-  if (!seminar) {
-    throw new ApiError(404, "Conducted seminar not found");
-  }
-
-  const rsvp = await SeminarRSVP.findOne({
-    seminar: seminarId,
-    student: req.student._id,
-  });
-  if (!rsvp) {
-    throw new ApiError(400, "You have not RSVPed for this seminar");
-  }
-
-  if (rsvp.submittedFeedback) {
-    throw new ApiError(400, "Feedback already submitted");
-  }
-
-  await SeminarFeedback.create({
-    seminar: seminarId,
-    rsvp: rsvp._id,
-    comments,
-    rating,
-  });
-
-  rsvp.submittedFeedback = true;
-  await rsvp.save();
-
-  return res
-    .status(201)
-    .json(new ApiResponse(201, null, "Feedback submitted successfully"));
-});
-
-// 13.
-const getPendingFeedbackFormsForConductedSeminars = asyncHandler(
-  async (req, res) => {
-    const studentId = req.student._id;
-
-    // Find all RSVP'd seminars that are conducted and where feedback is not submitted
-    const rsvps = await SeminarRSVP.find({
-      student: studentId,
-      submittedFeedback: false,
-    })
-      .populate({
-        path: "seminar",
-        match: { status: "conducted" },
-        select: "topic date",
-      })
-      .select("seminar submittedFeedback");
-
-    // Filter out RSVP entries where seminar is null (not conducted)
-    const pendingFeedbackForms = rsvps
-      .filter((rsvp) => rsvp.seminar)
-      .map((rsvp) => ({
-        seminar: rsvp.seminar,
-        submittedFeedback: rsvp.submittedFeedback,
-      }));
-
-    return res
-      .status(200)
-      .json(
-        new ApiResponse(
-          200,
-          pendingFeedbackForms,
-          "Pending feedback forms fetched successfully"
-        )
-      );
-  }
-);
-
-// 14. Edit Upcoming Seminar
-const editUpcomingSeminar = asyncHandler(async (req, res) => {
-  const { seminarId } = req.params;
-  const { topic, duration, date } = req.body;
-
-  const seminar = await Seminar.findOne({
-    _id: seminarId,
-    owner: req.teacher._id,
-    status: "upcoming",
-  });
-
-  if (!seminar) {
-    throw new ApiError(404, "Upcoming seminar not found or not owned by you");
-  }
-
-  // Update seminar fields if provided in the request body
+  // Update the basic details if provided
   if (topic) seminar.topic = topic;
   if (duration) seminar.duration = duration;
-  if (date) seminar.date = date;
+  if (date) seminar.date = new Date(date);
+
+  // Handle report updates
+  if (deleteReport && seminar.report) {
+    await deleteFromGCS(seminar.report); // Remove the report from GCS
+    seminar.report = undefined; // Clear the report field
+  }
+
+  if (req.file) {
+    const reportUrl = await uploadToGCS(req.file.path, "reports");
+    seminar.report = reportUrl; // Update with new report
+  }
 
   await seminar.save();
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, seminar, "Seminar updated successfully"));
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      seminar,
+      "Seminar updated successfully"
+    )
+  );
 });
 
-// 15. Cancel Upcoming Seminar
-const cancelUpcomingSeminar = asyncHandler(async (req, res) => {
+const deleteUploadedSeminar = asyncHandler(async (req, res) => {
   const { seminarId } = req.params;
 
-  const seminar = await Seminar.findOneAndDelete({
-    _id: seminarId,
-    owner: req.teacher._id,
-    status: "upcoming",
-  });
+  const seminar = await Seminar.findOneAndDelete({ _id: seminarId, owner: req.teacher._id });
 
   if (!seminar) {
-    throw new ApiError(404, "Upcoming seminar not found or not owned by you");
+    throw new ApiError(404, "Seminar not found or you're not authorized to delete it.");
   }
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, null, "Seminar cancelled successfully"));
+  res.status(200).json(new ApiResponse(200, seminar, "Seminar deleted successfully."));
+});
+
+const releaseFeedbackForm = asyncHandler(async (req, res) => {
+  const { seminarId } = req.params;
+
+  const seminar = await Seminar.findOneAndUpdate(
+    { _id: seminarId, owner: req.user._id },
+    { feedbackReleased: true, activeUntil: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000) },
+    { new: true }
+  );
+
+  if (!seminar) {
+    throw new ApiError(404, "Seminar not found or you're not authorized to release feedback.");
+  }
+
+  res.status(200).json(new ApiResponse(200, seminar, "Feedback form released successfully."));
+});
+
+const viewFeedbacks = asyncHandler(async (req, res) => {
+  const { seminarId } = req.params;
+
+  const feedbacks = await SeminarFeedback.find({ seminar: seminarId }).select("-student");
+
+  res.status(200).json(new ApiResponse(200, feedbacks, "Feedbacks fetched successfully."));
+});
+
+const getFeedbackSubmitters = asyncHandler(async (req, res) => {
+  const { seminarId } = req.params;
+
+  const feedbacks = await SeminarFeedback.find({ seminar: seminarId }).populate("student", "name roll_no");
+
+  const submitters = feedbacks.map((feedback) => feedback.student);
+
+  res.status(200).json(new ApiResponse(200, submitters , "Feedback submitters fetched successfully."));
+});
+
+const markAttendance = asyncHandler(async (req, res) => {
+  const { seminarId, teacherId } = req.params;
+  const { rollNumbers } = req.body;
+
+  if (!rollNumbers || !Array.isArray(rollNumbers) || rollNumbers.length === 0) {
+    return next(new ApiError("Please provide an array of roll numbers.", 400));
+  }
+
+  const seminar = await Seminar.findById(seminarId);
+  if (!seminar) {
+    return next(new ApiError("Seminar not found.", 404));
+  }
+
+  const students = await Student.find({ roll_no: { $in: rollNumbers } });
+
+  if (students.length === 0) {
+    return next(new ApiError("No students found for the provided roll numbers.", 404));
+  }
+
+  const studentIds = students.map((student) => student._id);
+
+  const attendanceRecord = await SAttendance.findOneAndUpdate(
+    { seminar: seminarId, date: new Date().toISOString().split("T")[0], teacher: teacherId },
+    { $addToSet: { studentsPresent: { $each: studentIds } } },
+    { upsert: true, new: true }
+  );
+
+  res.status(200).json(new ApiResponse(200, attendanceRecord, "Attendance marked successfully."));
+});
+
+const viewSeminarFeedbackFormsAvailable = asyncHandler(async (req, res) => {
+  const studentId = req.user._id; // Assuming student is authenticated and `req.user` contains their details.
+
+  const attendanceRecords = await SAttendance.find({ studentsPresent: studentId }).populate("seminar");
+
+  const feedbackAvailableSeminars = attendanceRecords
+    .filter((record) => record.seminar.feedbackReleased)
+    .map((record) => ({
+      seminarId: record.seminar._id,
+      topic: record.seminar.topic,
+      date: record.seminar.date,
+      duration: record.seminar.duration,
+      owner: record.seminar.owner,
+    }));
+
+  res.status(200).json(
+    new ApiResponse(200, feedbackAvailableSeminars, "Feedback forms available for the following seminars.")
+  );
+});
+
+const fillEligibleFeedbackForm = asyncHandler(async (req, res) => {
+  const { seminarId } = req.params;
+  const studentId = req.student._id;
+
+  const seminar = await Seminar.findById(seminarId);
+  if (!seminar) {
+    return next(new ApiError("Seminar not found.", 404));
+  }
+
+  const attendanceRecord = await SAttendance.findOne({
+    seminar: seminarId,
+    studentsPresent: studentId,
+    date: new Date().toISOString().split("T")[0],
+  });
+
+  if (!attendanceRecord) {
+    return next(new ApiError("You're not eligible to fill the feedback form for this seminar.", 403));
+  }
+
+  const { comments, rating } = req.body;
+
+  if (!comments || !rating) {
+    return next(new ApiError("Comments and rating are required.", 400));
+  }
+
+  const feedback = await SeminarFeedback.create({
+    seminar: seminarId,
+    comments,
+    rating,
+    student: studentId,
+  });
+
+  res.status(201).json(new ApiResponse(201,feedback, "Feedback submitted successfully."));
 });
 
 export {
-  getAllConductedSeminars,
-  postUpcomingSeminar,
-  seeFeedbacks,
-  editConductedSeminarReport,
-  deleteConductedSeminar,
-  seeRSVPedStudents,
-  seeFeedbackSubmitters,
-  getAllUpcomingSeminarsForStudents,
-  getAllUpcomingSeminarsByTeacher,
-  conductSeminar,
-  studentRSVP,
-  studentSubmitFeedback,
-  getPendingFeedbackFormsForConductedSeminars,
-  editUpcomingSeminar,
-  cancelUpcomingSeminar
+  uploadConductedSeminar,
+  getConductedSeminars,
+  editUploadedSeminar,
+  deleteUploadedSeminar,
+  releaseFeedbackForm,
+  viewFeedbacks,
+  getFeedbackSubmitters,
+  markAttendance,
+  viewSeminarFeedbackFormsAvailable,
+  fillEligibleFeedbackForm,
 };

@@ -1,7 +1,7 @@
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErrors.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadToGCS } from "../utils/googleCloud.js";
 import { Admin } from "../models/admins.models.js";
 import { Teacher } from "../models/teachers.models.js";
 import { LectureFeedback } from "../models/lectureFeedbacks.models.js";
@@ -17,7 +17,20 @@ import { Lecture } from "../models/lectures.models.js";
 import { ExpertLecture } from "../models/expert-lectures.models.js";
 import { Student } from "../models/students.models.js";
 import { StudySubject } from "../models/studySubjects.models.js";
+import { Task } from "../models/tasks.modules.js";
+import { Completedtask } from "../models/completedTasks.models.js";
 import mongoose from "mongoose";
+import nodemailer from 'nodemailer';
+
+const transport = nodemailer.createTransport({
+  host: 'smtp.gmail.com', // Gmail SMTP server
+  port: 587, // Secure connection
+  secure: false, // Use TLS
+  auth: {
+    user: process.env.EMAIL_USER, // Your Gmail email
+    pass: process.env.EMAIL_PASS, // Your Gmail password or app password
+  },
+})
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -44,7 +57,7 @@ const registerAdmin = asyncHandler(async (req, res) => {
   if (
     [name, email, designation, password].some((field) => field?.trim() === "")
   ) {
-    throw new ApiError(400, "All fields is required");
+    throw new ApiError(400, "All fields are required");
   }
 
   const existedUser = await Admin.findOne({ email });
@@ -61,17 +74,17 @@ const registerAdmin = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Avatar is required");
   }
 
-  const avatar = await uploadOnCloudinary(avatarLocalPath);
+  const avatar = await uploadToGCS(avatarLocalPath, "images"); // Pass the file path and specify a directory within the bucket
 
   if (!avatar) {
-    throw new ApiError(400, "No avatar file found");
+    throw new ApiError(400, "Failed to upload avatar to GCS");
   }
 
   const admin = await Admin.create({
     name,
     email,
     designation,
-    avatar: avatar.url,
+    avatar: avatarUrl, // Assuming `uploadToGCS` returns an object with a `url` field
     password,
   });
 
@@ -102,18 +115,33 @@ const registerAdmin = asyncHandler(async (req, res) => {
         "Admin successfully registered"
       )
     );
-}); // worked on postman
+}); // Works with Postman
 
 const registerTeacher = asyncHandler(async (req, res) => {
-  const { name, email, employee_code, designation, experience, qualification, department, password } = req.body;
-  // console.log('req: ', req);
+  const {
+    name,
+    email,
+    employee_code,
+    designation,
+    experience,
+    qualification,
+    department,
+    password,
+  } = req.body;
 
   if (
-    [name, email, employee_code, designation, experience, qualification, department, password].some(
-      (field) => field?.trim() === ""
-    )
+    [
+      name,
+      email,
+      employee_code,
+      designation,
+      experience,
+      qualification,
+      department,
+      password,
+    ].some((field) => field?.trim() === "")
   ) {
-    throw new ApiError(400, "All fields is required");
+    throw new ApiError(400, "All fields are required");
   }
 
   const existedUser = await Teacher.findOne({
@@ -124,19 +152,21 @@ const registerTeacher = asyncHandler(async (req, res) => {
     throw new ApiError(400, "User with email or employee code already exists");
   }
 
-  // console.log("request: ", req.file);
-
   const avatarLocalPath = req.file?.path;
+
+  console.log("request: ", req.file);
 
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar is required");
   }
 
-  const avatar = await uploadOnCloudinary(avatarLocalPath);
+  const avatar = await uploadToGCS(avatarLocalPath, "images"); // Pass the file path and specify a directory within the bucket
 
   if (!avatar) {
-    throw new ApiError(400, "No avatar file found");
+    throw new ApiError(400, "Failed to upload avatar to GCS");
   }
+
+  // console.log(avatar);
 
   const teacher = await Teacher.create({
     name,
@@ -146,7 +176,7 @@ const registerTeacher = asyncHandler(async (req, res) => {
     experience,
     qualification,
     department,
-    avatar: avatar.url,
+    avatar: avatar, // Assuming `uploadToGCS` returns an object with a `url` field
     password,
   });
 
@@ -158,25 +188,25 @@ const registerTeacher = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Something went wrong while registering the user");
   }
 
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        {
-          teacher: createTeacher,
-        },
-        "Teacher successfully registered"
-      )
-    );
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        teacher: createTeacher,
+      },
+      "Teacher successfully registered"
+    )
+  );
 }); // worked on postman
 
 const getCurrentTeacher = asyncHandler(async (req, res) => {
-  const {teacherId} = req.params;
+  const { teacherId } = req.params;
 
   const teacherInfo = await Teacher.findById(teacherId)
-    .select("name email employee_code experience qualification department avatar")
-    .lean(); 
+    .select(
+      "name email employee_code experience qualification department avatar"
+    )
+    .lean();
 
   if (!teacherInfo) {
     throw new ApiError(404, "Teacher not found");
@@ -190,10 +220,26 @@ const getCurrentTeacher = asyncHandler(async (req, res) => {
 }); //worked on postman
 
 const updateTeacherAccountDetails = asyncHandler(async (req, res) => {
-  const {teacherId} = req.params;
-  const { name, department, email, employee_code, designation, experience, qualification } = req.body;
+  const { teacherId } = req.params;
+  const {
+    name,
+    department,
+    email,
+    employee_code,
+    designation,
+    experience,
+    qualification,
+  } = req.body;
 
-  if (!name || !department || !email || !employee_code || !designation || !experience || !qualification) {
+  if (
+    !name ||
+    !department ||
+    !email ||
+    !employee_code ||
+    !designation ||
+    !experience ||
+    !qualification
+  ) {
     throw new ApiError(400, "All field are requires");
   }
 
@@ -229,7 +275,7 @@ const updateTeacherAccountDetails = asyncHandler(async (req, res) => {
 }); //worked on postman
 
 const updateTeacherAvatar = asyncHandler(async (req, res) => {
-  const {teacherId} = req.params;
+  const { teacherId } = req.params;
   console.log(req.file);
   console.log(req.file.path);
   const avatarLocalPath = req.file?.path; // we are taking the file from multer middleware, also here we are only taking one file as input and therefore we are using 'file', whereas if we wanted to take multiple file we would have written 'files' instead of 'file'
@@ -259,32 +305,51 @@ const updateTeacherAvatar = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, teacher, "avatar image updated successfully"));
 }); //did not work on postman
 
-const allotSubjectsToTeachers = asyncHandler(async (req, res)=>{
-  const { subject_name, subject_code, subject_credit, branch, year, min_lectures, teacherId } = req.body;
+const allotSubjectsToTeachers = asyncHandler(async (req, res) => {
+  const {
+    subject_name,
+    subject_code,
+    subject_credit,
+    branch,
+    year,
+    min_lectures,
+    teacherId,
+  } = req.body;
 
-    // Validate input fields
-    if (!subject_name || !subject_code || !subject_credit || !branch || !year || !min_lectures || !teacherId) {
-      return res.status(400).json({ error: "All fields are required." });
-    }
+  // Validate input fields
+  if (
+    !subject_name ||
+    !subject_code ||
+    !subject_credit ||
+    !branch ||
+    !year ||
+    !min_lectures ||
+    !teacherId
+  ) {
+    return res.status(400).json({ error: "All fields are required." });
+  }
 
-    // Check if the teacher exists
-    const teacher = await Teacher.findById(teacherId);
+  // Check if the teacher exists
+  const teacher = await Teacher.findById(teacherId);
 
-    if (!teacher) {
-      throw new ApiError(400, "Teacher not found.");
-    }
+  if (!teacher) {
+    throw new ApiError(400, "Teacher not found.");
+  }
 
-    // Check if the subject is already allocated to the teacher
-    const existingAllocation = await AllocatedSubject.findOne({
-      subject_code,
-      branch,
-      year,
-      teacher: teacherId,
-    });
+  // Check if the subject is already allocated to the teacher
+  const existingAllocation = await AllocatedSubject.findOne({
+    subject_code,
+    branch,
+    year,
+    teacher: teacherId,
+  });
 
-    if (existingAllocation) {
-      throw new ApiError(400, "This subject is already allocated to this teacher")
-    }
+  if (existingAllocation) {
+    throw new ApiError(
+      400,
+      "This subject is already allocated to this teacher"
+    );
+  }
 
     // Create a new allocated subject record
     const allocatedSubject = await AllocatedSubject.create({
@@ -295,9 +360,15 @@ const allotSubjectsToTeachers = asyncHandler(async (req, res)=>{
       year,
       min_lectures,
       teacher: teacherId,
+      feedbackReleased: false,
+      activeUntil: null,
     });
 
-    return res.status(200).json(new ApiResponse(200, {allocatedSubject, teacher}, "Subject alloted"))
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, { allocatedSubject, teacher }, "Subject alloted")
+    );
 }); //worked on postman
 
 const viewAllAllocatedSubjectsOfTheTeacher = asyncHandler(async (req, res) => {
@@ -328,7 +399,14 @@ const viewAllAllocatedSubjectsOfTheTeacher = asyncHandler(async (req, res) => {
 
 const editAllocatedSubjectOfTheTeacher = asyncHandler(async (req, res) => {
   const { teacherId, subjectId } = req.params;
-  const { subject_name, subject_code, subject_credit, min_lectures, branch, year } = req.body;
+  const {
+    subject_name,
+    subject_code,
+    subject_credit,
+    min_lectures,
+    branch,
+    year,
+  } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(teacherId)) {
     throw new ApiError(400, "Invalid teacher ID format.");
@@ -338,7 +416,15 @@ const editAllocatedSubjectOfTheTeacher = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid subject ID format.");
   }
 
-  if (!subject_name || !subject_code || !subject_credit || !branch || !year || !min_lectures || !teacherId) {
+  if (
+    !subject_name ||
+    !subject_code ||
+    !subject_credit ||
+    !branch ||
+    !year ||
+    !min_lectures ||
+    !teacherId
+  ) {
     return res.status(400).json({ error: "All fields are required." });
   }
 
@@ -352,6 +438,9 @@ const editAllocatedSubjectOfTheTeacher = asyncHandler(async (req, res) => {
         branch,
         year,
         min_lectures,
+        teacher: teacherId,
+        feedbackReleased: false,
+        activeUntil: null,
       },
     },
     { new: true }
@@ -403,7 +492,9 @@ const registerStudent = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields is required");
   }
 
-  const existedUser = await Student.findOne({ email });
+  const existedUser = await Student.findOne({
+    $or: [{ roll_no }, { email }],
+  });
 
   if (existedUser) {
     throw new ApiError(400, "User with email already exists");
@@ -416,7 +507,7 @@ const registerStudent = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Avatar is required");
   }
 
-  const avatar = await uploadOnCloudinary(avatarLocalPath);
+  const avatar = await uploadToGCS(avatarLocalPath, "images"); // Pass the file path and specify a directory within the bucket
 
   if (!avatar) {
     throw new ApiError(400, "No avatar file found");
@@ -428,7 +519,7 @@ const registerStudent = asyncHandler(async (req, res) => {
     roll_no,
     branch,
     year,
-    avatar: avatar.url,
+    avatar: avatar,
     password,
   });
 
@@ -452,7 +543,7 @@ const registerStudent = asyncHandler(async (req, res) => {
 }); //worked on postman
 
 const getCurrentStudent = asyncHandler(async (req, res) => {
-  const {studentId} = req.params;
+  const { studentId } = req.params;
 
   const students = await Student.findById(studentId);
 
@@ -460,7 +551,9 @@ const getCurrentStudent = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Student not found");
   }
 
-  const studentInfo = students.select("name email roll_no branch year avatar").lean();
+  const studentInfo = students
+    .select("name email roll_no branch year avatar")
+    .lean();
 
   return res
     .status(200)
@@ -470,7 +563,7 @@ const getCurrentStudent = asyncHandler(async (req, res) => {
 }); //worked on postman
 
 const updateStudentAccountDetails = asyncHandler(async (req, res) => {
-  const {studentId} = req.params;
+  const { studentId } = req.params;
   const { name, email, roll_no, branch, year } = req.body;
 
   if (!name || !roll_no || !email || !branch || !year) {
@@ -498,9 +591,8 @@ const updateStudentAccountDetails = asyncHandler(async (req, res) => {
     );
 }); //worked on postman
 
-//todo: delete the previous avatar image from the db and cloudinary
 const updateStudentAvatar = asyncHandler(async (req, res) => {
-  const {studentId} = req.params;
+  const { studentId } = req.params;
   const avatarLocalPath = req.file?.path; // we are taking the file from multer middleware, also here we are only taking one file as input and therefore we are using 'file', whereas if we wanted to take multiple file we would have written 'files' instead of 'file'
 
   if (!avatarLocalPath) {
@@ -528,11 +620,28 @@ const updateStudentAvatar = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, student, "avatar image updated successfully"));
 });
 
+const getAllTheSubjects = asyncHandler(async (req, res) => {
+  const subjects = await AllocatedSubject.find()
+
+  if (!subjects) {
+    throw new ApiError(404, "No subjects found.");
+  }
+
+  return res.status(200).json(new ApiResponse(200, subjects ,"All the subjects fetched successfully"))
+})
+
 const allottSubjectsToStudents = asyncHandler(async (req, res) => {
-  const { subject_name, subject_code, subject_credit, teacherId, studentId } = req.body;
+  const { subject_name, subject_code, subject_credit, teacherId, studentId } =
+    req.body;
 
   // Validate inputs
-  if (!subject_name || !subject_code || !subject_credit || !teacherId || !studentId) {
+  if (
+    !subject_name ||
+    !subject_code ||
+    !subject_credit ||
+    !teacherId ||
+    !studentId
+  ) {
     return res.status(400).json({ error: "All fields are required." });
   }
 
@@ -571,8 +680,16 @@ const allottSubjectsToStudents = asyncHandler(async (req, res) => {
     teacher: teacherId,
     student: studentId,
   });
-  
-  return res.status(200).json(new ApiResponse(200, { studySubject, teacher, student }, "Subject allotted to student successfully."));
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { studySubject, teacher, student },
+        "Subject allotted to student successfully."
+      )
+    );
 }); //worked on postman
 
 const viewAllSubjectsAllottedToTheStudent = asyncHandler(async (req, res) => {
@@ -666,9 +783,244 @@ const deleteAllottedSubjectOfTheStudent = asyncHandler(async (req, res) => {
     );
 }); //worked on postman
 
-const releaseFeedbackForms = asyncHandler(async (req, res)=>{
+const releaseAllFeedbackForms = asyncHandler(async (req, res) => {
+  const { activeUntil } = req.body;
 
-})
+  // Validate activeUntil
+  if (!activeUntil || new Date(activeUntil) <= new Date()) {
+    throw new ApiError(400, 'Invalid or past activeUntil time.');
+  }
+
+  // Ensure activeUntil ends at the end of the specified day
+  const activeUntilDate = new Date(activeUntil);
+  activeUntilDate.setHours(23, 59, 59, 999);
+
+  // Update feedbackReleased to true and set activeUntil for all subjects
+  const result = await AllocatedSubject.updateMany(
+    { feedbackReleased: false }, // Update only subjects where feedback hasn't been released
+    { feedbackReleased: true, activeUntil: activeUntilDate }
+  );
+
+  if (result.length === 0) {
+    throw new ApiError(404, 'No subjects found to update.');
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        result,
+        'Feedback forms released for all subjects.'
+      )
+    );
+});
+
+const releaseFeedbackForSubjects = asyncHandler(async (req, res) => {
+  const { teacherId } = req.params; // Teacher ID from URL parameters
+  const { subjectIds, activeUntilDate } = req.body; // Array of subject IDs and expiration date
+
+  // Validate teacherId
+  if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+    throw new ApiError(400, 'Invalid teacher ID format.');
+  }
+
+  // Validate subjectIds
+  if (!Array.isArray(subjectIds) || subjectIds.length === 0) {
+    throw new ApiError(400, 'Provide an array of valid subject IDs.');
+  }
+
+  const invalidSubjectIds = subjectIds.filter(
+    (id) => !mongoose.Types.ObjectId.isValid(id)
+  );
+  if (invalidSubjectIds.length > 0) {
+    throw new ApiError(400, `Invalid subject IDs: ${invalidSubjectIds.join(', ')}`);
+  }
+
+  // Validate activeUntilDate
+  if (!activeUntilDate) {
+    throw new ApiError(400, 'activeUntilDate is required.');
+  }
+
+  const activeUntil = new Date(activeUntilDate);
+  if (isNaN(activeUntil.getTime()) || activeUntil <= new Date()) {
+    throw new ApiError(400, 'Invalid or past activeUntilDate.');
+  }
+
+  // Set the time to midnight (11:59:59 PM)
+  activeUntil.setHours(23, 59, 59, 999);
+
+  // Update feedbackReleased and activeUntil for selected subjects
+  const updatedSubjects = await AllocatedSubject.updateMany(
+    {
+      _id: { $in: subjectIds },
+      teacher: teacherId, // Ensure the subjects belong to the specified teacher
+    },
+    { feedbackReleased: true, activeUntil },
+    { new: true }
+  );
+
+  // Check if any subjects were updated
+  if (updatedSubjects.matchedCount === 0) {
+    throw new ApiError(
+      404,
+      'No matching subjects found for the specified teacher.'
+    );
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { updatedSubjects: updatedSubjects.modifiedCount },
+        'Feedback forms released successfully for the selected subjects.'
+      )
+    );
+});
+
+const getAllFeedbackCards = asyncHandler(async (req, res) => {
+  const { subject_name, subject_code, subject_credit, branch, year, teacherId } = req.body;
+
+  // Validate query parameters
+  if (!subject_name || !subject_code || !subject_credit || !branch || !year || !teacherId) {
+    throw new ApiError(
+      400,
+      "All fields (subject_name, subject_code, subject_credit, branch, year) are required."
+    );
+  }
+
+  // Fetch all feedback matching the specified subject details
+  const feedbackData = await LectureFeedback.find({
+    subject_name: subject_name,
+    subject_code: subject_code,
+    subject_credit: subject_credit,
+    teacher: teacherId,
+    branch: branch,
+    year: year,
+  }).sort({ submissionTime: -1 }) // Sort by most recent submission
+    .lean();
+
+  // If no feedback is found, return an error
+  if (!feedbackData || feedbackData.length === 0) {
+    throw new ApiError(404, "No feedback found for the specified subject.");
+  }
+
+  // Prepare response: anonymized cards with average ratings and comments
+  const feedbackCards = feedbackData.map((feedback) => {
+    const averageRating = (
+      (feedback.question1_rating +
+        feedback.question2_rating +
+        feedback.question3_rating +
+        feedback.question4_rating +
+        feedback.question5_rating +
+        feedback.question6_rating +
+        feedback.question7_rating +
+        feedback.question8_rating +
+        feedback.question9_rating +
+        feedback.question10_rating) /
+      10
+    ).toFixed(2);
+
+    return {
+      feedbackId: feedback._id,
+      comment: feedback.comment,
+      averageRating,
+      submissionTime: feedback.submissionTime,
+    };
+  });
+
+  // Send the feedback cards as the response
+  return res
+    .status(200)
+    .json(new ApiResponse(200, feedbackCards, "Feedback cards fetched successfully."));
+});
+
+const getDetailedFeedback = asyncHandler(async (req, res) => {
+  const { feedbackId } = req.params;
+
+  // Validate input
+  if (!feedbackId) {
+    throw new ApiError(400, "Feedback ID is required.");
+  }
+
+  // Fetch feedback by ID
+  const feedback = await LectureFeedback.findById(feedbackId).lean();
+
+  if (!feedback) {
+    throw new ApiError(404, "Feedback not found.");
+  }
+
+  // Prepare detailed feedback response
+  const detailedFeedback = {
+    subject_name: feedback.subject_name,
+    subject_code: feedback.subject_code,
+    subject_credit: feedback.subject_credit,
+    branch: feedback.branch,
+    year: feedback.year,
+    ratings: {
+      question1: feedback.question1_rating,
+      question2: feedback.question2_rating,
+      question3: feedback.question3_rating,
+      question4: feedback.question4_rating,
+      question5: feedback.question5_rating,
+      question6: feedback.question6_rating,
+      question7: feedback.question7_rating,
+      question8: feedback.question8_rating,
+      question9: feedback.question9_rating,
+      question10: feedback.question10_rating,
+    },
+    comment: feedback.comment,
+    submissionTime: feedback.submissionTime,
+  };
+
+  // Send the detailed feedback as the response
+  return res
+    .status(200)
+    .json(new ApiResponse(200, detailedFeedback, "Detailed feedback fetched successfully."));
+});
+
+const getSubmitters = asyncHandler(async (req, res) => {
+  const { subject_name, subject_code, subject_credit, branch, year, teacherId } = req.query;
+
+  // Validate input
+  if (!subject_name || !subject_code || !subject_credit || !branch || !year || !teacherId) {
+    throw new ApiError(
+      400,
+      "All fields (subject_name, subject_code, subject_credit, branch, year, teacherId) are required."
+    );
+  }
+
+  // Fetch feedback for the specified subject and teacher
+  const feedbackData = await LectureFeedback.find({
+    subject_name: subject_name,
+    subject_code: subject_code,
+    subject_credit:subject_credit,
+    branch: branch,
+    year: year,
+    teacher: teacherId,
+  })
+    .select("submitter submissionTime") // Only fetch submitter and submission time
+    .populate("submitter", "name email roll_no") // Populate student details if needed
+    .lean();
+
+  // If no feedback is found, return an error
+  if (!feedbackData || feedbackData.length === 0) {
+    throw new ApiError(404, "No feedback found for the specified subject and teacher.");
+  }
+
+  // Prepare response: List of submitters with submission times
+  const submitters = feedbackData.map((feedback) => ({
+    submitter: feedback.submitter ? feedback.submitter.name || "Anonymous" : "Anonymous",
+    rollNumber: feedback.submitter?.rollNumber || "N/A", // Include rollNumber if required
+    submissionTime: feedback.submissionTime,
+  }));
+
+  // Send the submitters as the response
+  return res
+    .status(200)
+    .json(new ApiResponse(200, submitters, "Submitters fetched successfully."));
+});
 
 const loginAdmin = asyncHandler(async (req, res) => {
   console.log("request : ", req);
@@ -808,6 +1160,131 @@ const updateAdminAvatar = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, admin, "avatar image updated successfully"));
 });
 
+const assignTasks = asyncHandler(async (req, res) => {
+  const {title, description, deadline, assignedTo, points} = req.body;
+  const {assignedBy} = req.admin._id;
+
+  if(!title || !description || !deadline || !assignedTo || !points) {
+    throw new ApiError(400, "All fields are required");
+  }
+
+  if(!mongoose.Types.ObjectId.isValid(assignedTo)) {
+    throw new ApiError(400, "Invalid assignedTo ID format");
+  }
+
+  const task = await Task.create({
+    title,
+    description,
+    assignedAt: new Date(),
+    deadline,
+    status: "pending",
+    assignedBy,
+    assignedByModel: "Admin",
+    assignedTo,
+    points,
+  });
+
+  if(!task) {
+    throw new ApiError(500, "Something went wrong while assigning the task");
+  }
+
+  return res.status(200).json(new ApiResponse(200, task, "Task assigned successfully"));
+})
+
+const viewAssignedTasks = asyncHandler(async (req, res) => {
+  const { teacherId } = req.body;
+  const { adminId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(adminId)) {
+    throw new ApiError(400, "Invalid admin ID format.");
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+    throw new ApiError(400, "Invalid teacher ID format.");
+  }
+
+  const tasks = await Task.find({ assignedByModel: "Admin", assignedBy: adminId, assignedTo: teacherId })
+    .select("title description assignedAt deadline status points")
+    .lean();
+
+  if (!tasks || tasks.length === 0) {
+    throw new ApiError(404, "No tasks assigned to this teacher by you.");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        tasks,
+        "Tasks assigned to admin fetched successfully."
+      )
+    );
+});
+
+const viewCompletedTasks = asyncHandler(async (req, res) => {
+  const { teacherId, taskId } = req.body;
+  const { adminId } = req.params;
+
+  // Validate adminId
+  if (!mongoose.Types.ObjectId.isValid(adminId)) {
+    throw new ApiError(400, 'Invalid admin ID format.');
+  }
+
+  // Validate teacherId if provided
+  if (teacherId && !mongoose.Types.ObjectId.isValid(teacherId)) {
+    throw new ApiError(400, 'Invalid teacher ID format.');
+  }
+
+  // Validate taskId if provided
+  if (taskId && !mongoose.Types.ObjectId.isValid(taskId)) {
+    throw new ApiError(400, 'Invalid task ID format.');
+  }
+
+  // Build query dynamically based on filters
+  const query = { "task.assignedByModel": "Admin", "task.assignedBy": adminId };
+
+  if (teacherId) {
+    query.teacher = teacherId;
+  }
+
+  if (taskId) {
+    query.task = taskId;
+  }
+
+  // Fetch completed tasks with populated fields
+  const completedTasks = await Completedtask.find(query)
+    .populate({
+      path: 'task',
+      select: 'title description deadline assignedBy', // Fields to include
+      populate: {
+        path: 'assignedBy',
+        select: 'name', // Replace with admin details fields
+      },
+    })
+    .populate({
+      path: 'teacher',
+      select: 'name email', // Replace with teacher details fields
+    })
+    .lean();
+
+  // Check if tasks exist
+  if (!completedTasks || completedTasks.length === 0) {
+    throw new ApiError(404, 'No completed tasks found for the given criteria.');
+  }
+
+  // Return response
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        completedTasks,
+        'Completed tasks fetched successfully.'
+      )
+    );
+});
+
 const getAllTheBranches = asyncHandler(async (req, res) => {
   const branches = await Student.distinct("branch");
 
@@ -824,7 +1301,11 @@ const getAllTheStudentsOfParticularBranch = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, students, "All students of the branch fetched successfully")
+      new ApiResponse(
+        200,
+        students,
+        "All students of the branch fetched successfully"
+      )
     );
 });
 
@@ -957,10 +1438,6 @@ const getTeacherPersonalInfo = asyncHandler(async (req, res) => {
     );
 });
 
-/**
- * Controller to fetch feedbacks for a specific subject taught by a teacher.
- * Accessible only by authenticated admins.
- */
 const getSubjectFeedbacks = asyncHandler(async (req, res) => {
   // Step 1: Extract teacherId and subjectId from request parameters
   const { teacherId, subjectId } = req.params;
@@ -1211,7 +1688,7 @@ const getSeminarsConductedByTheTeacher = asyncHandler(async (req, res) => {
   }
 
   const seminars = await Seminar.find({ owner: teacherId, status: "conducted" })
-    .select("topic duration date report")
+    .select("topic department duration date report")
     .lean();
 
   if (!seminars || seminars.length === 0) {
@@ -1324,15 +1801,24 @@ export {
   getCurrentStudent,
   updateStudentAccountDetails,
   updateStudentAvatar,
+  getAllTheSubjects,
   allottSubjectsToStudents,
   viewAllSubjectsAllottedToTheStudent,
   editAllottedSubjectOfTheStudent,
   deleteAllottedSubjectOfTheStudent,
+  releaseAllFeedbackForms,
+  releaseFeedbackForSubjects,
+  getAllFeedbackCards,
+  getDetailedFeedback,
+  getSubmitters,
+  viewCompletedTasks,
   loginAdmin,
   logoutAdmin,
   getCurrentAdmin,
   updateAdminAvatar,
   updateAccountDetails,
+  assignTasks,
+  viewAssignedTasks,
   getAllTheBranches,
   getAllTheStudentsOfParticularBranch,
   getAllTheTeachers,

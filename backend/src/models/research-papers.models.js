@@ -22,6 +22,15 @@ const researchPaperSchema = new Schema(
         type: Date,
         required: true
     },
+    impactFactor: {
+        type: Number,
+        required: true
+    },
+    unit:{
+        type: Number,
+        required: true,
+        trim: true
+    },
     viewUrl: {
         type:String,
         required: true,

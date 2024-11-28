@@ -218,6 +218,4 @@ const markLectureAttendance = asyncHandler(async (req, res) => {
     );
 });
 
-const viewFeedbacks = asyncHandler(async (req, res)=>{})
-
 export {addNewLecture, editLecture, deleteLecture, getLectureById, fetchAllStudents, markLectureAttendance, viewFeedbacks}

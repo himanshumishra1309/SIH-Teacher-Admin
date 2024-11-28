@@ -18,10 +18,6 @@ const seminarSchema = new Schema(
       type: Date,
       required: true,
     },
-    attendace:[{
-      type: Schema.Types.ObjectId,
-      ref: "Student",
-    }],
     report: {
       type: String,
       required: false,
@@ -31,6 +27,13 @@ const seminarSchema = new Schema(
       ref: "Teacher",
       required: true,
     },
+    feedbackReleased: {
+      type: Boolean,
+      default: false,
+    },
+    activeUntil:{
+      type: Date,
+    }
   },
   { timestamps: true }
 );

@@ -29,9 +29,16 @@ const allocatedSubjectSchema = new Schema(
     },
     teacher: {
         type: Schema.Types.ObjectId,
-        ref: "Teacher",
+        ref: 'Teacher',
         index: true,
-    }
+    },
+    feedbackReleased: {
+        type: Boolean,
+        default: false, // Initially false
+    },
+    activeUntil: {
+        type: Date, // Time until feedback remains active
+    },
 },
 { timestamps: true });
 

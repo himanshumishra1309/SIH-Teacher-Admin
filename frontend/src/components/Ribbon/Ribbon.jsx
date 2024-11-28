@@ -39,7 +39,7 @@ const Ribbon = () => {
   };
 
   return (
-    <div className="bg-gray-200 text-black shadow-md">
+    <div className="bg-gray-200 text-black shadow-md z-100">
       <div className="container mx-auto flex justify-between items-center px-2">
         {/* Logo */}
         <div className="text-sm font-bold">
