@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
 import LoadingPage from "@/pages/LoadingPage";
-import "../../table.css"
+import "../../table.css";
 export default function FacultyCourseFeedbackTable({ setSelectedCourses }) {
   const [data, setData] = useState([]);
   const [sorting, setSorting] = useState([]);
@@ -25,13 +25,17 @@ export default function FacultyCourseFeedbackTable({ setSelectedCourses }) {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const token = sessionStorage.getItem("teacherAccessToken");
-        const response = await axios.get("http://localhost:6005/api/v1/courses", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setData(response.data.data.courses);
+        const token = sessionStorage.getItem("adminAccessToken");
+        const response = await axios.get(
+          "http://localhost:6005/api/v1/admins/subjects/allSubjects",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log(response.data.data);
+        setData(response.data.data);
       } catch (error) {
         console.error("An error occurred while fetching courses:", error);
       } finally {
@@ -60,7 +64,9 @@ export default function FacultyCourseFeedbackTable({ setSelectedCourses }) {
   });
 
   useEffect(() => {
-    const selectedIds = Object.keys(rowSelection).filter(id => rowSelection[id]);
+    const selectedIds = Object.keys(rowSelection).filter(
+      (id) => rowSelection[id]
+    );
     setSelectedCourses(selectedIds);
   }, [rowSelection, setSelectedCourses]);
 
@@ -78,7 +84,7 @@ export default function FacultyCourseFeedbackTable({ setSelectedCourses }) {
           className="max-w-sm"
         />
       </div>
-      
+
       <div className="table-container">
         <table>
           <thead>
@@ -147,4 +153,3 @@ export default function FacultyCourseFeedbackTable({ setSelectedCourses }) {
     </div>
   );
 }
-
