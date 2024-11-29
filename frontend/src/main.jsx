@@ -54,6 +54,7 @@ import { FontSizeProvider } from './components/Ribbon/FontSizeContext';
 import FontSizeHandler from './components/Ribbon/FontSizeHandler';
 import ResearchLayout from './Layouts/ResearchLayout';
 import ReleaseFeedbacks from './pages/AdminPortal/AdminList/AdminFeedbacks';
+import AdminLectureAllocationTable from './table/Tables/Admin/AdminLectureAllocationTable';
 
 
 const router = createBrowserRouter(
@@ -121,6 +122,8 @@ const router = createBrowserRouter(
         <Route path="event-participation" element={<AdminEventTable />} errorElement={<NotFoundPage/>} />
         <Route path="seminars" element={<AdminSeminarsTable/>} errorElement={<NotFoundPage/>} />
         <Route path="projects" element={<AdminProjectTable />} errorElement={<NotFoundPage/>} />
+        <Route path="adminallocate-lectures" element={<AdminLectureAllocationTable />} errorElement={<NotFoundPage/>} />
+
         {/* <Route path="Contribution-graph" element={<ResearchTable />} errorElement={<NotFoundPage/>} /> */}
 
 

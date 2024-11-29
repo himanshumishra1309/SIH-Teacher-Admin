@@ -3,48 +3,41 @@ import { ArrowUpDown } from 'lucide-react';
 
 export const columnDef = [
   {
-    accessorKey: "teacher",
-    header: "Teacher",
-    enableSorting: true,
-  },
-  {
-    accessorKey: "subject",
+    accessorKey: "subject_name",
     header: "Subject",
     enableSorting: true,
   },
   {
-    accessorKey: "class",
-    header: "Class",
+    accessorKey: "subject_code",
+    header: "Course Code",
     enableSorting: true,
   },
   {
-    accessorKey: "lectures",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          No. of Lectures
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
+    accessorKey: "subject_credit",
+    header: "Credits",
     enableSorting: true,
   },
   {
-    accessorKey: "day",
-    header: "Day",
+    accessorKey: "branch",
+    header: "Branch",
     enableSorting: true,
   },
   {
-    accessorKey: "time",
-    header: "Time",
+    accessorKey: "year",
+    header: "Year",
     enableSorting: true,
   },
   {
+    accessorKey: "min_lectures",
+    header: "Minimum Lectures",
+    enableSorting: true,
+  },
+    {
     accessorKey: "actions",
     header: "Actions",
     enableSorting: false,
   },
 ];
+
+
+// subject_name , subject_code, subject_credit, year, branch, min_lectures

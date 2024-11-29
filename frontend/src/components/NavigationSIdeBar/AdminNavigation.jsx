@@ -12,11 +12,11 @@ export default function AdminNavigation() {
     // { name: "Portfolio At Institute Level ", path: "institute-portfolio" },
     // { name: "Portfolio At Department Level", path: "department-portfolio" },
     { name: "Expert Lecture Delivered", path: "expert-lecture" },
-    { name: 
-      
-      "Event Participation", path: "event-participation" },
+    { name:  "Event Participation", path: "event-participation" },
     { name: "Seminars", path: "seminars" },
     { name: "Projects", path: "projects" },
+    { name: "Allocate Lectures", path: "adminallocate-lectures" },
+
     // { name: "Contribution Graph", path: "Contribution-graph" }
   ];
 
