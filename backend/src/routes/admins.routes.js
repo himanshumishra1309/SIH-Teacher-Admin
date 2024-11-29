@@ -91,7 +91,7 @@ router.get('/teachers/:teacherId/lectures', verifyAdminJWT, getLecturesConducted
 router.put('/student/:studentId/avatar', verifyAdminJWT, upload.single('avatar'), updateStudentAvatar);
 router.get('/subjects/allSubjects', verifyAdminJWT, getAllTheSubjects);
 router.post('/subjects/release-feedback', verifyAdminJWT, releaseAllFeedbackForms);
-router.post('/teachers/:teacherId/release-feedback', verifyAdminJWT, releaseFeedbackForSubjects);
+router.post('/teachers/release-feedback', verifyAdminJWT, releaseFeedbackForSubjects);
 router.get('/subjects/:subjectId/feedback-cards', verifyAdminJWT, getAllFeedbackCards);
 router.get('/feedback/:feedbackId', verifyAdminJWT, getDetailedFeedback);
 router.get('/subjects/:subjectId/submitters', verifyAdminJWT, getSubmitters);

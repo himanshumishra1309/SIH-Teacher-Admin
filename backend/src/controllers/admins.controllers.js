@@ -324,14 +324,16 @@ const allotSubjectsToTeachers = asyncHandler(async (req, res) => {
     !subject_credit ||
     !branch ||
     !year ||
-    !min_lectures 
+    !min_lectures
     // !teacherId
   ) {
     return res.status(400).json({ error: "All fields are required." });
   }
 
   // Check if the teacher exists
-  const teacher = await Teacher.findById(teacherId).select("-password -refreshToken");
+  const teacher = await Teacher.findById(teacherId).select(
+    "-password -refreshToken"
+  );
 
   if (!teacher) {
     throw new ApiError(400, "Teacher not found.");
@@ -817,31 +819,79 @@ const releaseAllFeedbackForms = asyncHandler(async (req, res) => {
     );
 });
 
+// const releaseFeedbackForSubjects = asyncHandler(async (req, res) => {
+//   const { teacherId } = req.params; // Teacher ID from URL parameters
+//   const { subjectIds, activeUntilDate } = req.body; // Array of subject IDs and expiration date
+
+//   // Validate teacherId
+//   if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+//     throw new ApiError(400, "Invalid teacher ID format.");
+//   }
+
+//   // Validate subjectIds
+//   if (!Array.isArray(subjectIds) || subjectIds.length === 0) {
+//     throw new ApiError(400, "Provide an array of valid subject IDs.");
+//   }
+
+//   const invalidSubjectIds = subjectIds.filter(
+//     (id) => !mongoose.Types.ObjectId.isValid(id)
+//   );
+//   if (invalidSubjectIds.length > 0) {
+//     throw new ApiError(
+//       400,
+//       `Invalid subject IDs: ${invalidSubjectIds.join(", ")}`
+//     );
+//   }
+
+//   // Validate activeUntilDate
+//   if (!activeUntilDate) {
+//     throw new ApiError(400, "activeUntilDate is required.");
+//   }
+
+//   const activeUntil = new Date(activeUntilDate);
+//   if (isNaN(activeUntil.getTime()) || activeUntil <= new Date()) {
+//     throw new ApiError(400, "Invalid or past activeUntilDate.");
+//   }
+
+//   // Set the time to midnight (11:59:59 PM)
+//   activeUntil.setHours(23, 59, 59, 999);
+
+//   // Update feedbackReleased and activeUntil for selected subjects
+//   const updatedSubjects = await AllocatedSubject.updateMany(
+//     {
+//       _id: { $in: subjectIds },
+//       teacher: teacherId, // Ensure the subjects belong to the specified teacher
+//     },
+//     { feedbackReleased: true, activeUntil },
+//     { new: true }
+//   );
+
+//   // Check if any subjects were updated
+//   if (updatedSubjects.matchedCount === 0) {
+//     throw new ApiError(
+//       404,
+//       "No matching subjects found for the specified teacher."
+//     );
+//   }
+
+//   return res
+//     .status(200)
+//     .json(
+//       new ApiResponse(
+//         200,
+//         { updatedSubjects: updatedSubjects.modifiedCount },
+//         "Feedback forms released successfully for the selected subjects."
+//       )
+//     );
+// });
+
 const releaseFeedbackForSubjects = asyncHandler(async (req, res) => {
-  const { teacherId } = req.params; // Teacher ID from URL parameters
-  const { subjectIds, activeUntilDate } = req.body; // Array of subject IDs and expiration date
+  const { teachersData, activeUntilDate } = req.body; 
 
-  // Validate teacherId
-  if (!mongoose.Types.ObjectId.isValid(teacherId)) {
-    throw new ApiError(400, "Invalid teacher ID format.");
+  if (!Array.isArray(teachersData) || teachersData.length === 0) {
+    throw new ApiError(400, "Provide an array of valid teacher-subject data.");
   }
 
-  // Validate subjectIds
-  if (!Array.isArray(subjectIds) || subjectIds.length === 0) {
-    throw new ApiError(400, "Provide an array of valid subject IDs.");
-  }
-
-  const invalidSubjectIds = subjectIds.filter(
-    (id) => !mongoose.Types.ObjectId.isValid(id)
-  );
-  if (invalidSubjectIds.length > 0) {
-    throw new ApiError(
-      400,
-      `Invalid subject IDs: ${invalidSubjectIds.join(", ")}`
-    );
-  }
-
-  // Validate activeUntilDate
   if (!activeUntilDate) {
     throw new ApiError(400, "activeUntilDate is required.");
   }
@@ -854,21 +904,61 @@ const releaseFeedbackForSubjects = asyncHandler(async (req, res) => {
   // Set the time to midnight (11:59:59 PM)
   activeUntil.setHours(23, 59, 59, 999);
 
-  // Update feedbackReleased and activeUntil for selected subjects
-  const updatedSubjects = await AllocatedSubject.updateMany(
-    {
-      _id: { $in: subjectIds },
-      teacher: teacherId, // Ensure the subjects belong to the specified teacher
-    },
-    { feedbackReleased: true, activeUntil },
-    { new: true }
-  );
+  const updatedSubjects = [];
+
+  // Iterate over each teacher's data
+  for (const teacherData of teachersData) {
+    const { teacherId, subjectIds } = teacherData;
+
+    // Validate teacherId
+    if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+      throw new ApiError(400, `Invalid teacher ID format: ${teacherId}`);
+    }
+
+    // Validate subjectIds
+    if (!Array.isArray(subjectIds) || subjectIds.length === 0) {
+      throw new ApiError(
+        400,
+        `Provide an array of valid subject IDs for teacher ${teacherId}.`
+      );
+    }
+
+    const invalidSubjectIds = subjectIds.filter(
+      (id) => !mongoose.Types.ObjectId.isValid(id)
+    );
+    if (invalidSubjectIds.length > 0) {
+      throw new ApiError(
+        400,
+        `Invalid subject IDs for teacher ${teacherId}: ${invalidSubjectIds.join(
+          ", "
+        )}`
+      );
+    }
+
+    // Update feedbackReleased and activeUntil for selected subjects
+    const result = await AllocatedSubject.updateMany(
+      {
+        _id: { $in: subjectIds },
+        teacher: teacherId, // Ensure the subjects belong to the specified teacher
+      },
+      { feedbackReleased: true, activeUntil },
+      { new: true }
+    );
+
+    updatedSubjects.push({
+      teacherId,
+      updatedCount: result.modifiedCount,
+    });
+  }
 
   // Check if any subjects were updated
-  if (updatedSubjects.matchedCount === 0) {
+  if (
+    updatedSubjects.length === 0 ||
+    updatedSubjects.every((teacher) => teacher.updatedCount === 0)
+  ) {
     throw new ApiError(
       404,
-      "No matching subjects found for the specified teacher."
+      "No matching subjects found for the specified teachers."
     );
   }
 
@@ -877,7 +967,7 @@ const releaseFeedbackForSubjects = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        { updatedSubjects: updatedSubjects.modifiedCount },
+        updatedSubjects,
         "Feedback forms released successfully for the selected subjects."
       )
     );

@@ -100,11 +100,22 @@ export default function FacultyCourseFeedbackTable({ setSelectedCourses }) {
   });
 
   useEffect(() => {
-    const selectedIds = Object.keys(rowSelection).filter(
-      (id) => rowSelection[id]
-    );
-    setSelectedCourses(selectedIds);
-  }, [rowSelection, setSelectedCourses]);
+    const selectedData = Object.keys(rowSelection)
+      .map((rowId) => {
+        const row = table.getRowModel().rows[rowId]?.original;
+        if (row) {
+          return {
+            subjectId: row._id,
+            teacherId: row.teacher,
+          };
+        }
+        return null;
+      })
+      .filter(Boolean);
+
+    console.log(selectedData);
+    setSelectedCourses(selectedData);
+  }, [rowSelection, setSelectedCourses, table]);
 
   if (isLoading) {
     return <LoadingPage />;
