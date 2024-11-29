@@ -18,15 +18,15 @@ export default function ReleaseFeedbacks() {
   const [courseData, setCourseData] = useState([]);
   const { toast } = useToast();
 
-  useEffect(() => {
-    // Fetch course data here
-    // For now, we'll use dummy data
-    setCourseData([
-      { id: "1", subject_name: "Introduction to Computer Science", subject_code: "CS101", subject_credit: 3, branch: "CSE", year: 1 },
-      { id: "2", subject_name: "Data Structures", subject_code: "CS201", subject_credit: 4, branch: "CSE", year: 2 },
-      // Add more dummy data as needed
-    ]);
-  }, []);
+  // useEffect(() => {
+  //   // Fetch course data here
+  //   // For now, we'll use dummy data
+  //   // setCourseData([
+  //   //   { id: "1", subject_name: "Introduction to Computer Science", subject_code: "CS101", subject_credit: 3, branch: "CSE", year: 1 },
+  //   //   { id: "2", subject_name: "Data Structures", subject_code: "CS201", subject_credit: 4, branch: "CSE", year: 2 },
+  //   //   // Add more dummy data as needed
+  //   // ]);
+  // }, []);
 
   const handleRelease = () => {
     if (selectedCourses.length === 0) {
@@ -58,9 +58,6 @@ export default function ReleaseFeedbacks() {
         <CardDescription className="text-blue-100">Select courses to release student feedbacks</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 pt-6">
-        
-          
-
         <FacultyCourseFeedbackTable
           data={courseData}
           setSelectedCourses={setSelectedCourses}

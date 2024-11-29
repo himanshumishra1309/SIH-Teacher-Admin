@@ -26,6 +26,8 @@ export default function FacultyCourseFeedbackTable({ setSelectedCourses }) {
     const fetchCourses = async () => {
       try {
         const token = sessionStorage.getItem("adminAccessToken");
+
+        // Step 1: Fetch all subjects
         const response = await axios.get(
           "http://localhost:6005/api/v1/admins/subjects/allSubjects",
           {
@@ -34,8 +36,42 @@ export default function FacultyCourseFeedbackTable({ setSelectedCourses }) {
             },
           }
         );
+
+        const currData = response.data.data;
         console.log(response.data.data);
-        setData(response.data.data);
+
+        const updatedData = await Promise.all(
+          currData.map(async (subject) => {
+            // console.log(subject)
+            try {
+              const teacherResponse = await axios.get(
+                `http://localhost:6005/api/v1/admins/teacher/${subject.teacher}`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+              // console.log(teacherResponse.data.data.name)
+              return {
+                ...subject,
+                teacherName: teacherResponse.data.data.name,
+              };
+            } catch (error) {
+              console.error(
+                `Failed to fetch teacher name for ID: ${subject.teacher}`,
+                error
+              );
+              return {
+                ...subject,
+                teacherName: "Unknown Teacher",
+              };
+            }
+          })
+        );
+
+        // console.log(updatedData)
+        setData(updatedData);
       } catch (error) {
         console.error("An error occurred while fetching courses:", error);
       } finally {

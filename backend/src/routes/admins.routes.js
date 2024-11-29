@@ -58,7 +58,7 @@ router.post('/register-teacher', verifyAdminJWT, upload.single("avatar"), regist
 router.get('/teacher/:teacherId', verifyAdminJWT, getCurrentTeacher);
 router.patch('/teacher/:teacherId/update', verifyAdminJWT, updateTeacherAccountDetails);
 router.put('/teacher/:teacherId/avatar', verifyAdminJWT, upload.single('avatar'), updateTeacherAvatar);
-router.post('/subjects/allocate', verifyAdminJWT, allotSubjectsToTeachers);
+router.post('/subjects/allocate/:teacherId', verifyAdminJWT, allotSubjectsToTeachers);
 router.get('/teacher/:teacherId/allocated-subjects', verifyAdminJWT, viewAllAllocatedSubjectsOfTheTeacher);
 router.put('/teacher/:teacherId/allocated-subject/:subjectId', verifyAdminJWT, editAllocatedSubjectOfTheTeacher);
 router.delete('/teacher/:teacherId/allocated-subject/:subjectId', verifyAdminJWT, deleteAllocatedSubjectOfTheTeacher);

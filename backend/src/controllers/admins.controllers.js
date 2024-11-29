@@ -306,6 +306,7 @@ const updateTeacherAvatar = asyncHandler(async (req, res) => {
 }); //did not work on postman
 
 const allotSubjectsToTeachers = asyncHandler(async (req, res) => {
+  const { teacherId } = req.params;
   const {
     subject_name,
     subject_code,
@@ -313,24 +314,24 @@ const allotSubjectsToTeachers = asyncHandler(async (req, res) => {
     branch,
     year,
     min_lectures,
-    teacherId,
+    // teacherId,
   } = req.body;
 
-  // Validate input fields
+  // Validate input +--fields
   if (
     !subject_name ||
     !subject_code ||
     !subject_credit ||
     !branch ||
     !year ||
-    !min_lectures ||
-    !teacherId
+    !min_lectures 
+    // !teacherId
   ) {
     return res.status(400).json({ error: "All fields are required." });
   }
 
   // Check if the teacher exists
-  const teacher = await Teacher.findById(teacherId);
+  const teacher = await Teacher.findById(teacherId).select("-password -refreshToken");
 
   if (!teacher) {
     throw new ApiError(400, "Teacher not found.");
@@ -379,7 +380,7 @@ const viewAllAllocatedSubjectsOfTheTeacher = asyncHandler(async (req, res) => {
   }
 
   const allocatedSubjects = await AllocatedSubject.find({ teacher: teacherId })
-    .select("subject_name subject_code subject_credit branch year")
+    .select("subject_name min_lectures subject_code subject_credit branch year")
     .lean();
 
   if (!allocatedSubjects || allocatedSubjects.length === 0) {
