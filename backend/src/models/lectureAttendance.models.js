@@ -23,9 +23,11 @@ const attendanceSchema = new Schema(
     branch:{
         type: String,
         required: true,
+        enum: ['CSE', 'IT', 'EXTC', 'EE', 'ME', 'CE'],
     },
     year:{
-        type: Number,
+        type: String,
+        enum: ['First', 'Second', 'Third', 'Fourth'],
         required: true,
     },
     date:{

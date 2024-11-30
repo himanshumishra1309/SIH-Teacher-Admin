@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { UserPlus, UserCheck, GraduationCap } from 'lucide-react';
+import { UserPlus, UserCheck, GraduationCap } from "lucide-react";
 import "../SISU/SISU.css";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Input } from "../../components/ui/input";
@@ -26,28 +26,28 @@ export default function StudentSISU() {
   const [avatar, setAvatar] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState("");
 
-  useEffect(() => {
-    const signUpButton = document.getElementById("fs-signUp");
-    const signInButton = document.getElementById("fs-signIn");
-    const container = document.querySelector(".fs-container");
+  // useEffect(() => {
+  //   const signUpButton = document.getElementById("fs-signUp");
+  //   const signInButton = document.getElementById("fs-signIn");
+  //   const container = document.querySelector(".fs-container");
 
-    signUpButton.addEventListener('click', () => {
-      container.classList.add("right-panel-active");
-    });
+  //   signUpButton.addEventListener('click', () => {
+  //     container.classList.add("right-panel-active");
+  //   });
 
-    signInButton.addEventListener('click', () => {
-      container.classList.remove("right-panel-active");
-    });
+  //   signInButton.addEventListener('click', () => {
+  //     container.classList.remove("right-panel-active");
+  //   });
 
-    return () => {
-      signUpButton.removeEventListener('click', () => {
-        container.classList.add("right-panel-active");
-      });
-      signInButton.removeEventListener('click', () => {
-        container.classList.remove("right-panel-active");
-      });
-    };
-  }, []);
+  //   return () => {
+  //     signUpButton.removeEventListener('click', () => {
+  //       container.classList.add("right-panel-active");
+  //     });
+  //     signInButton.removeEventListener('click', () => {
+  //       container.classList.remove("right-panel-active");
+  //     });
+  //   };
+  // }, []);
 
   const handleSignupChange = (e) => {
     const { id, value } = e.target;
@@ -58,7 +58,6 @@ export default function StudentSISU() {
     const { id, value } = e.target;
     setLoginData({ ...loginData, [id]: value });
   };
-
 
   const handleSignUpSubmit = async (e) => {
     e.preventDefault();
@@ -156,7 +155,6 @@ export default function StudentSISU() {
       if (studentAccessToken) {
         sessionStorage.setItem("studentAccessToken", studentAccessToken);
 
-
         // toast.success("Login successful");
         console.log("Login successful", response.data);
 
@@ -176,125 +174,136 @@ export default function StudentSISU() {
     <div className="w-full min-h-screen flex flex-col justify-center items-center bg-gradient-to-r from-blue-900 to-blue-700">
       <div className="mb-8 text-center">
         <h1 className="text-4xl font-bold text-white mb-2">Student Portal</h1>
-        <p className="text-xl text-blue-100">Empowering Students in the Academic Journey</p>
+        <p className="text-xl text-blue-100">
+          Empowering Students in the Academic Journey
+        </p>
       </div>
       <div className="w-full max-w-4xl flex justify-center items-center">
         <div className="fs-container" id="fs-main">
           <div className="fs-sign-up">
             <form onSubmit={handleSignUpSubmit}>
+              <ScrollArea>
+                <GraduationCap className="fs-icon text-blue-800" size={64} />
 
-            <ScrollArea>
-            <GraduationCap className="fs-icon text-blue-800" size={64} />
-        
-        <h1 className="text-2xl font-bold text-blue-800 mb-4">Create Student Account</h1>
-        <input
-          type="text"
-          id="name"
-          placeholder="Name"
-          value={signupData.name}
-          onChange={handleSignupChange}
-          required
-          className="fs-input"
-        />
-        <input
-          type="email"
-          id="email"
-          placeholder="Email"
-          value={signupData.email}
-          onChange={handleSignupChange}
-          required
-          className="fs-input"
-        />
-        <input
-          type="text"
-          id="roll_no"
-          placeholder="Enrollment No"
-          value={signupData.roll_no}
-          onChange={handleSignupChange}
-          required
-          className="fs-input"
-        />
-        <input
-          type="text"
-          id="branch"
-          placeholder="Branch"
-          value={signupData.branch}
-          onChange={handleSignupChange}
-          required
-          className="fs-input"
-        />
-        <input
-          type="text"
-          id="year"
-          placeholder="Year"
-          value={signupData.year}
-          onChange={handleSignupChange}
-          required
-          className="fs-input"
-        />
-        <input
-          type="password"
-          id="password"
-          placeholder="Password"
-          value={signupData.password}
-          onChange={handleSignupChange}
-          required
-          className="fs-input"
-        />
-        <input
-          type="file"
-          id="avatar"
-          onChange={handleAvatarChange}
-          accept="image/*"
-          className="fs-input file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-        />
-        {avatarPreview && (
-          <img src={avatarPreview} alt="Avatar Preview" className="mt-2 w-20 h-20 object-cover rounded-full" />
-        )}
-        <button type="submit" className="fs-button">Sign Up</button>
-        
-            </ScrollArea>
-            
-      </form>
-    </div>
+                <h1 className="text-2xl font-bold text-blue-800 mb-4">
+                  Create Student Account
+                </h1>
+                <input
+                  type="text"
+                  id="name"
+                  placeholder="Name"
+                  value={signupData.name}
+                  onChange={handleSignupChange}
+                  required
+                  className="fs-input"
+                />
+                <input
+                  type="email"
+                  id="email"
+                  placeholder="Email"
+                  value={signupData.email}
+                  onChange={handleSignupChange}
+                  required
+                  className="fs-input"
+                />
+                <input
+                  type="text"
+                  id="roll_no"
+                  placeholder="Enrollment No"
+                  value={signupData.roll_no}
+                  onChange={handleSignupChange}
+                  required
+                  className="fs-input"
+                />
+                <input
+                  type="text"
+                  id="branch"
+                  placeholder="Branch"
+                  value={signupData.branch}
+                  onChange={handleSignupChange}
+                  required
+                  className="fs-input"
+                />
+                <input
+                  type="text"
+                  id="year"
+                  placeholder="Year"
+                  value={signupData.year}
+                  onChange={handleSignupChange}
+                  required
+                  className="fs-input"
+                />
+                <input
+                  type="password"
+                  id="password"
+                  placeholder="Password"
+                  value={signupData.password}
+                  onChange={handleSignupChange}
+                  required
+                  className="fs-input"
+                />
+                <input
+                  type="file"
+                  id="avatar"
+                  onChange={handleAvatarChange}
+                  accept="image/*"
+                  className="fs-input file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
+                {avatarPreview && (
+                  <img
+                    src={avatarPreview}
+                    alt="Avatar Preview"
+                    className="mt-2 w-20 h-20 object-cover rounded-full"
+                  />
+                )}
+                <button type="submit" className="fs-button">
+                  Sign Up
+                </button>
+              </ScrollArea>
+            </form>
+          </div>
 
-    <div className="fs-sign-in">
-      <form onSubmit={handleLoginSubmit}>
-        <UserCheck className="fs-icon text-blue-800" size={64} />
-        <h1 className="text-2xl font-bold text-blue-800 mb-4">Sign In</h1>
-        <input
-          type="email"
-          id="email"
-          placeholder="Email"
-          value={loginData.email}
-          onChange={handleLoginChange}
-          required
-          className="fs-input"
-        />
-        <input
-          type="password"
-          id="password"
-          placeholder="Password"
-          value={loginData.password}
-          onChange={handleLoginChange}
-          required
-          className="fs-input"
-        />
-        <button type="submit" className="fs-button">Sign In</button>             
+          <div className="fs-sign-in">
+            <form onSubmit={handleLoginSubmit}>
+              <UserCheck className="fs-icon text-blue-800" size={64} />
+              <h1 className="text-2xl font-bold text-blue-800 mb-4">Sign In</h1>
+              <input
+                type="email"
+                id="email"
+                placeholder="Email"
+                value={loginData.email}
+                onChange={handleLoginChange}
+                required
+                className="fs-input"
+              />
+              <input
+                type="password"
+                id="password"
+                placeholder="Password"
+                value={loginData.password}
+                onChange={handleLoginChange}
+                required
+                className="fs-input"
+              />
+              <button type="submit" className="fs-button">
+                Sign In
+              </button>
             </form>
           </div>
 
           <div className="fs-overlay-container">
             <div className="fs-overlay">
-              <div className="fs-overlay-left">
+              {/* <div className="fs-overlay-left">
                 <h1 className="text-3xl font-bold mb-4">Welcome Back!</h1>
                 <p className="mb-4">Continue your learning journey with us</p>
                 <button id="fs-signIn" className="fs-overlay-button">Sign In</button>
-              </div>
+              </div> */}
               <div className="fs-overlay-right">
                 <h1 className="text-3xl font-bold mb-4">Hello, Student!</h1>
-                <p className="mb-4">Join us and start your academic adventure</p>
-                <button id="fs-signUp" className="fs-overlay-button">Sign Up</button>
+                <p className="mb-4">
+                  Join us and start your academic adventure
+                </p>
+                {/* <button id="fs-signUp" className="fs-overlay-button">Sign Up</button> */}
               </div>
             </div>
           </div>

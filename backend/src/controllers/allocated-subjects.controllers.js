@@ -2,6 +2,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { AllocatedSubject } from "../models/allocated-subjects.models.js";
+import mongoose from "mongoose";
 
 //All the controllers are working
 
@@ -49,25 +50,22 @@ const addSubject = asyncHandler(async (req, res) => {
 });
 
 const showAllSubjects = asyncHandler(async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const skip = (page - 1) * limit;
+  const {teacherId} = req.params;
 
-  const [total, subjects] = await Promise.all([
-    AllocatedSubject.countDocuments({ owner: req.teacher?._id }),
-    AllocatedSubject.find({ owner: req.teacher._id })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit),
-  ]);
+  if(!teacherId){
+    throw new ApiError(400, "Teacher id is invalid")
+  }
+
+  const subjects = await AllocatedSubject.find({teacher: teacherId});
+
+  if(!subjects || subjects.length === 0){
+    throw new ApiError(404, "No subjects are allocated to this teachers")
+  }
 
   return res.status(200).json(
     new ApiResponse(
       200,
       {
-        total,
-        page,
-        pages: Math.ceil(total / limit),
         subjects,
       },
       "All participated events are now visible"

@@ -108,13 +108,13 @@ const getFeedbackForms = asyncHandler(async (req, res) => {
 
   // Step 1: Fetch the student's branch and year from the Student model
   const student = await Student.findById(studentId).select("branch year").lean();
-
+  
   if (!student) {
     throw new ApiError(404, "Student not found.");
   }
 
   const { branch, year } = student;
-
+  
   // Step 2: Fetch all subjects the student is studying
   const studentSubjects = await StudySubject.find({ student: studentId }).lean();
 
@@ -124,7 +124,7 @@ const getFeedbackForms = asyncHandler(async (req, res) => {
 
   // Step 3: Initialize array to store eligible subjects for feedback
   const eligibleSubjects = [];
-
+  
   for (const subject of studentSubjects) {
     // Fetch total lectures for the subject
     const totalLectures = await Attendance.find({
@@ -135,11 +135,10 @@ const getFeedbackForms = asyncHandler(async (req, res) => {
       branch: branch,
       year: year,
     }).countDocuments();
-
+    
     if (totalLectures === 0) {
-      continue; // Skip if no lectures for the subject
+      continue;
     }
-
     // Fetch lectures attended by the student for this subject
     const attendedLectures = await Attendance.find({
       subject_name: subject.subject_name,
@@ -153,6 +152,7 @@ const getFeedbackForms = asyncHandler(async (req, res) => {
 
     // Calculate attendance percentage
     const attendancePercentage = (attendedLectures / totalLectures) * 100;
+    console.log("attendancePercentage", attendancePercentage)
 
     if (attendancePercentage >= 60) {
       // Check if feedback is released for this subject
