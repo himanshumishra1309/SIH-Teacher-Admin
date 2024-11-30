@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { Graph } from "./graphs.models.js";
-import { domainPoints } from "../utils/domainPoints.js";
+import { DomainPoint } from './domainpoints.models.js';
 
 const eventsParticipatedSchema = new Schema(
   {
@@ -8,6 +8,18 @@ const eventsParticipatedSchema = new Schema(
       type: String,
       required: true,
       trim: true,
+      enum: [
+        "Organizer",
+        "Speaker",
+        "Judge",
+        "Coordinator",
+        "Volunteer",
+        "Evaluator",
+        "Panelist",
+        "Mentor",
+        "Session Chair",
+        "Reviewer",
+      ],
     },
     event: {
       type: String,
@@ -31,11 +43,17 @@ const eventsParticipatedSchema = new Schema(
   { timestamps: true }
 );
 
+const getPointsForDomain = async (key) => {
+  const domainPoint = await DomainPoint.findOne({ domain: key });
+  return domainPoint?.points || 0; // Default to 0 if no points are defined
+};
+
 // Post-save hook to add points
 eventsParticipatedSchema.post("save", async function (doc) {
+  const points = await getPointsForDomain(doc.role); 
   await Graph.findOneAndUpdate(
     { owner: doc.owner, date: doc.date },
-    { $inc: { points: domainPoints.EventParticipation } },
+    { $inc: { points: points } },
     { upsert: true }
   );
 });
@@ -43,9 +61,10 @@ eventsParticipatedSchema.post("save", async function (doc) {
 // Post-remove hook to deduct points
 eventsParticipatedSchema.post("findOneAndDelete", async function (doc) {
   if (doc) {
+    const points = await getPointsForDomain(doc.role);
     await Graph.findOneAndUpdate(
       { owner: doc.owner, date: doc.date },
-      { $inc: { points: -domainPoints.EventParticipation } },
+      { $inc: { points: -points } },
       { new: true }
     );
   }

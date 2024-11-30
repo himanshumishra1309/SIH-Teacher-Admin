@@ -24,10 +24,12 @@ const studentSchema = new Schema(
       type: String,
       required: true,
       index: true,
+      enum: ["CSE", "IT", "EXTC", "EE", "ME", "CE"],
     },
     year: {
       type: String,
       required: true,
+      enum: ["First", "Second", "Third", "Fourth"],
       index: true,
     },
     avatar: {

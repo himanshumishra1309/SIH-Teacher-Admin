@@ -117,7 +117,7 @@ const fetchAllStudents = asyncHandler(async (req, res)=>{
         throw new ApiError(404, "Subject Not Found");
     }
 
-    const subjectInfo = await AllocatedSubject.findById(subjectId).select('subject_name subject_code subject_credit branch year');
+    const subjectInfo = await AllocatedSubject.findById(subjectId).select('subject_name subject_code subject_credit type branch year');
 
     if (!subjectInfo) {
         throw new ApiError(404, "Subject Not Found");
@@ -129,6 +129,7 @@ const fetchAllStudents = asyncHandler(async (req, res)=>{
                 subject_name: subjectInfo.subject_name,
                 subject_code: subjectInfo.subject_code,
                 subject_credit: subjectInfo.subject_credit,
+                subject_type: subjectInfo.type,
             },
         },
         {
@@ -143,12 +144,18 @@ const fetchAllStudents = asyncHandler(async (req, res)=>{
             $unwind: '$student',
         },
         {
+            $match: {
+                'student.branch': subjectInfo.branch, // Match branch within the student object
+                'student.year': subjectInfo.year, // Match year within the student object
+            },
+        },
+        {
             $project: {
                 _id: '$student._id',
                 name: '$student.name',
                 roll_no: '$student.roll_no',
                 branch: '$student.branch',
-                academic_year: '$student.year',
+                year: '$student.year',
             },
         },
     ])
@@ -158,7 +165,7 @@ const fetchAllStudents = asyncHandler(async (req, res)=>{
     }
 
     return res.status(200).json(new ApiResponse(200, {students, subjectInfo},"Students Found Successfully"))
-});
+}); //worked on postman
 
 const markLectureAttendance = asyncHandler(async (req, res) => {
     const { lectureId } = req.params;
@@ -218,4 +225,4 @@ const markLectureAttendance = asyncHandler(async (req, res) => {
     );
 });
 
-export {addNewLecture, editLecture, deleteLecture, getLectureById, fetchAllStudents, markLectureAttendance, viewFeedbacks}
+export {addNewLecture, editLecture, deleteLecture, getLectureById, fetchAllStudents, markLectureAttendance}

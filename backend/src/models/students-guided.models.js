@@ -27,7 +27,7 @@ const studentGuidedSchema = new Schema(
     mOp: {
         type: String,
         required:true,
-        trim: true
+        enum:['Mtech', 'PhD']
     },
     academic_year:{
         type: String,
@@ -45,20 +45,27 @@ const studentGuidedSchema = new Schema(
 },
 { timestamps: true });
 
+const getPointsForDomain = async (key) => {
+    const domainPoint = await DomainPoint.findOne({ domain: key });
+    return domainPoint?.points || 0; // Default to 0 if no points are defined
+};
+
 // Post-save hook to add points
 studentGuidedSchema.post('save', async function(doc) {
+    const points = await getPointsForDomain(doc.mOp);
     await Graph.findOneAndUpdate(
         { owner: doc.owner, date: doc.addedOn },
-        { $inc: { points: domainPoints.StudentGuided } },
+        { $inc: { points: points } },
         { upsert: true }
     );
 });
 
 // Post-remove hook to deduct points
 studentGuidedSchema.post('findOneAndDelete', async function(doc){
+    const points = await getPointsForDomain(doc.mOp);
     await Graph.findOneAndUpdate(
         { owner: doc.owner, date: doc.date },
-        { $inc: { points: -domainPoints.StudentGuided } },
+        { $inc: { points: -points } },
         { new: true }
     )
 })
