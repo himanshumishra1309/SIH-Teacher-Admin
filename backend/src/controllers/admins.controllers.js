@@ -313,6 +313,7 @@ const allotSubjectsToTeachers = asyncHandler(async (req, res) => {
     subject_credit,
     branch,
     year,
+    type,
     min_lectures,
     // teacherId,
   } = req.body;
@@ -324,8 +325,9 @@ const allotSubjectsToTeachers = asyncHandler(async (req, res) => {
     !subject_credit ||
     !branch ||
     !year ||
-    !min_lectures
-    // !teacherId
+    !type ||
+    !min_lectures ||
+    !teacherId
   ) {
     return res.status(400).json({ error: "All fields are required." });
   }
@@ -344,6 +346,7 @@ const allotSubjectsToTeachers = asyncHandler(async (req, res) => {
     subject_code,
     branch,
     year,
+    type,
     teacher: teacherId,
   });
 
@@ -354,18 +357,19 @@ const allotSubjectsToTeachers = asyncHandler(async (req, res) => {
     );
   }
 
-  // Create a new allocated subject record
-  const allocatedSubject = await AllocatedSubject.create({
-    subject_name,
-    subject_code,
-    subject_credit,
-    branch,
-    year,
-    min_lectures,
-    teacher: teacherId,
-    feedbackReleased: false,
-    activeUntil: null,
-  });
+    // Create a new allocated subject record
+    const allocatedSubject = await AllocatedSubject.create({
+      subject_name,
+      subject_code,
+      subject_credit,
+      branch,
+      year,
+      type,
+      min_lectures,
+      teacher: teacherId,
+      feedbackReleased: false,
+      activeUntil: null,
+    });
 
   return res
     .status(200)
@@ -409,6 +413,7 @@ const editAllocatedSubjectOfTheTeacher = asyncHandler(async (req, res) => {
     min_lectures,
     branch,
     year,
+    type,
   } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(teacherId)) {
@@ -425,6 +430,7 @@ const editAllocatedSubjectOfTheTeacher = asyncHandler(async (req, res) => {
     !subject_credit ||
     !branch ||
     !year ||
+    !type ||
     !min_lectures ||
     !teacherId
   ) {
@@ -440,6 +446,7 @@ const editAllocatedSubjectOfTheTeacher = asyncHandler(async (req, res) => {
         subject_credit,
         branch,
         year,
+        type,
         min_lectures,
         teacher: teacherId,
         feedbackReleased: false,
@@ -638,7 +645,7 @@ const getAllTheSubjects = asyncHandler(async (req, res) => {
 });
 
 const allottSubjectsToStudents = asyncHandler(async (req, res) => {
-  const { subject_name, subject_code, subject_credit, teacherId, studentId } =
+  const { subject_name, subject_code, subject_credit, subject_type, teacherId, studentId } =
     req.body;
 
   // Validate inputs
@@ -646,6 +653,7 @@ const allottSubjectsToStudents = asyncHandler(async (req, res) => {
     !subject_name ||
     !subject_code ||
     !subject_credit ||
+    !subject_type ||
     !teacherId ||
     !studentId
   ) {
@@ -684,6 +692,7 @@ const allottSubjectsToStudents = asyncHandler(async (req, res) => {
     subject_name,
     subject_code,
     subject_credit,
+    subject_type,
     teacher: teacherId,
     student: studentId,
   });
@@ -707,7 +716,7 @@ const viewAllSubjectsAllottedToTheStudent = asyncHandler(async (req, res) => {
   }
 
   const studySubjects = await StudySubject.find({ student: studentId })
-    .select("subject_name subject_code subject_credit teacher")
+    .select("subject_name subject_code subject_credit subject_type teacher")
     .populate("teacher", "name department")
     .lean();
 
@@ -728,7 +737,7 @@ const viewAllSubjectsAllottedToTheStudent = asyncHandler(async (req, res) => {
 
 const editAllottedSubjectOfTheStudent = asyncHandler(async (req, res) => {
   const { studentId, subjectId } = req.params;
-  const { subject_name, subject_code, subject_credit, teacherId } = req.body;
+  const { subject_name, subject_code, subject_credit, subject_type, teacherId } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(studentId)) {
     throw new ApiError(400, "Invalid student ID format.");
@@ -749,6 +758,7 @@ const editAllottedSubjectOfTheStudent = asyncHandler(async (req, res) => {
         subject_name,
         subject_code,
         subject_credit,
+        subject_type,
         teacher: teacherId,
       },
     },

@@ -6,5 +6,8 @@ export const domainPoints = {
     ResearchPaper: 15,
     Seminar: 7,
     STTP: 9,
-    StudentGuided: 6
+    StudentGuided: 6,
+    InternationalJournal: 4, // Added for international journals
+    NationalJournal: 2,      // Added for national journals
+    Other: 1                 // Added for other journals
 };
