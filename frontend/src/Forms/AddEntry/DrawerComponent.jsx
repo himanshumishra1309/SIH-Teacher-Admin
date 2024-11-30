@@ -91,9 +91,12 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
       }
     });
 
-
-    onSubmit(formData);
-    onClose();
+    try {
+      onSubmit(formData); 
+      onClose();
+    } catch (error) {
+      console.error("Error submitting the form:", error);
+    }
   };
 
   return (

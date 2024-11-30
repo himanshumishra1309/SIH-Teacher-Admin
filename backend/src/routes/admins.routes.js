@@ -58,7 +58,7 @@ router.post('/register-teacher', verifyAdminJWT, upload.single("avatar"), regist
 router.get('/teacher/:teacherId', verifyAdminJWT, getCurrentTeacher);
 router.patch('/teacher/:teacherId/update', verifyAdminJWT, updateTeacherAccountDetails);
 router.put('/teacher/:teacherId/avatar', verifyAdminJWT, upload.single('avatar'), updateTeacherAvatar);
-router.post('/subjects/allocate', verifyAdminJWT, allotSubjectsToTeachers);
+router.post('/subjects/allocate/:teacherId', verifyAdminJWT, allotSubjectsToTeachers);
 router.get('/teacher/:teacherId/allocated-subjects', verifyAdminJWT, viewAllAllocatedSubjectsOfTheTeacher);
 router.put('/teacher/:teacherId/allocated-subject/:subjectId', verifyAdminJWT, editAllocatedSubjectOfTheTeacher);
 router.delete('/teacher/:teacherId/allocated-subject/:subjectId', verifyAdminJWT, deleteAllocatedSubjectOfTheTeacher);
@@ -91,7 +91,7 @@ router.get('/teachers/:teacherId/lectures', verifyAdminJWT, getLecturesConducted
 router.put('/student/:studentId/avatar', verifyAdminJWT, upload.single('avatar'), updateStudentAvatar);
 router.get('/subjects/allSubjects', verifyAdminJWT, getAllTheSubjects);
 router.post('/subjects/release-feedback', verifyAdminJWT, releaseAllFeedbackForms);
-router.post('/teachers/:teacherId/release-feedback', verifyAdminJWT, releaseFeedbackForSubjects);
+router.post('/teachers/release-feedback', verifyAdminJWT, releaseFeedbackForSubjects);
 router.get('/subjects/:subjectId/feedback-cards', verifyAdminJWT, getAllFeedbackCards);
 router.get('/feedback/:feedbackId', verifyAdminJWT, getDetailedFeedback);
 router.get('/subjects/:subjectId/submitters', verifyAdminJWT, getSubmitters);

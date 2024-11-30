@@ -20,17 +20,17 @@ import { StudySubject } from "../models/studySubjects.models.js";
 import { Task } from "../models/tasks.modules.js";
 import { Completedtask } from "../models/completedTasks.models.js";
 import mongoose from "mongoose";
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 
 const transport = nodemailer.createTransport({
-  host: 'smtp.gmail.com', // Gmail SMTP server
+  host: "smtp.gmail.com", // Gmail SMTP server
   port: 587, // Secure connection
   secure: false, // Use TLS
   auth: {
     user: process.env.EMAIL_USER, // Your Gmail email
     pass: process.env.EMAIL_PASS, // Your Gmail password or app password
   },
-})
+});
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -306,6 +306,7 @@ const updateTeacherAvatar = asyncHandler(async (req, res) => {
 }); //did not work on postman
 
 const allotSubjectsToTeachers = asyncHandler(async (req, res) => {
+  const { teacherId } = req.params;
   const {
     subject_name,
     subject_code,
@@ -314,10 +315,10 @@ const allotSubjectsToTeachers = asyncHandler(async (req, res) => {
     year,
     type,
     min_lectures,
-    teacherId,
+    // teacherId,
   } = req.body;
 
-  // Validate input fields
+  // Validate input +--fields
   if (
     !subject_name ||
     !subject_code ||
@@ -332,7 +333,9 @@ const allotSubjectsToTeachers = asyncHandler(async (req, res) => {
   }
 
   // Check if the teacher exists
-  const teacher = await Teacher.findById(teacherId);
+  const teacher = await Teacher.findById(teacherId).select(
+    "-password -refreshToken"
+  );
 
   if (!teacher) {
     throw new ApiError(400, "Teacher not found.");
@@ -383,7 +386,7 @@ const viewAllAllocatedSubjectsOfTheTeacher = asyncHandler(async (req, res) => {
   }
 
   const allocatedSubjects = await AllocatedSubject.find({ teacher: teacherId })
-    .select("subject_name subject_code subject_credit branch year")
+    .select("subject_name min_lectures subject_code subject_credit branch year")
     .lean();
 
   if (!allocatedSubjects || allocatedSubjects.length === 0) {
@@ -628,14 +631,18 @@ const updateStudentAvatar = asyncHandler(async (req, res) => {
 });
 
 const getAllTheSubjects = asyncHandler(async (req, res) => {
-  const subjects = await AllocatedSubject.find()
+  const subjects = await AllocatedSubject.find();
 
   if (!subjects) {
     throw new ApiError(404, "No subjects found.");
   }
 
-  return res.status(200).json(new ApiResponse(200, subjects ,"All the subjects fetched successfully"))
-})
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, subjects, "All the subjects fetched successfully")
+    );
+});
 
 const allottSubjectsToStudents = asyncHandler(async (req, res) => {
   const { subject_name, subject_code, subject_credit, subject_type, teacherId, studentId } =
@@ -798,7 +805,7 @@ const releaseAllFeedbackForms = asyncHandler(async (req, res) => {
 
   // Validate activeUntil
   if (!activeUntil || new Date(activeUntil) <= new Date()) {
-    throw new ApiError(400, 'Invalid or past activeUntil time.');
+    throw new ApiError(400, "Invalid or past activeUntil time.");
   }
 
   // Ensure activeUntil ends at the end of the specified day
@@ -812,69 +819,156 @@ const releaseAllFeedbackForms = asyncHandler(async (req, res) => {
   );
 
   if (result.length === 0) {
-    throw new ApiError(404, 'No subjects found to update.');
+    throw new ApiError(404, "No subjects found to update.");
   }
 
   return res
     .status(200)
     .json(
-      new ApiResponse(
-        200,
-        result,
-        'Feedback forms released for all subjects.'
-      )
+      new ApiResponse(200, result, "Feedback forms released for all subjects.")
     );
 });
 
+// const releaseFeedbackForSubjects = asyncHandler(async (req, res) => {
+//   const { teacherId } = req.params; // Teacher ID from URL parameters
+//   const { subjectIds, activeUntilDate } = req.body; // Array of subject IDs and expiration date
+
+//   // Validate teacherId
+//   if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+//     throw new ApiError(400, "Invalid teacher ID format.");
+//   }
+
+//   // Validate subjectIds
+//   if (!Array.isArray(subjectIds) || subjectIds.length === 0) {
+//     throw new ApiError(400, "Provide an array of valid subject IDs.");
+//   }
+
+//   const invalidSubjectIds = subjectIds.filter(
+//     (id) => !mongoose.Types.ObjectId.isValid(id)
+//   );
+//   if (invalidSubjectIds.length > 0) {
+//     throw new ApiError(
+//       400,
+//       `Invalid subject IDs: ${invalidSubjectIds.join(", ")}`
+//     );
+//   }
+
+//   // Validate activeUntilDate
+//   if (!activeUntilDate) {
+//     throw new ApiError(400, "activeUntilDate is required.");
+//   }
+
+//   const activeUntil = new Date(activeUntilDate);
+//   if (isNaN(activeUntil.getTime()) || activeUntil <= new Date()) {
+//     throw new ApiError(400, "Invalid or past activeUntilDate.");
+//   }
+
+//   // Set the time to midnight (11:59:59 PM)
+//   activeUntil.setHours(23, 59, 59, 999);
+
+//   // Update feedbackReleased and activeUntil for selected subjects
+//   const updatedSubjects = await AllocatedSubject.updateMany(
+//     {
+//       _id: { $in: subjectIds },
+//       teacher: teacherId, // Ensure the subjects belong to the specified teacher
+//     },
+//     { feedbackReleased: true, activeUntil },
+//     { new: true }
+//   );
+
+//   // Check if any subjects were updated
+//   if (updatedSubjects.matchedCount === 0) {
+//     throw new ApiError(
+//       404,
+//       "No matching subjects found for the specified teacher."
+//     );
+//   }
+
+//   return res
+//     .status(200)
+//     .json(
+//       new ApiResponse(
+//         200,
+//         { updatedSubjects: updatedSubjects.modifiedCount },
+//         "Feedback forms released successfully for the selected subjects."
+//       )
+//     );
+// });
+
 const releaseFeedbackForSubjects = asyncHandler(async (req, res) => {
-  const { teacherId } = req.params; // Teacher ID from URL parameters
-  const { subjectIds, activeUntilDate } = req.body; // Array of subject IDs and expiration date
+  const { teachersData, activeUntilDate } = req.body; 
 
-  // Validate teacherId
-  if (!mongoose.Types.ObjectId.isValid(teacherId)) {
-    throw new ApiError(400, 'Invalid teacher ID format.');
+  if (!Array.isArray(teachersData) || teachersData.length === 0) {
+    throw new ApiError(400, "Provide an array of valid teacher-subject data.");
   }
 
-  // Validate subjectIds
-  if (!Array.isArray(subjectIds) || subjectIds.length === 0) {
-    throw new ApiError(400, 'Provide an array of valid subject IDs.');
-  }
-
-  const invalidSubjectIds = subjectIds.filter(
-    (id) => !mongoose.Types.ObjectId.isValid(id)
-  );
-  if (invalidSubjectIds.length > 0) {
-    throw new ApiError(400, `Invalid subject IDs: ${invalidSubjectIds.join(', ')}`);
-  }
-
-  // Validate activeUntilDate
   if (!activeUntilDate) {
-    throw new ApiError(400, 'activeUntilDate is required.');
+    throw new ApiError(400, "activeUntilDate is required.");
   }
 
   const activeUntil = new Date(activeUntilDate);
   if (isNaN(activeUntil.getTime()) || activeUntil <= new Date()) {
-    throw new ApiError(400, 'Invalid or past activeUntilDate.');
+    throw new ApiError(400, "Invalid or past activeUntilDate.");
   }
 
   // Set the time to midnight (11:59:59 PM)
   activeUntil.setHours(23, 59, 59, 999);
 
-  // Update feedbackReleased and activeUntil for selected subjects
-  const updatedSubjects = await AllocatedSubject.updateMany(
-    {
-      _id: { $in: subjectIds },
-      teacher: teacherId, // Ensure the subjects belong to the specified teacher
-    },
-    { feedbackReleased: true, activeUntil },
-    { new: true }
-  );
+  const updatedSubjects = [];
+
+  // Iterate over each teacher's data
+  for (const teacherData of teachersData) {
+    const { teacherId, subjectIds } = teacherData;
+
+    // Validate teacherId
+    if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+      throw new ApiError(400, `Invalid teacher ID format: ${teacherId}`);
+    }
+
+    // Validate subjectIds
+    if (!Array.isArray(subjectIds) || subjectIds.length === 0) {
+      throw new ApiError(
+        400,
+        `Provide an array of valid subject IDs for teacher ${teacherId}.`
+      );
+    }
+
+    const invalidSubjectIds = subjectIds.filter(
+      (id) => !mongoose.Types.ObjectId.isValid(id)
+    );
+    if (invalidSubjectIds.length > 0) {
+      throw new ApiError(
+        400,
+        `Invalid subject IDs for teacher ${teacherId}: ${invalidSubjectIds.join(
+          ", "
+        )}`
+      );
+    }
+
+    // Update feedbackReleased and activeUntil for selected subjects
+    const result = await AllocatedSubject.updateMany(
+      {
+        _id: { $in: subjectIds },
+        teacher: teacherId, // Ensure the subjects belong to the specified teacher
+      },
+      { feedbackReleased: true, activeUntil },
+      { new: true }
+    );
+
+    updatedSubjects.push({
+      teacherId,
+      updatedCount: result.modifiedCount,
+    });
+  }
 
   // Check if any subjects were updated
-  if (updatedSubjects.matchedCount === 0) {
+  if (
+    updatedSubjects.length === 0 ||
+    updatedSubjects.every((teacher) => teacher.updatedCount === 0)
+  ) {
     throw new ApiError(
       404,
-      'No matching subjects found for the specified teacher.'
+      "No matching subjects found for the specified teachers."
     );
   }
 
@@ -883,17 +977,31 @@ const releaseFeedbackForSubjects = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        { updatedSubjects: updatedSubjects.modifiedCount },
-        'Feedback forms released successfully for the selected subjects.'
+        updatedSubjects,
+        "Feedback forms released successfully for the selected subjects."
       )
     );
 });
 
 const getAllFeedbackCards = asyncHandler(async (req, res) => {
-  const { subject_name, subject_code, subject_credit, branch, year, teacherId } = req.body;
+  const {
+    subject_name,
+    subject_code,
+    subject_credit,
+    branch,
+    year,
+    teacherId,
+  } = req.body;
 
   // Validate query parameters
-  if (!subject_name || !subject_code || !subject_credit || !branch || !year || !teacherId) {
+  if (
+    !subject_name ||
+    !subject_code ||
+    !subject_credit ||
+    !branch ||
+    !year ||
+    !teacherId
+  ) {
     throw new ApiError(
       400,
       "All fields (subject_name, subject_code, subject_credit, branch, year) are required."
@@ -908,7 +1016,8 @@ const getAllFeedbackCards = asyncHandler(async (req, res) => {
     teacher: teacherId,
     branch: branch,
     year: year,
-  }).sort({ submissionTime: -1 }) // Sort by most recent submission
+  })
+    .sort({ submissionTime: -1 }) // Sort by most recent submission
     .lean();
 
   // If no feedback is found, return an error
@@ -943,7 +1052,13 @@ const getAllFeedbackCards = asyncHandler(async (req, res) => {
   // Send the feedback cards as the response
   return res
     .status(200)
-    .json(new ApiResponse(200, feedbackCards, "Feedback cards fetched successfully."));
+    .json(
+      new ApiResponse(
+        200,
+        feedbackCards,
+        "Feedback cards fetched successfully."
+      )
+    );
 });
 
 const getDetailedFeedback = asyncHandler(async (req, res) => {
@@ -987,14 +1102,34 @@ const getDetailedFeedback = asyncHandler(async (req, res) => {
   // Send the detailed feedback as the response
   return res
     .status(200)
-    .json(new ApiResponse(200, detailedFeedback, "Detailed feedback fetched successfully."));
+    .json(
+      new ApiResponse(
+        200,
+        detailedFeedback,
+        "Detailed feedback fetched successfully."
+      )
+    );
 });
 
 const getSubmitters = asyncHandler(async (req, res) => {
-  const { subject_name, subject_code, subject_credit, branch, year, teacherId } = req.query;
+  const {
+    subject_name,
+    subject_code,
+    subject_credit,
+    branch,
+    year,
+    teacherId,
+  } = req.query;
 
   // Validate input
-  if (!subject_name || !subject_code || !subject_credit || !branch || !year || !teacherId) {
+  if (
+    !subject_name ||
+    !subject_code ||
+    !subject_credit ||
+    !branch ||
+    !year ||
+    !teacherId
+  ) {
     throw new ApiError(
       400,
       "All fields (subject_name, subject_code, subject_credit, branch, year, teacherId) are required."
@@ -1005,7 +1140,7 @@ const getSubmitters = asyncHandler(async (req, res) => {
   const feedbackData = await LectureFeedback.find({
     subject_name: subject_name,
     subject_code: subject_code,
-    subject_credit:subject_credit,
+    subject_credit: subject_credit,
     branch: branch,
     year: year,
     teacher: teacherId,
@@ -1016,12 +1151,17 @@ const getSubmitters = asyncHandler(async (req, res) => {
 
   // If no feedback is found, return an error
   if (!feedbackData || feedbackData.length === 0) {
-    throw new ApiError(404, "No feedback found for the specified subject and teacher.");
+    throw new ApiError(
+      404,
+      "No feedback found for the specified subject and teacher."
+    );
   }
 
   // Prepare response: List of submitters with submission times
   const submitters = feedbackData.map((feedback) => ({
-    submitter: feedback.submitter ? feedback.submitter.name || "Anonymous" : "Anonymous",
+    submitter: feedback.submitter
+      ? feedback.submitter.name || "Anonymous"
+      : "Anonymous",
     rollNumber: feedback.submitter?.rollNumber || "N/A", // Include rollNumber if required
     submissionTime: feedback.submissionTime,
   }));
@@ -1171,14 +1311,14 @@ const updateAdminAvatar = asyncHandler(async (req, res) => {
 });
 
 const assignTasks = asyncHandler(async (req, res) => {
-  const {title, description, deadline, assignedTo, points} = req.body;
-  const {assignedBy} = req.admin._id;
+  const { title, description, deadline, assignedTo, points } = req.body;
+  const { assignedBy } = req.admin._id;
 
-  if(!title || !description || !deadline || !assignedTo || !points) {
+  if (!title || !description || !deadline || !assignedTo || !points) {
     throw new ApiError(400, "All fields are required");
   }
 
-  if(!mongoose.Types.ObjectId.isValid(assignedTo)) {
+  if (!mongoose.Types.ObjectId.isValid(assignedTo)) {
     throw new ApiError(400, "Invalid assignedTo ID format");
   }
 
@@ -1194,12 +1334,14 @@ const assignTasks = asyncHandler(async (req, res) => {
     points,
   });
 
-  if(!task) {
+  if (!task) {
     throw new ApiError(500, "Something went wrong while assigning the task");
   }
 
-  return res.status(200).json(new ApiResponse(200, task, "Task assigned successfully"));
-})
+  return res
+    .status(200)
+    .json(new ApiResponse(200, task, "Task assigned successfully"));
+});
 
 const viewAssignedTasks = asyncHandler(async (req, res) => {
   const { teacherId } = req.body;
@@ -1213,7 +1355,11 @@ const viewAssignedTasks = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid teacher ID format.");
   }
 
-  const tasks = await Task.find({ assignedByModel: "Admin", assignedBy: adminId, assignedTo: teacherId })
+  const tasks = await Task.find({
+    assignedByModel: "Admin",
+    assignedBy: adminId,
+    assignedTo: teacherId,
+  })
     .select("title description assignedAt deadline status points")
     .lean();
 
@@ -1238,17 +1384,17 @@ const viewCompletedTasks = asyncHandler(async (req, res) => {
 
   // Validate adminId
   if (!mongoose.Types.ObjectId.isValid(adminId)) {
-    throw new ApiError(400, 'Invalid admin ID format.');
+    throw new ApiError(400, "Invalid admin ID format.");
   }
 
   // Validate teacherId if provided
   if (teacherId && !mongoose.Types.ObjectId.isValid(teacherId)) {
-    throw new ApiError(400, 'Invalid teacher ID format.');
+    throw new ApiError(400, "Invalid teacher ID format.");
   }
 
   // Validate taskId if provided
   if (taskId && !mongoose.Types.ObjectId.isValid(taskId)) {
-    throw new ApiError(400, 'Invalid task ID format.');
+    throw new ApiError(400, "Invalid task ID format.");
   }
 
   // Build query dynamically based on filters
@@ -1265,22 +1411,22 @@ const viewCompletedTasks = asyncHandler(async (req, res) => {
   // Fetch completed tasks with populated fields
   const completedTasks = await Completedtask.find(query)
     .populate({
-      path: 'task',
-      select: 'title description deadline assignedBy', // Fields to include
+      path: "task",
+      select: "title description deadline assignedBy", // Fields to include
       populate: {
-        path: 'assignedBy',
-        select: 'name', // Replace with admin details fields
+        path: "assignedBy",
+        select: "name", // Replace with admin details fields
       },
     })
     .populate({
-      path: 'teacher',
-      select: 'name email', // Replace with teacher details fields
+      path: "teacher",
+      select: "name email", // Replace with teacher details fields
     })
     .lean();
 
   // Check if tasks exist
   if (!completedTasks || completedTasks.length === 0) {
-    throw new ApiError(404, 'No completed tasks found for the given criteria.');
+    throw new ApiError(404, "No completed tasks found for the given criteria.");
   }
 
   // Return response
@@ -1290,7 +1436,7 @@ const viewCompletedTasks = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         completedTasks,
-        'Completed tasks fetched successfully.'
+        "Completed tasks fetched successfully."
       )
     );
 });

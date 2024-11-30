@@ -25,19 +25,24 @@ import AdminNavigation from "../components/NavigationSIdeBar/AdminNavigation";
 
 const FacultyLayout = () => {
   return (
-    <div className="flex flex-col min-h-screen">
-      <AdminHeader />
-      <main className="flex-1">
-        <div className="flex h-full">
-          <AdminNavigation />
-          <main className="flex-1 p-4">
-            <h1 className="text-xl font-bold m-2 text-center">Admin Portal</h1>
-            {navigation.state === "loading" ? <LoadingPage /> : <Outlet />}
+    <>
+      <div className="flex flex-col min-h-screen">
+        <AdminHeader/>
+        <div className="flex flex-1 overflow-hidden">
+          <aside className="w-68 overflow-y-auto">
+            <AdminNavigation/>
+          </aside>
+          <main className="flex-1 flex flex-col overflow-hidden min-h-screen">
+            <h1 className="text-xl font-bold text-center p-4">Admin Portal</h1>
+            <div className="flex-1 overflow-auto p-4 bg-gray-100">
+              {navigation.state === "loading" ? <LoadingPage /> : <Outlet />}
+            </div>
           </main>
         </div>
-      </main>
+      </div>
       <Footer />
-    </div>
+      <Toaster />
+    </>
   );
 };
 
