@@ -3,7 +3,7 @@ import {
   getAllFeedbackCards,
   getDetailedFeedback,
   getSubmitters,
-} from "../controllers/feedback.controllers.js";
+} from "../controllers/lecture-feedbacks.controllers.js";
 import { verifyTeacherJWT } from "../middleware/teacher.auth.middleware.js";
 
 const router = express.Router();

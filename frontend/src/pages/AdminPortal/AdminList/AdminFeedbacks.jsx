@@ -82,7 +82,7 @@ export default function ReleaseFeedbacks() {
         : {
             teachersData: selectedCourses.map((course) => ({
               teacherId: course.teacherId,
-              subjectIds: [course.subjectId],
+              subjectId: course.subjectId,
             })),
             activeUntilDate: activeUntil,
           };
