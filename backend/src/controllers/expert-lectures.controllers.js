@@ -4,14 +4,15 @@ import { ApiError } from "../utils/ApiErrors.js";
 import { ExpertLecture } from "../models/expert-lectures.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { v2 as cloudinary } from "cloudinary";
+import { uploadToGCS } from "../utils/googleCloud.js";
 
 // all routes done including delete and update
 
 const uploadExpertLecture = asyncHandler(async (req, res) => {
-  const { topic, duration, date } = req.body;
+  const { topic, duration, date, level, venue } = req.body;
   const report = req.file;
 
-  if (!topic || !duration || !date) {
+  if (!topic || !duration || !date || !venue || !level) {
     throw new ApiError(400, "All fields are required");
   }
 
@@ -19,7 +20,8 @@ const uploadExpertLecture = asyncHandler(async (req, res) => {
     throw new ApiError(400, "A report PDF is required");
   }
 
-  const uploadExpertLectureReport = await uploadOnCloudinary(report.path);
+  // const uploadExpertLectureReport = await uploadOnCloudinary(report.path);
+  const uploadExpertLectureReport = await uploadToGCS(report.path, "pdf-report"); 
 
   if (!uploadExpertLectureReport) {
     throw new ApiError(500, "Couldn't upload the pdf file");
@@ -29,7 +31,9 @@ const uploadExpertLecture = asyncHandler(async (req, res) => {
     topic,
     duration,
     date,
-    report: uploadExpertLectureReport.secure_url,
+    level,
+    venue,
+    report: uploadExpertLectureReport,
     owner: req.teacher.id,
   });
 

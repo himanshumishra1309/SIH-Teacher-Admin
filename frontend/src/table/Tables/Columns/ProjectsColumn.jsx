@@ -13,8 +13,13 @@ export const columnDef = [
     enableSorting: true,
   },
   {
+    accessorKey: "projectType",
+    header: "Project Type",
+    enableSorting: true,
+  },
+  {
     accessorKey: "daily_duration",
-    header: "Duration",
+    header: "Daily Duration",
     enableSorting: true,
   },
   {

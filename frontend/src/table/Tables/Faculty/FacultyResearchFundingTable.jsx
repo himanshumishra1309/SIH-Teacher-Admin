@@ -12,21 +12,42 @@ import { columnDef } from "../Columns/FacultyResearchFundingColumn";
 import "../../table.css";
 import DownloadBtn from "../../DownloadBtn.jsx";
 import DebouncedInput from "../../DebouncedInput.jsx";
-import { SearchIcon } from 'lucide-react';
+import { SearchIcon } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import { Checkbox } from "@/components/ui/checkbox.jsx";
 import LoadingPage from "@/pages/LoadingPage.jsx";
 import DrawerComponent from "../../../Forms/AddEntry/DrawerComponent.jsx";
 import DeleteDialog from "../../DeleteDialog.jsx";
 import axios from "axios";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bar } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 export default function FacultyResearchFundingTable() {
   const [isActionLoading, setIsActionLoading] = useState(false);
@@ -63,7 +84,10 @@ export default function FacultyResearchFundingTable() {
       setData(response.data.data.researchFunding);
       setTotalPages(response.data.data.pages);
     } catch (error) {
-      console.error("An error occurred while fetching research funding data:", error);
+      console.error(
+        "An error occurred while fetching research funding data:",
+        error
+      );
       toast({
         title: "Error",
         description: "Failed to fetch research funding data. Please try again.",
@@ -136,29 +160,35 @@ export default function FacultyResearchFundingTable() {
     table.resetColumnVisibility();
   };
 
-  const handleResearchTypeFilter = useCallback((value) => {
-    setResearchTypeFilter(value);
-    if (value === "all") {
-      table.getColumn("researchType")?.setFilterValue("");
-    } else {
-      table.getColumn("researchType")?.setFilterValue(value);
-    }
-  }, [table]);
+  const handleResearchTypeFilter = useCallback(
+    (value) => {
+      setResearchTypeFilter(value);
+      if (value === "all") {
+        table.getColumn("researchType")?.setFilterValue("");
+      } else {
+        table.getColumn("researchType")?.setFilterValue(value);
+      }
+    },
+    [table]
+  );
 
-  const handleFundingFilter = useCallback((value) => {
-    setFundingFilter(value);
-    if (value === "all") {
-      table.getColumn("fundingAmount")?.setFilterValue("");
-    } else {
-      const [min, max] = value.split("to").map(Number);
-      table.getColumn("fundingAmount")?.setFilterValue((fundingAmount) => {
-        const amount = parseFloat(fundingAmount);
-        if (value === "lessThan5") return amount < 500000;
-        if (value === "moreThan100") return amount > 10000000;
-        return amount >= min * 100000 && amount <= max * 100000;
-      });
-    }
-  }, [table]);
+  const handleFundingFilter = useCallback(
+    (value) => {
+      setFundingFilter(value);
+      if (value === "all") {
+        table.getColumn("fundingAmount")?.setFilterValue("");
+      } else {
+        const [min, max] = value.split("to").map(Number);
+        table.getColumn("fundingAmount")?.setFilterValue((fundingAmount) => {
+          const amount = parseFloat(fundingAmount);
+          if (value === "lessThan5") return amount < 500000;
+          if (value === "moreThan100") return amount > 10000000;
+          return amount >= min * 100000 && amount <= max * 100000;
+        });
+      }
+    },
+    [table]
+  );
 
   const handleAddEntry = async (newData) => {
     try {
@@ -205,7 +235,9 @@ export default function FacultyResearchFundingTable() {
         }
       );
       setData((prevData) =>
-        prevData.map((row) => (row._id === updatedData._id ? response.data.data : row))
+        prevData.map((row) =>
+          row._id === updatedData._id ? response.data.data : row
+        )
       );
       toast({
         title: "Success",
@@ -259,7 +291,10 @@ export default function FacultyResearchFundingTable() {
   const calculateSummary = () => {
     const summary = {
       totalProjects: data.length,
-      totalFunding: data.reduce((sum, project) => sum + parseFloat(project.fundingAmount), 0),
+      totalFunding: data.reduce(
+        (sum, project) => sum + parseFloat(project.fundingAmount),
+        0
+      ),
       projectsByType: {
         international: 0,
         national: 0,
@@ -279,10 +314,10 @@ export default function FacultyResearchFundingTable() {
     labels: Object.keys(summary.projectsByType),
     datasets: [
       {
-        label: 'Number of Projects',
+        label: "Number of Projects",
         data: Object.values(summary.projectsByType),
-        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-        borderColor: 'rgba(75, 192, 192, 1)',
+        backgroundColor: "rgba(75, 192, 192, 0.6)",
+        borderColor: "rgba(75, 192, 192, 1)",
         borderWidth: 1,
       },
     ],
@@ -292,11 +327,11 @@ export default function FacultyResearchFundingTable() {
     responsive: true,
     plugins: {
       legend: {
-        position: 'top',
+        position: "top",
       },
       title: {
         display: true,
-        text: 'Projects by Research Type',
+        text: "Projects by Research Type",
       },
     },
   };
@@ -314,7 +349,13 @@ export default function FacultyResearchFundingTable() {
           </CardHeader>
           <CardContent>
             <p>Total Projects: {summary.totalProjects}</p>
-            <p>Total Funding: {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(summary.totalFunding)}</p>
+            <p>
+              Total Funding:{" "}
+              {new Intl.NumberFormat("en-IN", {
+                style: "currency",
+                currency: "INR",
+              }).format(summary.totalFunding)}
+            </p>
           </CardContent>
         </Card>
         <Card>
@@ -466,7 +507,8 @@ export default function FacultyResearchFundingTable() {
             console.error("Failed to submit research funding data:", error);
             toast({
               title: "Error",
-              description: "Failed to submit research funding data. Please try again.",
+              description:
+                "Failed to submit research funding data. Please try again.",
               variant: "destructive",
             });
           } finally {
@@ -509,7 +551,10 @@ export default function FacultyResearchFundingTable() {
             type="number"
             value={page}
             onChange={(e) => {
-              const pageNumber = Math.max(1, Math.min(totalPages, Number(e.target.value)));
+              const pageNumber = Math.max(
+                1,
+                Math.min(totalPages, Number(e.target.value))
+              );
               setPage(pageNumber);
             }}
             className="border p-1 rounded w-16"
@@ -541,4 +586,3 @@ export default function FacultyResearchFundingTable() {
     </div>
   );
 }
-

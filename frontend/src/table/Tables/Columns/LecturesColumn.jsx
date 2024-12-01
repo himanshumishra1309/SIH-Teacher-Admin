@@ -36,6 +36,16 @@ export const columnDef = [
     enableSorting: true,
   },
   {
+    accessorKey: "level",
+    header: "Level",
+    enableSorting: true,
+  },
+  {
+    accessorKey: "venue",
+    header: "Venue",
+    enableSorting: true,
+  },
+  {
     accessorKey: "report",
     header: "View Report",
     cell: ({ row }) => (

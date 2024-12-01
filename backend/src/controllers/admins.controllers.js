@@ -118,7 +118,6 @@ const registerAdmin = asyncHandler(async (req, res) => {
 }); // Works with Postman
 
 const registerTeacher = asyncHandler(async (req, res) => {
-  console.log("HELLOW")
   const {
     name,
     email,
