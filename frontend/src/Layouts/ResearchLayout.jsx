@@ -19,9 +19,6 @@ export default function ResearchLayout() {
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="publications">Publications</TabsTrigger>
           <TabsTrigger value="funding">Research Funding</TabsTrigger>
-          <TabsTrigger value="projects">Projects</TabsTrigger>
-          <TabsTrigger value="proceedings">Conference Proceedings</TabsTrigger>
-          <TabsTrigger value="editorial">Editorial Work</TabsTrigger>
         </TabsList>
         
         <TabsContent value="publications">
@@ -35,24 +32,7 @@ export default function ResearchLayout() {
             <FacultyResearchFundingTable/>
           </Card>
         </TabsContent>
-        
-        <TabsContent value="projects">
-          <Card className="p-4">
-            {/* <ResearchProjects /> */}
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="proceedings">
-          <Card className="p-4">
-            {/* <ConferenceProceedings /> */}
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="editorial">
-          <Card className="p-4">
-            {/* <EditorialWork /> */}
-          </Card>
-        </TabsContent>
+
       </Tabs>
     </div>
   )

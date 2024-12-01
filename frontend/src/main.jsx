@@ -55,6 +55,7 @@ import FontSizeHandler from './components/Ribbon/FontSizeHandler';
 import ResearchLayout from './Layouts/ResearchLayout';
 import ReleaseFeedbacks from './pages/AdminPortal/AdminList/AdminFeedbacks';
 import AdminLectureAllocationTable from './table/Tables/Admin/AdminLectureAllocationTable';
+import AppraisalReport from './pages/FacultyAppraisalReport';
 
 
 const router = createBrowserRouter(
@@ -82,6 +83,8 @@ const router = createBrowserRouter(
         {/* <Route path="lectures" element={<LecturesTable />} /> */}
         <Route path="event-participation" element={<RouteTransitionWrapper><FacultyEventTable /></RouteTransitionWrapper>} errorElement={<NotFoundPage />} />
         <Route path="posts" element={<RouteTransitionWrapper><PostsPage/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
+        <Route path="appraisal-report" element={<RouteTransitionWrapper><AppraisalReport/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
+
 
 
 
