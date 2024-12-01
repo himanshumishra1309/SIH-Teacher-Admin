@@ -3,7 +3,8 @@ import {
   loginStudent,
   logoutStudent,
   getStudentProfile,
-  getFeedbackForms
+  getFeedbackForms,
+  fillFeedbackForm
 } from "../controllers/students.controllers.js";
 import { verifyStudentJWT } from "../middleware/student.auth.middleware.js";
 
@@ -20,5 +21,8 @@ router.get("/me", verifyStudentJWT, getStudentProfile);
 
 // Route to get the getFeedbackForms
 router.get("/feedBackForms", verifyStudentJWT, getFeedbackForms);
+
+router.post("/fillfeedBackForm", verifyStudentJWT, fillFeedbackForm);
+
 
 export default router;

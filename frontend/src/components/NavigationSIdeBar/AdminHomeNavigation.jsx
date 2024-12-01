@@ -12,6 +12,8 @@ export default function AdminHomeNavigation() {
     { name: "Register Teacher", path: "register-faulty", icon: <Users className="w-4 h-4" /> },
     { name: "Register Student", path: "register-student", icon: <Users className="w-4 h-4" /> },
     { name: "Allocate Subject To Student", path: "allocate-sub-student", icon: <Users className="w-4 h-4" /> },
+    { name: "Appraisal Points", path: "appraisal-points", icon: <Users className="w-4 h-4" /> },
+
 
 
     // { name: "Expert Lectures", path: "expert-lectures", icon: <Mic className="w-4 h-4" /> },

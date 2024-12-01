@@ -29,7 +29,7 @@ const addNewLecture = asyncHandler(async (req, res) => {
     topic,
     duration,
     date,
-    teacher: teacherId,
+    owner: teacherId,
   });
 
   if (!lecture) {
@@ -109,7 +109,7 @@ const getLectureById = asyncHandler(async (req, res) => {
 
   const lecture = await Lecture.find({
     subject: subjectId,
-    teacher: teacherId,
+    owner: teacherId,
   });
 
   if (!lecture) {
@@ -211,6 +211,7 @@ const getStudentsByBranch = asyncHandler(async (req, res) => {
 
 const markLectureAttendance = asyncHandler(async (req, res) => {
   const { lectureId } = req.params;
+  const teacher = req.teacher._id;
   const {
     studentIds,
     subject_name,
@@ -229,14 +230,19 @@ const markLectureAttendance = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Student IDs are required");
   }
 
+  console.log({studentIds})
+
   // (Optional) Verify if the students belong to the correct branch and year (based on your backend logic).
   const validStudents = await Student.find({
     _id: { $in: studentIds },
     branch,
     year,
   }).select("_id");
+  
+  console.log({validStudents})
 
   const validStudentIds = validStudents.map((s) => s._id.toString());
+  console.log({validStudentIds});
   const invalidIds = studentIds.filter((id) => !validStudentIds.includes(id));
 
   if (invalidIds.length > 0) {
@@ -262,6 +268,7 @@ const markLectureAttendance = asyncHandler(async (req, res) => {
     subject_name,
     subject_code, // new 
     subject_credit,
+    teacher,
     branch,
     year,
     date: date || new Date(),

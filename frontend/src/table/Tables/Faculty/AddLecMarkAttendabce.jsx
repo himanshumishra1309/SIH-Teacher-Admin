@@ -98,7 +98,7 @@ const AddLecMarkAttendance = () => {
       const { subject_name, subject_code, subject_credit, branch, year } =
         selectedSubject;
 
-      await axios.post(
+      const response = await axios.post(
         `http://localhost:6005/api/v1/lecture/${lectureId}/attendance`,
         {
           studentIds: selectedStudents,
@@ -113,6 +113,7 @@ const AddLecMarkAttendance = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+      console.log("atendance", response);
 
       alert("Attendance marked successfully!");
       setSelectedStudents([]); // Reset selected students
