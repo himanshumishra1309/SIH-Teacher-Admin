@@ -1,32 +1,50 @@
-import React, { useRef, useEffect } from 'react';
-import { Bar, BarChart, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer } from 'recharts';
+import React, { useRef, useEffect, useState } from "react";
+import {
+  Bar,
+  BarChart,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
-import { Download } from 'lucide-react';
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { Download } from "lucide-react";
+import axios from "axios";
 
-const FacultyAppraisalReport = ({ facultyName, facultyDepartment, facultyCode }) => {
+const FacultyAppraisalReport = ({
+  facultyName,
+  facultyDepartment,
+  facultyCode,
+}) => {
   const reportRef = useRef(null);
   const signatureRef = useRef(null);
+  const [facultyData, setFacultyData] = useState("");
 
   const appraisalData = [
-    { field: 'Journals', currentPoints: 25, highestPoints: 40 },
-    { field: 'Books', currentPoints: 15, highestPoints: 30 },
-    { field: 'Patents', currentPoints: 10, highestPoints: 20 },
-    { field: 'STTP', currentPoints: 20, highestPoints: 25 },
-    { field: 'Conferences', currentPoints: 30, highestPoints: 35 },
-    { field: 'Seminars Conducted', currentPoints: 18, highestPoints: 22 },
-    { field: 'Seminars Attended', currentPoints: 12, highestPoints: 15 },
-    { field: 'Projects', currentPoints: 35, highestPoints: 50 },
+    { field: "Journals", currentPoints: 25, highestPoints: 40 },
+    { field: "Books", currentPoints: 15, highestPoints: 30 },
+    { field: "Patents", currentPoints: 10, highestPoints: 20 },
+    { field: "STTP", currentPoints: 20, highestPoints: 25 },
+    { field: "Conferences", currentPoints: 30, highestPoints: 35 },
+    { field: "Seminars Conducted", currentPoints: 18, highestPoints: 22 },
+    { field: "Seminars Attended", currentPoints: 12, highestPoints: 15 },
+    { field: "Projects", currentPoints: 35, highestPoints: 50 },
   ];
 
   const handleDownload = () => {
     const input = reportRef.current;
     html2canvas(input).then((canvas) => {
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
       const imgWidth = canvas.width;
@@ -35,14 +53,21 @@ const FacultyAppraisalReport = ({ facultyName, facultyDepartment, facultyCode })
       const imgX = (pdfWidth - imgWidth * ratio) / 2;
       const imgY = 30;
 
-      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
-      pdf.save('faculty-appraisal-report.pdf');
+      pdf.addImage(
+        imgData,
+        "PNG",
+        imgX,
+        imgY,
+        imgWidth * ratio,
+        imgHeight * ratio
+      );
+      pdf.save("faculty-appraisal-report.pdf");
     });
   };
 
   useEffect(() => {
     const canvas = signatureRef.current;
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext("2d");
     let isDrawing = false;
     let lastX = 0;
     let lastY = 0;
@@ -56,20 +81,44 @@ const FacultyAppraisalReport = ({ facultyName, facultyDepartment, facultyCode })
       [lastX, lastY] = [e.offsetX, e.offsetY];
     };
 
-    canvas.addEventListener('mousedown', (e) => {
+    canvas.addEventListener("mousedown", (e) => {
       isDrawing = true;
       [lastX, lastY] = [e.offsetX, e.offsetY];
     });
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseup', () => isDrawing = false);
-    canvas.addEventListener('mouseout', () => isDrawing = false);
+    canvas.addEventListener("mousemove", draw);
+    canvas.addEventListener("mouseup", () => (isDrawing = false));
+    canvas.addEventListener("mouseout", () => (isDrawing = false));
 
     return () => {
-      canvas.removeEventListener('mousedown', () => {});
-      canvas.removeEventListener('mousemove', draw);
-      canvas.removeEventListener('mouseup', () => {});
-      canvas.removeEventListener('mouseout', () => {});
+      canvas.removeEventListener("mousedown", () => {});
+      canvas.removeEventListener("mousemove", draw);
+      canvas.removeEventListener("mouseup", () => {});
+      canvas.removeEventListener("mouseout", () => {});
     };
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:6005/api/v1/teachers/me",
+          {
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem(
+                "teacherAccessToken"
+              )}`,
+            },
+          }
+        );
+        // console.log(response.data.data);
+        setFacultyData(response.data.data);
+      } catch (error) {
+        const errorMessage = error.response?.data?.message || error.message;
+        console.error("Error fetching teacher data:", errorMessage);
+      }
+    };
+
+    fetchData();
   }, []);
 
   return (
@@ -77,13 +126,18 @@ const FacultyAppraisalReport = ({ facultyName, facultyDepartment, facultyCode })
       <Button onClick={handleDownload} className="absolute top-4 right-4 z-10">
         <Download className="mr-2 h-4 w-4" /> Download Report
       </Button>
-      <div ref={reportRef} className="mt-16 border-4 border-gray-300 rounded-lg p-8 bg-white shadow-lg max-w-4xl mx-auto">
+      <div
+        ref={reportRef}
+        className="mt-16 border-4 border-gray-300 rounded-lg p-8 bg-white shadow-lg max-w-4xl mx-auto"
+      >
         <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold mb-2">Faculty Appraisal Final Report</h1>
+          <h1 className="text-4xl font-bold mb-2">
+            Faculty Appraisal Final Report
+          </h1>
           <p className="text-gray-600">Academic Year 2023-2024</p>
-          <p>Faculty Name: {facultyName}</p>
-          <p>Faculty Department: {facultyDepartment}</p>
-          <p>Faculty Code: {facultyCode}</p>
+          <p>Faculty Name: {facultyData.name}</p>
+          <p>Faculty Department: {facultyData.department}</p>
+          <p>Faculty Code: {facultyData.employee_code}</p>
         </div>
 
         <Card className="mb-8">
@@ -110,12 +164,25 @@ const FacultyAppraisalReport = ({ facultyName, facultyDepartment, facultyCode })
                   margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="field" angle={-45} textAnchor="end" height={80} />
+                  <XAxis
+                    dataKey="field"
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
+                  />
                   <YAxis />
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <Legend />
-                  <Bar dataKey="currentPoints" fill="var(--color-currentPoints)" name="Current Faculty" />
-                  <Bar dataKey="highestPoints" fill="var(--color-highestPoints)" name="Highest Score" />
+                  <Bar
+                    dataKey="currentPoints"
+                    fill="var(--color-currentPoints)"
+                    name="Current Faculty"
+                  />
+                  <Bar
+                    dataKey="highestPoints"
+                    fill="var(--color-highestPoints)"
+                    name="Highest Score"
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </ChartContainer>
@@ -128,7 +195,10 @@ const FacultyAppraisalReport = ({ facultyName, facultyDepartment, facultyCode })
           </CardHeader>
           <CardContent>
             {/* Your custom component will go here */}
-            <p className="text-gray-600 text-center">Your custom detailed appraisal data component will be inserted here.</p>
+            <p className="text-gray-600 text-center">
+              Your custom detailed appraisal data component will be inserted
+              here.
+            </p>
           </CardContent>
         </Card>
 
@@ -142,10 +212,18 @@ const FacultyAppraisalReport = ({ facultyName, facultyDepartment, facultyCode })
           </CardContent>
         </Card>
         <div>
-          <canvas ref={signatureRef} width="300" height="100" style={{border: '1px solid black'}}/>
+          <canvas
+            ref={signatureRef}
+            width="300"
+            height="100"
+            style={{ border: "1px solid black" }}
+          />
         </div>
         <div className="mt-8 text-center text-sm text-gray-500">
-          <p>This report is generated automatically and is valid as of {new Date().toLocaleDateString()}.</p>
+          <p>
+            This report is generated automatically and is valid as of{" "}
+            {new Date().toLocaleDateString()}.
+          </p>
         </div>
       </div>
     </div>
@@ -153,4 +231,3 @@ const FacultyAppraisalReport = ({ facultyName, facultyDepartment, facultyCode })
 };
 
 export default FacultyAppraisalReport;
-
