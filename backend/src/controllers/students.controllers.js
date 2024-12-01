@@ -107,7 +107,9 @@ const getFeedbackForms = asyncHandler(async (req, res) => {
   const studentId = req.student._id;
 
   // Step 1: Fetch the student's branch and year from the Student model
-  const student = await Student.findById(studentId).select("branch year").lean();
+  const student = await Student.findById(studentId)
+    .select("branch year")
+    .lean();
 
   if (!student) {
     throw new ApiError(404, "Student not found.");
@@ -116,7 +118,11 @@ const getFeedbackForms = asyncHandler(async (req, res) => {
   const { branch, year } = student;
 
   // Step 2: Fetch all subjects the student is studying
-  const studentSubjects = await StudySubject.find({ student: studentId }).lean();
+  const studentSubjects = await StudySubject.find({
+    student: studentId,
+  })
+    .populate("teacher", "name") // Populate teacher with only the 'name' field
+    .lean();
 
   if (!studentSubjects || studentSubjects.length === 0) {
     throw new ApiError(404, "No subjects found for the student.");
@@ -137,9 +143,8 @@ const getFeedbackForms = asyncHandler(async (req, res) => {
     }).countDocuments();
 
     if (totalLectures === 0) {
-      continue; // Skip if no lectures for the subject
+      continue;
     }
-
     // Fetch lectures attended by the student for this subject
     const attendedLectures = await Attendance.find({
       subject_name: subject.subject_name,
@@ -172,6 +177,7 @@ const getFeedbackForms = asyncHandler(async (req, res) => {
           subject_credit: subject.subject_credit,
           teacher: subject.teacher,
           attendancePercentage: attendancePercentage.toFixed(2),
+          branch : branch
         });
       }
     }
@@ -197,9 +203,26 @@ const getFeedbackForms = asyncHandler(async (req, res) => {
 
 const fillFeedbackForm = asyncHandler(async (req, res) => {
   const studentId = req.student._id;
-  const studentBranch = req.student.branch; 
+  const studentBranch = req.student.branch;
   const studentYear = req.student.year;
-  const { subject_name, subject_code, subject_credit, teacher, question1_rating, question2_rating, question3_rating, question4_rating, question5_rating, question6_rating, question7_rating, question8_rating, question9_rating, question10_rating, comments } = req.body;
+
+  const {
+    subject_name,
+    subject_code,
+    subject_credit,
+    teacher,
+    question1_rating,
+    question2_rating,
+    question3_rating,
+    question4_rating,
+    question5_rating,
+    question6_rating,
+    question7_rating,
+    question8_rating,
+    question9_rating,
+    question10_rating,
+    comments,
+  } = req.body;
 
   // Step 1: Check if feedback form is available for the subject
   const allocatedSubject = await AllocatedSubject.findOne({
@@ -208,7 +231,7 @@ const fillFeedbackForm = asyncHandler(async (req, res) => {
     subject_credit,
     branch: studentBranch,
     year: studentYear,
-    teacher
+    teacher,
   }).lean();
 
   if (!allocatedSubject || !allocatedSubject.feedbackReleased) {
@@ -248,14 +271,18 @@ const fillFeedbackForm = asyncHandler(async (req, res) => {
     question8_rating,
     question9_rating,
     question10_rating,
-    comments,
+    comment : comments,
     submitter: studentId,
     submissionTime: new Date(),
   });
 
   await feedback.save();
 
-  return res.status(201).json(new ApiResponse(201, feedback, "Feedback form submitted successfully."));
+  return res
+    .status(201)
+    .json(
+      new ApiResponse(201, feedback, "Feedback form submitted successfully.")
+    );
 });
 
 const logoutStudent = asyncHandler(async (req, res) => {
@@ -292,5 +319,5 @@ export {
   logoutStudent,
   getStudentProfile,
   getFeedbackForms,
-  fillFeedbackForm
+  fillFeedbackForm,
 };

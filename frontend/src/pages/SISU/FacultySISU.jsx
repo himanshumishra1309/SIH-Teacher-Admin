@@ -1,51 +1,51 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { UserPlus, UserCheck, BookOpen } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { UserPlus, UserCheck, BookOpen } from "lucide-react";
 import "../SISU/SISU.css";
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function FacultySISU() {
   const navigate = useNavigate();
-  
+
   const [signupData, setSignupData] = useState({
-    name: '',
-    email: '',
-    employee_code: '',
-    department: '',
-    password: '',
+    name: "",
+    email: "",
+    employee_code: "",
+    department: "",
+    password: "",
   });
-  
+
   const [loginData, setLoginData] = useState({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
 
   const [avatar, setAvatar] = useState(null);
-  const [avatarPreview, setAvatarPreview] = useState('');
+  const [avatarPreview, setAvatarPreview] = useState("");
 
-  useEffect(() => {
-    const signUpButton = document.getElementById('fs-signUp');
-    const signInButton = document.getElementById('fs-signIn');
-    const container = document.querySelector('.fs-container');
+  // useEffect(() => {
+  //   const signUpButton = document.getElementById('fs-signUp');
+  //   const signInButton = document.getElementById('fs-signIn');
+  //   const container = document.querySelector('.fs-container');
 
-    signUpButton.addEventListener('click', () => {
-      container.classList.add("right-panel-active");
-    });
+  //   signUpButton.addEventListener('click', () => {
+  //     container.classList.add("right-panel-active");
+  //   });
 
-    signInButton.addEventListener('click', () => {
-      container.classList.remove("right-panel-active");
-    });
+  //   signInButton.addEventListener('click', () => {
+  //     container.classList.remove("right-panel-active");
+  //   });
 
-    return () => {
-      signUpButton.removeEventListener('click', () => {
-        container.classList.add("right-panel-active");
-      });
-      signInButton.removeEventListener('click', () => {
-        container.classList.remove("right-panel-active");
-      });
-    };
-  }, []);
+  //   return () => {
+  //     signUpButton.removeEventListener('click', () => {
+  //       container.classList.add("right-panel-active");
+  //     });
+  //     signInButton.removeEventListener('click', () => {
+  //       container.classList.remove("right-panel-active");
+  //     });
+  //   };
+  // }, []);
 
   const handleSignupChange = (e) => {
     const { id, value } = e.target;
@@ -63,7 +63,7 @@ export default function FacultySISU() {
 
     const reader = new FileReader();
     reader.onload = () => {
-        setAvatarPreview(reader.result);
+      setAvatarPreview(reader.result);
     };
     reader.readAsDataURL(file);
   };
@@ -71,34 +71,48 @@ export default function FacultySISU() {
   const handleSignUpSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('name', signupData.name);
-    formData.append('email', signupData.email);
-    formData.append('employee_code', signupData.employee_code);
-    formData.append('department', signupData.department);
-    formData.append('password', signupData.password);
-    formData.append('avatar', avatar);
+    formData.append("name", signupData.name);
+    formData.append("email", signupData.email);
+    formData.append("employee_code", signupData.employee_code);
+    formData.append("department", signupData.department);
+    formData.append("password", signupData.password);
+    formData.append("avatar", avatar);
 
     try {
-      const response = await axios.post('http://localhost:6005/api/v1/teachers/register', formData);
+      const response = await axios.post(
+        "http://localhost:6005/api/v1/teachers/register",
+        formData
+      );
       const { teacherAccessToken } = response?.data?.data;
-      sessionStorage.setItem('teacherAccessToken', teacherAccessToken);
-      navigate('/faculty');
+      sessionStorage.setItem("teacherAccessToken", teacherAccessToken);
+      navigate("/faculty");
     } catch (error) {
-      console.error('Error during signup:', error.response?.data?.message || error.message);
-      alert('Signup failed. Please try again.');
+      console.error(
+        "Error during signup:",
+        error.response?.data?.message || error.message
+      );
+      alert("Signup failed. Please try again.");
     }
   };
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:6005/api/v1/teachers/login', loginData);
+      const response = await axios.post(
+        "http://localhost:6005/api/v1/teachers/login",
+        loginData
+      );
       const { teacherAccessToken } = response?.data?.data;
-      sessionStorage.setItem('teacherAccessToken', teacherAccessToken);
-      navigate(`/faculty/${response.data.data.user._id}`, { state: { justLoggedIn: true }});
+      sessionStorage.setItem("teacherAccessToken", teacherAccessToken);
+      navigate(`/faculty/${response.data.data.user._id}`, {
+        state: { justLoggedIn: true },
+      });
     } catch (error) {
-      console.error('Error during login:', error.response?.data?.message || error.message);
-      alert('Login failed. Please try again.');
+      console.error(
+        "Error during login:",
+        error.response?.data?.message || error.message
+      );
+      alert("Login failed. Please try again.");
     }
   };
 
@@ -106,11 +120,13 @@ export default function FacultySISU() {
     <div className="w-full min-h-screen flex flex-col justify-center items-center bg-gradient-to-r from-blue-900 to-blue-700">
       <div className="mb-8 text-center">
         <h1 className="text-4xl font-bold text-white mb-2">Faculty Portal</h1>
-        <p className="text-xl text-blue-100">Empowering Educators in the Appraisal Process</p>
+        <p className="text-xl text-blue-100">
+          Empowering Educators in the Appraisal Process
+        </p>
       </div>
       <div className="w-full max-w-4xl flex justify-center items-center">
         <div className="fs-container" id="fs-main">
-          <div className="fs-sign-up">
+          {/* <div className="fs-sign-up">
             <form onSubmit={handleSignUpSubmit}>
 
               <ScrollArea>
@@ -176,7 +192,7 @@ export default function FacultySISU() {
             </form>
 
 
-          </div>
+          </div> */}
           <div className="fs-sign-in">
             <form onSubmit={handleLoginSubmit}>
               <UserCheck className="fs-icon text-blue-800" size={64} />
@@ -199,20 +215,24 @@ export default function FacultySISU() {
                 required
                 className="fs-input"
               />
-              <button type="submit" className="fs-button">Sign In</button>
+              <button type="submit" className="fs-button">
+                Sign In
+              </button>
             </form>
           </div>
           <div className="fs-overlay-container">
             <div className="fs-overlay">
-              <div className="fs-overlay-left">
+              {/* <div className="fs-overlay-left">
                 <h1 className="text-3xl font-bold mb-4">Welcome Back!</h1>
                 <p className="mb-4">To continue your journey in shaping minds, please sign in</p>
                 <button id="fs-signIn" className="fs-overlay-button">Sign In</button>
-              </div>
+              </div> */}
               <div className="fs-overlay-right">
                 <h1 className="text-3xl font-bold mb-4">Hello, Educator!</h1>
-                <p className="mb-4">Start your journey with us and make a difference in education</p>
-                <button id="fs-signUp" className="fs-overlay-button">Sign Up</button>
+                <p className="mb-4">
+                  Start your journey with us and make a difference in education
+                </p>
+                {/* <button id="fs-signUp" className="fs-overlay-button">Sign Up</button> */}
               </div>
             </div>
           </div>

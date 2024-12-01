@@ -21,7 +21,6 @@ import DeleteDialog from "../../DeleteDialog.jsx";
 import axios from "axios";
 import LoadingPage from "@/pages/LoadingPage.jsx";
 
-
 export default function AdminLectureAllocationTable() {
   const { id } = useParams();
   // console.log(id);
@@ -35,71 +34,30 @@ export default function AdminLectureAllocationTable() {
   const [columnVisibility, setColumnVisibility] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
-
-  // data of the teacher email wegera
-  // useEffect(() => {
-  //   const fetchTeacherInfo = async () => {
-  //     try {
-  //       // Retrieve the token from session storage
-  //       const token = sessionStorage.getItem("adminAccessToken"); // Adjust this if using cookies
-
-  //       const response = await axios.get(
-  //         `http://localhost:6005/api/v1/admins/teachers/${id}`, // Adjust URL to your API endpoint
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`, // Set the Authorization header
-  //           },
-  //         }
-  //       );
-  //       console.log(response.data.data.teacher);
-  //       setTeacherInfo(response.data.data);
-  //     } catch (error) {
-  //       console.log("An error occurred while fetching teacher info.");
-  //     }
-  //   };
-
-  //   fetchTeacherInfo();
-  // }, [id]); // Runs when 'id' changes
-
-  // dtaa of the reaserch paper of the teacher aditi sharma
-
   useEffect(() => {
     const fetchTeacherInfo = async () => {
       try {
-        const token = sessionStorage.getItem("teacherAccessToken");
+        const token = sessionStorage.getItem("adminAccessToken");
 
-        const [response1, response2] = await Promise.all([
-          axios.get(
-            `http://localhost:6005/api/v1/student-guide/mtech-students`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          ),
-          axios.get(`http://localhost:6005/api/v1/student-guide/phd-students`, {
+        const response = await axios.get(
+          `http://localhost:6005/api/v1/admins/teacher/${id}/allocated-subjects`,
+          {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }),
-        ]);
-
-        const combinedData = [...response1.data.data, ...response2.data.data];
-
-        console.log("Admin Lecture Allocation Data", combinedData);
-        setData(combinedData);
-      } catch (error) {
-        console.log("An error occurred while fetching lecture allocaton info.");
-      }
-      finally {
+          }
+        );
+        console.log(response.data.data);
+        setData(response.data.data);
         setIsLoading(false);
+      } catch (error) {
+        console.log("An error occurred while fetching teacher info.");
       }
     };
 
     fetchTeacherInfo();
-  }, []);
+  }, [id]);
 
-  
   const columns = useMemo(() => {
     return columnDef.map((col) => {
       if (col.accessorKey === "actions") {
@@ -194,9 +152,9 @@ export default function AdminLectureAllocationTable() {
   };
 
   if (isLoading) {
-    return <LoadingPage/>;
+    return <LoadingPage />;
   }
-  
+
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between mb-4">
@@ -280,15 +238,15 @@ export default function AdminLectureAllocationTable() {
           setRowToEdit(null);
         }}
         onSubmit={async (formData) => {
-          console.log(formData);
-          const token = sessionStorage.getItem("teacherAccessToken");
+          // console.log(formData);
+          const token = sessionStorage.getItem("adminAccessToken");
 
           try {
             if (rowToEdit) {
               console.log("editing  the data", formData);
 
               const response = await axios.put(
-                `http://localhost:6005/api/v1/student-guide/${rowToEdit._id}`,
+                `http://localhost:6005/api/v1/admins/teacher/${id}/allocated-subject/${rowToEdit._id}`,
                 formData,
                 {
                   headers: {
@@ -300,19 +258,18 @@ export default function AdminLectureAllocationTable() {
               console.log(response.data.data);
               handleEditEntry(response.data.data);
             } else {
-              // Add (POST Request)
               console.log("posting the data", formData);
               const response = await axios.post(
-                `http://localhost:6005/api/v1/student-guide/upload`,
+                `http://localhost:6005/api/v1/admins/subjects/allocate/${id}`,
                 formData,
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,
-                    "Content-Type": "application.json",
+                    "Content-Type": "application/json",
                   },
                 }
               );
-              console.log(response.data.data);
+              // console.log(response.data);
               handleAddEntry(response.data.data);
             }
           } catch (error) {

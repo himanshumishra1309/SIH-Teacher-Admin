@@ -2,27 +2,39 @@ import React, { useEffect } from "react";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { z } from "zod";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 
-function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData, calculateScore }) {
+function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
   const generateSchema = () => {
     const schemaFields = {};
-    columns.forEach((column) => {
-      if (column.accessorKey !== "actions" && column.accessorKey !== "score") {
-        if (column.type === "date") {
-          schemaFields[column.accessorKey] = z.date().nullable();
-        } else if (column.type === "number") {
-          schemaFields[column.accessorKey] = z.number().nullable();
-        } else if (column.type === "select") {
-          schemaFields[column.accessorKey] = z.enum(column.options.map(option => option.value));
+    columns.forEach((col) => {
+      if (
+        col.accessorKey &&
+        col.accessorKey !== "actions" &&
+        col.accessorKey !== "View"
+      ) {
+        if (
+          [
+            "Date",
+            "startDate",
+            "publishedDate",
+            "addedOn",
+            "date",
+            "endDate",
+          ].includes(col.accessorKey)
+        ) {
+          schemaFields[col.accessorKey] = z.date().nullable();
+        } else if (col.accessorKey === "report") {
+          // Assuming the key for report is 'reportFile'
+          schemaFields[col.accessorKey] = z.instanceof(File).optional();
         } else {
-          schemaFields[column.accessorKey] = z.string().min(1, { message: `${column.header} is required` });
+          schemaFields[col.accessorKey] = z
+            .string()
+            .min(1, { message: `${col.header} is required` });
         }
       }
     });
@@ -34,109 +46,135 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData, calculat
   const {
     register,
     handleSubmit,
-    control,
     setValue,
-    reset,
+    watch,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
-    defaultValues: {},
+    defaultValues: rowData || {},
   });
 
   useEffect(() => {
-    if (isOpen) {
-      if (rowData) {
-        Object.keys(rowData).forEach((key) => {
-          if (key === "startDate") {
-            setValue(key, rowData[key] ? new Date(rowData[key]) : null);
-          } else {
-            setValue(key, rowData[key]);
-          }
-        });
-      } else {
-        reset({});
-      }
+    if (isOpen && rowData) {
+      Object.keys(rowData).forEach((key) => {
+        if (
+          [
+            "Date",
+            "startDate",
+            "publishedDate",
+            "addedOn",
+            "date",
+            "endDate",
+          ].includes(key)
+        ) {
+          setValue(key, rowData[key] ? new Date(rowData[key]) : null);
+        } else {
+          setValue(key, rowData[key]);
+        }
+      });
     }
-  }, [isOpen, rowData, setValue, reset]);
+  }, [isOpen, rowData, setValue]);
 
   const handleFormSubmit = (data) => {
-    const score = calculateScore(data);
-    onSubmit({ ...data, score });
-    onClose();
+    console.log(data);
+    const formData = new FormData();
+
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === "report") {
+        if (value instanceof File) {
+          formData.append(key, value);
+        } else if (typeof value === "string" && value.startsWith("http")) {
+          formData.append(key, value);
+        }
+      } else {
+        formData.append(key, value);
+      }
+    });
+
+    try {
+      onSubmit(formData); 
+      onClose();
+    } catch (error) {
+      console.error("Error submitting the form:", error);
+    }
   };
 
   return (
     <Drawer open={isOpen} onOpenChange={onClose}>
       <DrawerContent>
-        <div className="p-6">
-          <h3 className="text-lg font-semibold mb-6">
+        <div className="p-4">
+          <h3 className="text-lg font-semibold mb-4">
             {rowData ? "Edit Entry" : "Add a New Entry"}
           </h3>
-          <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              {columns.map((column, index) => {
-                if (column.accessorKey !== "actions" && column.accessorKey !== "score") {
-                  return (
-                    <div key={column.accessorKey} className={index % 2 === 0 ? "col-span-1" : "col-span-1"}>
-                      <Label htmlFor={column.accessorKey} className="mb-2 block">
-                        {column.header}
-                      </Label>
-                      {column.type === "date" ? (
-                        <Controller
-                          name={column.accessorKey}
-                          control={control}
-                          render={({ field }) => (
-                            <DatePicker
-                              {...field}
-                              selected={field.value}
-                              onChange={(date) => field.onChange(date)}
-                              placeholderText={`Select ${column.header.toLowerCase()}`}
-                              className="w-full p-2 border rounded"
-                            />
-                          )}
-                        />
-                      ) : column.type === "select" ? (
-                        <Controller
-                          name={column.accessorKey}
-                          control={control}
-                          render={({ field }) => (
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder={`Select ${column.header.toLowerCase()}`} />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {column.options.map((option) => (
-                                  <SelectItem key={option.value} value={option.value}>
-                                    {option.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          )}
-                        />
-                      ) : (
-                        <Input
-                          id={column.accessorKey}
-                          type={column.type || "text"}
-                          {...register(column.accessorKey, { valueAsNumber: column.type === "number" })}
-                          className="w-full"
-                        />
-                      )}
-                      {errors[column.accessorKey] && (
-                        <p className="text-red-500 text-sm mt-1">{errors[column.accessorKey].message}</p>
-                      )}
-                    </div>
-                  );
-                }
-                return null;
-              })}
-            </div>
-
+          <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+            {columns.map((col) => {
+              if (
+                col.accessorKey &&
+                col.accessorKey !== "actions" &&
+                col.accessorKey !== "View"
+              ) {
+                return (
+                  <div key={col.accessorKey}>
+                    <label
+                      htmlFor={col.accessorKey}
+                      className="block text-sm font-medium mb-1"
+                    >
+                      {col.header || col.accessorKey}
+                    </label>
+                    {col.accessorKey === "Date" ||
+                    col.accessorKey === "startDate" ||
+                    col.accessorKey === "publishedDate" ||
+                    col.accessorKey === "addedOn" ||
+                    col.accessorKey === "endDate" ||
+                    col.accessorKey === "date" ? (
+                      <DatePicker
+                        selected={watch(col.accessorKey)}
+                        onChange={(date) => setValue(col.accessorKey, date)}
+                        className={`w-full p-2 border rounded ${
+                          errors[col.accessorKey]
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }`}
+                      />
+                    ) : col.accessorKey === "report" ? (
+                      <input
+                        type="file"
+                        id={col.accessorKey}
+                        onChange={(e) =>
+                          setValue(col.accessorKey, e.target.files[0] || null)
+                        }
+                        className={`w-full p-2 border rounded ${
+                          errors[col.accessorKey]
+                            ? "border-red-500"
+                            : "border-gray-300"
+                        }`}
+                      />
+                    ) : (
+                      <Input
+                        id={col.accessorKey}
+                        {...register(col.accessorKey)}
+                        className={
+                          errors[col.accessorKey] ? "border-red-500" : ""
+                        }
+                      />
+                    )}
+                    {errors[col.accessorKey] && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors[col.accessorKey].message}
+                      </p>
+                    )}
+                  </div>
+                );
+              }
+              return null;
+            })}
             <div className="flex justify-end gap-2 mt-6">
               <Button type="button" onClick={onClose} variant="outline">
                 Cancel
               </Button>
-              <Button type="submit">{rowData ? "Save Changes" : "Add Entry"}</Button>
+              <Button type="submit">
+                {rowData ? "Save Changes" : "Add Entry"}
+              </Button>
             </div>
           </form>
         </div>
@@ -146,4 +184,3 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData, calculat
 }
 
 export default DrawerComponent;
-

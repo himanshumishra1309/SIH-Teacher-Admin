@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { z } from "zod";
-import { X, Loader2, Star } from 'lucide-react';
+import { X, Loader2, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
@@ -56,7 +56,12 @@ function StarRating({ rating, onRatingChange }) {
   );
 }
 
-export default function EnhancedLectureFeedback() {
+export default function EnhancedLectureFeedback({
+  teacherId,
+  subject_credit,
+  subject_name,
+  subject_code,
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [formData, setFormData] = useState({
@@ -84,7 +89,7 @@ export default function EnhancedLectureFeedback() {
           "http://localhost:6005/api/v1/students/me",
           { headers }
         );
-        console.log("Student data fetched:", response.data);
+        // console.log("Student data fetched:", response.data);
 
         setFormData((prev) => ({
           ...prev,
@@ -120,11 +125,22 @@ export default function EnhancedLectureFeedback() {
     setIsSubmitting(true);
     try {
       formSchema.parse(formData);
-
       const feedbackData = {
-        seminarId: formData.studentId,
-        ratings: formData.ratings,
-        comments: formData.comment,
+        subject_name: subject_name || "",
+        subject_code: subject_code || "",
+        subject_credit: subject_credit || 0,
+        teacher: teacherId || "",
+        question1_rating: formData.ratings[0] || 0,
+        question2_rating: formData.ratings[1] || 0,
+        question3_rating: formData.ratings[2] || 0,
+        question4_rating: formData.ratings[3] || 0,
+        question5_rating: formData.ratings[4] || 0,
+        question6_rating: formData.ratings[5] || 0,
+        question7_rating: formData.ratings[6] || 0,
+        question8_rating: formData.ratings[7] || 0,
+        question9_rating: formData.ratings[8] || 0,
+        question10_rating: formData.ratings[9] || 0,
+        comments: formData.comment || "",
       };
 
       const accessToken = sessionStorage.getItem("studentAccessToken");
@@ -132,8 +148,9 @@ export default function EnhancedLectureFeedback() {
         throw new Error("You are not authenticated");
       }
 
+      // Send the feedback to the backend
       const response = await axios.post(
-        "http://localhost:6005/api/v1/seminars/seminars/feedback",
+        "http://localhost:6005/api/v1/students/fillfeedBackForm",
         feedbackData,
         {
           headers: {
@@ -141,17 +158,19 @@ export default function EnhancedLectureFeedback() {
           },
         }
       );
-
-      console.log("Feedback submitted:", response.data);
-      setFeedbackSubmitted(true);
+      setShowDialog(false);
+      console.log("Feedback submitted:", response);
       toast({
         title: "Feedback Submitted",
         description: "Thank you for your detailed feedback!",
         duration: 3000,
       });
-
+      setIsSubmitting(false);
+      setFeedbackSubmitted(true);
       setIsOpen(false);
     } catch (error) {
+      console.error("Error submitting feedback:", error);
+
       if (error instanceof z.ZodError) {
         setErrors(error.flatten().fieldErrors);
         toast({
@@ -161,7 +180,6 @@ export default function EnhancedLectureFeedback() {
           variant: "destructive",
         });
       } else {
-        console.error("Error submitting feedback:", error);
         const errorMessage =
           error.response?.data?.message ||
           "Failed to submit feedback. Please try again.";
@@ -174,13 +192,12 @@ export default function EnhancedLectureFeedback() {
       }
     } finally {
       setIsSubmitting(false);
-      setShowDialog(false);
     }
   };
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    if (formData.ratings.some(rating => rating === 0)) {
+    if (formData.ratings.some((rating) => rating === 0)) {
       toast({
         title: "Error",
         description: "Please provide ratings for all criteria.",
@@ -196,7 +213,11 @@ export default function EnhancedLectureFeedback() {
     <div className="relative">
       <Button
         onClick={() => setIsOpen(true)}
-        className={feedbackSubmitted ? "bg-green-500 text-white" : "text-white"}
+        className={`${
+          feedbackSubmitted
+            ? "bg-green-500 text-white"
+            : "bg-blue-600 text-white"
+        } px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-300`}
       >
         {feedbackSubmitted ? "Feedback Submitted" : "Give Feedback"}
       </Button>
@@ -214,29 +235,35 @@ export default function EnhancedLectureFeedback() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ type: "spring", damping: 15 }}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl h-[90vh] relative"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-4xl h-[90vh] relative overflow-hidden"
             >
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                 onClick={() => setIsOpen(false)}
               >
-                <X className="h-4 w-4" />
+                <X className="h-5 w-5" />
                 <span className="sr-only">Close</span>
               </Button>
-              <form onSubmit={handleFormSubmit} className="p-8 h-full overflow-y-auto">
-                <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-gray-200">
+
+              <form
+                onSubmit={handleFormSubmit}
+                className="p-8 h-full overflow-y-auto space-y-6"
+              >
+                <h2 className="text-3xl font-bold mb-4 text-center text-gray-800 dark:text-gray-200">
                   Faculty Feedback Form
                 </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 text-center">
-                  Your feedback is valuable in maintaining and improving the quality of instruction.
-                  Please rate the following criteria on a scale of 1-5 stars.
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-8 text-center">
+                  Your feedback is valuable in maintaining and improving the
+                  quality of instruction. Please rate the following criteria on
+                  a scale of 1-5 stars.
                 </p>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   {["name", "email", "roll_no", "branch"].map((field) => (
-                    <div key={field}>
-                      <Label htmlFor={field} className="mb-1 block">
+                    <div key={field} className="space-y-2">
+                      <Label htmlFor={field} className="text-sm font-semibold">
                         {field === "roll_no"
                           ? "Enrollment Number"
                           : field.charAt(0).toUpperCase() + field.slice(1)}
@@ -248,9 +275,9 @@ export default function EnhancedLectureFeedback() {
                         value={formData[field]}
                         onChange={handleInputChange}
                         readOnly
-                        className={`transition-all duration-300 ${
+                        className={`w-full p-3 border rounded-lg shadow-sm transition-all duration-300 ${
                           errors[field]
-                            ? "border-red-500 dark:border-red-400 shake"
+                            ? "border-red-500 dark:border-red-400"
                             : "border-gray-300 dark:border-gray-600"
                         }`}
                       />
@@ -262,19 +289,31 @@ export default function EnhancedLectureFeedback() {
                     </div>
                   ))}
                 </div>
+
                 <div className="space-y-6">
                   {feedbackCriteria.map((criterion, index) => (
-                    <div key={index} className="border-b border-gray-200 dark:border-gray-700 pb-4">
-                      <Label className="mb-2 block">{criterion}</Label>
+                    <div
+                      key={index}
+                      className="border-b border-gray-200 dark:border-gray-700 pb-4"
+                    >
+                      <Label className="mb-2 block text-lg font-semibold text-gray-700 dark:text-gray-300">
+                        {criterion}
+                      </Label>
                       <StarRating
                         rating={formData.ratings[index]}
-                        onRatingChange={(rating) => handleRatingChange(index, rating)}
+                        onRatingChange={(rating) =>
+                          handleRatingChange(index, rating)
+                        }
                       />
                     </div>
                   ))}
                 </div>
+
                 <div className="mt-6">
-                  <Label htmlFor="comment" className="mb-1 block">
+                  <Label
+                    htmlFor="comment"
+                    className="mb-1 block text-lg font-semibold text-gray-700 dark:text-gray-300"
+                  >
                     Additional Comments
                   </Label>
                   <Textarea
@@ -284,12 +323,13 @@ export default function EnhancedLectureFeedback() {
                     onChange={handleInputChange}
                     rows={4}
                     placeholder="Please provide any additional feedback or suggestions"
-                    className="transition-all duration-300"
+                    className="w-full p-3 border rounded-lg shadow-sm transition-all duration-300 dark:bg-gray-700 dark:border-gray-600"
                   />
                 </div>
+
                 <Button
                   type="submit"
-                  className="w-full mt-6 relative overflow-hidden group"
+                  className="w-full mt-6 relative overflow-hidden group bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-400"
                   disabled={isSubmitting}
                 >
                   <span

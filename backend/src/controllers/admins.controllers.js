@@ -118,6 +118,7 @@ const registerAdmin = asyncHandler(async (req, res) => {
 }); // Works with Postman
 
 const registerTeacher = asyncHandler(async (req, res) => {
+  console.log("HELLOW")
   const {
     name,
     email,
@@ -306,23 +307,26 @@ const updateTeacherAvatar = asyncHandler(async (req, res) => {
 }); //did not work on postman
 
 const allotSubjectsToTeachers = asyncHandler(async (req, res) => {
+  const { teacherId } = req.params;
   const {
     subject_name,
     subject_code,
     subject_credit,
     branch,
     year,
+    type,
     min_lectures,
-    teacherId,
+    // teacherId,
   } = req.body;
 
-  // Validate input fields
+  // Validate input +--fields
   if (
     !subject_name ||
     !subject_code ||
     !subject_credit ||
     !branch ||
     !year ||
+    !type ||
     !min_lectures ||
     !teacherId
   ) {
@@ -330,7 +334,9 @@ const allotSubjectsToTeachers = asyncHandler(async (req, res) => {
   }
 
   // Check if the teacher exists
-  const teacher = await Teacher.findById(teacherId);
+  const teacher = await Teacher.findById(teacherId).select(
+    "-password -refreshToken"
+  );
 
   if (!teacher) {
     throw new ApiError(400, "Teacher not found.");
@@ -341,6 +347,7 @@ const allotSubjectsToTeachers = asyncHandler(async (req, res) => {
     subject_code,
     branch,
     year,
+    type,
     teacher: teacherId,
   });
 
@@ -351,18 +358,19 @@ const allotSubjectsToTeachers = asyncHandler(async (req, res) => {
     );
   }
 
-  // Create a new allocated subject record
-  const allocatedSubject = await AllocatedSubject.create({
-    subject_name,
-    subject_code,
-    subject_credit,
-    branch,
-    year,
-    min_lectures,
-    teacher: teacherId,
-    feedbackReleased: false,
-    activeUntil: null,
-  });
+    // Create a new allocated subject record
+    const allocatedSubject = await AllocatedSubject.create({
+      subject_name,
+      subject_code,
+      subject_credit,
+      branch,
+      year,
+      type,
+      min_lectures,
+      teacher: teacherId,
+      feedbackReleased: false,
+      activeUntil: null,
+    });
 
   return res
     .status(200)
@@ -379,7 +387,7 @@ const viewAllAllocatedSubjectsOfTheTeacher = asyncHandler(async (req, res) => {
   }
 
   const allocatedSubjects = await AllocatedSubject.find({ teacher: teacherId })
-    .select("subject_name subject_code subject_credit branch year")
+    .select("subject_name min_lectures subject_code subject_credit branch year")
     .lean();
 
   if (!allocatedSubjects || allocatedSubjects.length === 0) {
@@ -406,6 +414,7 @@ const editAllocatedSubjectOfTheTeacher = asyncHandler(async (req, res) => {
     min_lectures,
     branch,
     year,
+    type,
   } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(teacherId)) {
@@ -422,6 +431,7 @@ const editAllocatedSubjectOfTheTeacher = asyncHandler(async (req, res) => {
     !subject_credit ||
     !branch ||
     !year ||
+    !type ||
     !min_lectures ||
     !teacherId
   ) {
@@ -437,6 +447,7 @@ const editAllocatedSubjectOfTheTeacher = asyncHandler(async (req, res) => {
         subject_credit,
         branch,
         year,
+        type,
         min_lectures,
         teacher: teacherId,
         feedbackReleased: false,
@@ -635,7 +646,7 @@ const getAllTheSubjects = asyncHandler(async (req, res) => {
 });
 
 const allottSubjectsToStudents = asyncHandler(async (req, res) => {
-  const { subject_name, subject_code, subject_credit, teacherId, studentId } =
+  const { subject_name, subject_code, subject_credit, subject_type, teacherId, studentId } =
     req.body;
 
   // Validate inputs
@@ -643,6 +654,7 @@ const allottSubjectsToStudents = asyncHandler(async (req, res) => {
     !subject_name ||
     !subject_code ||
     !subject_credit ||
+    !subject_type ||
     !teacherId ||
     !studentId
   ) {
@@ -681,6 +693,7 @@ const allottSubjectsToStudents = asyncHandler(async (req, res) => {
     subject_name,
     subject_code,
     subject_credit,
+    subject_type,
     teacher: teacherId,
     student: studentId,
   });
@@ -704,7 +717,7 @@ const viewAllSubjectsAllottedToTheStudent = asyncHandler(async (req, res) => {
   }
 
   const studySubjects = await StudySubject.find({ student: studentId })
-    .select("subject_name subject_code subject_credit teacher")
+    .select("subject_name subject_code subject_credit subject_type teacher")
     .populate("teacher", "name department")
     .lean();
 
@@ -725,7 +738,7 @@ const viewAllSubjectsAllottedToTheStudent = asyncHandler(async (req, res) => {
 
 const editAllottedSubjectOfTheStudent = asyncHandler(async (req, res) => {
   const { studentId, subjectId } = req.params;
-  const { subject_name, subject_code, subject_credit, teacherId } = req.body;
+  const { subject_name, subject_code, subject_credit, subject_type, teacherId } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(studentId)) {
     throw new ApiError(400, "Invalid student ID format.");
@@ -746,6 +759,7 @@ const editAllottedSubjectOfTheStudent = asyncHandler(async (req, res) => {
         subject_name,
         subject_code,
         subject_credit,
+        subject_type,
         teacher: teacherId,
       },
     },
@@ -816,31 +830,79 @@ const releaseAllFeedbackForms = asyncHandler(async (req, res) => {
     );
 });
 
+// const releaseFeedbackForSubjects = asyncHandler(async (req, res) => {
+//   const { teacherId } = req.params; // Teacher ID from URL parameters
+//   const { subjectIds, activeUntilDate } = req.body; // Array of subject IDs and expiration date
+
+//   // Validate teacherId
+//   if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+//     throw new ApiError(400, "Invalid teacher ID format.");
+//   }
+
+//   // Validate subjectIds
+//   if (!Array.isArray(subjectIds) || subjectIds.length === 0) {
+//     throw new ApiError(400, "Provide an array of valid subject IDs.");
+//   }
+
+//   const invalidSubjectIds = subjectIds.filter(
+//     (id) => !mongoose.Types.ObjectId.isValid(id)
+//   );
+//   if (invalidSubjectIds.length > 0) {
+//     throw new ApiError(
+//       400,
+//       `Invalid subject IDs: ${invalidSubjectIds.join(", ")}`
+//     );
+//   }
+
+//   // Validate activeUntilDate
+//   if (!activeUntilDate) {
+//     throw new ApiError(400, "activeUntilDate is required.");
+//   }
+
+//   const activeUntil = new Date(activeUntilDate);
+//   if (isNaN(activeUntil.getTime()) || activeUntil <= new Date()) {
+//     throw new ApiError(400, "Invalid or past activeUntilDate.");
+//   }
+
+//   // Set the time to midnight (11:59:59 PM)
+//   activeUntil.setHours(23, 59, 59, 999);
+
+//   // Update feedbackReleased and activeUntil for selected subjects
+//   const updatedSubjects = await AllocatedSubject.updateMany(
+//     {
+//       _id: { $in: subjectIds },
+//       teacher: teacherId, // Ensure the subjects belong to the specified teacher
+//     },
+//     { feedbackReleased: true, activeUntil },
+//     { new: true }
+//   );
+
+//   // Check if any subjects were updated
+//   if (updatedSubjects.matchedCount === 0) {
+//     throw new ApiError(
+//       404,
+//       "No matching subjects found for the specified teacher."
+//     );
+//   }
+
+//   return res
+//     .status(200)
+//     .json(
+//       new ApiResponse(
+//         200,
+//         { updatedSubjects: updatedSubjects.modifiedCount },
+//         "Feedback forms released successfully for the selected subjects."
+//       )
+//     );
+// });
+
 const releaseFeedbackForSubjects = asyncHandler(async (req, res) => {
-  const { teacherId } = req.params; // Teacher ID from URL parameters
-  const { subjectIds, activeUntilDate } = req.body; // Array of subject IDs and expiration date
+  const { teachersData, activeUntilDate } = req.body;
 
-  // Validate teacherId
-  if (!mongoose.Types.ObjectId.isValid(teacherId)) {
-    throw new ApiError(400, "Invalid teacher ID format.");
+  if (!Array.isArray(teachersData) || teachersData.length === 0) {
+    throw new ApiError(400, "Provide an array of valid teacher-subject data.");
   }
 
-  // Validate subjectIds
-  if (!Array.isArray(subjectIds) || subjectIds.length === 0) {
-    throw new ApiError(400, "Provide an array of valid subject IDs.");
-  }
-
-  const invalidSubjectIds = subjectIds.filter(
-    (id) => !mongoose.Types.ObjectId.isValid(id)
-  );
-  if (invalidSubjectIds.length > 0) {
-    throw new ApiError(
-      400,
-      `Invalid subject IDs: ${invalidSubjectIds.join(", ")}`
-    );
-  }
-
-  // Validate activeUntilDate
   if (!activeUntilDate) {
     throw new ApiError(400, "activeUntilDate is required.");
   }
@@ -853,21 +915,60 @@ const releaseFeedbackForSubjects = asyncHandler(async (req, res) => {
   // Set the time to midnight (11:59:59 PM)
   activeUntil.setHours(23, 59, 59, 999);
 
-  // Update feedbackReleased and activeUntil for selected subjects
-  const updatedSubjects = await AllocatedSubject.updateMany(
-    {
-      _id: { $in: subjectIds },
-      teacher: teacherId, // Ensure the subjects belong to the specified teacher
-    },
-    { feedbackReleased: true, activeUntil },
-    { new: true }
-  );
+  const updatedSubjects = [];
+
+  // Iterate over each teacher's data
+  for (const teacherData of teachersData) {
+    const { teacherId, subjectId } = teacherData;
+
+    // Validate teacherId
+    if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+      throw new ApiError(400, `Invalid teacher ID format: ${teacherId}`);
+    }
+
+    // Validate subjectId
+    if (!mongoose.Types.ObjectId.isValid(subjectId)) {
+      throw new ApiError(
+        400,
+        `Invalid subject ID for teacher ${teacherId}: ${subjectId}`
+      );
+    }
+
+    const existingSubject = await AllocatedSubject.findOne({
+      _id: subjectId,
+      teacher: teacherId,
+    });
+
+    if (existingSubject && existingSubject.feedbackReleased) {
+      throw new ApiError(
+        400,
+        `Feedback has already been released for subject ${subjectId} for teacher ${teacherId}.`
+      );
+    }
+
+    const result = await AllocatedSubject.findOneAndUpdate(
+      {
+        _id: subjectId,
+        teacher: teacherId,
+      },
+      { feedbackReleased: true, activeUntil },
+      { new: true }
+    );
+
+    updatedSubjects.push({
+      teacherId,
+      result,
+    });
+  }
 
   // Check if any subjects were updated
-  if (updatedSubjects.matchedCount === 0) {
+  if (
+    updatedSubjects.length === 0 ||
+    updatedSubjects.every((teacher) => teacher.result.modifiedCount === 0)
+  ) {
     throw new ApiError(
       404,
-      "No matching subjects found for the specified teacher."
+      "No matching subjects found for the specified teachers."
     );
   }
 
@@ -876,7 +977,7 @@ const releaseFeedbackForSubjects = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        { updatedSubjects: updatedSubjects.modifiedCount },
+        updatedSubjects,
         "Feedback forms released successfully for the selected subjects."
       )
     );

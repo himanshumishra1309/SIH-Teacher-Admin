@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { Graph } from './graphs.models.js';
-import { domainPoints } from '../utils/domainPoints.js';
+import { DomainPoint } from './domainpoints.models.js';
 
 const projectSchema = new Schema(
 {
@@ -31,6 +31,12 @@ const projectSchema = new Schema(
         type: Date,
         required: true
     },
+    projectType: {
+        type: String,
+        required: true,
+        trim: true,
+        enum: ['Major', 'Minor']
+    },
     report: {
         type: String, //cloudinary url
         required: true,
@@ -42,20 +48,27 @@ const projectSchema = new Schema(
 },
 { timestamps: true });
 
+const getPointsForDomain = async (key) => {
+    const domainPoint = await DomainPoint.findOne({ domain: key });
+    return domainPoint?.points || 0; // Default to 0 if no points are defined
+};
+
 // Post-save hook to add points
 projectSchema.post('save', async function(doc) {
+    const points = await getPointsForDomain(doc.projectType);
     await Graph.findOneAndUpdate(
         { owner: doc.owner, date: doc.startDate },
-        { $inc: { points: domainPoints.Project } },
+        { $inc: { points: points } },
         { upsert: true }
     );
 });
 
 // Post-remove hook to deduct points
 projectSchema.post('findOneAndDelete', async function(doc){
+    const points = await getPointsForDomain(doc.projectType);
     await Graph.findOneAndUpdate(
         { owner: doc.owner, date: doc.date },
-        { $inc: { points: -domainPoints.Lecture } },
+        { $inc: { points: -points } },
         { new: true }
     )
 })

@@ -39,7 +39,7 @@ const FacultyLayout = () => {
           "http://localhost:6005/api/v1/teachers/me",
           { headers }
         );
-        console.log("Faculty data fetched:", response.data);
+        // console.log("Faculty data fetched:", response.data);
 
         const data = response.data.data;
         setFacultyData({

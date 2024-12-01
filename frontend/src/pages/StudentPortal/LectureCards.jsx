@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -40,32 +40,44 @@ import { Header } from "@/components";
 import BasicForm from "@/Forms/Student/BasicForm";
 import { Dialog } from "@/components/ui/dialog";
 import EnhancedLectureFeedback from "../AdminPortal/AdminList/LectureFeedback";
+import axios from "axios";
 
 export default function LectureCards() {
   const [facultyData, setFacultyData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBranch, setSelectedBranch] = useState("All");
 
-  // Fetch faculty data from the backend
-  //   useEffect(() => {
-  //     const fetchData = async () => {
-  //       try {
-  //         const response = await axios.get('/api/faculty'); // Adjust this endpoint as needed
-  //         setFacultyData(response.data); // Save the fetched data into state
-  //       } catch (error) {
-  //         console.error('Error fetching faculty data:', error);
-  //       }
-  //     };
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = sessionStorage.getItem("studentAccessToken");
+      try {
+        const response = await axios.get(
+          "http://localhost:6005/api/v1/students/feedBackForms",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log(response.data.data);
+        setFacultyData(response.data.data);
+      } catch (error) {
+        console.error("Error fetching faculty data:", error);
+      }
+    };
 
-  //     fetchData();
-  //   }, []);
+    fetchData();
+  }, []);
 
-  //   // Filter the cards based on search and selected branch
-  //   const filteredFaculty = facultyData.filter((faculty) => {
-  //     const matchesSearchTerm = faculty.name.toLowerCase().includes(searchTerm.toLowerCase()) || faculty.employeeCode.toLowerCase().includes(searchTerm.toLowerCase());
-  //     const matchesBranch = selectedBranch === "All" || faculty.department === selectedBranch;
-  //     return matchesSearchTerm && matchesBranch;
-  //   });
+  // Filter the cards based on search and selected branch
+  // const filteredFaculty = facultyData.filter((faculty) => {
+  //   const matchesSearchTerm =
+  //     faculty.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     faculty.employeeCode.toLowerCase().includes(searchTerm.toLowerCase());
+  //   const matchesBranch =
+  //     selectedBranch === "All" || faculty.department === selectedBranch;
+  //   return matchesSearchTerm && matchesBranch;
+  // });
 
   return (
     <>
@@ -100,7 +112,7 @@ export default function LectureCards() {
 
       <div className="container mx-auto px-4 py-10">
         {/* Set ScrollArea with limited height for the cards */}
-        <h1 className="text-center font-serif font-semibold">Lecture</h1>
+        <h1 className="text-center font-serif font-semibold">Fill Subject FeedBack</h1>
         {/* Search and Filter Section */}
         <div className="flex justify-between items-center mb-6">
           {/* Search Bar */}
@@ -120,22 +132,6 @@ export default function LectureCards() {
               <SelectItem value="descending">Descending</SelectItem>
             </SelectContent>
           </Select>
-          {/* Dropdown for Department Filter */}
-          <Select
-            onValueChange={(value) => setSelectedBranch(value)}
-            defaultValue={selectedBranch}
-          >
-            <SelectTrigger className="p-2 border border-gray-300 rounded-lg max-w-40">
-              <SelectValue placeholder="Select a branch" />
-            </SelectTrigger>
-            <SelectContent className="max-h-40 overflow-y-auto">
-              {branches.map((branch) => (
-                <SelectItem key={branch.value} value={branch.value}>
-                  {branch.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
 
           {/* Dropdown for Department Filter
                 <select
@@ -152,88 +148,62 @@ export default function LectureCards() {
         </div>
 
         <ScrollArea className="h-[600px]">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Card 1 */}
-            <Card className="w-full bg-white rounded-lg shadow-lg border border-gray-200 hover:shadow-xl transition-shadow">
-              <CardHeader className="flex items-center space-x-4">
-                <Avatar className="w-24 h-24 border-2 border-blue-500 shadow-lg">
-                  <AvatarImage
-                    src={"/default-avatar.png"}
-                    alt={"Default Avatar"}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4 md:px-8 lg:px-16">
+            {facultyData.map((faculty) => (
+              <Card className="w-full bg-white rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-shadow duration-300">
+                <CardHeader className="flex items-center space-x-6 p-6 bg-blue-50 rounded-t-lg">
+                  <Avatar className="w-20 h-20 border-2 border-blue-500 shadow-md">
+                    <AvatarImage
+                      src="/default-avatar.png"
+                      alt="Default Avatar"
+                    />
+                    <AvatarFallback className="text-blue-500">?</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <CardTitle className="text-xl font-semibold text-gray-800">
+                      {faculty.teacher.name}
+                    </CardTitle>
+                    <CardDescription className="text-sm text-blue-600">
+                      {faculty.subject_name}
+                    </CardDescription>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-6 space-y-3">
+                  <p className="text-sm text-gray-600">
+                    <span className="font-semibold text-gray-800">
+                      Department:
+                    </span>{" "}
+                    {faculty.branch}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <span className="font-semibold text-gray-800">
+                      Subject Code:
+                    </span>{" "}
+                    {faculty.subject_code}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <span className="font-semibold text-gray-800">
+                      Subject Credit:
+                    </span>{" "}
+                    {faculty.subject_credit}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    <span className="font-semibold text-gray-800">
+                      Attendance:
+                    </span>{" "}
+                    {faculty.attendancePercentage}%
+                  </p>
+                </CardContent>
+                <CardFooter className="p-4 bg-gray-50 rounded-b-lg flex justify-end">
+                  <EnhancedLectureFeedback
+                    teacherId={faculty.teacher._id}
+                    subject_name={faculty.subject_name}
+                    subject_code={faculty.subject_code}
+                    subject_credit={faculty.subject_credit}
                   />
-                  <AvatarFallback>?</AvatarFallback>
-                </Avatar>
-                <div>
-                  <CardTitle className="text-lg font-semibold">
-                    Dr. Vikul J. Pawar
-                  </CardTitle>
-                  <CardDescription className="text-sm text-gray-500">
-                    Data Structures
-                  </CardDescription>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <h2 className="text-base">Department: Computer Science</h2>
-                <h2 className="text-base">Subject Code: CSE1234F56</h2>
-              </CardContent>
-              <CardFooter className="flex justify-end">
-                <EnhancedLectureFeedback />
-              </CardFooter>
-            </Card>
-
-            <Card className="w-full bg-white rounded-lg shadow-lg border border-gray-200 hover:shadow-xl transition-shadow">
-              <CardHeader className="flex items-center space-x-4">
-                <Avatar className="w-24 h-24 border-2 border-blue-500 shadow-lg">
-                  <AvatarImage
-                    src={"/default-avatar.png"}
-                    alt={"Default Avatar"}
-                  />
-                  <AvatarFallback>?</AvatarFallback>
-                </Avatar>
-                <div>
-                  <CardTitle className="text-lg font-semibold">
-                    Dr. Vikul J. Pawar
-                  </CardTitle>
-                  <CardDescription className="text-sm text-gray-500">
-                    Data Structures
-                  </CardDescription>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <h2 className="text-base">Department: Computer Science</h2>
-                <h2 className="text-base">Subject Code: CSE1234F56</h2>
-              </CardContent>
-              <CardFooter className="flex justify-end">
-                <EnhancedLectureFeedback />
-              </CardFooter>
-            </Card>
-
-            <Card className="w-full bg-white rounded-lg shadow-lg border border-gray-200 hover:shadow-xl transition-shadow">
-              <CardHeader className="flex items-center space-x-4">
-                <Avatar className="w-24 h-24 border-2 border-blue-500 shadow-lg">
-                  <AvatarImage
-                    src={"/default-avatar.png"}
-                    alt={"Default Avatar"}
-                  />
-                  <AvatarFallback>?</AvatarFallback>
-                </Avatar>
-                <div>
-                  <CardTitle className="text-lg font-semibold">
-                    Dr. Vikul J. Pawar
-                  </CardTitle>
-                  <CardDescription className="text-sm text-gray-500">
-                    Data Structures
-                  </CardDescription>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <h2 className="text-base">Department: Computer Science</h2>
-                <h2 className="text-base">Subject Code: CSE1234F56</h2>
-              </CardContent>
-              <CardFooter className="flex justify-end">
-                <EnhancedLectureFeedback />
-              </CardFooter>
-            </Card>
+                </CardFooter>
+              </Card>
+            ))}
           </div>
         </ScrollArea>
       </div>

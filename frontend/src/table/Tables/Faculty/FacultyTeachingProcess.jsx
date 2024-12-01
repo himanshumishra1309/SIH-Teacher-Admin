@@ -63,31 +63,31 @@ export default function FacultyTeachingProcessTable() {
 
   // dtaa of the reaserch paper of the teacher aditi sharma
 
-  useEffect(() => {
-    const fetchTeacherInfo = async () => {
-      try {
-        const token = sessionStorage.getItem("teacherAccessToken");
+  // useEffect(() => {
+  //   const fetchTeacherInfo = async () => {
+  //     try {
+  //       const token = sessionStorage.getItem("teacherAccessToken");
 
-        const response = await axios.get(
-          // `http://localhost:6005/api/v1/seminars/seminars/conducted`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        console.log("Tecahing Process Data", response.data.data);
-        setData(response.data.data);
-      } catch (error) {
-        console.log("An error occurred while fetching teacher info.");
-      }
-      finally {
-        setIsLoading(false);
-      }
-    };
+  //       const response = await axios.get(
+  //         // `http://localhost:6005/api/v1/seminars/seminars/conducted`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //       console.log("Tecahing Process Data", response.data.data);
+  //       setData(response.data.data);
+  //     } catch (error) {
+  //       console.log("An error occurred while fetching teacher info.");
+  //     }
+  //     finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
 
-    fetchTeacherInfo();
-  }, []);
+  //   fetchTeacherInfo();
+  // }, []);
 
   const columns = useMemo(() => {
     return columnDef.map((col) => {
@@ -184,9 +184,9 @@ export default function FacultyTeachingProcessTable() {
   };
 
 
-  if (isLoading) {
-    return <LoadingPage/>;
-  }
+  // if (isLoading) {
+  //   return <LoadingPage/>;
+  // }
 
 
   return (

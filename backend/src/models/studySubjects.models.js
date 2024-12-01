@@ -15,6 +15,11 @@ const studySubjectSchema = new Schema(
         type: Number,
         required: true,
     },
+    subject_type: {
+        type: String,
+        enum: ['Theory', 'Practical'],
+        required: true,
+    },
     teacher:{
         type: Schema.Types.ObjectId,
         ref: "Teacher",
