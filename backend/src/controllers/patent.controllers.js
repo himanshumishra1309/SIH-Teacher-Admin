@@ -4,18 +4,18 @@ import { ApiError } from "../utils/ApiErrors.js";
 import { Patent } from "../models/patent.models.js";
 
 const addPatent = asyncHandler(async (req, res) => {
-  const { title, inventors, publicationDate, patentOffice, patentNumber, applicationNumber } = req.body;
+  const { title, inventors, patentOffice,  publicationDate, publicationType, patentNumber, applicationNumber } = req.body;
   const owner = req.teacher._id;
 
-  if (!title || !inventors || !publicationDate || !patentOffice || !patentNumber || !applicationNumber) {
+  if (!title || !inventors || !publicationType || !patentOffice || !patentNumber || !applicationNumber) {
     throw new ApiError(400, "Please provide all mandatory fields");
   }
-
   const patentEntry = await Patent.create({
     title,
     inventors,
     publicationDate,
     patentOffice,
+    patentType : publicationType,
     patentNumber,
     applicationNumber,
     owner,

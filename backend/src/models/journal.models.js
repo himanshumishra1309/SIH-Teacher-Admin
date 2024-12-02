@@ -22,7 +22,7 @@ const journalSchema = new Schema(
         },
         volume: {
             type: Number,
-            required: true,
+            required: true, 
         },
         issue: {
             type: Number,

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown, ExternalLink } from "lucide-react";
 
-export const columnDef = [
+export const conferenceColumnDef = [
   {
     accessorKey: "title",
     header: "Title",
@@ -13,7 +13,12 @@ export const columnDef = [
     enableSorting: true,
   },
   {
-    accessorKey: "publication_date",
+    accessorKey: "conferenceType",
+    header: "Conference Type",
+    enableSorting: true,
+  },
+  {
+    accessorKey: "publicationDate",
     header: ({ column }) => {
       return (
         <Button
@@ -26,7 +31,7 @@ export const columnDef = [
       );
     },
     cell: ({ row }) => {
-      const dateValue = row.getValue("date");
+      const dateValue = row.getValue("publicationDate");
       if (dateValue) {
         const date = new Date(dateValue);
         return date.toLocaleDateString();
@@ -41,7 +46,7 @@ export const columnDef = [
     enableSorting: true,
   },
   {
-    accessorKey: "Volume",
+    accessorKey: "volume",
     header: "Volume",
     enableSorting: true,
   },
@@ -55,19 +60,19 @@ export const columnDef = [
     header: "Pages",
     enableSorting: true,
   },
-  {
-    accessorKey: "report",
-    header: "View Report",
-    cell: ({ row }) => (
-      <Button
-        onClick={() => window.open(row.getValue("report"), "_blank")}
-        className="view-btn"
-      >
-        View <ExternalLink className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    enableSorting: false,
-  },
+  // {
+  //   accessorKey: "report",
+  //   header: "View Report",
+  //   cell: ({ row }) => (
+  //     <Button
+  //       onClick={() => window.open(row.getValue("report"), "_blank")}
+  //       className="view-btn"
+  //     >
+  //       View <ExternalLink className="ml-2 h-4 w-4" />
+  //     </Button>
+  //   ),
+  //   enableSorting: false,
+  // },
   {
     accessorKey: "actions",
     header: "Actions",

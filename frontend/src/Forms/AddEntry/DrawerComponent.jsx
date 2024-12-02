@@ -22,6 +22,7 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
             "Date",
             "startDate",
             "publishedDate",
+            "publicationDate",
             "addedOn",
             "date",
             "endDate",
@@ -62,6 +63,7 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
             "Date",
             "startDate",
             "publishedDate",
+            "publicationDate",
             "addedOn",
             "date",
             "endDate",
@@ -92,7 +94,7 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
     });
 
     try {
-      onSubmit(formData); 
+      onSubmit(formData);
       onClose();
     } catch (error) {
       console.error("Error submitting the form:", error);
@@ -124,6 +126,7 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
                     {col.accessorKey === "Date" ||
                     col.accessorKey === "startDate" ||
                     col.accessorKey === "publishedDate" ||
+                    col.accessorKey === "publicationDate" ||
                     col.accessorKey === "addedOn" ||
                     col.accessorKey === "endDate" ||
                     col.accessorKey === "date" ? (
