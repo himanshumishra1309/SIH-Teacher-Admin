@@ -4,10 +4,19 @@ import { ApiError } from "../utils/ApiErrors.js";
 import { Book } from "../models/books.models.js";
 
 const addBook = asyncHandler(async (req, res) => {
-  const { title, authors, publicationDate, volume, pages, segregation } = req.body;
+  const { title, authors, publicationDate, volume, pages, segregation } =
+    req.body;
+
   const owner = req.teacher._id;
 
-  if (!title || !authors || !publicationDate || !volume || !pages || !segregation) {
+  if (
+    !title ||
+    !authors ||
+    !publicationDate ||
+    !volume ||
+    !pages ||
+    !segregation
+  ) {
     throw new ApiError(400, "Please provide all mandatory fields");
   }
 
@@ -28,21 +37,25 @@ const addBook = asyncHandler(async (req, res) => {
 
 const updateBook = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { title, authors, publicationDate, volume, pages, segregation } = req.body;
+  const { title, authors, publicationDate, volume, pages, segregation } =
+    req.body;
 
-  const updatedBook = await Book.findByIdAndUpdate(id, 
+  const updatedBook = await Book.findByIdAndUpdate(
+    id,
     {
-      $set:{ 
-        title, 
+      $set: {
+        title,
         authors,
-        publicationDate, 
-        volume, 
-        pages, 
-        segregation 
-      }
-    }, {
-    new: true,
-  });
+        publicationDate,
+        volume,
+        pages,
+        segregation,
+      },
+    },
+    {
+      new: true,
+    }
+  );
 
   if (!updatedBook) {
     throw new ApiError(404, "Book not found");

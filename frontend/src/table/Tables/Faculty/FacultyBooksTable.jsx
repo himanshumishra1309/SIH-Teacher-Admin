@@ -20,9 +20,7 @@ import DeleteDialog from "../../DeleteDialog.jsx";
 import LoadingPage from "@/pages/LoadingPage.jsx";
 import axios from "axios";
 
-export default function FacultyEventTable() {
-
-
+export default function FacultyBookTable() {
   const { id } = useParams();
   // console.log(id);
   const [data, setData] = useState("");
@@ -161,7 +159,7 @@ export default function FacultyEventTable() {
   if (isLoading) {
     return <LoadingPage/>;
   }
-
+  
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between mb-4">
@@ -205,6 +203,9 @@ export default function FacultyEventTable() {
           Reset Filters
         </Button>
       </div>
+
+
+
 
       <div className="table-container">
         <table className="w-full">
@@ -268,7 +269,7 @@ export default function FacultyEventTable() {
               // Add (POST Request)
               console.log("posting the data", formData);
               const response = await axios.post(
-                `http://localhost:6005/api/v1/event/events`,
+                `http://localhost:6005/api/v1/books/book/add`,
                 formData,
                 {
                   headers: {
@@ -277,8 +278,8 @@ export default function FacultyEventTable() {
                   },
                 }
               );
-              console.log(response.data.data);
-              handleAddEntry(response.data.data);
+              console.log(response.data);
+              // handleAddEntry(response.data.data);
             }
           } catch (error) {
             console.error("Failed to submit Event data:", error);

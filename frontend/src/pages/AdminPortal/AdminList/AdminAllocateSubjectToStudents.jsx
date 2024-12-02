@@ -98,21 +98,24 @@ const AdminAllocateSubjectToStudent = () => {
 
     setLoading(true);
     try {
-      // console.log(selectedStudents);
-      const payload = selectedStudents.map((studentId) => ({
+      console.log(selectedStudents);
+      const token = sessionStorage.getItem("adminAccessToken");
+      const payload = {
         subject_name: selectedSubject.subject_name,
         subject_code: selectedSubject.subject_code,
         subject_credit: selectedSubject.subject_credit,
         subject_type: selectedSubject.type,
         teacherId: selectedSubject.teacher,
-        studentId,
-      }));
+        selectedStudents,
+      };
       console.log(payload);
 
       const response = await axios.post(
-        `http://localhost:6005/api/v1/admins/allot-subject`,
-        payload
+        `http://localhost:6005/api/v1/admins/subjects/student-allocate`,
+        payload,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
+      console.log(response)
 
       toast.success(
         response.data.message || "Subjects allocated successfully!"
