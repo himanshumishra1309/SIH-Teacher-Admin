@@ -2,49 +2,48 @@ import mongoose, { Schema } from 'mongoose';
 import { Point } from './points.models.js';
 import { DomainPoint } from './domainpoints.models.js';
 
-const bookSchema = new Schema(
+const seminarAttendedSchema = new Schema(
 {
-    title: {
+    topic: {
         type: String,
-        required: true,
+        required:true,
+        trim: true
     },
-    authors: {
+    seminarType: {
+        type: String,
+        required:true,
+        enum:['International', 'National', 'State']
+    },
+    images: {
         type: [String],
-        required: true, 
+        required: true
     },
-    publicationDate: {
+    date: {
         type: Date,
-        required: true, 
+        required: true
     },
-    volume: {
-        type: Number,
-        required: true,
-    },
-    pages: {
+    venue: {
         type: String,
-        required: true,
+        required: true
     },
-    segregation: {
+    report: {
         type: String,
-        enum: ['International', 'National', 'Regional'], // Segregation into levels
-        required: true, // Ensures the type of book is defined
+        required: true
     },
     owner: {
         type: Schema.Types.ObjectId,
-        ref: 'Teacher',
-        required: true, // Mandatory field to link to the owner
-    },
+        ref: "Teacher"
+    }
 },
 { timestamps: true });
 
-// Function to get points for a domain from the DomainPoint model
 const getPointsForDomain = async (domain) => {
     const domainPoint = await DomainPoint.findOne({ domain });
     return domainPoint?.points || 0; // Default to 0 if the domain is not found
 };
 
 // Function to allocate points in the `Point` model
-const allocatePoints = async (teacherId, domain, publicationDate) => {
+const allocatePoints = async (teacherId, domain, addedOn) => {
     const points = await getPointsForDomain(domain); // Fetch points for the domain
 
     // Search for an existing domain for the teacher
@@ -58,7 +57,7 @@ const allocatePoints = async (teacherId, domain, publicationDate) => {
     } else {
         // Create a new domain if it does not exist
         await Point.create({
-            date: publicationDate,
+            date: addedOn,
             points,
             domain,
             owner: teacherId,
@@ -67,15 +66,15 @@ const allocatePoints = async (teacherId, domain, publicationDate) => {
 };
 
 // Post-save hook to allocate points
-bookSchema.post('save', async function (doc) {
-    const domain = `${doc.segregation} Book`; // Generate the domain key (e.g., "International Journal")
+seminarAttendedSchema.post('save', async function (doc) {
+    const domain = `${doc.seminarType} Seminar Attended`; // Generate the domain key (e.g., "International Seminar Attended")
     await allocatePoints(doc.owner, domain, doc.publicationDate);
 });
 
 // Post-remove hook to deduct points
-bookSchema.post('findOneAndDelete', async function (doc) {
+seminarAttendedSchema.post('findOneAndDelete', async function (doc) {
     if (doc) {
-        const domain = `${doc.segregation} Book`; // Generate the domain key (e.g., "International Journal")
+        const domain = `${doc.seminarType} Seminar Attended`; // Generate the domain key (e.g., "International Seminar Attended")
         const points = await getPointsForDomain(domain); // Fetch points for the domain
 
         // Search for an existing domain for the teacher
@@ -95,4 +94,4 @@ bookSchema.post('findOneAndDelete', async function (doc) {
     }
 });
 
-export const Book = mongoose.model('Book', bookSchema);
+export const SeminarAttended = mongoose.model('SeminarAttended', seminarAttendedSchema);
