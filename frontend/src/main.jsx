@@ -55,6 +55,11 @@ import FontSizeHandler from './components/Ribbon/FontSizeHandler';
 import ResearchLayout from './Layouts/ResearchLayout';
 import ReleaseFeedbacks from './pages/AdminPortal/AdminList/AdminFeedbacks';
 import AdminLectureAllocationTable from './table/Tables/Admin/AdminLectureAllocationTable';
+import AppraisalReport from './pages/FacultyAppraisalReport';
+import FacultyRegister from './pages/SISU/FacultyRegister';
+import StudentRegister from './pages/SISU/StudentRegister';
+import AdminAllocateSubjectToStudent from './pages/AdminPortal/AdminList/AdminAllocateSubjectToStudents';
+import AddLecMarkAttendabce from './table/Tables/Faculty/AddLecMarkAttendabce';
 
 
 const router = createBrowserRouter(
@@ -82,8 +87,11 @@ const router = createBrowserRouter(
         {/* <Route path="lectures" element={<LecturesTable />} /> */}
         <Route path="event-participation" element={<RouteTransitionWrapper><FacultyEventTable /></RouteTransitionWrapper>} errorElement={<NotFoundPage />} />
         <Route path="posts" element={<RouteTransitionWrapper><PostsPage/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
+        <Route path="appraisal-report" element={<RouteTransitionWrapper><AppraisalReport/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
 
 
+
+        <Route path="teacheraddecture" element={<RouteTransitionWrapper><AddLecMarkAttendabce/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
 
       </Route>
 
@@ -103,6 +111,10 @@ const router = createBrowserRouter(
     <Route path="faculty-data" element={<AdminHome/>} errorElement={<NotFoundPage/>}/>
     <Route path="allocate-lectures" element={<AdminLectureAllocationPage/>} errorElement={<NotFoundPage/>}/>
     <Route path="release-feedbacks" element={<ReleaseFeedbacks/>} errorElement={<NotFoundPage/>}/>
+    <Route path="register-faulty" element={<FacultyRegister/>} errorElement={<NotFoundPage/>}/>
+    <Route path="register-student" element={<StudentRegister/>} errorElement={<NotFoundPage/>}/>
+    <Route path="allocate-sub-student" element={<AdminAllocateSubjectToStudent/>} errorElement={<NotFoundPage/>}/>
+
 
 
     </Route>

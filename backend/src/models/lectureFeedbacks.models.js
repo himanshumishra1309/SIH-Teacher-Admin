@@ -24,7 +24,7 @@ const lectureFeedbackSchema = new Schema(
         required: true,
     },
     year: {
-        type: Number,
+        type: String, // changed
         required: true,
     },
     question1_rating:{
@@ -80,23 +80,23 @@ const lectureFeedbackSchema = new Schema(
         type: Date, 
         required: true,
     },
-    releaseTime: {
-        type: Date, 
-        required: true,
-    },
-    activeUntil: {
-        type: Date, 
-        required: true,
-    }
+    // releaseTime: {
+    //     type: Date, 
+    //     required: true,
+    // },
+    // activeUntil: {
+    //     type: Date, 
+    //     required: true,
+    // }
 },
 { timestamps: true });
 
 // Middleware to set `activeUntil` automatically
-lectureFeedbackSchema.pre('save', function (next) {
-    if (this.isNew) {
-        this.activeUntil = new Date(this.releaseTime.getTime() + 2 * 24 * 60 * 60 * 1000); // Add 2 days to releaseTime
-    }
-    next();
-});
+// lectureFeedbackSchema.pre('save', function (next) {
+//     if (this.isNew) {
+//         this.activeUntil = new Date(this.releaseTime.getTime() + 2 * 24 * 60 * 60 * 1000); // Add 2 days to releaseTime
+//     }
+//     next();
+// });
 
 export const LectureFeedback = mongoose.model('LectureFeedback', lectureFeedbackSchema);

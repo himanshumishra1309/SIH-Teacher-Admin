@@ -5,15 +5,16 @@ import { Project } from "../models/projects.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
+import { uploadToGCS } from "../utils/googleCloud.js";
 
 // All the routes are done including update and delete also :)
 
 const uploadProject = asyncHandler(async (req, res) => {
-  const { topic, branch_name, daily_duration, startDate, endDate } = req.body;
+  const { topic, branch_name, daily_duration, projectType, startDate, endDate } = req.body;
   const file = req.file;
 
   if (
-    [topic, branch_name, daily_duration, startDate, endDate].some(
+    [topic, branch_name, daily_duration, projectType, startDate, endDate].some(
       (field) => field.trim === ""
     )
   ) {
@@ -24,20 +25,22 @@ const uploadProject = asyncHandler(async (req, res) => {
     throw new ApiError(200, "PDF report file is required");
   }
 
-  const uploadResponse = await uploadOnCloudinary(file.path);
+  // const uploadResponse = await uploadOnCloudinary(file.path);
+  const uploadResponse = await uploadToGCS(file.path, "pdf-report"); 
 
   if (!uploadResponse) {
-    throw new ApiError(500, "error in uploading file to cloudinary");
+    throw new ApiError(500, "error in uploading file to Google Cloud");
   }
 
   const project = await Project.create({
     topic,
     branch_name,
     daily_duration,
+    projectType,
     startDate,
     endDate,
     addedOn: Date.now(),
-    report: uploadResponse.secure_url, // Store Cloudinary URL
+    report: uploadResponse, // Store Cloud URL
     owner: req.teacher._id, // Assuming authenticated user's ID
   });
 

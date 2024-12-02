@@ -4,6 +4,7 @@ import { ApiError } from "../utils/ApiErrors.js";
 import { EventParticipation } from "../models/events-participated.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { v2 as cloudinary } from "cloudinary";
+import { uploadToGCS } from "../utils/googleCloud.js";
 
 // All routes checked, including delete and update
 
@@ -18,9 +19,10 @@ const uploadParticipatedEvent = asyncHandler(async (req, res) => {
 
   console.log("Report path:", report.path);
 
-  const uploadedReport = await uploadOnCloudinary(report.path);
+  // const uploadedReport = await uploadOnCloudinary(report.path);
+  const uploadResponse = await uploadToGCS(report.path, "pdf-report");
 
-  if (!uploadedReport) {
+  if (!uploadResponse) {
     throw new ApiError(500, "Error in uploading report to Cloudinary");
   }
 
@@ -28,7 +30,7 @@ const uploadParticipatedEvent = asyncHandler(async (req, res) => {
     role,
     event,
     date,
-    report: uploadedReport.secure_url,
+    report: uploadResponse,
     owner,
   });
 

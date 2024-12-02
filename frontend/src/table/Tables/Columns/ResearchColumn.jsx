@@ -1,110 +1,43 @@
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, ExternalLink } from "lucide-react";
+import { ArrowUpDown, ExternalLink } from 'lucide-react';
 
 export const columnDef = [
   {
+    accessorKey: "id",
+    header: "ID",
+  },
+  {
     accessorKey: "name",
-    header: "Title of Research/Publication",
-    enableSorting: true,
+    header: "Name",
   },
   {
-    accessorKey: "publicationType",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Publication Type
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-  },
-
-  {
-    accessorKey: "publication",
-    header: "Publication Type",
-    enableSorting: true,
-  },
-  {
-    accessorKey: "journal",
-    header: "Journal/Publisher",
-    enableSorting: true,
-  },
-
-  {
-    accessorKey: "publishedDate",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          publishedDate
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      const dateValue = row.getValue("publishedDate");
-      if (dateValue) {
-        const date = new Date(dateValue);
-        return date.toLocaleDateString();
-      }
-      return "N/A";
-    },
-    enableSorting: true,
-  },
-  {
-    accessorKey: "impactFactor",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Impact Factor
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-  },
-  {
-    accessorKey: "authors",
-    header: "Authors",
-    enableSorting: true,
-  },
-  {
-    accessorKey: "score",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Score
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-  },
-  {
-    accessorKey: "viewUrl",
-    header: "View Report",
-    cell: ({ row }) => (
-      <Button
-        onClick={() => window.open(row.getValue("viewUrl"), "_blank")}
-        className="view-btn text-white"
-      >
-        View <ExternalLink className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    enableSorting: false,
+    accessorKey: "email",
+    header: "Email",
   },
   {
     accessorKey: "actions",
     header: "Actions",
+    cell: ({ row }) => (
+      <div className="flex gap-2">
+        <Button
+          onClick={() => {
+            // Edit logic will be handled in the parent component
+          }}
+          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
+        >
+          Edit
+        </Button>
+        <Button
+          onClick={() => {
+            // Delete logic will be handled in the parent component
+          }}
+          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+        >
+          Delete
+        </Button>
+      </div>
+    ),
     enableSorting: false,
   },
 ];
+

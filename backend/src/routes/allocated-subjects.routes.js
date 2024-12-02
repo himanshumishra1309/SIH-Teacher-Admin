@@ -8,7 +8,7 @@ const router = express.Router();
 router.post('/subjects', verifyTeacherJWT, addSubject); // done
 
 // Route to show all subjects
-router.get('/subjects', verifyTeacherJWT, showAllSubjects); // done
+router.get('/subjects/:teacherId', verifyTeacherJWT, showAllSubjects); // done
 
 // Route to edit a subject
 router.patch('/subjects/:id', verifyTeacherJWT, editSubject);

@@ -49,7 +49,7 @@ export default function FacultyLecturesTable() {
             },
           }
         );
-        console.log(response.data.data.expertLectures);
+        // console.log(response.data.data.expertLectures);
         // const formattedData = response.data.data.map((item) => ({
         //   ...item,
         //   publishedDate: item.publishedDate.split("T")[0],
@@ -134,7 +134,7 @@ export default function FacultyLecturesTable() {
   };
 
   const handleDeleteRow = async () => {
-    console.log(rowToDelete);
+    // console.log(rowToDelete);
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
 
@@ -247,14 +247,14 @@ export default function FacultyLecturesTable() {
           setRowToEdit(null);
         }}
         onSubmit={async (formData) => {
-          console.log(formData);
+          // console.log(formData);
           const token = sessionStorage.getItem("teacherAccessToken");
 
           try {
             if (rowToEdit) {
               // console.log(rowToEdit);
               // Edit (PUT Request)
-              console.log("editing  the data", formData);
+              // console.log("editing  the data", formData);
 
               const response = await axios.patch(
                 `http://localhost:6005/api/v1/expertLectures/lectures/${rowToEdit._id}`,
@@ -265,11 +265,11 @@ export default function FacultyLecturesTable() {
                   },
                 }
               );
-              console.log(response.data);
+              // console.log(response.data);
               handleEditEntry(response.data.data); // Update table data
             } else {
               // Add (POST Request)
-              console.log("posting the data", formData);
+              // console.log("posting the data", formData);
               const response = await axios.post(
                 `http://localhost:6005/api/v1/expertLectures/lectures`,
                 formData,
@@ -279,7 +279,7 @@ export default function FacultyLecturesTable() {
                   },
                 }
               );
-              console.log(response.data);
+              // console.log(response.data);
               handleAddEntry(response.data.data);
             }
           } catch (error) {

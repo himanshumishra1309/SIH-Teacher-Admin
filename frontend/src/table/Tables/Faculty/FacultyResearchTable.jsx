@@ -1,336 +1,531 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import {
   useReactTable,
   getCoreRowModel,
   getPaginationRowModel,
   getFilteredRowModel,
   getSortedRowModel,
+  getExpandedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { columnDef } from "../Columns/ResearchColumn.jsx";
-import "../../table.css";
-import DownloadBtn from "../../DownloadBtn.jsx";
-import DebouncedInput from "../../DebouncedInput.jsx";
-import { SearchIcon, Filter } from 'lucide-react';
-import { Button } from "@/components/ui/button.jsx";
-import { Checkbox } from "@/components/ui/checkbox.jsx";
-import LoadingPage from "@/pages/LoadingPage.jsx";
+import { ChevronDown, ChevronRight, ChevronLeft, Search, Plus, Edit, Trash2, Download, Upload } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import DrawerComponent from "../../../Forms/AddEntry/DrawerComponent.jsx";
 import DeleteDialog from "../../DeleteDialog.jsx";
 import axios from "axios";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bar } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { CSVLink } from "react-csv";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+function ExpandedRowContent({ data }) {
+  const fieldLabels = {
+    TY: 'Type',
+    T1: 'Title',
+    A1: 'Authors',
+    Y1: 'Year',
+    PB: 'Publisher',
+    JO: 'Journal',
+    VL: 'Volume',
+    IS: 'Issue',
+    SP: 'Start Page',
+    EP: 'End Page',
+    SN: 'ISBN/ISSN',
+    T2: 'Secondary Title',
+    UR: 'URL'
+  };
+
+  const formatValue = (key, value) => {
+    if (Array.isArray(value)) {
+      return value.join(', ');
+    }
+    return value;
+  };
+
+  return (
+    <div className="grid grid-cols-2 gap-4 p-4">
+      {Object.entries(data)
+        .filter(([key, value]) => value && value !== 'N/A')
+        .map(([key, value]) => (
+          <div key={key} className="flex flex-col">
+            <Label className="font-medium">
+              {fieldLabels[key] || key}
+            </Label>
+            <span className="text-sm">
+              {formatValue(key, value)}
+            </span>
+          </div>
+        ))}
+    </div>
+  );
+}
 
 export default function FacultyResearchTable() {
-  const { id } = useParams();
   const [data, setData] = useState([]);
+  const [expanded, setExpanded] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
+  const [sorting, setSorting] = useState([]);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [rowToEdit, setRowToEdit] = useState(null);
   const [rowToDelete, setRowToDelete] = useState(null);
-  const [sorting, setSorting] = useState([]);
-  const [columnVisibility, setColumnVisibility] = useState({});
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [totalPages, setTotalPages] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [publicationTypeFilter, setPublicationTypeFilter] = useState("all");
+  const [uploadedFileName, setUploadedFileName] = useState("");
+  const fileInputRef = useRef(null);
+  const [typeFilter, setTypeFilter] = useState("all");
 
   useEffect(() => {
-    const fetchResearchPapers = async () => {
-      try {
-        const token = sessionStorage.getItem("teacherAccessToken");
-        const response = await axios.get(
-          `http://localhost:6005/api/v1/research-paper/allPapers?page=${page}&limit=${pageSize}&publicationType=${publicationTypeFilter}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setData(response.data.data.researchPapers);
-        setTotalPages(response.data.data.pages);
-      } catch (error) {
-        console.error("An error occurred while fetching research papers:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchResearchPapers();
-  }, [id, page, pageSize, publicationTypeFilter]);
-
-  const columns = useMemo(() => {
-    return columnDef.map((col) => {
-      if (col.accessorKey === "actions") {
-        return {
-          ...col,
-          cell: ({ row }) => (
-            <div className="flex gap-2">
-              <Button
-                onClick={() => {
-                  setRowToEdit(row.original);
-                  setDrawerOpen(true);
-                }}
-                className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200"
-              >
-                Edit
-              </Button>
-              <Button
-                onClick={() => {
-                  setRowToDelete(row.original);
-                  setDeleteDialogOpen(true);
-                }}
-                className="p-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-200"
-              >
-                Delete
-              </Button>
-            </div>
-          ),
-        };
-      }
-      return col;
-    });
+    fetchData();
   }, []);
 
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      sorting,
-      globalFilter,
-      columnVisibility,
-    },
-    onSortingChange: setSorting,
-    onGlobalFilterChange: setGlobalFilter,
-    onColumnVisibilityChange: setColumnVisibility,
-  });
-
-  const resetFilters = () => {
-    setGlobalFilter("");
-    setSorting([]);
-    setPublicationTypeFilter("all");
-    table.resetColumnVisibility();
-  };
-
-  const handleAddEntry = (newData) => {
-    setData((prevData) => [...prevData, { ...newData, id: Date.now() }]);
-  };
-
-  const handleEditEntry = (updatedData) => {
-    setData((prevData) =>
-      prevData.map((row) => (row._id === updatedData._id ? updatedData : row))
-    );
-  };
-
-  const handleDeleteRow = async () => {
+  const fetchData = async () => {
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
-      await axios.delete(
-        `http://localhost:6005/api/v1/research-paper/paper/${rowToDelete._id}`,
+      const response = await axios.get(
+        "http://localhost:6005/api/v1/research-paper/allPapers",
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      setData((prevData) =>
-        prevData.filter((row) => row._id !== rowToDelete._id)
-      );
-      setDeleteDialogOpen(false);
-      setRowToDelete(null);
+      setData(response.data.data.researchPapers);
     } catch (error) {
-      console.error("Failed to delete research paper:", error);
+      console.error("Error fetching data:", error);
     }
   };
 
-  const calculateSummary = () => {
-    const summary = {
-      totalPublications: data.length,
-      totalUnitPoints: data.reduce((sum, paper) => sum + paper.unitPoints, 0),
-      publicationsByType: {
-        international: 0,
-        national: 0,
-        patent: 0,
-        book: 0,
-        bookChapter: 0,
-      },
-    };
-
-    data.forEach((paper) => {
-      summary.publicationsByType[paper.publicationType]++;
-    });
-
-    return summary;
+  const handleRefManUpload = (event) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setUploadedFileName(file.name);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const content = e.target.result;
+          const parsedData = parseRefMan(content);
+          console.log('Parsed Data:', parsedData); // For debugging
+          setData(parsedData);
+        } catch (error) {
+          console.error('Error parsing RefMan file:', error);
+          alert('Error parsing the RefMan file. Please check the file format.');
+        }
+      };
+      reader.readAsText(file);
+    }
   };
 
-  const summary = calculateSummary();
+  const parseRefMan = (content) => {
+    const entries = content.split('ER  - ').filter(entry => entry.trim());
+    
+    return entries.map(entry => {
+      const fields = {};
+      const lines = entry.split('\n');
+      
+      lines.forEach(line => {
+        const [key, ...valueParts] = line.split('  - ');
+        if (key && valueParts.length > 0) {
+          const value = valueParts.join('  - ').trim();
+          if (value) {
+            if (fields[key.trim()]) {
+              if (Array.isArray(fields[key.trim()])) {
+                fields[key.trim()].push(value);
+              } else {
+                fields[key.trim()] = [fields[key.trim()], value];
+              }
+            } else {
+              fields[key.trim()] = value;
+            }
+          }
+        }
+      });
 
-  const chartData = {
-    labels: Object.keys(summary.publicationsByType),
-    datasets: [
+      const authors = fields.A1 
+        ? (Array.isArray(fields.A1) ? fields.A1 : [fields.A1]).join(', ')
+        : 'N/A';
+
+      return {
+        title: fields.T1 || 'N/A',
+        authors: authors,
+        year: fields.Y1 || 'N/A',
+        type: mapPublicationType(fields.TY || ''),
+        viewUrl: fields.UR || '',
+        allFields: fields
+      };
+    }).filter(entry => entry.title !== 'N/A' || entry.authors !== 'N/A');
+  };
+
+  const mapPublicationType = (type) => {
+    const typeMap = {
+      'BOOK': 'Book',
+      'CHAP': 'Book Chapter',
+      'JOUR': 'Journal Article',
+      'PAT': 'Patent',
+      'CONF': 'Conference Paper',
+      'THES': 'Thesis',
+      'RPRT': 'Report'
+    };
+    return typeMap[type.trim()] || 'Other';
+  };
+
+  const columns = useMemo(
+    () => [
       {
-        label: 'Number of Publications',
-        data: Object.values(summary.publicationsByType),
-        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-        borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 1,
+        accessorKey: "title",
+        header: "Title",
+        cell: ({ row, getValue }) => (
+          <div
+            className="cursor-pointer flex items-center gap-2"
+            onClick={() => row.toggleExpanded()}
+          >
+            {row.getIsExpanded() ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+            <span className="font-medium">{getValue()}</span>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "authors",
+        header: "Author(s)",
+      },
+      {
+        accessorKey: "year",
+        header: "Year",
+      },
+      {
+        accessorKey: "type",
+        header: "Type",
+      },
+      {
+        accessorKey: "viewUrl",
+        header: "View URL",
+        cell: ({ getValue }) => {
+          const url = getValue();
+          return url ? (
+            <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+              View
+            </a>
+          ) : (
+            <span className="text-gray-400">N/A</span>
+          );
+        },
+      },
+      {
+        accessorKey: "actions",
+        header: "Actions",
+        cell: ({ row }) => (
+          <div className="flex gap-2">
+            <Button
+              onClick={() => {
+                setRowToEdit(row.original);
+                setDrawerOpen(true);
+              }}
+              className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200"
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+            <Button
+              onClick={() => {
+                setRowToDelete(row.original);
+                setDeleteDialogOpen(true);
+              }}
+              className="p-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-200"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        ),
       },
     ],
-  };
+    []
+  );
 
-  const chartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: 'Publications by Type',
-      },
+  const table = useReactTable({
+    data,
+    columns,
+    state: {
+      sorting,
+      globalFilter,
+      pagination,
+      expanded,
     },
+    onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
+    onPaginationChange: setPagination,
+    onExpandedChange: setExpanded,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    globalFilterFn: (row, columnId, filterValue) => {
+      const searchValue = filterValue.toLowerCase();
+      const value = row.getValue(columnId);
+      return value?.toString().toLowerCase().includes(searchValue);
+    },
+  });
+
+  const filteredRows = React.useMemo(() => {
+    return table.getRowModel().rows.filter(row => {
+      if (typeFilter === "all") return true;
+      return row.original.type === typeFilter;
+    });
+  }, [table.getRowModel().rows, typeFilter]);
+
+  const handleAddEntry = async (formData) => {
+    try {
+      const token = sessionStorage.getItem("teacherAccessToken");
+      const response = await axios.post(
+        "http://localhost:6005/api/v1/research-paper/create",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setData((prevData) => [...prevData, response.data.data]);
+      setDrawerOpen(false);
+    } catch (error) {
+      console.error("Error adding entry:", error);
+    }
   };
 
-  if (isLoading) {
-    return <LoadingPage />;
-  }
+  const handleEditEntry = async (formData) => {
+    try {
+      const token = sessionStorage.getItem("teacherAccessToken");
+      const response = await axios.patch(
+        `http://localhost:6005/api/v1/research-paper/update/${rowToEdit._id}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setData((prevData) =>
+        prevData.map((item) =>
+          item._id === response.data.data._id ? response.data.data : item
+        )
+      );
+      setDrawerOpen(false);
+      setRowToEdit(null);
+    } catch (error) {
+      console.error("Error editing entry:", error);
+    }
+  };
+
+  const handleDeleteEntry = async () => {
+    try {
+      const token = sessionStorage.getItem("teacherAccessToken");
+      await axios.delete(
+        `http://localhost:6005/api/v1/research-paper/delete/${rowToDelete._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setData((prevData) => prevData.filter((item) => item._id !== rowToDelete._id));
+      setDeleteDialogOpen(false);
+      setRowToDelete(null);
+    } catch (error) {
+      console.error("Error deleting entry:", error);
+    }
+  };
+
+  const csvData = useMemo(() => {
+    return data.map(item => ({
+      Title: item.title,
+      Authors: item.authors,
+      Year: item.year,
+      Type: item.type,
+      ViewURL: item.viewUrl,
+    }));
+  }, [data]);
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Research Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>Total Publications: {summary.totalPublications}</p>
-            <p>Total Unit Points: {summary.totalUnitPoints}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Publications by Type</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Bar data={chartData} options={chartOptions} />
-          </CardContent>
-        </Card>
-      </div>
+    <div className="container mx-auto p-6 space-y-6">
+      <h2 className="text-2xl font-semibold text-gray-800">Research Papers</h2>
 
-      <div className="flex justify-between mb-4">
-        
-<div className="flex items-center gap-2">
-          <SearchIcon className="text-gray-400" />
-          <DebouncedInput
+      <div className="flex justify-between items-center gap-4 flex-wrap">
+        <div className="flex items-center gap-2">
+          <Input
             value={globalFilter ?? ""}
-            onChange={(value) => setGlobalFilter(String(value))}
-            className="p-2 bg-transparent outline-none border-b-2 w-64 focus:w-96 duration-300 border-gray-300 focus:border-blue-500"
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className="max-w-xs"
             placeholder="Search all columns..."
+            leftIcon={<Search className="h-4 w-4 text-gray-400" />}
           />
         </div>
         <div className="flex items-center gap-2">
-          <Label htmlFor="publicationTypeFilter" className="text-sm font-medium">
-            Filter by Type:
-          </Label>
+          <Label htmlFor="type-filter">Filter by Type:</Label>
           <Select
-            id="publicationTypeFilter"
-            value={publicationTypeFilter}
-            onValueChange={setPublicationTypeFilter}
+            value={typeFilter}
+            onValueChange={setTypeFilter}
           >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filter by type" />
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Select type" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="international">International</SelectItem>
-              <SelectItem value="national">National</SelectItem>
-              <SelectItem value="patent">Patent</SelectItem>
-              <SelectItem value="book">Book</SelectItem>
-              <SelectItem value="bookChapter">Book Chapter</SelectItem>
+              <SelectItem value="Book">Book</SelectItem>
+              <SelectItem value="Book Chapter">Book Chapter</SelectItem>
+              <SelectItem value="Journal Article">Journal Article</SelectItem>
+              <SelectItem value="Patent">Patent</SelectItem>
+              <SelectItem value="Conference Paper">Conference Paper</SelectItem>
+              <SelectItem value="Thesis">Thesis</SelectItem>
+              <SelectItem value="Report">Report</SelectItem>
+              <SelectItem value="Other">Other</SelectItem>
             </SelectContent>
           </Select>
         </div>
-        <DownloadBtn data={data} fileName="Research" />
+        <div className="flex items-center gap-2">
+          <input
+            type="file"
+            accept=".ris"
+            onChange={handleRefManUpload}
+            className="hidden"
+            ref={fileInputRef}
+          />
+          <Button
+            onClick={() => fileInputRef.current?.click()}
+            className="bg-blue-500 hover:bg-blue-600"
+          >
+            <Upload className="h-4 w-4 mr-2" /> Upload RefMan
+          </Button>
+          {uploadedFileName && (
+            <span className="text-sm text-gray-600">
+              Uploaded: {uploadedFileName}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <Button onClick={() => setDrawerOpen(true)} className="bg-green-500 hover:bg-green-600">
+            <Plus className="h-4 w-4 mr-2" /> Add Entry
+          </Button>
+          <CSVLink
+            data={csvData}
+            filename={"research_papers.csv"}
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded inline-flex items-center"
+          >
+            <Download className="h-4 w-4 mr-2" /> Export CSV
+          </CSVLink>
+        </div>
       </div>
 
-      <div className="flex justify-end mb-4">
-        <Button
-          onClick={() => {
-            setRowToEdit(null);
-            setDrawerOpen(true);
-          }}
-          className="add-entry-btn text-white"
-        >
-          Add Entry
-        </Button>
-      </div>
-
-      <div className="mb-4 flex flex-wrap gap-2">
-        {table.getAllLeafColumns().map((column) => (
-          <div key={column.id} className="flex items-center">
-            <Checkbox
-              checked={column.getIsVisible()}
-              onCheckedChange={(value) => column.toggleVisibility(!!value)}
-              id={column.id}
-            />
-            <label htmlFor={column.id} className="ml-2 text-sm font-medium">
-              {column.id}
-            </label>
-          </div>
-        ))}
-        <Button
-          onClick={resetFilters}
-          variant="outline"
-          size="sm"
-          className="ml-2"
-        >
-          Reset Filters
-        </Button>
-      </div>
-
-      <div className="table-container">
-        <table className="w-full">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th key={header.id} className="px-4 py-2">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
+      {data.length > 0 ? (
+        <div className="overflow-x-auto bg-white shadow-md rounded-lg border border-gray-200">
+          <table className="w-full table-auto">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      key={header.id}
+                      className="px-6 py-3 text-left text-sm font-medium text-gray-700"
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      <div className="flex items-center gap-2">
+                        {flexRender(
                           header.column.columnDef.header,
                           header.getContext()
                         )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.original._id}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-4 py-2">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                        {header.column.getIsSorted() && (
+                          <ChevronDown className={`h-4 w-4 ${header.column.getIsSorted() === "desc" ? "transform rotate-180" : ""}`} />
+                        )}
+                      </div>
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {filteredRows.map((row) => (
+                <React.Fragment key={row.id}>
+                  <tr className="hover:bg-gray-50 border-b border-gray-200">
+                    {row.getVisibleCells().map((cell) => (
+                      <td
+                        key={cell.id}
+                        className="px-6 py-3 text-sm text-gray-700"
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                  {row.getIsExpanded() && (
+                    <tr>
+                      <td colSpan={columns.length} className="bg-gray-50 border-b">
+                        <ExpandedRowContent data={row.original.allFields} />
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div className="text-center py-10 text-gray-500">
+          No data available. Please upload a RefMan file or add entries.
+        </div>
+      )}
+
+      {data.length > 0 && (
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="flex items-center gap-1">
+              <div>Page</div>
+              <strong>
+                {table.getState().pagination.pageIndex + 1} of{" "}
+                {Math.ceil(filteredRows.length / table.getState().pagination.pageSize)}
+              </strong>
+            </span>
+            <Button
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+          <Select
+            value={table.getState().pagination.pageSize.toString()}
+            onValueChange={(value) => {
+              table.setPageSize(Number(value));
+            }}
+          >
+            <SelectTrigger className="w-[100px]">
+              <SelectValue placeholder={table.getState().pagination.pageSize} />
+            </SelectTrigger>
+            <SelectContent>
+              {[10, 20, 30, 40, 50].map((pageSize) => (
+                <SelectItem key={pageSize} value={pageSize.toString()}>
+                  Show {pageSize}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       <DrawerComponent
         isOpen={isDrawerOpen}
@@ -338,41 +533,7 @@ export default function FacultyResearchTable() {
           setDrawerOpen(false);
           setRowToEdit(null);
         }}
-        onSubmit={async (formData) => {
-          const token = sessionStorage.getItem("teacherAccessToken");
-
-          try {
-            if (rowToEdit) {
-              const response = await axios.patch(
-                `http://localhost:6005/api/v1/research-paper/paper/${rowToEdit._id}`,
-                formData,
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                  },
-                }
-              );
-              handleEditEntry(response.data.data);
-            } else {
-              const response = await axios.post(
-                `http://localhost:6005/api/v1/research-paper/papers`,
-                formData,
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                  },
-                }
-              );
-              handleAddEntry(response.data.data);
-            }
-          } catch (error) {
-            console.error("Failed to submit research data:", error);
-          }
-
-          setDrawerOpen(false);
-        }}
+        onSubmit={rowToEdit ? handleEditEntry : handleAddEntry}
         columns={columns}
         rowData={rowToEdit}
       />
@@ -380,64 +541,8 @@ export default function FacultyResearchTable() {
       <DeleteDialog
         isOpen={isDeleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
-        onConfirm={handleDeleteRow}
-        rowData={rowToDelete}
+        onConfirm={handleDeleteEntry}
       />
-
-      <div className="flex items-center justify-end mt-4 gap-2">
-        <Button
-          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-          disabled={page === 1}
-        >
-          Previous
-        </Button>
-        <Button
-          onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-          disabled={page === totalPages}
-        >
-          Next
-        </Button>
-        <span className="flex items-center gap-1">
-          <div>Page</div>
-          <strong>
-            {page} of {totalPages}
-          </strong>
-        </span>
-        <span className="flex items-center gap-1">
-          | Go to page:
-          <input
-            type="number"
-            value={page}
-            onChange={(e) => {
-              const pageNumber = Math.max(1, Math.min(totalPages, Number(e.target.value)));
-              setPage(pageNumber);
-            }}
-            className="border p-1 rounded w-16"
-          />
-        </span>
-        <Label htmlFor="pageSize" className="text-sm font-medium">
-          Show:
-        </Label>
-        <Select
-          id="pageSize"
-          value={pageSize.toString()}
-          onValueChange={(value) => {
-            setPageSize(Number(value));
-            setPage(1);
-          }}
-        >
-          <SelectTrigger className="w-[70px]">
-            <SelectValue placeholder="Page size" />
-          </SelectTrigger>
-          <SelectContent>
-            {[10, 20, 30, 40, 50].map((size) => (
-              <SelectItem key={size} value={size.toString()}>
-                {size}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
     </div>
   );
 }

@@ -14,11 +14,15 @@ export default function FacultyNavigation() {
     { name: "Event Participation", path: "event-participation", icon: <Calendar className="w-4 h-4" /> },
     { name: "Seminars", path: "seminars", icon: <PresentationChart className="w-4 h-4" /> },
     { name: "Projects", path: "projects", icon: <Briefcase className="w-4 h-4" /> },
-    { name: "Contribution Graph", path: "contribution", icon: <BarChart2 className="w-4 h-4" /> }
+    { name: "Contribution Graph", path: "contribution", icon: <BarChart2 className="w-4 h-4" /> },
+    { name: "Posts", path: "posts", icon: <BarChart2 className="w-4 h-4" /> },
+    { name: "Appraisal report", path: "appraisal-report", icon: <BarChart2 className="w-4 h-4" /> },
+    { name: "Add Lecture", path: "teacheraddecture", icon: <BarChart2 className="w-4 h-4" /> }
+
   ];
 
   return (
-    <Card className="w-80 rounded-lg mt-5 overflow-hidden shadow-lg">
+    <Card className="w-80 rounded-lg mt-5 overflow-hidden shadow-lg ">
       <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-800 py-3 px-4">
         <h2 className="text-xl font-bold text-white text-center">Faculty Navigation</h2>
       </CardHeader>

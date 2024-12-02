@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Outlet, useNavigation, useLocation } from "react-router-dom";
 import { Toaster } from "../components/ui/toaster";
 import { useToast } from "../components/ui/hooks/use-toast";
@@ -21,9 +21,12 @@ const FacultyLayout = () => {
 
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
+  const [isNavigationFixed, setIsNavigationFixed] = useState(false);
 
   const location = useLocation();
   const navigation = useNavigation();
+  const mainContentRef = useRef(null);
+  const navigationRef = useRef(null);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -36,7 +39,7 @@ const FacultyLayout = () => {
           "http://localhost:6005/api/v1/teachers/me",
           { headers }
         );
-        console.log("Faculty data fetched:", response.data);
+        // console.log("Faculty data fetched:", response.data);
 
         const data = response.data.data;
         setFacultyData({
@@ -82,20 +85,48 @@ const FacultyLayout = () => {
           variant: "destructive",
           duration: 5000,
         });
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchProfileData();
   }, [location, toast]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (mainContentRef.current && navigationRef.current) {
+        const { top, bottom } = mainContentRef.current.getBoundingClientRect();
+        const navHeight = navigationRef.current.offsetHeight;
+        const viewportHeight = window.innerHeight;
+
+        if (top <= 0 && bottom >= navHeight) {
+          setIsNavigationFixed(true);
+        } else if (bottom < navHeight || top > 0) {
+          setIsNavigationFixed(false);
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <>
       <div className="flex flex-col min-h-screen">
         <TeacherHeader />
         <div className="flex flex-1 overflow-hidden">
-          <aside className="w-68 overflow-y-auto">
+          <aside 
+            ref={navigationRef}
+            className={`w-68 ${
+              isNavigationFixed 
+                ? 'fixed top-0 bottom-0 overflow-y-auto' 
+                : 'relative overflow-y-auto'
+            }`}
+          >
             <FacultyNavigation />
           </aside>
-          <main className="flex-1 flex flex-col overflow-hidden min-h-screen">
+          <main ref={mainContentRef} className="flex-1 flex flex-col overflow-hidden min-h-screen ml-68">
             <h1 className="text-xl font-bold text-center p-4">Faculty Portal</h1>
             <div className="flex-1 overflow-auto p-4 bg-gray-100">
               {navigation.state === "loading" ? <LoadingPage /> : <Outlet />}
@@ -110,3 +141,4 @@ const FacultyLayout = () => {
 };
 
 export default FacultyLayout;
+

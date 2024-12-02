@@ -896,7 +896,7 @@ const releaseAllFeedbackForms = asyncHandler(async (req, res) => {
 // });
 
 const releaseFeedbackForSubjects = asyncHandler(async (req, res) => {
-  const { teachersData, activeUntilDate } = req.body; 
+  const { teachersData, activeUntilDate } = req.body;
 
   if (!Array.isArray(teachersData) || teachersData.length === 0) {
     throw new ApiError(400, "Provide an array of valid teacher-subject data.");
@@ -918,38 +918,37 @@ const releaseFeedbackForSubjects = asyncHandler(async (req, res) => {
 
   // Iterate over each teacher's data
   for (const teacherData of teachersData) {
-    const { teacherId, subjectIds } = teacherData;
+    const { teacherId, subjectId } = teacherData;
 
     // Validate teacherId
     if (!mongoose.Types.ObjectId.isValid(teacherId)) {
       throw new ApiError(400, `Invalid teacher ID format: ${teacherId}`);
     }
 
-    // Validate subjectIds
-    if (!Array.isArray(subjectIds) || subjectIds.length === 0) {
+    // Validate subjectId
+    if (!mongoose.Types.ObjectId.isValid(subjectId)) {
       throw new ApiError(
         400,
-        `Provide an array of valid subject IDs for teacher ${teacherId}.`
+        `Invalid subject ID for teacher ${teacherId}: ${subjectId}`
       );
     }
 
-    const invalidSubjectIds = subjectIds.filter(
-      (id) => !mongoose.Types.ObjectId.isValid(id)
-    );
-    if (invalidSubjectIds.length > 0) {
+    const existingSubject = await AllocatedSubject.findOne({
+      _id: subjectId,
+      teacher: teacherId,
+    });
+
+    if (existingSubject && existingSubject.feedbackReleased) {
       throw new ApiError(
         400,
-        `Invalid subject IDs for teacher ${teacherId}: ${invalidSubjectIds.join(
-          ", "
-        )}`
+        `Feedback has already been released for subject ${subjectId} for teacher ${teacherId}.`
       );
     }
 
-    // Update feedbackReleased and activeUntil for selected subjects
-    const result = await AllocatedSubject.updateMany(
+    const result = await AllocatedSubject.findOneAndUpdate(
       {
-        _id: { $in: subjectIds },
-        teacher: teacherId, // Ensure the subjects belong to the specified teacher
+        _id: subjectId,
+        teacher: teacherId,
       },
       { feedbackReleased: true, activeUntil },
       { new: true }
@@ -957,14 +956,14 @@ const releaseFeedbackForSubjects = asyncHandler(async (req, res) => {
 
     updatedSubjects.push({
       teacherId,
-      updatedCount: result.modifiedCount,
+      result,
     });
   }
 
   // Check if any subjects were updated
   if (
     updatedSubjects.length === 0 ||
-    updatedSubjects.every((teacher) => teacher.updatedCount === 0)
+    updatedSubjects.every((teacher) => teacher.result.modifiedCount === 0)
   ) {
     throw new ApiError(
       404,

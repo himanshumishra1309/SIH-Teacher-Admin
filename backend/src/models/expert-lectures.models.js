@@ -3,41 +3,42 @@ import { Point } from './points.models.js';
 import { DomainPoint } from './domainpoints.models.js';
 
 const expertLectureSchema = new Schema(
-    {
-        topic: {
-          type: String,
-          required: true,
-          trim: true,
-        },
-        duration: {
-          type: Number, // in hours
-          required: true,
-        },
-        date: {
-          type: Date,
-          required: true,
-        },
-        level: {
-          type: String,
-          enum: ["International", "National", "State"], // Lecture level
-          required: true,
-        },
-        venue: {
-          type: String, // Place where the lecture was conducted
-          required: true,
-          trim: true,
-        },
-        report: {
-          type: String, // Cloudinary URL for the report document
-          required: true,
-        },
-        owner: {
-          type: Schema.Types.ObjectId,
-          ref: "Teacher",
-          required: true,
-        },
+  {
+    topic: {
+      type: String,
+      required: true,
+      trim: true,
     },
-{ timestamps: true });
+    duration: {
+      type: Number, // in hours
+      required: true,
+    },
+    date: {
+      type: Date,
+      required: true,
+    },
+    level: {
+      type: String,
+      enum: ["International", "National", "State"], // Lecture level
+      required: true,
+    },
+    venue: {
+      type: String, // Place where the lecture was conducted
+      required: true,
+      trim: true,
+    },
+    report: {
+      type: String, // Cloudinary URL for the report document
+      required: true,
+    },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "Teacher",
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
 
 const getPointsForDomain = async (domain) => {
   const domainPoint = await DomainPoint.findOne({ domain });
@@ -96,4 +97,7 @@ expertLectureSchema.post('findOneAndDelete', async function (doc) {
   }
 });
 
-export const ExpertLecture = mongoose.model('ExpertLecture', expertLectureSchema);
+export const ExpertLecture = mongoose.model(
+  "ExpertLecture",
+  expertLectureSchema
+);
