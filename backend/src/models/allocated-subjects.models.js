@@ -2,6 +2,7 @@ import mongoose, { Schema } from "mongoose";
 import { DomainPoint } from "./domainpoints.models.js";
 import { Point } from "./points.models.js";
 import { Lecture } from "./lectures.models.js";
+import { LectureFeedback } from "./lecturefeedback.models.js"; // Assuming this model exists
 
 const allocatedSubjectSchema = new Schema(
   {
@@ -99,9 +100,67 @@ const allocatePointsIfEligible = async (subjectId) => {
   }
 };
 
+// Function to process feedback and allocate points
+const processFeedback = async (doc) => {
+  if (doc.feedbackReleased && doc.activeUntil && doc.activeUntil <= new Date()) {
+    const feedbacks = await LectureFeedback.find({
+      subject_code: doc.subject_code,
+      teacher: doc.teacher,
+      submissionTime: { $lte: doc.activeUntil },
+    });
+
+    if (feedbacks.length > 0) {
+      const totalRating = feedbacks.reduce((sum, feedback) => {
+        return (
+          sum +
+          (feedback.question1_rating +
+            feedback.question2_rating +
+            feedback.question3_rating +
+            feedback.question4_rating +
+            feedback.question5_rating +
+            feedback.question6_rating +
+            feedback.question7_rating +
+            feedback.question8_rating +
+            feedback.question9_rating +
+            feedback.question10_rating) /
+            10
+        );
+      }, 0);
+
+      const averageRating = totalRating / feedbacks.length;
+
+      const domainKey = getDomainKey(doc.subject_credit, doc.type);
+      const domainPoints = await getPointsForDomain(domainKey);
+      const feedbackPoints = Math.max(
+        0,
+        (averageRating - 3) * (domainPoints * 0.1) // Example: 10% of domain points per star above 3
+      );
+
+      // Update teacher's points
+      const existingPoints = await Point.findOne({ owner: doc.teacher, domain: domainKey });
+      if (existingPoints) {
+        await Point.findByIdAndUpdate(existingPoints._id, { $inc: { points: feedbackPoints } });
+      } else {
+        await Point.create({
+          date: new Date(),
+          points: feedbackPoints,
+          domain: domainKey,
+          owner: doc.teacher,
+        });
+      }
+    }
+
+    // Reset feedback fields
+    doc.feedbackReleased = false;
+    doc.activeUntil = null;
+    await doc.save();
+  }
+};
+
 // Post-save hook to check and allocate points
 allocatedSubjectSchema.post("save", async function (doc) {
   await allocatePointsIfEligible(doc._id);
+  await processFeedback(doc); // Process feedback
 });
 
 // Post-remove hook to deduct points if allocated

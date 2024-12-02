@@ -1118,4 +1118,104 @@ const completeSeminarPoints = asyncHandler(async (req, res) => {
     }, "Seminar points calculated successfully"));
 });
 
-export { completeJournalPoints, completeBooksPoints, completePatentPoints, completeProjectsPoints, completeConferencePoints, completeChapterPoints, completeSTTPPoints, completeEventsConductedPoints, completeSeminarAttendedPoints, completeExpertLecturesPoints,completeSeminarPoints };
+const getComparativePointsData = asyncHandler(async (req, res) => {
+    const { teacherId } = req.params;
+    if (!teacherId) {
+        throw new ApiError(400, "Teacher ID is required");
+    }
+
+    const categoryMapping = {
+        'Journal': ['International Journal', 'National Journal', 'Regional Journal'],
+        'Book': ['International Book', 'National Book', 'Regional Book'],
+        'Chapter': ['International Chapter', 'National Chapter', 'Regional Chapter'],
+        'Conference': ['International Conference', 'National Conference', 'Regional Conference'],
+        'Patent': ['International Patent', 'National Patent', 'Regional Patent'],
+        'Project': ['Major Projects', 'Minor Projects'],
+        'STTP': ['STTP_1_DAY', 'STTP_2_3_DAYS', 'STTP_4_5_DAYS', 'STTP_1_WEEK', 'STTP_2_WEEKS', 'STTP_3_WEEKS', 'STTP_4_WEEKS'],
+        'Event': [
+            'Organizer National Event', 'Organizer International Event', 'Organizer State Event', 'Organizer College Event',
+            'Speaker National Event', 'Speaker International Event', 'Speaker State Event', 'Speaker College Event',
+            'Judge National Event', 'Judge International Event', 'Judge State Event', 'Judge College Event',
+            'Coordinator National Event', 'Coordinator International Event', 'Coordinator State Event', 'Coordinator College Event',
+            'Volunteer National Event', 'Volunteer International Event', 'Volunteer State Event', 'Volunteer College Event',
+            'Evaluator National Event', 'Evaluator International Event', 'Evaluator State Event', 'Evaluator College Event',
+            'Panelist National Event', 'Panelist International Event', 'Panelist State Event', 'Panelist College Event',
+            'Mentor National Event', 'Mentor International Event', 'Mentor State Event', 'Mentor College Event',
+            'Session Chair National Event', 'Session Chair International Event', 'Session Chair State Event', 'Session Chair College Event',
+            'Reviewer National Event', 'Reviewer International Event', 'Reviewer State Event', 'Reviewer College Event'
+        ],
+        'Seminar': ['National Seminar', 'International Seminar', 'State Seminar', 'College Seminar'],
+        'Expert Lecture': ['National Expert Lecture', 'International Expert Lecture', 'State Expert Lecture', 'College Expert Lecture'],
+        'Seminar Conducted': ['Seminar']
+    };
+
+    const allDomains = Object.values(categoryMapping).flat();
+
+    const comparativeData = await Point.aggregate([
+        {
+            $match: { domain: { $in: allDomains } }
+        },
+        {
+            $group: {
+                _id: {
+                    category: {
+                        $switch: {
+                            branches: Object.entries(categoryMapping).map(([category, domains]) => ({
+                                case: { $in: ["$domain", domains] },
+                                then: category
+                            })),
+                            default: "Other"
+                        }
+                    },
+                    owner: "$owner"
+                },
+                totalPoints: { $sum: "$points" }
+            }
+        },
+        {
+            $group: {
+                _id: "$_id.category",
+                highestPoints: { $max: "$totalPoints" },
+                teacherPoints: {
+                    $sum: {
+                        $cond: [
+                            { $eq: ["$_id.owner", mongoose.Types.ObjectId(teacherId)] },
+                            "$totalPoints",
+                            0
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            $project: {
+                category: "$_id",
+                highestPoints: 1,
+                teacherPoints: 1,
+                _id: 0
+            }
+        },
+        {
+            $sort: { category: 1 }
+        }
+    ]);
+
+    // Prepare data for Chart.js
+    const chartData = {
+        labels: comparativeData.map(item => item.category),
+        datasets: [
+            {
+                label: 'Highest Points',
+                data: comparativeData.map(item => item.highestPoints),
+            },
+            {
+                label: 'Teacher Points',
+                data: comparativeData.map(item => item.teacherPoints),
+            }
+        ]
+    };
+
+    res.status(200).json(new ApiResponse(200, { comparativeData, chartData }, "Comparative points data retrieved successfully"));
+});
+
+export { completeJournalPoints, completeBooksPoints, completePatentPoints, completeProjectsPoints, completeConferencePoints, completeChapterPoints, completeSTTPPoints, completeEventsConductedPoints, completeSeminarAttendedPoints, completeExpertLecturesPoints,completeSeminarPoints, getComparativePointsData };
