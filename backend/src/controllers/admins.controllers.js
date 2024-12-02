@@ -357,19 +357,19 @@ const allotSubjectsToTeachers = asyncHandler(async (req, res) => {
     );
   }
 
-    // Create a new allocated subject record
-    const allocatedSubject = await AllocatedSubject.create({
-      subject_name,
-      subject_code,
-      subject_credit,
-      branch,
-      year,
-      type,
-      min_lectures,
-      teacher: teacherId,
-      feedbackReleased: false,
-      activeUntil: null,
-    });
+  // Create a new allocated subject record
+  const allocatedSubject = await AllocatedSubject.create({
+    subject_name,
+    subject_code,
+    subject_credit,
+    branch,
+    year,
+    type,
+    min_lectures,
+    teacher: teacherId,
+    feedbackReleased: false,
+    activeUntil: null,
+  });
 
   return res
     .status(200)
@@ -644,9 +644,85 @@ const getAllTheSubjects = asyncHandler(async (req, res) => {
     );
 });
 
+// const allottSubjectsToStudents = asyncHandler(async (req, res) => {
+//   const {
+//     subject_name,
+//     subject_code,
+//     subject_credit,
+//     subject_type,
+//     teacherId,
+//     studentId,
+//   } = req.body;
+
+//   // Validate inputs
+//   if (
+//     !subject_name ||
+//     !subject_code ||
+//     !subject_credit ||
+//     !subject_type ||
+//     !teacherId ||
+//     !studentId
+//   ) {
+//     return res.status(400).json({ error: "All fields are required." });
+//   }
+
+//   // Check if the teacher exists
+//   const teacher = await Teacher.findById(teacherId);
+
+//   if (!teacher) {
+//     return res.status(404).json({ error: "Teacher not found." });
+//   }
+
+//   // Check if the student exists
+//   const student = await Student.findById(studentId);
+
+//   if (!student) {
+//     return res.status(404).json({ error: "Student not found." });
+//   }
+
+//   // Check if the subject is already allotted to the student
+//   const existingAllocation = await StudySubject.findOne({
+//     subject_name,
+//     subject_code,
+//     student: studentId,
+//   });
+
+//   if (existingAllocation) {
+//     return res
+//       .status(400)
+//       .json({ error: "Subject is already allotted to this student." });
+//   }
+
+//   // Create and save the subject allocation
+//   const studySubject = await StudySubject.create({
+//     subject_name,
+//     subject_code,
+//     subject_credit,
+//     subject_type,
+//     teacher: teacherId,
+//     student: studentId,
+//   });
+
+//   return res
+//     .status(200)
+//     .json(
+//       new ApiResponse(
+//         200,
+//         { studySubject, teacher, student },
+//         "Subject allotted to student successfully."
+//       )
+//     );
+// });
+
 const allottSubjectsToStudents = asyncHandler(async (req, res) => {
-  const { subject_name, subject_code, subject_credit, subject_type, teacherId, studentId } =
-    req.body;
+  const {
+    subject_name,
+    subject_code,
+    subject_credit,
+    subject_type,
+    teacherId,
+    selectedStudents, // Array of student IDs
+  } = req.body;
 
   // Validate inputs
   if (
@@ -655,58 +731,83 @@ const allottSubjectsToStudents = asyncHandler(async (req, res) => {
     !subject_credit ||
     !subject_type ||
     !teacherId ||
-    !studentId
+    !selectedStudents ||
+    !Array.isArray(selectedStudents) ||
+    selectedStudents.length === 0
   ) {
-    return res.status(400).json({ error: "All fields are required." });
+    return res.status(400).json({
+      error:
+        "All fields are required and selectedStudents must be a non-empty array.",
+    });
   }
 
   // Check if the teacher exists
   const teacher = await Teacher.findById(teacherId);
-
   if (!teacher) {
     return res.status(404).json({ error: "Teacher not found." });
   }
 
-  // Check if the student exists
-  const student = await Student.findById(studentId);
+  const responseResults = [];
 
-  if (!student) {
-    return res.status(404).json({ error: "Student not found." });
+  // Iterate over selectedStudents array
+  for (const studentId of selectedStudents) {
+    try {
+      // Check if the student exists
+      const student = await Student.findById(studentId);
+      if (!student) {
+        responseResults.push({
+          studentId,
+          status: "failed",
+          error: "Student not found.",
+        });
+        continue;
+      }
+
+      // Check if the subject is already allotted to the student
+      const existingAllocation = await StudySubject.findOne({
+        subject_name,
+        subject_code,
+        student: studentId,
+      });
+
+      if (existingAllocation) {
+        responseResults.push({
+          studentId,
+          status: "failed",
+          error: "Subject is already allotted to this student.",
+        });
+        continue;
+      }
+
+      // Create and save the subject allocation
+      const studySubject = await StudySubject.create({
+        subject_name,
+        subject_code,
+        subject_credit,
+        subject_type,
+        teacher: teacherId,
+        student: studentId,
+      });
+
+      responseResults.push({
+        studentId,
+        status: "success",
+        data: studySubject,
+      });
+    } catch (error) {
+      responseResults.push({
+        studentId,
+        status: "failed",
+        error: error.message,
+      });
+    }
   }
 
-  // Check if the subject is already allotted to the student
-  const existingAllocation = await StudySubject.findOne({
-    subject_name,
-    subject_code,
-    student: studentId,
+  return res.status(200).json({
+    message: "Subject allocation process completed.",
+    results: responseResults,
   });
-
-  if (existingAllocation) {
-    return res
-      .status(400)
-      .json({ error: "Subject is already allotted to this student." });
-  }
-
-  // Create and save the subject allocation
-  const studySubject = await StudySubject.create({
-    subject_name,
-    subject_code,
-    subject_credit,
-    subject_type,
-    teacher: teacherId,
-    student: studentId,
-  });
-
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        { studySubject, teacher, student },
-        "Subject allotted to student successfully."
-      )
-    );
-}); //worked on postman
+});
 
 const viewAllSubjectsAllottedToTheStudent = asyncHandler(async (req, res) => {
   const { studentId } = req.params;
@@ -737,7 +838,13 @@ const viewAllSubjectsAllottedToTheStudent = asyncHandler(async (req, res) => {
 
 const editAllottedSubjectOfTheStudent = asyncHandler(async (req, res) => {
   const { studentId, subjectId } = req.params;
-  const { subject_name, subject_code, subject_credit, subject_type, teacherId } = req.body;
+  const {
+    subject_name,
+    subject_code,
+    subject_credit,
+    subject_type,
+    teacherId,
+  } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(studentId)) {
     throw new ApiError(400, "Invalid student ID format.");

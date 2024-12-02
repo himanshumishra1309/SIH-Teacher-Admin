@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { Graph } from './graphs.models.js';
-import { domainPoints } from '../utils/domainPoints.js';
+import { DomainPoint } from './domainpoints.models.js';
 
 const studentGuidedSchema = new Schema(
 {
