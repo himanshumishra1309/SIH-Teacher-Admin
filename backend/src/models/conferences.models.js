@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
-import { Graph } from './graphs.models.js';
-import { DomainPoint } from './domainPoint.model.js';
+import { Point } from './points.models.js';
+import { DomainPoint } from './domainpoints.models.js';
 
 const conferenceSchema = new Schema(
     {
@@ -34,7 +34,7 @@ const conferenceSchema = new Schema(
         },
         conferenceType: {
             type: String,
-            enum: ['International', 'National', 'Other'], // Conference classification
+            enum: ['International', 'National', 'Regional'], // Conference classification
             required: true,
         },
         owner: {
@@ -46,33 +46,61 @@ const conferenceSchema = new Schema(
     { timestamps: true }
 );
 
-// Helper function to dynamically fetch points
-const getPointsForConferenceType = async (conferenceType) => {
-    const domainPoint = await DomainPoint.findOne({ domain: conferenceType });
-    return domainPoint?.points || 0; // Default points to 0 if not found
+// Function to get points for a domain from the DomainPoint model
+const getPointsForDomain = async (domain) => {
+    const domainPoint = await DomainPoint.findOne({ domain });
+    return domainPoint?.points || 0; // Default to 0 if the domain is not found
 };
 
-// Post-save hook for adding points to the graph
-conferenceSchema.post('save', async function (doc) {
-    const points = await getPointsForConferenceType(doc.conferenceType);
+// Function to allocate points in the `Point` model
+const allocatePoints = async (teacherId, domain, publicationDate) => {
+    const points = await getPointsForDomain(domain); // Fetch points for the domain
 
-    await Graph.findOneAndUpdate(
-        { owner: doc.owner, date: doc.publicationDate },
-        { $inc: { points: points } },
-        { upsert: true }
-    );
+    // Search for an existing domain for the teacher
+    const existingPoint = await Point.findOne({ owner: teacherId, domain });
+
+    if (existingPoint) {
+        // Update points if the domain exists
+        await Point.findByIdAndUpdate(existingPoint._id, {
+            $inc: { points },
+        });
+    } else {
+        // Create a new domain if it does not exist
+        await Point.create({
+            date: publicationDate,
+            points,
+            domain,
+            owner: teacherId,
+        });
+    }
+};
+
+// Post-save hook to allocate points
+conferenceSchema.post('save', async function (doc) {
+    const domain = `${doc.conferenceType} Conference`; // Generate the domain key (e.g., "International Conference")
+    await allocatePoints(doc.owner, domain, doc.publicationDate);
 });
 
-// Post-remove hook for deducting points
+// Post-remove hook to deduct points
 conferenceSchema.post('findOneAndDelete', async function (doc) {
     if (doc) {
-        const points = await getPointsForConferenceType(doc.conferenceType);
+        const domain = `${doc.conferenceType} Conference`; // Generate the domain key (e.g., "International Conference")
+        const points = await getPointsForDomain(domain); // Fetch points for the domain
 
-        await Graph.findOneAndUpdate(
-            { owner: doc.owner, date: doc.publicationDate },
-            { $inc: { points: -points } },
-            { new: true }
-        );
+        // Search for an existing domain for the teacher
+        const existingPoint = await Point.findOne({ owner: doc.owner, domain });
+
+        if (existingPoint) {
+            // Deduct points
+            await Point.findByIdAndUpdate(existingPoint._id, {
+                $inc: { points: -points },
+            });
+
+            // Optionally, remove the document if points drop to 0
+            if (existingPoint.points - points <= 0) {
+                await Point.findByIdAndDelete(existingPoint._id);
+            }
+        }
     }
 });
 

@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { Graph } from "./graphs.models.js";
+import { Point } from "./points.models.js";
 import { SeminarFeedback } from "./feedback-seminars.models.js";
 import { DomainPoint } from "./domainpoints.models.js";
 
@@ -44,65 +44,73 @@ const getPointsForDomain = async (domain) => {
   return domainPoint?.points || 0; // Default to 0 if no points are defined
 };
 
-// Post-save hook: Allocate 1 point for adding a seminar
+// Post-save hook: Allocate 1 point for seminar creation
 seminarSchema.post("save", async function (doc) {
   const basePoints = await getPointsForDomain("Seminar");
-  await Graph.findOneAndUpdate(
-    { owner: doc.owner, date: doc.date },
-    { $inc: { points: basePoints } },
-    { upsert: true }
-  );
-});
 
-// Post-remove hook: Deduct points when seminar is removed
-seminarSchema.post("findOneAndDelete", async function (doc) {
-  if (!doc) return;
-
-  const basePoints = await getPointsForDomain("Seminar");
-
-  // Deduct the base points for the seminar
-  await Graph.findOneAndUpdate(
-    { owner: doc.owner, date: doc.date },
-    { $inc: { points: -basePoints } },
-    { new: true }
-  );
-
-  // Fetch all feedback related to the seminar
-  const feedbacks = await SeminarFeedback.find({ seminar: doc._id });
-
-  if (feedbacks.length > 0) {
-    // Calculate the average feedback rating
-    const averageRating =
-      feedbacks.reduce((sum, feedback) => sum + feedback.rating, 0) / feedbacks.length;
-
-    // Deduct the feedback points (average rating) from the graph
-    await Graph.findOneAndUpdate(
-      { owner: doc.owner, date: doc.date },
-      { $inc: { points: -averageRating } },
-      { new: true }
-    );
+  if (basePoints > 0) {
+    await Point.create({
+      date: doc.date, // Points allocated on seminar creation date
+      points: basePoints,
+      domain: "Seminar",
+      owner: doc.owner,
+    });
   }
 });
 
-// Method to allocate points based on feedback after the form is filled
+// Middleware to handle feedbackReleased status based on activeUntil
+seminarSchema.pre("save", function (next) {
+  if (this.activeUntil < new Date()) {
+    this.feedbackReleased = false;
+  }
+  next();
+});
+
+// Method to calculate and allocate feedback points
 seminarSchema.methods.allocateFeedbackPoints = async function () {
-  if (this.feedbackReleased && this.activeUntil < new Date()) {
-    // Fetch all feedback for the seminar
+  // Ensure feedbackReleased is false and activeUntil has passed
+  if (!this.feedbackReleased && this.activeUntil < new Date()) {
+    // Fetch all feedbacks for this seminar
     const feedbacks = await SeminarFeedback.find({ seminar: this._id });
 
     if (feedbacks.length > 0) {
-      // Calculate average rating
+      // Calculate average feedback rating
       const averageRating =
-        feedbacks.reduce((sum, feedback) => sum + feedback.rating, 0) / feedbacks.length;
+        feedbacks.reduce((sum, feedback) => sum + feedback.rating, 0) /
+        feedbacks.length;
 
-      // Add average rating as points to the teacher's graph
-      await Graph.findOneAndUpdate(
-        { owner: this.owner, date: this.date },
-        { $inc: { points: averageRating } },
-        { upsert: true }
-      );
+      // Find the original seminar point document
+      const seminarPoint = await Point.findOne({
+        owner: this.owner,
+        domain: "Seminar",
+        date: this.date, // Ensure points are updated for the original seminar date
+      });
+
+      if (seminarPoint) {
+        // Add feedback points to the existing document
+        await Point.findByIdAndUpdate(
+          seminarPoint._id,
+          { $inc: { points: averageRating } }, // Add average feedback points
+          { new: true }
+        );
+      }
     }
   }
 };
+
+// Post-remove hook: Handle point deletion on seminar deletion
+seminarSchema.post("findOneAndDelete", async function (doc) {
+  if (!doc) return;
+
+  // Delete seminar points
+  await Point.deleteMany({
+    owner: doc.owner,
+    domain: "Seminar",
+    date: doc.date, // Match seminar's creation date
+  });
+
+  // Optionally, handle any other cleanup like feedback deletion
+  await SeminarFeedback.deleteMany({ seminar: doc._id });
+});
 
 export const Seminar = mongoose.model("Seminar", seminarSchema);
