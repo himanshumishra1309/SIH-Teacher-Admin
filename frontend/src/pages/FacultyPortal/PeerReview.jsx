@@ -18,8 +18,6 @@ import {
 
 import { Link } from "react-router-dom";
 
-
-
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
@@ -34,20 +32,17 @@ import PeerReviewFeedback from "./PeerReviewFeedback";
 export default function PeerReview() {
   const [facultyData, setFacultyData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-//   const [selectedBranch, setSelectedBranch] = useState("All");
+  //   const [selectedBranch, setSelectedBranch] = useState("All");
 
   useEffect(() => {
     const fetchData = async () => {
       const token = sessionStorage.getItem("teacherAccessToken");
       try {
-        const response = await axios.get(
-          "http://localhost:6005/api/v1/",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await axios.get("http://localhost:6005/api/v1/", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         console.log(response.data.data);
         setFacultyData(response.data.data);
       } catch (error) {

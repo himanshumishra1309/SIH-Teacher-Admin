@@ -38,8 +38,8 @@ const FacultyAppraisalReport = ({
     // sttp: "http://localhost:6005/api/v1/points/sttp",
     conferences: "http://localhost:6005/api/v1/points/conferences",
     // seminarsConducted: "http://localhost:6005/api/v1/points/seminars-conducted",
-    // seminarsAttended: "http://localhost:6005/api/v1/points/seminars-attended",
-    // projects: "http://localhost:6005/api/v1/points/projects",
+    // seminarsAttended: "http://localhost:6005/api/v1/points/seminar-attended", 
+    // projects: "http://localhost:6005/api/v1/points/projects", 
   };
 
   const appraisalData2 = [
