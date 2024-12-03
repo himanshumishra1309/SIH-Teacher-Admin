@@ -37,6 +37,7 @@ const teacherSchema = new Schema(
       type: String,
       required: true,
       index: true,
+      enum: ['CSE', 'IT', 'ENTC', 'ME', 'EE', 'CE']
     },
     avatar: {
       type: String,
