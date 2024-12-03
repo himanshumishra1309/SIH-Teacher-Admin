@@ -39,6 +39,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { ColumnVisibilityToggle } from "../ColumnVisiblityToggle";
 
 ChartJS.register(
   CategoryScale,
@@ -434,26 +435,7 @@ export default function FacultyResearchFundingTable() {
       </div>
 
       <div className="mb-4 flex flex-wrap gap-2">
-        {table.getAllLeafColumns().map((column) => (
-          <div key={column.id} className="flex items-center">
-            <Checkbox
-              checked={column.getIsVisible()}
-              onCheckedChange={(value) => column.toggleVisibility(!!value)}
-              id={column.id}
-            />
-            <label htmlFor={column.id} className="ml-2 text-sm font-medium">
-              {column.id}
-            </label>
-          </div>
-        ))}
-        <Button
-          onClick={resetFilters}
-          variant="outline"
-          size="sm"
-          className="ml-2"
-        >
-          Reset Filters
-        </Button>
+      <ColumnVisibilityToggle table={table} />
       </div>
 
       <div className="table-container">
