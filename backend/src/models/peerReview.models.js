@@ -12,22 +12,54 @@ const peerReviewSchema = new Schema(
       ref: "Teacher", // The person providing the review
       required: true,
     },
-    subjectOrProject: {
-      type: String, // Subject or project being reviewed
+    question1_rating:{
+      type: Number,
       required: true,
-      trim: true,
+    },
+    question2_rating:{
+      type: Number,
+      required: true,
+    },
+    question3_rating:{
+      type: Number,
+      required: true,
+    },
+    question4_rating:{
+      type: Number,
+      required: true,
+    },
+    question5_rating:{
+      type: Number,
+      required: true,
+    },
+    question6_rating:{
+      type: Number,
+      required: true,
+    },
+    question7_rating:{
+      type: Number,
+      required: true,
+    },
+    question8_rating:{
+      type: Number,
+      required: true,
+    },
+    question9_rating:{
+      type: Number,
+      required: true,
+    },
+    question10_rating:{
+      type: Number,
+      required: true,
     },
     feedback: {
       type: String, // Feedback or comments provided by the reviewer
       required: true,
       trim: true,
     },
-    reviewDate: {
-      type: Date, // Date when the review was completed
-    },
-    reviewedOnTime: {
-      type: Boolean, // Whether the review was submitted on time
-      default: true,
+    submissionTime: {
+      type: Date, 
+      required: true,
     },
     owner: {
       type: Schema.Types.ObjectId,
