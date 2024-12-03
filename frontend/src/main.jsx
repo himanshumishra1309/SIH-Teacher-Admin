@@ -61,6 +61,8 @@ import StudentRegister from './pages/SISU/StudentRegister';
 import AdminAllocateSubjectToStudent from './pages/AdminPortal/AdminList/AdminAllocateSubjectToStudents';
 import AddLecMarkAttendabce from './table/Tables/Faculty/AddLecMarkAttendabce';
 import PeerReview from './pages/FacultyPortal/PeerReview';
+import SubjectList from './table/Tables/Faculty/SubjectList';
+import LectureAndAttendance from './table/Tables/Faculty/LectureAndAttendance';
 
 
 const router = createBrowserRouter(
@@ -74,6 +76,9 @@ const router = createBrowserRouter(
         <Route index element={<FacultyDataDashboard/>} errorElement={<NotFoundPage/>} />
         
         <Route path="contribution" element={<RouteTransitionWrapper><FacultyDataDashboard/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
+        <Route path="subject/:subjectId" element={<RouteTransitionWrapper><LectureAndAttendance /></RouteTransitionWrapper>}
+          errorElement={<NotFoundPage />}
+        />
         <Route path="teaching-process" element={<RouteTransitionWrapper><FacultyTeachingProcessTable/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
         <Route path="research-papers" element={<RouteTransitionWrapper><ResearchLayout/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
         <Route path="expert-lectures" element={<RouteTransitionWrapper><FacultyLecturesTable /></RouteTransitionWrapper>}errorElement={<NotFoundPage/>}  />
@@ -91,9 +96,8 @@ const router = createBrowserRouter(
         <Route path="appraisal-report" element={<RouteTransitionWrapper><AppraisalReport/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
         <Route path="peer-review" element={<RouteTransitionWrapper><PeerReview/></RouteTransitionWrapper>}errorElement={<NotFoundPage/>} />
 
-
-
-        <Route path="teacheraddecture" element={<RouteTransitionWrapper><AddLecMarkAttendabce/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
+        <Route path="lecAttend" element={<RouteTransitionWrapper><SubjectList/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
+        {/* <Route path="teacheraddecture" element={<RouteTransitionWrapper><AddLecMarkAttendabce/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} /> */}
 
       </Route>
 
@@ -117,10 +121,7 @@ const router = createBrowserRouter(
     <Route path="register-student" element={<StudentRegister/>} errorElement={<NotFoundPage/>}/>
     <Route path="allocate-sub-student" element={<AdminAllocateSubjectToStudent/>} errorElement={<NotFoundPage/>}/>
 
-
-
     </Route>
-
  
       <Route path="admin-info/:id" element={<AdminLayout/>}> 
         

@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { columnDef } from "../Columns/LectureAndAttendace.jsx";
+import { columnDef } from "../Columns/LectureAndAttendaceCol.jsx";
 import "../../table.css";
 import DownloadBtn from "../../DownloadBtn.jsx";
 import DebouncedInput from "../../DebouncedInput.jsx";
@@ -22,7 +22,7 @@ import LoadingPage from "@/pages/LoadingPage.jsx";
 import DeleteDialog from "../../DeleteDialog.jsx";
 import axios from "axios";
 
-export default function LectureAndAttendaceTable() {
+export default function LectureAndAttendaceTable({ teacherId, subjectId }) {
   const { id } = useParams();
   // console.log(id);
   const [data, setData] = useState("");
@@ -34,7 +34,6 @@ export default function LectureAndAttendaceTable() {
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-
 
   // data of the teacher email wegera
   // useEffect(() => {
@@ -63,31 +62,30 @@ export default function LectureAndAttendaceTable() {
 
   // dtaa of the reaserch paper of the teacher aditi sharma
 
-  // useEffect(() => {
-  //   const fetchTeacherInfo = async () => {
-  //     try {
-  //       const token = sessionStorage.getItem("teacherAccessToken");
+  useEffect(() => {
+    const fetchLecture = async () => {
+      try {
+        const token = sessionStorage.getItem("teacherAccessToken");
 
-  //       const response = await axios.get(
-  //         `http://localhost:6005/api/v1/seminars/seminars/conducted`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //       console.log("Tecaher Seminar Data", response.data.data);
-  //       setData(response.data.data);
-  //     } catch (error) {
-  //       console.log("An error occurred while fetching teacher info.");
-  //     }
-  //     finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
+        const response = await axios.get(
+          `http://localhost:6005/api/v1/lecture/${subjectId}/${teacherId}/lectures`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log(response.data.data);
+        setData(response.data.data);
+      } catch (error) {
+        console.log("An error occurred while fetching teacher info.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  //   fetchTeacherInfo();
-  // }, []);
+    fetchLecture();
+  }, [subjectId, teacherId]);
 
   const columns = useMemo(() => {
     return columnDef.map((col) => {
@@ -185,7 +183,7 @@ export default function LectureAndAttendaceTable() {
   // if (isLoading) {
   //   return <LoadingPage/>;
   // }
-  
+
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between mb-4">
@@ -201,11 +199,11 @@ export default function LectureAndAttendaceTable() {
         <DownloadBtn data={data} fileName="Research" />
       </div>
 
-      <div className="flex justify-end mb-4">
+      {/* <div className="flex justify-end mb-4">
         <Button onClick={() => setDrawerOpen(true)} className="add-entry-btn">
           Add Entry
         </Button>
-      </div>
+      </div> */}
 
       <div className="mb-4 flex flex-wrap gap-2">
         {table.getAllLeafColumns().map((column) => (

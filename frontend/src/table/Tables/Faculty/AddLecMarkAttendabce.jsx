@@ -237,7 +237,7 @@ const AddLecMarkAttendance = () => {
           </Button>
         )}
       </div>
-      <LectureAndAttendaceTable />
+      <LectureAndAttendaceTable teacherId = {id} subjectId = {selectedSubject?._id} />
     </div>
   );
 };
