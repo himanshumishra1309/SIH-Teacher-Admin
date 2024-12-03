@@ -19,6 +19,7 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { Download } from "lucide-react";
 import axios from "axios";
+import AppraisalReportTable from "@/table/Tables/AppraisalReportTable";
 
 const FacultyAppraisalReport = ({
   facultyName,
@@ -195,10 +196,7 @@ const FacultyAppraisalReport = ({
           </CardHeader>
           <CardContent>
             {/* Your custom component will go here */}
-            <p className="text-gray-600 text-center">
-              Your custom detailed appraisal data component will be inserted
-              here.
-            </p>
+            <AppraisalReportTable/>
           </CardContent>
         </Card>
 
