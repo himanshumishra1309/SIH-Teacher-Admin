@@ -47,7 +47,7 @@ export default function AdminProjectTable() {
           }
         );
         setData(response.data.data);
-        console.log("Tecaher Projects DATA Is", data);
+        console.log(data);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
       }
@@ -142,7 +142,7 @@ export default function AdminProjectTable() {
         </div>
         <DownloadBtn data={data} fileName="Research" />
       </div>
-{/* 
+      {/* 
       <div className="flex justify-end mb-4">
         <Button onClick={() => setDrawerOpen(true)} className="add-entry-btn">
           Add Entry

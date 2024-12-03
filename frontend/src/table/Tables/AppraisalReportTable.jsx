@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { columnDef } from "./Columns/AppraisalReportColumn"
+import { columnDef } from "./Columns/AppraisalReportColumn";
 import "../table.css";
 import DebouncedInput from "../DebouncedInput.jsx";
 import { SearchIcon, Eye, EyeOff } from "lucide-react";
@@ -27,6 +27,19 @@ export default function AppraisalReportTable() {
   const [rowToDelete, setRowToDelete] = useState(null);
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
+
+  const [appraisalData, setAppraisalData] = useState([]);
+
+  const endpoints = {
+    journals: "http://localhost:6005/api/v1/points/journals",
+    books: "http://localhost:6005/api/v1/points/books",
+    patents: "http://localhost:6005/api/v1/points/patents",
+    // sttp: "http://localhost:6005/api/v1/points/sttp",
+    conferences: "http://localhost:6005/api/v1/points/conferences",
+    // seminarsConducted: "http://localhost:6005/api/v1/points/seminars-conducted",
+    // seminarsAttended: "http://localhost:6005/api/v1/points/seminar-attended",
+    // projects: "http://localhost:6005/api/v1/points/projects",
+  };
 
   const [seminarData, setSeminarData] = useState("");
   useEffect(() => {
@@ -49,8 +62,44 @@ export default function AppraisalReportTable() {
       }
     };
 
-    fetchTeacherInfo();
+    // fetchTeacherInfo();
+    fetchAppraisalData();
   }, []);
+
+  const fetchAppraisalData = async () => {
+    try {
+      const results = await Promise.all(
+        Object.entries(endpoints).map(async ([key, url]) => {
+          const response = await axios.get(url, {
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem(
+                "teacherAccessToken"
+              )}`,
+            },
+          });
+          console.log(response);
+          return { field: key, ...response.data.data };
+        })
+      );
+
+      console.log("results", results);
+
+      const formattedData = results.map((item) => ({
+        field: item.field
+          .replace(/([A-Z])/g, " $1")
+          .replace(/^./, (str) => str.toUpperCase()),
+        currentPoints: item.requestedTeacherPoints || 0,
+        highestPoints: item.highestPoints || 0,
+        rank: item.requestedTeacherRank || 0,
+      }));
+
+      console.log("formattedData", formattedData);
+
+      setAppraisalData(formattedData);
+    } catch (error) {
+      console.error("Error fetching appraisal data:", error.message);
+    }
+  };
 
   const columns = useMemo(() => {
     return columnDef.map((col) => {
@@ -86,7 +135,7 @@ export default function AppraisalReportTable() {
   }, []);
 
   const table = useReactTable({
-    data,
+    data : appraisalData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -138,15 +187,14 @@ export default function AppraisalReportTable() {
         </div>
         <ColumnVisibilityToggle table={table} />
         <Button
-        onClick={resetFilters}
-        variant="outline"
-        size="sm"
-        className="mb-4"
-      >
-        Reset Filters
-      </Button>
+          onClick={resetFilters}
+          variant="outline"
+          size="sm"
+          className="mb-4"
+        >
+          Reset Filters
+        </Button>
       </div>
-  
 
       <div className="table-container">
         <table className="w-full">
@@ -187,8 +235,6 @@ export default function AppraisalReportTable() {
           </tbody>
         </table>
       </div>
-
- 
 
       {/* <div className="flex items-center justify-end mt-4 gap-2">
         <Button
