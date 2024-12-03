@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose";
 import { DomainPoint } from "./domainpoints.models.js";
 import { Point } from "./points.models.js";
 import { Lecture } from "./lectures.models.js";
-import { LectureFeedback } from "./lecturefeedback.models.js"; // Assuming this model exists
+import { LectureFeedback } from "./lectureFeedbacks.models.js"; // Assuming this model exists
 
 const allocatedSubjectSchema = new Schema(
   {
@@ -86,7 +86,10 @@ const allocatePointsIfEligible = async (subjectId) => {
     const points = await getPointsForDomain(domainKey); // Points for completing the minimum lectures
 
     // Check if points already exist for the subject domain
-    const existingPoints = await Point.findOne({ owner: teacher, domain: domainKey });
+    const existingPoints = await Point.findOne({
+      owner: teacher,
+      domain: domainKey,
+    });
 
     if (!existingPoints) {
       // Create points if not already allocated
@@ -102,7 +105,11 @@ const allocatePointsIfEligible = async (subjectId) => {
 
 // Function to process feedback and allocate points
 const processFeedback = async (doc) => {
-  if (doc.feedbackReleased && doc.activeUntil && doc.activeUntil <= new Date()) {
+  if (
+    doc.feedbackReleased &&
+    doc.activeUntil &&
+    doc.activeUntil <= new Date()
+  ) {
     const feedbacks = await LectureFeedback.find({
       subject_code: doc.subject_code,
       teacher: doc.teacher,
@@ -137,9 +144,14 @@ const processFeedback = async (doc) => {
       );
 
       // Update teacher's points
-      const existingPoints = await Point.findOne({ owner: doc.teacher, domain: domainKey });
+      const existingPoints = await Point.findOne({
+        owner: doc.teacher,
+        domain: domainKey,
+      });
       if (existingPoints) {
-        await Point.findByIdAndUpdate(existingPoints._id, { $inc: { points: feedbackPoints } });
+        await Point.findByIdAndUpdate(existingPoints._id, {
+          $inc: { points: feedbackPoints },
+        });
       } else {
         await Point.create({
           date: new Date(),
@@ -169,7 +181,10 @@ allocatedSubjectSchema.post("findOneAndDelete", async function (doc) {
     const domainKey = getDomainKey(doc.subject_credit, doc.type);
     const points = await getPointsForDomain(domainKey);
 
-    const existingPoints = await Point.findOne({ owner: doc.teacher, domain: domainKey });
+    const existingPoints = await Point.findOne({
+      owner: doc.teacher,
+      domain: domainKey,
+    });
 
     if (existingPoints) {
       // Deduct points and remove the points entry if points drop to 0
@@ -177,10 +192,15 @@ allocatedSubjectSchema.post("findOneAndDelete", async function (doc) {
       if (newPoints <= 0) {
         await Point.findByIdAndDelete(existingPoints._id);
       } else {
-        await Point.findByIdAndUpdate(existingPoints._id, { points: newPoints });
+        await Point.findByIdAndUpdate(existingPoints._id, {
+          points: newPoints,
+        });
       }
     }
   }
 });
 
-export const AllocatedSubject = mongoose.model("AllocatedSubject", allocatedSubjectSchema);
+export const AllocatedSubject = mongoose.model(
+  "AllocatedSubject",
+  allocatedSubjectSchema
+);
