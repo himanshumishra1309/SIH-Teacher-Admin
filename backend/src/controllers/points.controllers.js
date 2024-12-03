@@ -557,8 +557,7 @@ const completeChapterPoints = asyncHandler(async (req, res) => {
     "National Chapter",
     "Regional Chapter",
   ];
-
-  const { teacherId } = req.params; // Expect teacherId from params
+  const teacherId = req.teacher._id;
   if (!teacherId) {
     throw new ApiError("Teacher ID is required", 400);
   }
@@ -671,7 +670,7 @@ const completeSTTPPoints = asyncHandler(async (req, res) => {
     "STTP_4_WEEKS",
   ];
 
-  const { teacherId } = req.params; // Expect teacherId from params
+  const teacherId = req.teacher._id;
   if (!teacherId) {
     throw new ApiError("Teacher ID is required", 400);
   }
@@ -817,7 +816,7 @@ const completeEventsConductedPoints = asyncHandler(async (req, res) => {
     "Reviewer College Event",
   ];
 
-  const { teacherId } = req.params; // Expect teacherId from params
+  const teacherId = req.teacher._id;
   if (!teacherId) {
     throw new ApiError("Teacher ID is required", 400);
   }
@@ -927,7 +926,7 @@ const completeSeminarAttendedPoints = asyncHandler(async (req, res) => {
     "College Seminar",
   ];
 
-  const { teacherId } = req.params; // Expect teacherId from params
+  const teacherId = req.teacher._id;
   if (!teacherId) {
     throw new ApiError("Teacher ID is required", 400);
   }
@@ -1037,7 +1036,7 @@ const completeExpertLecturesPoints = asyncHandler(async (req, res) => {
     "College Expert Lecture",
   ];
 
-  const { teacherId } = req.params; // Expect teacherId from params
+  const teacherId = req.teacher._id;
   if (!teacherId) {
     throw new ApiError("Teacher ID is required", 400);
   }
@@ -1148,7 +1147,7 @@ const completeExpertLecturesPoints = asyncHandler(async (req, res) => {
 const completeSeminarPoints = asyncHandler(async (req, res) => {
   const seminarDomain = "Seminar";
 
-  const { teacherId } = req.params; // Expect teacherId from params
+  const teacherId = req.teacher._id; // Expect teacherId from params
 
   if (!teacherId) {
     throw new ApiError(400, "Teacher ID is required");

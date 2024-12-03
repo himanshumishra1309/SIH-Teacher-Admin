@@ -43,12 +43,12 @@ router.get("/books", completeBooksPoints);
 router.get("/patents", completePatentPoints);
 router.get("/projects", completeProjectsPoints);
 router.get("/conferences", completeConferencePoints);
-router.get("/chapter/:teacherId", completeChapterPoints);
+router.get("/chapter", completeChapterPoints);
 router.get("/sttp", completeSTTPPoints);
-router.get("/events/:teacherId", completeEventsConductedPoints);
-router.get("/seminar-attended/:teacherId", completeSeminarAttendedPoints);
+router.get("/events", completeEventsConductedPoints);
+router.get("/seminar-attended", completeSeminarAttendedPoints);
 router.get("/expert-lectures", completeExpertLecturesPoints);
-router.get("/seminar/:teacherId", completeSeminarPoints);
+router.get("/seminar", completeSeminarPoints);
 
 // Comparative data route
 router.get("/comparative", getComparativePointsData);

@@ -60,6 +60,7 @@ import FacultyRegister from './pages/SISU/FacultyRegister';
 import StudentRegister from './pages/SISU/StudentRegister';
 import AdminAllocateSubjectToStudent from './pages/AdminPortal/AdminList/AdminAllocateSubjectToStudents';
 import AddLecMarkAttendabce from './table/Tables/Faculty/AddLecMarkAttendabce';
+import PeerReview from './pages/FacultyPortal/PeerReview';
 
 
 const router = createBrowserRouter(
@@ -88,6 +89,7 @@ const router = createBrowserRouter(
         <Route path="event-participation" element={<RouteTransitionWrapper><FacultyEventTable /></RouteTransitionWrapper>} errorElement={<NotFoundPage />} />
         <Route path="posts" element={<RouteTransitionWrapper><PostsPage/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
         <Route path="appraisal-report" element={<RouteTransitionWrapper><AppraisalReport/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
+        <Route path="peer-review" element={<RouteTransitionWrapper><PeerReview/></RouteTransitionWrapper>}errorElement={<NotFoundPage/>} />
 
 
 
@@ -135,6 +137,7 @@ const router = createBrowserRouter(
         <Route path="seminars" element={<AdminSeminarsTable/>} errorElement={<NotFoundPage/>} />
         <Route path="projects" element={<AdminProjectTable />} errorElement={<NotFoundPage/>} />
         <Route path="adminallocate-lectures" element={<AdminLectureAllocationTable />} errorElement={<NotFoundPage/>} />
+
 
         {/* <Route path="Contribution-graph" element={<ResearchTable />} errorElement={<NotFoundPage/>} /> */}
 

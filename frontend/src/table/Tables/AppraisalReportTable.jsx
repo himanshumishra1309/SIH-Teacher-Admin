@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, Outlet } from "react-router-dom";
-
+import { ColumnVisibilityToggle } from "./ColumnVisiblityToggle";
 import {
   useReactTable,
   getCoreRowModel,
@@ -136,29 +136,17 @@ export default function AppraisalReportTable() {
             placeholder="Search all columns..."
           />
         </div>
-      </div>
-      <div className="mb-4 flex flex-wrap gap-2">
-        {table.getAllLeafColumns().map((column) => (
-          <div key={column.id} className="flex items-center">
-            <Checkbox
-              checked={column.getIsVisible()}
-              onCheckedChange={(value) => column.toggleVisibility(!!value)}
-              id={column.id}
-            />
-            <label htmlFor={column.id} className="ml-2 text-sm font-medium">
-              {column.id}
-            </label>
-          </div>
-        ))}
+        <ColumnVisibilityToggle table={table} />
         <Button
-          onClick={resetFilters}
-          variant="outline"
-          size="sm"
-          className="ml-2"
-        >
-          Reset Filters
-        </Button>
+        onClick={resetFilters}
+        variant="outline"
+        size="sm"
+        className="mb-4"
+      >
+        Reset Filters
+      </Button>
       </div>
+  
 
       <div className="table-container">
         <table className="w-full">
