@@ -2,10 +2,10 @@ import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { Contribution } from "../models/extraContributions.models.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { v2 as cloudinary } from 'cloudinary';
+import { uploadToGCS, deleteFromGCS } from "../utils/googleCloudStorage.js";
+import path from "path";
 
-const getAllContribution = asyncHandler(async (req, res)=>{
+const getAllContribution = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
@@ -28,54 +28,50 @@ const getAllContribution = asyncHandler(async (req, res)=>{
 });
 
 const createContribution = asyncHandler(async (req, res) => {
-    const { title, description } = req.body;
+    const { title, description, contributionType } = req.body;
     const files = req.files || {};
     
-    // Validate required fields
-    if (!title || !description) {
-        throw new ApiError(400, "Title and description are required");
+    if (!title || !description || !contributionType) {
+        throw new ApiError(400, "Title, description, and contribution type are required");
     }
 
-    // Upload images to Cloudinary
     const images = [];
     if (files.images) {
         for (const file of files.images) {
-            const result = await uploadOnCloudinary(file.path);
-            if (!result || !result.secure_url) {
+            const result = await uploadToGCS(file.path, "images");
+            if (!result) {
                 throw new ApiError(500, "Failed to upload one or more images. Please try again.");
             }
-            images.push(result.secure_url);
+            images.push(result);
         }
     }
 
-    // Upload report to Cloudinary if available
     let report = null;
     if (files.report) {
-        const result = await uploadOnCloudinary(files.report[0].path);
-        if (!result || !result.secure_url) {
+        const result = await uploadToGCS(files.report[0].path, "pdf-report");
+        if (!result) {
             throw new ApiError(500, "Failed to upload the report. Please try again.");
         }
-        report = result.secure_url;
+        report = result;
     }
 
-    // Create the contribution document
     const contribution = await Contribution.create({
         title,
         description,
         images,
         report,
+        contributionType,
         owner: req.teacher._id
     });
 
-    res.status(201).json(new ApiResponse(201, "Contribution created successfully", contribution));
+    res.status(201).json(new ApiResponse(201, contribution, "Contribution created successfully"));
 });
 
 const editContribution = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const { title, description, deleteImages = [], deleteReport } = req.body;
+    const { title, description, contributionType, deleteImages = [], deleteReport } = req.body;
     const files = req.files || {};
 
-    // Find the existing contribution by ID
     const contribution = await Contribution.findById(id);
     if (!contribution) {
         throw new ApiError(404, "Contribution not found");
@@ -85,60 +81,52 @@ const editContribution = asyncHandler(async (req, res) => {
         throw new ApiError(403, "You are not authorized to update this Contribution");
     }
 
-    // Update text fields if provided
     if (title) contribution.title = title;
     if (description) contribution.description = description;
+    if (contributionType) contribution.contributionType = contributionType;
 
-    // Delete specified images if requested
     if (deleteImages.length) {
+        for (const imageUrl of deleteImages) {
+            const fileName = path.basename(imageUrl);
+            await deleteFromGCS(fileName, "images");
+        }
         contribution.images = contribution.images.filter(
             (img) => !deleteImages.includes(img)
         );
-
-        // Optionally, delete images from Cloudinary
-        for (const imageUrl of deleteImages) {
-            const publicId = imageUrl.split('/').pop().split('.')[0];
-            await cloudinary.uploader.destroy(publicId);
-        }
     }
 
-    // Upload new images if provided
     if (files.images) {
         for (const file of files.images) {
-            const result = await uploadOnCloudinary(file.path);
-            if (!result || !result.secure_url) {
+            const result = await uploadToGCS(file.path, "images");
+            if (!result) {
                 throw new ApiError(500, "Failed to upload one or more images. Please try again.");
             }
-            contribution.images.push(result.secure_url);
+            contribution.images.push(result);
         }
     }
 
-    // Delete existing report if requested
     if (deleteReport && contribution.report) {
-        const reportPublicId = contribution.report.split('/').pop().split('.')[0];
-        await cloudinary.uploader.destroy(reportPublicId);
-        contribution.report = null;  // Remove report from the document
+        const reportFileName = path.basename(contribution.report);
+        await deleteFromGCS(reportFileName, "pdf-report");
+        contribution.report = null;
     }
 
-    // Upload new report if provided
     if (files.report) {
-        const result = await uploadOnCloudinary(files.report[0].path);
-        if (!result || !result.secure_url) {
+        const result = await uploadToGCS(files.report[0].path, "pdf-report");
+        if (!result) {
             throw new ApiError(500, "Failed to upload the report. Please try again.");
         }
-        contribution.report = result.secure_url;
+        contribution.report = result;
     }
 
-    // Save the updated document
     await contribution.save();
 
-    res.status(200).json(new ApiResponse(200, "Contribution updated successfully", contribution));
+    res.status(200).json(new ApiResponse(200, contribution, "Contribution updated successfully"));
 });
 
 const deleteContribution = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    // Find the existing contribution by ID
     const contribution = await Contribution.findById(id);
     if (!contribution) {
         throw new ApiError(404, "Contribution not found");
@@ -148,22 +136,19 @@ const deleteContribution = asyncHandler(async (req, res) => {
         throw new ApiError(403, "You are not authorized to delete this Contribution");
     }
 
-    // Delete each image from Cloudinary
     for (const imageUrl of contribution.images) {
-        const publicId = imageUrl.split('/').pop().split('.')[0]; // Extract public ID from URL
-        await cloudinary.uploader.destroy(publicId);
+        const fileName = path.basename(imageUrl);
+        await deleteFromGCS(fileName, "images");
     }
 
-    // Optionally, delete the report if it was uploaded
     if (contribution.report) {
-        const reportPublicId = contribution.report.split('/').pop().split('.')[0];
-        await cloudinary.uploader.destroy(reportPublicId);
+        const reportFileName = path.basename(contribution.report);
+        await deleteFromGCS(reportFileName, "pdf-report");
     }
 
-    // Delete the contribution from the database
-    await contribution.deleteOne();
+    await contribution.remove();
 
-    res.status(200).json(new ApiResponse(200, "Contribution deleted successfully"));
+    res.status(200).json(new ApiResponse(200, null, "Contribution deleted successfully"));
 });
 
-export { createContribution, editContribution, getAllContribution, deleteContribution};
+export { createContribution, editContribution, getAllContribution, deleteContribution };
