@@ -1467,6 +1467,8 @@ const calculateTeacherRanks = asyncHandler(async (req, res) => {
     "Minor Projects",
     "Ongoing Funded Above ₹10 Lakh Research",
     "Ongoing Funded Below ₹10 Lakh Research",
+    "Completed Funded Above ₹10 Lakh Research",
+    "Completed Funded Below ₹10 Lakh Research",
   ];
 
   const feedbackDomains = [
@@ -1481,7 +1483,12 @@ const calculateTeacherRanks = asyncHandler(async (req, res) => {
     "Seminar",
   ];
 
-  const otherDomains = ["Industrial-Visit-Other", "Task-Points-Other"];
+  const otherDomains = ["Industrial-Visit-Other", "Task-Points-Other", "Industrial-Visit-Other",
+        "Wookshop-Conducted-Other",
+        "Extra-Course-Studied-Other",
+        "Made-Study-Materials-Other",
+        "Miscellaneous",
+        "Task-Points-Other",];
 
   // Aggregate points for all teachers
   const teacherPoints = await Point.aggregate([
@@ -1518,6 +1525,8 @@ const calculateTeacherRanks = asyncHandler(async (req, res) => {
     },
   ]);
 
+  console.log({teacherPoints})
+
   // Calculate max points
   const maxPoints = teacherPoints.reduce(
     (max, teacher) => ({
@@ -1528,20 +1537,50 @@ const calculateTeacherRanks = asyncHandler(async (req, res) => {
     { academicPoints: 0, feedbackPoints: 0, otherPoints: 0 }
   );
 
+  console.log({maxPoints})
+
   // Calculate total points and performance category for each teacher
   const rankedTeachers = teacherPoints.map((teacher) => {
-    const totalPoints =
-      (teacher.academicPoints / maxPoints.academicPoints) * 65 +
-      (teacher.feedbackPoints / maxPoints.feedbackPoints) * 25 +
-      (teacher.otherPoints / maxPoints.otherPoints) * 10;
-
+    // Initialize totalPoints and weight sum
+    let totalPoints = 0;
+    let weightSum = 0;
+  
+    // Add academicPoints if maxPoints.academicPoints is greater than 0
+    if (maxPoints.academicPoints > 0) {
+      totalPoints +=
+        (teacher.academicPoints / maxPoints.academicPoints) * 65;
+      weightSum += 65;
+    }
+  
+    // Add feedbackPoints if maxPoints.feedbackPoints is greater than 0
+    if (maxPoints.feedbackPoints > 0) {
+      totalPoints +=
+        (teacher.feedbackPoints / maxPoints.feedbackPoints) * 25;
+      weightSum += 25;
+    }
+  
+    // Add otherPoints if maxPoints.otherPoints is greater than 0
+    if (maxPoints.otherPoints > 0) {
+      totalPoints +=
+        (teacher.otherPoints / maxPoints.otherPoints) * 10;
+      weightSum += 10;
+    }
+  
+    // Normalize totalPoints based on weightSum
+    if (weightSum > 0) {
+      totalPoints = (totalPoints / weightSum) * 100;
+    } else {
+      totalPoints = 0; // No valid points to calculate
+    }
+  
+    // Determine performance category
     let performanceCategory;
     if (totalPoints >= 95) performanceCategory = "Outstanding";
     else if (totalPoints >= 85) performanceCategory = "Very Good";
     else if (totalPoints >= 75) performanceCategory = "Good";
     else if (totalPoints >= 65) performanceCategory = "Satisfactory";
     else performanceCategory = "Poor";
-
+  
     return {
       teacherId: teacher._id,
       teacherName: teacher.teacherInfo.name,
@@ -1549,6 +1588,7 @@ const calculateTeacherRanks = asyncHandler(async (req, res) => {
       performanceCategory,
     };
   });
+  
 
   // Sort teachers by total points (descending) and assign ranks
   rankedTeachers.sort((a, b) => b.totalPoints - a.totalPoints);
