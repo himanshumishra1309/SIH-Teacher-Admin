@@ -38,6 +38,8 @@ import journalRouter from "./routes/journal.routes.js"
 import patentRouter from "./routes/patent.routes.js"
 import conferenceRouter from "./routes/conference.routes.js"
 import pointRouter from "./routes/points.routes.js"
+import postRouter from "./routes/extracontribution.routes.js"
+
 
 
 app.use("/api/v1/teachers", teacherRouter);
@@ -59,6 +61,7 @@ app.use("/api/v1/journals", journalRouter);
 app.use("/api/v1/patents", patentRouter);
 app.use("/api/v1/conferences", conferenceRouter);
 app.use("/api/v1/points", pointRouter);
+app.use("/api/v1/posts", postRouter);
 
 
 
