@@ -13,8 +13,9 @@ import {
     completeSeminarAttendedPoints,
     completeExpertLecturesPoints,
     completeSeminarPoints,
-    getComparativePointsData
-} from '../controllers/points.controller.js';
+    getComparativePointsData,
+    calculateTeacherRanks
+} from '../controllers/points.controllers.js';
 
 const router = express.Router();
 
@@ -51,5 +52,7 @@ router.get('/seminar/:teacherId', completeSeminarPoints);
 
 // Comparative data route
 router.get('/comparative/:teacherId', getComparativePointsData);
+
+router.get('/teacher-ranks', calculateTeacherRanks);
 
 export default router;

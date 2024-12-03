@@ -1327,4 +1327,105 @@ const getComparativePointsData = asyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, { comparativeData, chartData }, "Comparative points data retrieved successfully"));
 });
 
-export { completeJournalPoints, completeBooksPoints, completePatentPoints, completeProjectsPoints, completeConferencePoints, completeChapterPoints, completeSTTPPoints, completeEventsConductedPoints, completeSeminarAttendedPoints, completeExpertLecturesPoints,completeSeminarPoints, getComparativePointsData };
+const calculateTeacherRanks = asyncHandler(async (req, res) => {
+  // Define the domains for each category
+  const academicDomains = [
+    'International Journal', 'National Journal', 'Regional Journal',
+    'International Chapter', 'National Chapter', 'Regional Chapter',
+    'International Book', 'National Book', 'Regional Book',
+    'International Conference', 'National Conference', 'Regional Conference',
+    'International Seminar Attended', 'National Seminar Attended', 'State Seminar Attended',
+    'Organizer National Event', 'Organizer International Event', 'Organizer State Event', 'Organizer College Event',
+    'Speaker National Event', 'Speaker International Event', 'Speaker State Event', 'Speaker College Event',
+    'Judge National Event', 'Judge International Event', 'Judge State Event', 'Judge College Event',
+    'Coordinator National Event', 'Coordinator International Event', 'Coordinator State Event', 'Coordinator College Event',
+    'Volunteer National Event', 'Volunteer International Event', 'Volunteer State Event', 'Volunteer College Event',
+    'Evaluator National Event', 'Evaluator International Event', 'Evaluator State Event', 'Evaluator College Event',
+    'Panelist National Event', 'Panelist International Event', 'Panelist State Event', 'Panelist College Event',
+    'Mentor National Event', 'Mentor International Event', 'Mentor State Event', 'Mentor College Event',
+    'Session Chair National Event', 'Session Chair International Event', 'Session Chair State Event', 'Session Chair College Event',
+    'Reviewer National Event', 'Reviewer International Event', 'Reviewer State Event', 'Reviewer College Event',
+    'Mtech Students Guided', 'PhD Students Guided',
+    'STTP_1_DAY', 'STTP_2_3_DAYS', 'STTP_4_5_DAYS', 'STTP_1_WEEK', 'STTP_2_WEEKS', 'STTP_3_WEEKS', 'STTP_4_WEEKS',
+    'Major Projects', 'Minor Projects',
+    'Ongoing Funded Above ₹10 Lakh Research', 'Ongoing Funded Below ₹10 Lakh Research'
+  ];
+
+  const feedbackDomains = ['1-Theory', '2-Theory', '3-Theory', '4-Theory', '1-Practical', '2-Practical', '3-Practical', '4-Practical', 'Seminar'];
+
+  const otherDomains = ['Industrial-Visit-Other', 'Task-Points-Other'];
+
+  // Aggregate points for all teachers
+  const teacherPoints = await Point.aggregate([
+      {
+        $group: {
+          _id: "$owner",
+          academicPoints: {
+            $sum: {
+                $cond: [{ $in: ["$domain", academicDomains] }, "$points", 0]
+            }
+          },
+          feedbackPoints: {
+            $sum: {
+                $cond: [{ $in: ["$domain", feedbackDomains] }, "$points", 0]
+            }
+          },
+          otherPoints: {
+            $sum: {
+                $cond: [{ $in: ["$domain", otherDomains] }, "$points", 0]
+            }
+          }
+        }
+      },
+      {
+        $lookup: {
+            from: "teachers",
+            localField: "_id",
+            foreignField: "_id",
+            as: "teacherInfo"
+        }
+      },
+      {
+          $unwind: "$teacherInfo"
+      }
+  ]);
+
+  // Calculate max points
+  const maxPoints = teacherPoints.reduce((max, teacher) => ({
+      academicPoints: Math.max(max.academicPoints, teacher.academicPoints),
+      feedbackPoints: Math.max(max.feedbackPoints, teacher.feedbackPoints),
+      otherPoints: Math.max(max.otherPoints, teacher.otherPoints)
+  }), { academicPoints: 0, feedbackPoints: 0, otherPoints: 0 });
+
+  // Calculate total points and performance category for each teacher
+  const rankedTeachers = teacherPoints.map(teacher => {
+    const totalPoints = 
+      ((teacher.academicPoints / maxPoints.academicPoints) * 65) +
+      ((teacher.feedbackPoints / maxPoints.feedbackPoints) * 25) +
+      ((teacher.otherPoints / maxPoints.otherPoints) * 10);
+
+    let performanceCategory;
+    if (totalPoints >= 95) performanceCategory = "Outstanding";
+    else if (totalPoints >= 85) performanceCategory = "Very Good";
+    else if (totalPoints >= 75) performanceCategory = "Good";
+    else if (totalPoints >= 65) performanceCategory = "Satisfactory";
+    else performanceCategory = "Poor";
+
+    return {
+      teacherId: teacher._id,
+      teacherName: teacher.teacherInfo.name,
+      totalPoints,
+      performanceCategory
+    };
+  });
+
+  // Sort teachers by total points (descending) and assign ranks
+  rankedTeachers.sort((a, b) => b.totalPoints - a.totalPoints);
+  rankedTeachers.forEach((teacher, index) => {
+      teacher.rank = index + 1;
+  });
+
+  res.status(200).json(new ApiResponse(200, rankedTeachers, "Teacher ranks calculated successfully"));
+});
+
+export { completeJournalPoints, completeBooksPoints, completePatentPoints, completeProjectsPoints, completeConferencePoints, completeChapterPoints, completeSTTPPoints, completeEventsConductedPoints, completeSeminarAttendedPoints, completeExpertLecturesPoints,completeSeminarPoints, getComparativePointsData, calculateTeacherRanks };
