@@ -2,7 +2,7 @@ import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { Contribution } from "../models/extraContributions.models.js";
-import { uploadToGCS, deleteFromGCS } from "../utils/googleCloudStorage.js";
+import { uploadToGCS, deleteFromGCS } from "../utils/googleCloud.js";
 import path from "path";
 
 const getAllContribution = asyncHandler(async (req, res) => {
