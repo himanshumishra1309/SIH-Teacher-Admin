@@ -37,6 +37,8 @@ import bookRouter from "./routes/books.routes.js"
 import journalRouter from "./routes/journal.routes.js"
 import patentRouter from "./routes/patent.routes.js"
 import conferenceRouter from "./routes/conference.routes.js"
+import pointRouter from "./routes/points.routes.js"
+
 
 app.use("/api/v1/teachers", teacherRouter);
 app.use("/api/v1/admins", adminRouter);
@@ -56,6 +58,8 @@ app.use("/api/v1/book", bookRouter);
 app.use("/api/v1/journals", journalRouter);
 app.use("/api/v1/patents", patentRouter);
 app.use("/api/v1/conferences", conferenceRouter);
+app.use("/api/v1/points", pointRouter);
+
 
 
 

@@ -1,7 +1,8 @@
-import { ApiError } from "../utils/ApiErrors";
-import { ApiResponse } from "../utils/ApiResponse";
-import { asyncHandler } from "../utils/AsyncHandler";
-import { Point } from "../models/points.models";
+import { ApiError } from "../utils/ApiErrors.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { asyncHandler } from "../utils/AsyncHandler.js";
+import { Point } from "../models/points.models.js";
+import mongoose from "mongoose";
 
 const completeJournalPoints = asyncHandler(async (req, res) => {
   const journalDomains = [
@@ -10,7 +11,7 @@ const completeJournalPoints = asyncHandler(async (req, res) => {
     "Regional Journal",
   ];
 
-  const { teacherId } = req.params; // Expect teacherId from params
+  const teacherId = req.teacher._id;
   if (!teacherId) {
     throw new ApiError(400, "Teacher ID is required");
   }
@@ -53,11 +54,13 @@ const completeJournalPoints = asyncHandler(async (req, res) => {
 
   // Find the requested teacher's rank and points
   const requestedTeacher = aggregatedPoints.find(
-    (entry) => entry._id.toString() === teacherId
+    (entry) => entry._id.toString() === teacherId.toString()
   );
+
+  // console.log({requestedTeacher})
   const requestedTeacherRank = requestedTeacher
     ? aggregatedPoints.findIndex(
-        (entry) => entry._id.toString() === teacherId
+        (entry) => entry._id.toString() === teacherId.toString()
       ) + 1
     : null;
   const requestedTeacherPoints = requestedTeacher
@@ -71,7 +74,7 @@ const completeJournalPoints = asyncHandler(async (req, res) => {
   const journalPointsBreakdown = await Point.aggregate([
     {
       $match: {
-        owner: mongoose.Types.ObjectId(teacherId),
+        owner: new mongoose.Types.ObjectId(teacherId), // changes (new keyword added)
         domain: { $in: journalDomains },
       },
     },
@@ -115,7 +118,8 @@ const completeJournalPoints = asyncHandler(async (req, res) => {
 const completeBooksPoints = asyncHandler(async (req, res) => {
   const bookDomains = ["International Book", "National Book", "Regional Book"];
 
-  const { teacherId } = req.params; // Expect teacherId from params
+  // const { teacherId } = req.params; // Expect teacherId from params
+  const teacherId = req.teacher._id;
   if (!teacherId) {
     throw new ApiError("Teacher ID is required", 400);
   }
@@ -158,11 +162,11 @@ const completeBooksPoints = asyncHandler(async (req, res) => {
 
   // Find the requested teacher's rank and points
   const requestedTeacher = aggregatedPoints.find(
-    (entry) => entry._id.toString() === teacherId
+    (entry) => entry._id.toString() === teacherId.toString()
   );
   const requestedTeacherRank = requestedTeacher
     ? aggregatedPoints.findIndex(
-        (entry) => entry._id.toString() === teacherId
+        (entry) => entry._id.toString() === teacherId.toString()
       ) + 1
     : null;
   const requestedTeacherPoints = requestedTeacher
@@ -176,7 +180,7 @@ const completeBooksPoints = asyncHandler(async (req, res) => {
   const bookPointsBreakdown = await Point.aggregate([
     {
       $match: {
-        owner: mongoose.Types.ObjectId(teacherId),
+        owner: new mongoose.Types.ObjectId(teacherId),
         domain: { $in: bookDomains },
       },
     },
@@ -224,7 +228,8 @@ const completePatentPoints = asyncHandler(async (req, res) => {
     "Regional Patent",
   ];
 
-  const { teacherId } = req.params; // Expect teacherId from params
+  // const { teacherId } = req.params; // Expect teacherId from params
+  const teacherId = req.teacher._id;
   if (!teacherId) {
     throw new ApiError("Teacher ID is required", 400);
   }
@@ -267,11 +272,11 @@ const completePatentPoints = asyncHandler(async (req, res) => {
 
   // Find the requested teacher's rank and points
   const requestedTeacher = aggregatedPoints.find(
-    (entry) => entry._id.toString() === teacherId
+    (entry) => entry._id.toString() === teacherId.toString()
   );
   const requestedTeacherRank = requestedTeacher
     ? aggregatedPoints.findIndex(
-        (entry) => entry._id.toString() === teacherId
+        (entry) => entry._id.toString() === teacherId.toString()
       ) + 1
     : null;
   const requestedTeacherPoints = requestedTeacher
@@ -285,7 +290,7 @@ const completePatentPoints = asyncHandler(async (req, res) => {
   const patentPointsBreakdown = await Point.aggregate([
     {
       $match: {
-        owner: mongoose.Types.ObjectId(teacherId),
+        owner: new mongoose.Types.ObjectId(teacherId),
         domain: { $in: patentDomains },
       },
     },
@@ -329,7 +334,8 @@ const completePatentPoints = asyncHandler(async (req, res) => {
 const completeProjectsPoints = asyncHandler(async (req, res) => {
   const projectDomains = ["Major Projects", "Minor Projects"];
 
-  const { teacherId } = req.params; // Expect teacherId from params
+  // const { teacherId } = req.params; // Expect teacherId from params
+  const teacherId = req.teacher._id;
   if (!teacherId) {
     throw new ApiError("Teacher ID is required", 400);
   }
@@ -372,11 +378,11 @@ const completeProjectsPoints = asyncHandler(async (req, res) => {
 
   // Find the requested teacher's rank and points
   const requestedTeacher = aggregatedPoints.find(
-    (entry) => entry._id.toString() === teacherId
+    (entry) => entry._id.toString() === teacherId.toString()
   );
   const requestedTeacherRank = requestedTeacher
     ? aggregatedPoints.findIndex(
-        (entry) => entry._id.toString() === teacherId
+        (entry) => entry._id.toString() === teacherId.toString()
       ) + 1
     : null;
   const requestedTeacherPoints = requestedTeacher
@@ -438,7 +444,8 @@ const completeConferencePoints = asyncHandler(async (req, res) => {
     "Regional Conference",
   ];
 
-  const { teacherId } = req.params; // Expect teacherId from params
+  // const { teacherId } = req.params; // Expect teacherId from params
+  const teacherId = req.teacher._id;
   if (!teacherId) {
     throw new ApiError("Teacher ID is required", 400);
   }
@@ -481,11 +488,11 @@ const completeConferencePoints = asyncHandler(async (req, res) => {
 
   // Find the requested teacher's rank and points
   const requestedTeacher = aggregatedPoints.find(
-    (entry) => entry._id.toString() === teacherId
+    (entry) => entry._id.toString() === teacherId.toString()
   );
   const requestedTeacherRank = requestedTeacher
     ? aggregatedPoints.findIndex(
-        (entry) => entry._id.toString() === teacherId
+        (entry) => entry._id.toString() === teacherId.toString()
       ) + 1
     : null;
   const requestedTeacherPoints = requestedTeacher
@@ -499,7 +506,7 @@ const completeConferencePoints = asyncHandler(async (req, res) => {
   const conferencePointsBreakdown = await Point.aggregate([
     {
       $match: {
-        owner: mongoose.Types.ObjectId(teacherId),
+        owner: new mongoose.Types.ObjectId(teacherId),
         domain: { $in: conferenceDomains },
       },
     },
@@ -594,11 +601,11 @@ const completeChapterPoints = asyncHandler(async (req, res) => {
 
   // Find the requested teacher's rank and points
   const requestedTeacher = aggregatedPoints.find(
-    (entry) => entry._id.toString() === teacherId
+    (entry) => entry._id.toString() === teacherId.toString()
   );
   const requestedTeacherRank = requestedTeacher
     ? aggregatedPoints.findIndex(
-        (entry) => entry._id.toString() === teacherId
+        (entry) => entry._id.toString() === teacherId.toString()
       ) + 1
     : null;
   const requestedTeacherPoints = requestedTeacher
@@ -612,7 +619,7 @@ const completeChapterPoints = asyncHandler(async (req, res) => {
   const chapterPointsBreakdown = await Point.aggregate([
     {
       $match: {
-        owner: mongoose.Types.ObjectId(teacherId),
+        owner: new mongoose.Types.ObjectId(teacherId),
         domain: { $in: chapterDomains },
       },
     },
@@ -707,11 +714,11 @@ const completeSTTPPoints = asyncHandler(async (req, res) => {
 
   // Find the requested teacher's rank and points
   const requestedTeacher = aggregatedPoints.find(
-    (entry) => entry._id.toString() === teacherId
+    (entry) => entry._id.toString() === teacherId.toString()
   );
   const requestedTeacherRank = requestedTeacher
     ? aggregatedPoints.findIndex(
-        (entry) => entry._id.toString() === teacherId
+        (entry) => entry._id.toString() === teacherId.toString()
       ) + 1
     : null;
   const requestedTeacherPoints = requestedTeacher
@@ -725,7 +732,7 @@ const completeSTTPPoints = asyncHandler(async (req, res) => {
   const sttpPointsBreakdown = await Point.aggregate([
     {
       $match: {
-        owner: mongoose.Types.ObjectId(teacherId),
+        owner: new mongoose.Types.ObjectId(teacherId),
         domain: { $in: sttpDomains },
       },
     },
@@ -853,11 +860,11 @@ const completeEventsConductedPoints = asyncHandler(async (req, res) => {
 
   // Find the requested teacher's rank and points
   const requestedTeacher = aggregatedPoints.find(
-    (entry) => entry._id.toString() === teacherId
+    (entry) => entry._id.toString() === teacherId.toString()
   );
   const requestedTeacherRank = requestedTeacher
     ? aggregatedPoints.findIndex(
-        (entry) => entry._id.toString() === teacherId
+        (entry) => entry._id.toString() === teacherId.toString()
       ) + 1
     : null;
   const requestedTeacherPoints = requestedTeacher
@@ -871,7 +878,7 @@ const completeEventsConductedPoints = asyncHandler(async (req, res) => {
   const eventPointsBreakdown = await Point.aggregate([
     {
       $match: {
-        owner: mongoose.Types.ObjectId(teacherId),
+        owner: new mongoose.Types.ObjectId(teacherId),
         domain: { $in: eventDomains },
       },
     },
@@ -963,11 +970,11 @@ const completeSeminarAttendedPoints = asyncHandler(async (req, res) => {
 
   // Find the requested teacher's rank and points
   const requestedTeacher = aggregatedPoints.find(
-    (entry) => entry._id.toString() === teacherId
+    (entry) => entry._id.toString() === teacherId.toString()
   );
   const requestedTeacherRank = requestedTeacher
     ? aggregatedPoints.findIndex(
-        (entry) => entry._id.toString() === teacherId
+        (entry) => entry._id.toString() === teacherId.toString()
       ) + 1
     : null;
   const requestedTeacherPoints = requestedTeacher
@@ -981,7 +988,7 @@ const completeSeminarAttendedPoints = asyncHandler(async (req, res) => {
   const seminarPointsBreakdown = await Point.aggregate([
     {
       $match: {
-        owner: mongoose.Types.ObjectId(teacherId),
+        owner: new mongoose.Types.ObjectId(teacherId),
         domain: { $in: seminarDomains },
       },
     },
@@ -1073,11 +1080,11 @@ const completeExpertLecturesPoints = asyncHandler(async (req, res) => {
 
   // Find the requested teacher's rank and points
   const requestedTeacher = aggregatedPoints.find(
-    (entry) => entry._id.toString() === teacherId
+    (entry) => entry._id.toString() === teacherId.toString()
   );
   const requestedTeacherRank = requestedTeacher
     ? aggregatedPoints.findIndex(
-        (entry) => entry._id.toString() === teacherId
+        (entry) => entry._id.toString() === teacherId.toString()
       ) + 1
     : null;
   const requestedTeacherPoints = requestedTeacher
@@ -1091,7 +1098,7 @@ const completeExpertLecturesPoints = asyncHandler(async (req, res) => {
   const expertLecturesPointsBreakdown = await Point.aggregate([
     {
       $match: {
-        owner: mongoose.Types.ObjectId(teacherId),
+        owner: new mongoose.Types.ObjectId(teacherId),
         domain: { $in: expertLecturesDomains },
       },
     },
@@ -1185,11 +1192,11 @@ const completeSeminarPoints = asyncHandler(async (req, res) => {
 
   // Find the requested teacher's rank and points
   const requestedTeacher = aggregatedPoints.find(
-    (entry) => entry._id.toString() === teacherId
+    (entry) => entry._id.toString() === teacherId.toString()
   );
   const requestedTeacherRank = requestedTeacher
     ? aggregatedPoints.findIndex(
-        (entry) => entry._id.toString() === teacherId
+        (entry) => entry._id.toString() === teacherId.toString()
       ) + 1
     : null;
   const requestedTeacherPoints = requestedTeacher
@@ -1228,103 +1235,179 @@ const completeSeminarPoints = asyncHandler(async (req, res) => {
 });
 
 const getComparativePointsData = asyncHandler(async (req, res) => {
-    const { teacherId } = req.params;
-    if (!teacherId) {
-        throw new ApiError(400, "Teacher ID is required");
-    }
+  // const { teacherId } = req.params;
+  const teacherId = req.teacher._id;
+  if (!teacherId) {
+    throw new ApiError(400, "Teacher ID is required");
+  }
 
-    const categoryMapping = {
-        'Journal': ['International Journal', 'National Journal', 'Regional Journal'],
-        'Book': ['International Book', 'National Book', 'Regional Book'],
-        'Chapter': ['International Chapter', 'National Chapter', 'Regional Chapter'],
-        'Conference': ['International Conference', 'National Conference', 'Regional Conference'],
-        'Patent': ['International Patent', 'National Patent', 'Regional Patent'],
-        'Project': ['Major Projects', 'Minor Projects'],
-        'STTP': ['STTP_1_DAY', 'STTP_2_3_DAYS', 'STTP_4_5_DAYS', 'STTP_1_WEEK', 'STTP_2_WEEKS', 'STTP_3_WEEKS', 'STTP_4_WEEKS'],
-        'Event': [
-            'Organizer National Event', 'Organizer International Event', 'Organizer State Event', 'Organizer College Event',
-            'Speaker National Event', 'Speaker International Event', 'Speaker State Event', 'Speaker College Event',
-            'Judge National Event', 'Judge International Event', 'Judge State Event', 'Judge College Event',
-            'Coordinator National Event', 'Coordinator International Event', 'Coordinator State Event', 'Coordinator College Event',
-            'Volunteer National Event', 'Volunteer International Event', 'Volunteer State Event', 'Volunteer College Event',
-            'Evaluator National Event', 'Evaluator International Event', 'Evaluator State Event', 'Evaluator College Event',
-            'Panelist National Event', 'Panelist International Event', 'Panelist State Event', 'Panelist College Event',
-            'Mentor National Event', 'Mentor International Event', 'Mentor State Event', 'Mentor College Event',
-            'Session Chair National Event', 'Session Chair International Event', 'Session Chair State Event', 'Session Chair College Event',
-            'Reviewer National Event', 'Reviewer International Event', 'Reviewer State Event', 'Reviewer College Event'
-        ],
-        'Seminar': ['National Seminar', 'International Seminar', 'State Seminar', 'College Seminar'],
-        'Expert Lecture': ['National Expert Lecture', 'International Expert Lecture', 'State Expert Lecture', 'College Expert Lecture'],
-        'Seminar Conducted': ['Seminar']
-    };
+  const categoryMapping = {
+    Journal: ["International Journal", "National Journal", "Regional Journal"],
+    Book: ["International Book", "National Book", "Regional Book"],
+    Chapter: ["International Chapter", "National Chapter", "Regional Chapter"],
+    Conference: [
+      "International Conference",
+      "National Conference",
+      "Regional Conference",
+    ],
+    Patent: ["International Patent", "National Patent", "Regional Patent"],
+    Project: ["Major Projects", "Minor Projects"],
+    STTP: [
+      "STTP_1_DAY",
+      "STTP_2_3_DAYS",
+      "STTP_4_5_DAYS",
+      "STTP_1_WEEK",
+      "STTP_2_WEEKS",
+      "STTP_3_WEEKS",
+      "STTP_4_WEEKS",
+    ],
+    Event: [
+      "Organizer National Event",
+      "Organizer International Event",
+      "Organizer State Event",
+      "Organizer College Event",
+      "Speaker National Event",
+      "Speaker International Event",
+      "Speaker State Event",
+      "Speaker College Event",
+      "Judge National Event",
+      "Judge International Event",
+      "Judge State Event",
+      "Judge College Event",
+      "Coordinator National Event",
+      "Coordinator International Event",
+      "Coordinator State Event",
+      "Coordinator College Event",
+      "Volunteer National Event",
+      "Volunteer International Event",
+      "Volunteer State Event",
+      "Volunteer College Event",
+      "Evaluator National Event",
+      "Evaluator International Event",
+      "Evaluator State Event",
+      "Evaluator College Event",
+      "Panelist National Event",
+      "Panelist International Event",
+      "Panelist State Event",
+      "Panelist College Event",
+      "Mentor National Event",
+      "Mentor International Event",
+      "Mentor State Event",
+      "Mentor College Event",
+      "Session Chair National Event",
+      "Session Chair International Event",
+      "Session Chair State Event",
+      "Session Chair College Event",
+      "Reviewer National Event",
+      "Reviewer International Event",
+      "Reviewer State Event",
+      "Reviewer College Event",
+    ],
+    Seminar: [
+      "National Seminar",
+      "International Seminar",
+      "State Seminar",
+      "College Seminar",
+    ],
+    "Expert Lecture": [
+      "National Expert Lecture",
+      "International Expert Lecture",
+      "State Expert Lecture",
+      "College Expert Lecture",
+    ],
+    "Seminar Conducted": ["Seminar"],
+  };
 
-    const allDomains = Object.values(categoryMapping).flat();
+  const allDomains = Object.values(categoryMapping).flat();
 
-    const comparativeData = await Point.aggregate([
-        {
-            $match: { domain: { $in: allDomains } }
-        },
-        {
-            $group: {
-                _id: {
-                    category: {
-                        $switch: {
-                            branches: Object.entries(categoryMapping).map(([category, domains]) => ({
-                                case: { $in: ["$domain", domains] },
-                                then: category
-                            })),
-                            default: "Other"
-                        }
-                    },
-                    owner: "$owner"
-                },
-                totalPoints: { $sum: "$points" }
-            }
-        },
-        {
-            $group: {
-                _id: "$_id.category",
-                highestPoints: { $max: "$totalPoints" },
-                teacherPoints: {
-                    $sum: {
-                        $cond: [
-                            { $eq: ["$_id.owner", mongoose.Types.ObjectId(teacherId)] },
-                            "$totalPoints",
-                            0
-                        ]
-                    }
-                }
-            }
-        },
-        {
-            $project: {
-                category: "$_id",
-                highestPoints: 1,
-                teacherPoints: 1,
-                _id: 0
-            }
-        },
-        {
-            $sort: { category: 1 }
-        }
-    ]);
-
-    // Prepare data for Chart.js
-    const chartData = {
-        labels: comparativeData.map(item => item.category),
-        datasets: [
-            {
-                label: 'Highest Points',
-                data: comparativeData.map(item => item.highestPoints),
+  const comparativeData = await Point.aggregate([
+    {
+      $match: { domain: { $in: allDomains } },
+    },
+    {
+      $group: {
+        _id: {
+          category: {
+            $switch: {
+              branches: Object.entries(categoryMapping).map(
+                ([category, domains]) => ({
+                  case: { $in: ["$domain", domains] },
+                  then: category,
+                })
+              ),
+              default: "Other",
             },
-            {
-                label: 'Teacher Points',
-                data: comparativeData.map(item => item.teacherPoints),
-            }
-        ]
-    };
+          },
+          owner: "$owner",
+        },
+        totalPoints: { $sum: "$points" },
+      },
+    },
+    {
+      $group: {
+        _id: "$_id.category",
+        highestPoints: { $max: "$totalPoints" },
+        teacherPoints: {
+          $sum: {
+            $cond: [
+              { $eq: ["$_id.owner", new mongoose.Types.ObjectId(teacherId)] },
+              "$totalPoints",
+              0,
+            ],
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        category: "$_id",
+        highestPoints: 1,
+        teacherPoints: 1,
+        _id: 0,
+      },
+    },
+    {
+      $sort: { category: 1 },
+    },
+  ]);
 
-    res.status(200).json(new ApiResponse(200, { comparativeData, chartData }, "Comparative points data retrieved successfully"));
+  // Prepare data for Chart.js
+  const chartData = {
+    labels: comparativeData.map((item) => item.category),
+    datasets: [
+      {
+        label: "Highest Points",
+        data: comparativeData.map((item) => item.highestPoints),
+      },
+      {
+        label: "Teacher Points",
+        data: comparativeData.map((item) => item.teacherPoints),
+      },
+    ],
+  };
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { comparativeData, chartData },
+        "Comparative points data retrieved successfully"
+      )
+    );
 });
 
-export { completeJournalPoints, completeBooksPoints, completePatentPoints, completeProjectsPoints, completeConferencePoints, completeChapterPoints, completeSTTPPoints, completeEventsConductedPoints, completeSeminarAttendedPoints, completeExpertLecturesPoints,completeSeminarPoints, getComparativePointsData };
+export {
+  completeJournalPoints,
+  completeBooksPoints,
+  completePatentPoints,
+  completeProjectsPoints,
+  completeConferencePoints,
+  completeChapterPoints,
+  completeSTTPPoints,
+  completeEventsConductedPoints,
+  completeSeminarAttendedPoints,
+  completeExpertLecturesPoints,
+  completeSeminarPoints,
+  getComparativePointsData,
+};
