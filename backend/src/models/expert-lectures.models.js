@@ -97,7 +97,4 @@ expertLectureSchema.post('findOneAndDelete', async function (doc) {
   }
 });
 
-export const ExpertLecture = mongoose.model(
-  "ExpertLecture",
-  expertLectureSchema
-);
+export const ExpertLecture = mongoose.model("ExpertLecture", expertLectureSchema);

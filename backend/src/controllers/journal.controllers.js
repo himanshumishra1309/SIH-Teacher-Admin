@@ -4,12 +4,34 @@ import { ApiError } from "../utils/ApiErrors.js";
 import { Journal } from "../models/journal.models.js";
 
 const addJournal = asyncHandler(async (req, res) => {
-  const { title, authors, publicationDate, journal, volume, issue, pages, publisher, journalType } = req.body;
+  const {
+    title,
+    authors,
+    journalType,
+    publicationDate,
+    journal,
+    volume,
+    issue,
+    pages,
+    publisher,
+  } = req.body;
   const owner = req.teacher._id;
 
-  if (!title || !authors || !publicationDate || !journal || !journalType || !volume || !issue || !pages || !publisher) {
+  if (
+    !title ||
+    !authors ||
+    !journalType ||
+    !publicationDate ||
+    !journal ||
+    !volume ||
+    !issue ||
+    !pages ||
+    !publisher
+  ) {
     throw new ApiError(400, "Please provide all mandatory fields");
   }
+
+  // changes should be revind later
 
   const journalEntry = await Journal.create({
     title,
@@ -31,24 +53,37 @@ const addJournal = asyncHandler(async (req, res) => {
 
 const updateJournal = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { title, authors, publicationDate, journal, volume, issue, pages, publisher, journalType } = req.body;
+  const {
+    title,
+    authors,
+    publicationDate,
+    journal,
+    volume,
+    issue,
+    pages,
+    publisher,
+    journalType,
+  } = req.body;
 
-  const updatedJournal = await Journal.findByIdAndUpdate(id, 
+  const updatedJournal = await Journal.findByIdAndUpdate(
+    id,
     {
       $set: {
-        title, 
-        authors, 
-        publicationDate, 
-        journal, 
-        volume, 
-        issue, 
-        pages, 
-        publisher, 
-        journalType
-      }
-    }, {
-    new: true,
-  });
+        title,
+        authors,
+        publicationDate,
+        journal,
+        volume,
+        issue,
+        pages,
+        publisher,
+        journalType,
+      },
+    },
+    {
+      new: true,
+    }
+  );
 
   if (!updatedJournal) {
     throw new ApiError(404, "Journal not found");
@@ -79,7 +114,9 @@ const getAllJournals = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, journals, "All journals retrieved successfully"));
+    .json(
+      new ApiResponse(200, journals, "All journals retrieved successfully")
+    );
 });
 
 export { addJournal, updateJournal, deleteJournal, getAllJournals };

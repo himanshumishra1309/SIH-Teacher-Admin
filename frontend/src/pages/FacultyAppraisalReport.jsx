@@ -29,8 +29,20 @@ const FacultyAppraisalReport = ({
   const reportRef = useRef(null);
   const signatureRef = useRef(null);
   const [facultyData, setFacultyData] = useState("");
+  const [appraisalData, setAppraisalData] = useState([]);
 
-  const appraisalData = [
+  const endpoints = {
+    journals: "http://localhost:6005/api/v1/points/journals",
+    books: "http://localhost:6005/api/v1/points/books",
+    patents: "http://localhost:6005/api/v1/points/patents",
+    // sttp: "http://localhost:6005/api/v1/points/sttp",
+    conferences: "http://localhost:6005/api/v1/points/conferences",
+    // seminarsConducted: "http://localhost:6005/api/v1/points/seminars-conducted",
+    // seminarsAttended: "http://localhost:6005/api/v1/points/seminars-attended",
+    // projects: "http://localhost:6005/api/v1/points/projects",
+  };
+
+  const appraisalData2 = [
     { field: "Journals", currentPoints: 25, highestPoints: 40 },
     { field: "Books", currentPoints: 15, highestPoints: 30 },
     { field: "Patents", currentPoints: 10, highestPoints: 20 },
@@ -40,6 +52,40 @@ const FacultyAppraisalReport = ({
     { field: "Seminars Attended", currentPoints: 12, highestPoints: 15 },
     { field: "Projects", currentPoints: 35, highestPoints: 50 },
   ];
+
+  const fetchAppraisalData = async () => {
+    try {
+      const results = await Promise.all(
+        Object.entries(endpoints).map(async ([key, url]) => {
+          const response = await axios.get(url, {
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem(
+                "teacherAccessToken"
+              )}`,
+            },
+          });
+          console.log(response)
+          return { field: key, ...response.data.data };
+        })
+      );
+
+      console.log("results", results)
+      
+      const formattedData = results.map((item) => ({
+        field: item.field
+          .replace(/([A-Z])/g, " $1")
+          .replace(/^./, (str) => str.toUpperCase()),
+        currentPoints: item.requestedTeacherPoints || 0,
+        highestPoints: item.highestPoints || 0,
+      }));
+
+      console.log("formattedData", formattedData)
+
+      setAppraisalData(formattedData);
+    } catch (error) {
+      console.error("Error fetching appraisal data:", error.message);
+    }
+  };
 
   const handleDownload = () => {
     const input = reportRef.current;
@@ -120,6 +166,7 @@ const FacultyAppraisalReport = ({
     };
 
     fetchData();
+    fetchAppraisalData();
   }, []);
 
   return (
