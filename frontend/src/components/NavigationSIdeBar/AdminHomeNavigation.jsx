@@ -27,7 +27,7 @@ export default function AdminHomeNavigation() {
   return (
     <Card className="w-80 rounded-lg mt-5 overflow-hidden shadow-lg">
       <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-800 py-3 px-4">
-        <h2 className="text-xl font-bold text-white text-center">Faculty Navigation</h2>
+        <h2 className="text-xl font-bold text-white text-center">Admin Navigation</h2>
       </CardHeader>
       <CardContent className="p-0">
         <nav>

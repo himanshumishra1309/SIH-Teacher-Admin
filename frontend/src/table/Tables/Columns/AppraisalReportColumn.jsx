@@ -3,17 +3,17 @@ import { ArrowUpDown, ExternalLink } from "lucide-react";
 
 export const columnDef = [
   {
-    accessorKey: "fields",
+    accessorKey: "field",
     header: "Fields",
     enableSorting: true,
   },
   {
-    accessorKey: "faculty_points",
+    accessorKey: "currentPoints",
     header: "Faculty Points",
     enableSorting: true,
   },
   {
-    accessorKey: "highest_points",
+    accessorKey: "highestPoints",
     header: "Highest Points",
     enableSorting: true,
   },
@@ -22,5 +22,4 @@ export const columnDef = [
     header: "Rank",
     enableSorting: true,
   },
-
 ];
