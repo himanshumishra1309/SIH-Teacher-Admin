@@ -2121,6 +2121,32 @@ const getAllChapters = asyncHandler(async (req, res)=>{
     .json(new ApiResponse(200, chapters, "All chapters fetched successfully"));
 });
 
+const getAllseminarAttended = asyncHandler(async(req, res)=>{
+  const { teacherId } = req.params;
+  const seminars = await SeminarAttended.find({owner: teacherId});
+
+  if(!seminars || seminars.length === 0){
+    throw new ApiError(404, "No Seminars Found")
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, seminars, "All seminars fetched successfully"));
+});
+
+const getAllResearchWork = asyncHandler(async(req, res)=>{
+  const { teacherId } = req.params;
+  const researchWorks = await ResearchWork.find({owner: teacherId});
+
+  if(!researchWorks || researchWorks.length === 0){
+    throw new ApiError(404, "No Research Works Found")
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, researchWorks, "All research works fetched successfully"));
+});
+
 export {
   registerAdmin,
   registerTeacher,
@@ -2173,5 +2199,7 @@ export {
   getAllBooks,
   getAllPatents,
   getAllConferences,
-  getAllChapters
+  getAllChapters,
+  getAllseminarAttended,
+  getAllResearchWork
 };
