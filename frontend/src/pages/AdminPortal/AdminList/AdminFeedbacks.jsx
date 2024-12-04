@@ -102,7 +102,7 @@ export default function ReleaseFeedbacks() {
           variant: "success",
           duration: 3000,
         });
-        console.log(response);
+        // console.log(response);
 
         setSelectedCourses([]);
       } else {
