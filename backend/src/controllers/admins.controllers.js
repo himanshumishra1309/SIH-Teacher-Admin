@@ -2147,6 +2147,19 @@ const getAllResearchWork = asyncHandler(async(req, res)=>{
     .json(new ApiResponse(200, researchWorks, "All research works fetched successfully"));
 });
 
+const getAllContributions = asyncHandler(async(req, res)=>{
+  const { teacherId } = req.params;
+  const contributions = await Contribution.find({owner: teacherId});
+
+  if(!contributions || contributions.length === 0){
+    throw new ApiError(404, "No Contributions Found")
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, contributions, "All contributions fetched successfully"));
+});
+
 export {
   registerAdmin,
   registerTeacher,
@@ -2201,5 +2214,6 @@ export {
   getAllConferences,
   getAllChapters,
   getAllseminarAttended,
-  getAllResearchWork
+  getAllResearchWork,
+  getAllContributions
 };
