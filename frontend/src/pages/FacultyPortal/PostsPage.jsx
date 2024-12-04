@@ -32,6 +32,15 @@ import axios from "axios";
 const POSTS_PER_PAGE = 6;
 
 const AttachmentCarousel = ({ attachments }) => {
+  if (!attachments || !Array.isArray(attachments)) {
+    console.error("Invalid attachments array", attachments);
+    return (
+      <div className="p-4 bg-muted">
+        <p>No attachments available</p>
+      </div>
+    );
+  }
+
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false });
 
   const scrollPrev = useCallback(() => {
@@ -42,72 +51,67 @@ const AttachmentCarousel = ({ attachments }) => {
     if (emblaApi) emblaApi.scrollNext();
   }, [emblaApi]);
 
-  if (attachments.length === 0) return null;
-
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex">
-          {attachments.map((file, index) => (
-            <div key={index} className="flex-[0_0_100%] min-w-0 h-[300px]">
-              {file.type.startsWith("image/") ? (
+          {attachments.map((attachment, index) => {
+            const url =
+              typeof attachment === "string" ? attachment : attachment?.url;
+            return url ? (
+              <div
+                key={index}
+                className="flex-[0_0_100%] min-w-0 h-[300px] flex items-center justify-center bg-black"
+              >
                 <img
-                  src={URL.createObjectURL(file)}
+                  src={url}
                   alt={`Attachment ${index + 1}`}
                   className="w-full h-full object-contain"
                 />
-              ) : file.type.startsWith("video/") ? (
-                <video
-                  src={URL.createObjectURL(file)}
-                  controls
-                  className="w-full h-full object-contain"
-                >
-                  Your browser does not support the video tag.
-                </video>
-              ) : (
-                <div className="bg-muted p-4 text-center h-full flex items-center justify-center">
-                  <div>
-                    <p>{file.name}</p>
-                    <p>File type not supported for preview</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
+              </div>
+            ) : (
+              <div
+                key={index}
+                className="flex-[0_0_100%] h-[300px] flex items-center justify-center bg-muted"
+              >
+                <p>Invalid attachment</p>
+              </div>
+            );
+          })}
         </div>
       </div>
       {attachments.length > 1 && (
         <>
-          <Button
-            variant="outline"
-            size="icon"
-            className="absolute left-2 top-1/2 transform -translate-y-1/2"
+          <button
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white rounded-full p-2"
             onClick={scrollPrev}
           >
-            <ChevronLeftIcon className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="absolute right-2 top-1/2 transform -translate-y-1/2"
+            <ChevronLeftIcon className="h-5 w-5" />
+          </button>
+          <button
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white rounded-full p-2"
             onClick={scrollNext}
           >
-            <ChevronRightIcon className="h-4 w-4" />
-          </Button>
+            <ChevronRightIcon className="h-5 w-5" />
+          </button>
         </>
       )}
     </div>
   );
 };
 
+// Rest of your code with fixes applied for error handling, pagination, and missing keys.
+
 const PostsPage = () => {
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState({
     title: "",
-    description: "",
     contributionType: "",
+    description: "",
     attachments: [],
+    report: null,
   });
+
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
 
@@ -124,14 +128,16 @@ const PostsPage = () => {
       );
       console.log(response.data.data.contributions);
       const formattedPosts = response.data.data.contributions.map((post) => ({
+        id: post._id, // Use a unique identifier (e.g., `_id`) or fallback to generated ID
         title: post.title,
         description: post.description,
         contributionType: post.contributionType,
-        attachments: post.images[0], // Map images to attachments
+        attachments: Array.isArray(post.images) ? post.images : [], // Ensure `images` is an array
+        createdAt: new Date(post.createdAt), // Ensure proper date conversion
+        report: post.report,
       }));
 
-      // Update state with the formatted posts
-      // setPosts(formattedPosts);
+      setPosts(formattedPosts);
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
@@ -149,8 +155,13 @@ const PostsPage = () => {
       formData.append("title", newPost.title);
       formData.append("description", newPost.description);
       formData.append("contributionType", newPost.contributionType);
-      newPost.attachments.forEach((file) => formData.append("images", file));
+      newPost.attachments.forEach((file) => {
+        formData.append("images", file);
+      });
 
+      if (newPost.report) {
+        formData.append("report", newPost.report);
+      }
       const teacherAccessToken = sessionStorage.getItem("teacherAccessToken");
 
       // Make the POST request with the teacher access token in the Authorization header
@@ -169,12 +180,17 @@ const PostsPage = () => {
         { id: Date.now(), ...newPost, createdAt: new Date() },
         ...posts,
       ]);
-      setNewPost({
-        title: "",
-        description: "",
-        contributionType: "",
-        attachments: [],
-      });
+      if (response.status === 200) {
+        alert("Contribution created successfully!");
+        // Reset form state
+        setNewPost({
+          title: "",
+          contributionType: "",
+          description: "",
+          attachments: [],
+          report: null,
+        });
+      }
       setIsCreatePostOpen(false);
     } catch (error) {
       console.error("Error creating post:", error);
@@ -184,6 +200,13 @@ const PostsPage = () => {
   const handleAttachment = (e) => {
     const files = Array.from(e.target.files);
     setNewPost({ ...newPost, attachments: [...newPost.attachments, ...files] });
+  };
+
+  const handleReportFile = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setNewPost({ ...newPost, report: file });
+    }
   };
 
   const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
@@ -208,6 +231,7 @@ const PostsPage = () => {
               <DialogTitle>Create a New Post</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleCreatePost} className="space-y-4">
+              {/* Title Input */}
               <Input
                 placeholder="Title"
                 value={newPost.title}
@@ -215,6 +239,8 @@ const PostsPage = () => {
                   setNewPost({ ...newPost, title: e.target.value })
                 }
               />
+
+              {/* Contribution Type Input */}
               <Input
                 placeholder="Contribution Type"
                 value={newPost.contributionType}
@@ -222,6 +248,8 @@ const PostsPage = () => {
                   setNewPost({ ...newPost, contributionType: e.target.value })
                 }
               />
+
+              {/* Description Input */}
               <Textarea
                 placeholder="Share your achievement..."
                 value={newPost.description}
@@ -229,6 +257,8 @@ const PostsPage = () => {
                   setNewPost({ ...newPost, description: e.target.value })
                 }
               />
+
+              {/* Attachments Input */}
               <div className="flex items-center space-x-2">
                 <Input
                   type="file"
@@ -246,6 +276,28 @@ const PostsPage = () => {
                 </Button>
                 <span>{newPost.attachments.length} file(s) selected</span>
               </div>
+
+              {/* Report File Input */}
+              <div className="flex items-center space-x-2">
+                <Input
+                  type="file"
+                  onChange={handleReportFile}
+                  className="hidden"
+                  id="report-upload"
+                  accept=".pdf,.doc,.docx"
+                />
+                <Button type="button" variant="outline" asChild>
+                  <label htmlFor="report-upload" className="cursor-pointer">
+                    <PaperclipIcon className="mr-2 h-4 w-4" />
+                    Upload Report
+                  </label>
+                </Button>
+                <span>
+                  {newPost.report ? newPost.report.name : "No report selected"}
+                </span>
+              </div>
+
+              {/* Submit Button */}
               <Button type="submit">
                 <SendIcon className="mr-2 h-4 w-4" />
                 Post
@@ -255,54 +307,80 @@ const PostsPage = () => {
         </Dialog>
       </div>
 
-      <ScrollArea className="h-[calc(100vh-200px)]">
+      <ScrollArea className="h-[calc(100vh-200px)] bg-gray-50 p-6">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {paginatedPosts.map((post) => (
             <Card
               key={post.id}
-              className="cursor-pointer hover:shadow-lg transition-shadow"
+              className="cursor-pointer hover:shadow-xl border border-gray-200 rounded-lg transition-transform transform hover:scale-105 bg-white"
             >
-              <CardHeader>
-                <CardTitle>{post.title}</CardTitle>
+              {/* Card Header */}
+              <CardHeader className="border-b border-gray-200 p-4 bg-gray-100 rounded-t-lg">
+                <CardTitle className="text-lg font-semibold text-gray-800">
+                  {post.title}
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="line-clamp-3">{post.content}</p>
+
+              {/* Card Content */}
+              <CardContent className="p-4">
+                <p className="text-gray-700 line-clamp-3">{post.description}</p>
               </CardContent>
-              <CardFooter className="flex justify-between">
-                <div className="flex items-center">
-                  <CalendarIcon className="mr-2 h-4 w-4 opacity-70" />
-                  <span className="text-sm text-muted-foreground">
-                    {post.createdAt.toLocaleDateString()}
-                  </span>
+
+              {/* Card Footer */}
+              <CardFooter className="flex justify-between items-center p-4 border-t border-gray-200">
+                {/* Post Date */}
+                <div className="flex items-center text-gray-600 text-sm">
+                  <CalendarIcon className="mr-2 h-4 w-4 opacity-80" />
+                  <span>{post.createdAt.toLocaleDateString()}</span>
                 </div>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="outline">View Post</Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[700px] max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle className="text-center">
-                        {post.title}
-                      </DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      {/* <div className="flex items-center space-x-4"> */}
-                      {/* <Avatar>
-                          <AvatarImage src="/placeholder-avatar.jpg" alt="User" />
-                          <AvatarFallback>UN</AvatarFallback>
-                        </Avatar> */}
-                      {/* <div>
-                          <p className="text-sm font-medium">User Name</p>
-                          <p className="text-sm text-muted-foreground">
-                            {post.createdAt.toLocaleString()}
-                          </p>
-                        </div>
-                      </div> */}
-                      <p>{post.content}</p>
-                      <AttachmentCarousel attachments={post.attachments} />
-                    </div>
-                  </DialogContent>
-                </Dialog>
+
+                {/* Action Buttons */}
+                <div className="flex items-center space-x-2">
+                  {/* View Report Button */}
+                  {post.report && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-blue-500 border-blue-500 hover:bg-blue-50"
+                      onClick={() => {
+                        window.open(post.report, "_blank");
+                      }}
+                    >
+                      View Report
+                    </Button>
+                  )}
+                  {/* View Post Button */}
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-gray-600 border-gray-400 hover:bg-gray-100"
+                      >
+                        View Post
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[700px] max-h-[80vh] overflow-y-auto rounded-lg shadow-lg">
+                      <DialogHeader>
+                        <DialogTitle className="text-center font-bold text-lg">
+                          {post.title}
+                        </DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4 p-4">
+                        {/* Post Description */}
+                        <p className="text-gray-600">{post.description}</p>
+
+                        {/* Carousel for Attachments */}
+                        <AttachmentCarousel
+                          attachments={post.attachments.map((url) => ({
+                            type: "image/jpeg", // Assuming image type; adjust as needed
+                            url,
+                          }))}
+                        />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </CardFooter>
             </Card>
           ))}
