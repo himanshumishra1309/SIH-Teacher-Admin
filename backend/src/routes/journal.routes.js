@@ -6,7 +6,7 @@ import { addJournal, deleteJournal, getAllJournals, updateJournal } from "../con
 const router = Router();
 
 router.post("/journal/add", verifyTeacherJWT, addJournal);
-router.get("/journal/get", verifyTeacherJWT, getAllJournals);
+router.get("/journal/", verifyTeacherJWT, getAllJournals);
 router.post("/journal/:updateId/update", verifyTeacherJWT, updateJournal);
 router.post("/journal/:deleteId/delete", verifyTeacherJWT, deleteJournal);
 

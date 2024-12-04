@@ -1814,7 +1814,8 @@ const getEventsParticipatedByTheTeacher = asyncHandler(async (req, res) => {
     );
 });
 
-const getExpertLecturesDeliveredByTheTeacher = asyncHandler( async (req, res) => {
+const getExpertLecturesDeliveredByTheTeacher = asyncHandler(
+  async (req, res) => {
     const { teacherId } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(teacherId)) {
@@ -2058,10 +2059,10 @@ const getLecturesConductedByTheTeacher = asyncHandler(async (req, res) => {
 
 const getAllTheJournals = asyncHandler(async (req, res) => {
   const { teacherId } = req.params;
-  const journals = await Journal.find({owner: teacherId});
+  const journals = await Journal.find({ owner: teacherId });
 
-  if(!journals || journals.length === 0){
-    throw new ApiError(404, "No Journals Found")
+  if (!journals || journals.length === 0) {
+    throw new ApiError(404, "No Journals Found");
   }
 
   return res
@@ -2069,25 +2070,25 @@ const getAllTheJournals = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, journals, "All journals fetched successfully"));
 });
 
-const getAllBooks = asyncHandler(async (req, res)=>{
+const getAllBooks = asyncHandler(async (req, res) => {
   const { teacherId } = req.params;
-  const books = await Book.find({owner: teacherId});
+  const books = await Book.find({ owner: teacherId });
 
-  if(!books || books.length === 0){
-    throw new ApiError(404, "No Books Found")
+  if (!books || books.length === 0) {
+    throw new ApiError(404, "No Books Found");
   }
 
   return res
     .status(200)
     .json(new ApiResponse(200, books, "All books fetched successfully"));
-})
+});
 
-const getAllPatents = asyncHandler(async (req, res)=>{
+const getAllPatents = asyncHandler(async (req, res) => {
   const { teacherId } = req.params;
-  const patents = await Patent.find({owner: teacherId});
+  const patents = await Patent.find({ owner: teacherId });
 
-  if(!patents || patents.length === 0){
-    throw new ApiError(404, "No Patents Found")
+  if (!patents || patents.length === 0) {
+    throw new ApiError(404, "No Patents Found");
   }
 
   return res
@@ -2095,25 +2096,27 @@ const getAllPatents = asyncHandler(async (req, res)=>{
     .json(new ApiResponse(200, patents, "All patents fetched successfully"));
 });
 
-const getAllConferences = asyncHandler(async (req, res)=>{
+const getAllConferences = asyncHandler(async (req, res) => {
   const { teacherId } = req.params;
-  const conferences = await Conference.find({owner: teacherId});
+  const conferences = await Conference.find({ owner: teacherId });
 
-  if(!conferences || conferences.length === 0){
-    throw new ApiError(404, "No Conferences Found")
+  if (!conferences || conferences.length === 0) {
+    throw new ApiError(404, "No Conferences Found");
   }
 
   return res
     .status(200)
-    .json(new ApiResponse(200, conferences, "All conferences fetched successfully"));
+    .json(
+      new ApiResponse(200, conferences, "All conferences fetched successfully")
+    );
 });
 
-const getAllChapters = asyncHandler(async (req, res)=>{
+const getAllChapters = asyncHandler(async (req, res) => {
   const { teacherId } = req.params;
-  const chapters = await Chapter.find({owner: teacherId});
+  const chapters = await Chapter.find({ owner: teacherId });
 
-  if(!chapters || chapters.length === 0){
-    throw new ApiError(404, "No Chapters Found")
+  if (!chapters || chapters.length === 0) {
+    throw new ApiError(404, "No Chapters Found");
   }
 
   return res
@@ -2121,12 +2124,12 @@ const getAllChapters = asyncHandler(async (req, res)=>{
     .json(new ApiResponse(200, chapters, "All chapters fetched successfully"));
 });
 
-const getAllseminarAttended = asyncHandler(async(req, res)=>{
+const getAllseminarAttended = asyncHandler(async (req, res) => {
   const { teacherId } = req.params;
-  const seminars = await SeminarAttended.find({owner: teacherId});
+  const seminars = await SeminarAttended.find({ owner: teacherId });
 
-  if(!seminars || seminars.length === 0){
-    throw new ApiError(404, "No Seminars Found")
+  if (!seminars || seminars.length === 0) {
+    throw new ApiError(404, "No Seminars Found");
   }
 
   return res
@@ -2134,30 +2137,42 @@ const getAllseminarAttended = asyncHandler(async(req, res)=>{
     .json(new ApiResponse(200, seminars, "All seminars fetched successfully"));
 });
 
-const getAllResearchWork = asyncHandler(async(req, res)=>{
+const getAllResearchWork = asyncHandler(async (req, res) => {
   const { teacherId } = req.params;
-  const researchWorks = await ResearchWork.find({owner: teacherId});
+  const researchWorks = await ResearchWork.find({ owner: teacherId });
 
-  if(!researchWorks || researchWorks.length === 0){
-    throw new ApiError(404, "No Research Works Found")
+  if (!researchWorks || researchWorks.length === 0) {
+    throw new ApiError(404, "No Research Works Found");
   }
 
   return res
     .status(200)
-    .json(new ApiResponse(200, researchWorks, "All research works fetched successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        researchWorks,
+        "All research works fetched successfully"
+      )
+    );
 });
 
-const getAllContributions = asyncHandler(async(req, res)=>{
+const getAllContributions = asyncHandler(async (req, res) => {
   const { teacherId } = req.params;
-  const contributions = await Contribution.find({owner: teacherId});
+  const contributions = await Contribution.find({ owner: teacherId });
 
-  if(!contributions || contributions.length === 0){
-    throw new ApiError(404, "No Contributions Found")
+  if (!contributions || contributions.length === 0) {
+    throw new ApiError(404, "No Contributions Found");
   }
 
   return res
     .status(200)
-    .json(new ApiResponse(200, contributions, "All contributions fetched successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        contributions,
+        "All contributions fetched successfully"
+      )
+    );
 });
 
 export {
@@ -2215,5 +2230,5 @@ export {
   getAllChapters,
   getAllseminarAttended,
   getAllResearchWork,
-  getAllContributions
+  getAllContributions,
 };

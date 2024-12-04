@@ -39,7 +39,7 @@ import patentRouter from "./routes/patent.routes.js"
 import conferenceRouter from "./routes/conference.routes.js"
 import pointRouter from "./routes/points.routes.js"
 import postRouter from "./routes/extracontribution.routes.js"
-
+import chapterRouter from "./routes/chapter.routes.js"
 
 
 app.use("/api/v1/teachers", teacherRouter);
@@ -57,13 +57,12 @@ app.use("/api/v1/lecture", lecture);
 app.use("/api/v1/research-paper", research);
 app.use("/api/v1/domain-points", domainPoints);
 app.use("/api/v1/book", bookRouter);
+app.use("/api/v1/chapter", chapterRouter);
 app.use("/api/v1/journals", journalRouter);
 app.use("/api/v1/patents", patentRouter);
 app.use("/api/v1/conferences", conferenceRouter);
 app.use("/api/v1/points", pointRouter);
 app.use("/api/v1/posts", postRouter);
-
-
 
 
 export { app };

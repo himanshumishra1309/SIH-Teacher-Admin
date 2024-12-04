@@ -4,7 +4,16 @@ import { ApiError } from "../utils/ApiErrors.js";
 import { Chapter } from "../models/chapter.models.js";
 
 const addChapter = asyncHandler(async (req, res) => {
-  const { title, authors, publicationDate, book, volume, pages, publisher, chapterType } = req.body;
+  const {
+    title,
+    authors,
+    publicationDate,
+    book,
+    volume,
+    pages,
+    publisher,
+    chapterType,
+  } = req.body;
   const owner = req.teacher._id;
 
   if (!title || !authors || !publicationDate || !chapterType) {
@@ -30,23 +39,35 @@ const addChapter = asyncHandler(async (req, res) => {
 
 const updateChapter = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { title, authors, publicationDate, book, volume, pages, publisher, chapterType } = req.body;
+  const {
+    title,
+    authors,
+    publicationDate,
+    book,
+    volume,
+    pages,
+    publisher,
+    chapterType,
+  } = req.body;
 
-  const updatedChapter = await Chapter.findByIdAndUpdate(id, 
+  const updatedChapter = await Chapter.findByIdAndUpdate(
+    id,
     {
-      $set:{ 
-        title, 
+      $set: {
+        title,
         authors,
-        publicationDate, 
-        book, 
-        volume, 
-        pages, 
-        publisher, 
-        chapterType 
-      }
-    }, {
-    new: true,
-  });
+        publicationDate,
+        book,
+        volume,
+        pages,
+        publisher,
+        chapterType,
+      },
+    },
+    {
+      new: true,
+    }
+  );
 
   if (!updatedChapter) {
     throw new ApiError(404, "Chapter not found");
@@ -77,7 +98,9 @@ const getAllChapters = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, chapters, "All chapters retrieved successfully"));
+    .json(
+      new ApiResponse(200, chapters, "All chapters retrieved successfully")
+    );
 });
 
 export { addChapter, updateChapter, deleteChapter, getAllChapters };
