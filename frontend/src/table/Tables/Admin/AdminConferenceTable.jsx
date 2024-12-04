@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { bookColumnDef } from "../Columns/BookColumn.jsx";
+import { conferenceColumnDef } from "../Columns/ConferenceColumn.jsx";
 import "../../table.css";
 import DownloadBtn from "../../DownloadBtn.jsx";
 import DebouncedInput from "../../DebouncedInput.jsx";
@@ -20,7 +20,7 @@ import DrawerComponent from "../../../Forms/AddEntry/DrawerComponent.jsx";
 import DeleteDialog from "../../DeleteDialog.jsx";
 import axios from "axios";
 
-export default function AdminBookTable() {
+export default function AdminConferenceTable() {
   const { id } = useParams();
   // console.log(id);
   const [data, setData] = useState("");
@@ -40,7 +40,7 @@ export default function AdminBookTable() {
     try {
       const token = sessionStorage.getItem("adminAccessToken");
       const response = await axios.get(
-        `http://localhost:6005/api/v1/admins/book/${id}`,
+        `http://localhost:6005/api/v1/admins/conference/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -55,7 +55,7 @@ export default function AdminBookTable() {
   };
 
   const columns = useMemo(() => {
-    return bookColumnDef.map((col) => {
+    return conferenceColumnDef.map((col) => {
       if (col.accessorKey === "actions") {
         return {
           ...col,

@@ -64,6 +64,9 @@ import PeerReview from './pages/FacultyPortal/PeerReview';
 import SubjectList from './table/Tables/Faculty/SubjectList';
 import LectureAndAttendance from './table/Tables/Faculty/LectureAndAttendance';
 import AdminBookTable from './table/Tables/Admin/AdminBookTable';
+import AdminJournalTable from './table/Tables/Admin/AdminJournalTable';
+import AdminPatentsTable from './table/Tables/Admin/AdminPatentsTable';
+import AdminConferenceTable from './table/Tables/Admin/AdminConferenceTable';
 
 
 const router = createBrowserRouter(
@@ -139,9 +142,11 @@ const router = createBrowserRouter(
         <Route path="seminars" element={<AdminSeminarsTable/>} errorElement={<NotFoundPage/>} />
         <Route path="projects" element={<AdminProjectTable />} errorElement={<NotFoundPage/>} />
         <Route path="books" element={<AdminBookTable />} errorElement={<NotFoundPage/>} />
-        <Route path="adminallocate-lectures" element={<AdminLectureAllocationTable />} errorElement={<NotFoundPage/>} />
-        <Route path="adminallocate-lectures" element={<AdminLectureAllocationTable />} errorElement={<NotFoundPage/>} />
-        <Route path="adminallocate-lectures" element={<AdminLectureAllocationTable />} errorElement={<NotFoundPage/>} />
+        <Route path="adminallocate-lectures" element={<AdminAllocateSubjectToStudent />} errorElement={<NotFoundPage/>} />
+
+        <Route path="journal" element={<AdminJournalTable />} errorElement={<NotFoundPage/>} />
+        <Route path="patent" element={<AdminPatentsTable />} errorElement={<NotFoundPage/>} />
+        <Route path="conference" element={<AdminConferenceTable />} errorElement={<NotFoundPage/>} />
 
 
         {/* <Route path="Contribution-graph" element={<ResearchTable />} errorElement={<NotFoundPage/>} /> */}

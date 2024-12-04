@@ -18,7 +18,7 @@ export default function AdminNavigation() {
     { name: "Allocate Lectures", path: "adminallocate-lectures" },
     { name: "Books", path: "books" },
     { name: "Journal Article", path: "journal" },
-    { name: "Patents", path: "patents" },
+    { name: "Patents", path: "patent" },
     { name: "Conference Papers", path: "conference" },
     { name: "Thesis", path: "thesis" },
 
