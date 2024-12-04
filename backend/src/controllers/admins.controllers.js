@@ -19,6 +19,14 @@ import { Student } from "../models/students.models.js";
 import { StudySubject } from "../models/studySubjects.models.js";
 import { Task } from "../models/tasks.modules.js";
 import { Completedtask } from "../models/completedTasks.models.js";
+import { Chapter } from "../models/chapter.models.js";
+import { Conference } from "../models/conferences.models.js";
+import { Patent } from "../models/patent.models.js";
+import { ResearchWork } from "../models/ongoing-research.models.js";
+import { Journal } from "../models/journal.models.js";
+import { Contribution } from "../models/extraContributions.models.js";
+import { Book } from "../models/books.models.js";
+import { SeminarAttended } from "../models/seminarAttended.models.js";
 import mongoose from "mongoose";
 import nodemailer from "nodemailer";
 
@@ -1806,8 +1814,7 @@ const getEventsParticipatedByTheTeacher = asyncHandler(async (req, res) => {
     );
 });
 
-const getExpertLecturesDeliveredByTheTeacher = asyncHandler(
-  async (req, res) => {
+const getExpertLecturesDeliveredByTheTeacher = asyncHandler( async (req, res) => {
     const { teacherId } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(teacherId)) {
@@ -2049,6 +2056,97 @@ const getLecturesConductedByTheTeacher = asyncHandler(async (req, res) => {
     );
 });
 
+const getAllTheJournals = asyncHandler(async (req, res) => {
+  const { teacherId } = req.params;
+  const journals = await Journal.find({owner: teacherId});
+
+  if(!journals || journals.length === 0){
+    throw new ApiError(404, "No Journals Found")
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, journals, "All journals fetched successfully"));
+});
+
+const getAllBooks = asyncHandler(async (req, res)=>{
+  const { teacherId } = req.params;
+  const books = await Book.find({owner: teacherId});
+
+  if(!books || books.length === 0){
+    throw new ApiError(404, "No Books Found")
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, books, "All books fetched successfully"));
+})
+
+const getAllPatents = asyncHandler(async (req, res)=>{
+  const { teacherId } = req.params;
+  const patents = await Patent.find({owner: teacherId});
+
+  if(!patents || patents.length === 0){
+    throw new ApiError(404, "No Patents Found")
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, patents, "All patents fetched successfully"));
+});
+
+const getAllConferences = asyncHandler(async (req, res)=>{
+  const { teacherId } = req.params;
+  const conferences = await Conference.find({owner: teacherId});
+
+  if(!conferences || conferences.length === 0){
+    throw new ApiError(404, "No Conferences Found")
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, conferences, "All conferences fetched successfully"));
+});
+
+const getAllChapters = asyncHandler(async (req, res)=>{
+  const { teacherId } = req.params;
+  const chapters = await Chapter.find({owner: teacherId});
+
+  if(!chapters || chapters.length === 0){
+    throw new ApiError(404, "No Chapters Found")
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, chapters, "All chapters fetched successfully"));
+});
+
+const getAllseminarAttended = asyncHandler(async(req, res)=>{
+  const { teacherId } = req.params;
+  const seminars = await SeminarAttended.find({owner: teacherId});
+
+  if(!seminars || seminars.length === 0){
+    throw new ApiError(404, "No Seminars Found")
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, seminars, "All seminars fetched successfully"));
+});
+
+const getAllResearchWork = asyncHandler(async(req, res)=>{
+  const { teacherId } = req.params;
+  const researchWorks = await ResearchWork.find({owner: teacherId});
+
+  if(!researchWorks || researchWorks.length === 0){
+    throw new ApiError(404, "No Research Works Found")
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, researchWorks, "All research works fetched successfully"));
+});
+
 export {
   registerAdmin,
   registerTeacher,
@@ -2097,4 +2195,11 @@ export {
   getUpcomingSeminarByTheTeacher,
   getConductedSeminarFeedbacks,
   getLecturesConductedByTheTeacher,
+  getAllTheJournals,
+  getAllBooks,
+  getAllPatents,
+  getAllConferences,
+  getAllChapters,
+  getAllseminarAttended,
+  getAllResearchWork
 };
