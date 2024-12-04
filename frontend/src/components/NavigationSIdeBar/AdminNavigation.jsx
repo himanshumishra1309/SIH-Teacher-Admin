@@ -16,6 +16,11 @@ export default function AdminNavigation() {
     { name: "Seminars", path: "seminars" },
     { name: "Projects", path: "projects" },
     { name: "Allocate Lectures", path: "adminallocate-lectures" },
+    { name: "Books", path: "books" },
+    { name: "Journal Article", path: "journal" },
+    { name: "Patents", path: "patents" },
+    { name: "Conference Papers", path: "conference" },
+    { name: "Thesis", path: "thesis" },
 
     // { name: "Contribution Graph", path: "Contribution-graph" }
   ];

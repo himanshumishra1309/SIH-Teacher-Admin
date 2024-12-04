@@ -63,6 +63,7 @@ import AddLecMarkAttendabce from './table/Tables/Faculty/AddLecMarkAttendabce';
 import PeerReview from './pages/FacultyPortal/PeerReview';
 import SubjectList from './table/Tables/Faculty/SubjectList';
 import LectureAndAttendance from './table/Tables/Faculty/LectureAndAttendance';
+import AdminBookTable from './table/Tables/Admin/AdminBookTable';
 
 
 const router = createBrowserRouter(
@@ -137,6 +138,9 @@ const router = createBrowserRouter(
         <Route path="event-participation" element={<AdminEventTable />} errorElement={<NotFoundPage/>} />
         <Route path="seminars" element={<AdminSeminarsTable/>} errorElement={<NotFoundPage/>} />
         <Route path="projects" element={<AdminProjectTable />} errorElement={<NotFoundPage/>} />
+        <Route path="books" element={<AdminBookTable />} errorElement={<NotFoundPage/>} />
+        <Route path="adminallocate-lectures" element={<AdminLectureAllocationTable />} errorElement={<NotFoundPage/>} />
+        <Route path="adminallocate-lectures" element={<AdminLectureAllocationTable />} errorElement={<NotFoundPage/>} />
         <Route path="adminallocate-lectures" element={<AdminLectureAllocationTable />} errorElement={<NotFoundPage/>} />
 
 

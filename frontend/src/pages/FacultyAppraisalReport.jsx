@@ -38,8 +38,8 @@ const FacultyAppraisalReport = ({
     // sttp: "http://localhost:6005/api/v1/points/sttp",
     conferences: "http://localhost:6005/api/v1/points/conferences",
     // seminarsConducted: "http://localhost:6005/api/v1/points/seminars-conducted",
-    // seminarsAttended: "http://localhost:6005/api/v1/points/seminar-attended", 
-    projects: "http://localhost:6005/api/v1/points/projects", 
+    // seminarsAttended: "http://localhost:6005/api/v1/points/seminar-attended",
+    // projects: "http://localhost:6005/api/v1/points/projects",
   };
 
   const appraisalData2 = [
@@ -64,13 +64,13 @@ const FacultyAppraisalReport = ({
               )}`,
             },
           });
-          console.log(response)
+          console.log(response);
           return { field: key, ...response.data.data };
         })
       );
 
-      console.log("results", results)
-      
+      console.log("results", results);
+
       const formattedData = results.map((item) => ({
         field: item.field
           .replace(/([A-Z])/g, " $1")
@@ -79,7 +79,7 @@ const FacultyAppraisalReport = ({
         highestPoints: item.highestPoints || 0,
       }));
 
-      console.log("formattedData", formattedData)
+      console.log("formattedData", formattedData);
 
       setAppraisalData(formattedData);
     } catch (error) {
@@ -243,7 +243,7 @@ const FacultyAppraisalReport = ({
           </CardHeader>
           <CardContent>
             {/* Your custom component will go here */}
-            <AppraisalReportTable/>
+            <AppraisalReportTable />
           </CardContent>
         </Card>
 
