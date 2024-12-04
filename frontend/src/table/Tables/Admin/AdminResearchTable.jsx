@@ -1,198 +1,314 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { useParams, Outlet } from "react-router-dom";
-
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import {
   useReactTable,
   getCoreRowModel,
   getPaginationRowModel,
   getFilteredRowModel,
   getSortedRowModel,
+  getExpandedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { columnDef } from "../Columns/ResearchColumn.jsx";
-// import dataJSON from "./data.json";
-import "../../table.css";
-import DownloadBtn from "../../DownloadBtn.jsx";
-import DebouncedInput from "../../DebouncedInput.jsx";
-import { SearchIcon, Eye, EyeOff } from "lucide-react";
-import { Button } from "@/components/ui/button.jsx";
-import { Checkbox } from "@/components/ui/checkbox.jsx";
+import {
+  ChevronDown,
+  ChevronRight,
+  ChevronLeft,
+  Search,
+  Plus,
+  Edit,
+  Trash2,
+  Download,
+  Upload,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import DrawerComponent from "../../../Forms/AddEntry/DrawerComponent.jsx";
 import DeleteDialog from "../../DeleteDialog.jsx";
 import axios from "axios";
+import { CSVLink } from "react-csv";
+import { PatentcolumnDef } from "../Columns/PatentColumn.jsx";
+import { bookColumnDef } from "../Columns/BookColumn.jsx";
+import { JournalColumnDef } from "../Columns/JournalColumn.jsx";
+import { conferenceColumnDef } from "../Columns/ConferenceColumn.jsx";
+import { chapterColumnDef } from "../Columns/ChapterColumn.jsx";
+import { useParams } from "react-router-dom";
+
+function ExpandedRowContent({ data2 }) {
+  const fieldLabels = {
+    TY: "Type",
+    T1: "Title",
+    A1: "Authors",
+    Y1: "Year",
+    PB: "Publisher",
+    JO: "Journal",
+    VL: "Volume",
+    IS: "Issue",
+    SP: "Start Page",
+    EP: "End Page",
+    SN: "ISBN/ISSN",
+    T2: "Secondary Title",
+    UR: "URL",
+  };
+
+  const formatValue = (key, value) => {
+    if (Array.isArray(value)) {
+      return value.join(", ");
+    }
+    return value;
+  };
+
+  return (
+    <div className="grid grid-cols-2 gap-4 p-4">
+      {Object.entries(data2)
+        .filter(([key, value]) => value && value !== "N/A")
+        .map(([key, value]) => (
+          <div key={key} className="flex flex-col">
+            <Label className="font-medium">{fieldLabels[key] || key}</Label>
+            <span className="text-sm">{formatValue(key, value)}</span>
+          </div>
+        ))}
+    </div>
+  );
+}
 
 export default function AdminResearchTable() {
   const { id } = useParams();
-  // console.log(id);
-  const [data, setData] = useState("");
+  const [data, setData] = useState([]);
+  const [data2, setData2] = useState([]);
+  const [expanded, setExpanded] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
+  const [sorting, setSorting] = useState([]);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [rowToEdit, setRowToEdit] = useState(null);
   const [rowToDelete, setRowToDelete] = useState(null);
-  const [sorting, setSorting] = useState([]);
+  const [uploadedFileName, setUploadedFileName] = useState("");
+  const fileInputRef = useRef(null);
+  const [typeFilter, setTypeFilter] = useState("all");
   const [columnVisibility, setColumnVisibility] = useState({});
-
-  // data of the teacher email wegera
-  // useEffect(() => {
-  //   const fetchTeacherInfo = async () => {
-  //     try {
-  //       // Retrieve the token from session storage
-  //       const token = sessionStorage.getItem("adminAccessToken"); // Adjust this if using cookies
-
-  //       const response = await axios.get(
-  //         `http://localhost:6005/api/v1/admins/teachers/${id}`, // Adjust URL to your API endpoint
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`, // Set the Authorization header
-  //           },
-  //         }
-  //       );
-  //       console.log(response.data.data.teacher);
-  //       setTeacherInfo(response.data.data);
-  //     } catch (error) {
-  //       console.log("An error occurred while fetching teacher info.");
-  //     }
-  //   };
-
-  //   fetchTeacherInfo();
-  // }, [id]); // Runs when 'id' changes
-
-  // dtaa of the reaserch paper of the teacher aditi sharma
+  const [colu, setColu] = useState(PatentcolumnDef);
 
   useEffect(() => {
-    const fetchTeacherInfo = async () => {
-      try {
-        const token = sessionStorage.getItem("adminAccessToken");
+    fetchData();
+  }, [typeFilter]);
 
-        const response = await axios.get(
-          `http://localhost:6005/api/v1/admins/teachers/${id}/research-papers`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        console.log("Teacher is HERE");
-        // console.log(response.data.data);
-        const formattedData = response.data.data.map((item) => ({
-          ...item,
-          publishedDate: item.publishedDate.split("T")[0],
-        }));
-
-        // console.log(formattedData)
-
-        setData(response.data.data);
-      } catch (error) {
-        console.log("An error occurred while fetching teacher info.");
-      }
+  const fetchData = async () => {
+    const endpointMap = {
+      Book: `/api/v1/admins/book/${id}`,
+      // BOOK: "/api/v1/book/book/",
+      "Book Chapter": `/api/v1/admins/chapter/${id}`,
+      "Journal Article": `/api/v1/admins/journal/${id}`,
+      Patent: `/api/v1/admins/patent/${id}`,
+      "Conference Paper": `/api/v1/admins/conference/${id}`,
     };
 
-    fetchTeacherInfo();
-  }, [id]);
+    const publicationType = mapPublicationType(typeFilter);
 
-  // data of the sttp of the teacher aditi shrma
-  // const [sttData, setsttData] = useState("");
-  // useEffect(() => {
-  //   const fetchTeacherInfo = async () => {
-  //     try {
-  //       const token = sessionStorage.getItem("teacherAccessToken");
+    const endpoint = endpointMap[publicationType];
+    try {
+      const token = sessionStorage.getItem("adminAccessToken");
+      const response = await axios.get(`http://localhost:6005${endpoint}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response.data.data);
+      setData2(response.data.data);
+      // console.log(data2);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
-  //       const response = await axios.get(`http://localhost:6005/api/v1/sttp/`, {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
+  // const handleRefManUpload = (event) => {
+  //   const file = event.target.files?.[0];
+  //   if (file) {
+  //     setUploadedFileName(file.name);
+  //     const reader = new FileReader();
+  //     reader.onload = (e) => {
+  //       try {
+  //         const content = e.target.result;
+  //         const parsedData = parseRefMan(content);
+  //         console.log("Parsed Data:", parsedData); // For debugging
+  //         setData(parsedData);
+  //       } catch (error) {
+  //         console.error("Error parsing RefMan file:", error);
+  //         alert("Error parsing the RefMan file. Please check the file format.");
+  //       }
+  //     };
+  //     reader.readAsText(file);
+  //   }
+  // };
+
+  // const parseRefMan = (content) => {
+  //   const entries = content.split("ER  - ").filter((entry) => entry.trim());
+
+  //   return entries
+  //     .map((entry) => {
+  //       const fields = {};
+  //       const lines = entry.split("\n");
+
+  //       lines.forEach((line) => {
+  //         const [key, ...valueParts] = line.split("  - ");
+  //         if (key && valueParts.length > 0) {
+  //           const value = valueParts.join("  - ").trim();
+  //           if (value) {
+  //             if (fields[key.trim()]) {
+  //               if (Array.isArray(fields[key.trim()])) {
+  //                 fields[key.trim()].push(value);
+  //               } else {
+  //                 fields[key.trim()] = [fields[key.trim()], value];
+  //               }
+  //             } else {
+  //               fields[key.trim()] = value;
+  //             }
+  //           }
+  //         }
   //       });
 
-  //       setsttData(response.data.data.sttps);
-  //       console.log("STTPDATA IS HERE", sttData);
-  //     } catch (error) {
-  //       console.log("An error occurred while fetching teacher info.");
-  //     }
-  //   };
+  //       const authors = fields.A1
+  //         ? (Array.isArray(fields.A1) ? fields.A1 : [fields.A1]).join(", ")
+  //         : "N/A";
 
-  //   fetchTeacherInfo();
-  // }, []);
+  //       return {
+  //         title: fields.T1 || "N/A",
+  //         authors: authors,
+  //         year: fields.Y1 || "N/A",
+  //         type: mapPublicationType(fields.TY || ""),
+  //         viewUrl: fields.UR || "",
+  //         allFields: fields,
+  //       };
+  //     })
+  //     .filter((entry) => entry.title !== "N/A" || entry.authors !== "N/A");
+  // };
 
-  // data of the events of the teacher aditi shrma
-  // const [eventData, setEventData] = useState("");
-  // useEffect(() => {
-  //   const fetchTeacherInfo = async () => {
-  //     try {
-  //       const token = sessionStorage.getItem("teacherAccessToken");
+  const mapPublicationType = (type) => {
+    const typeMap = {
+      Book: "Book",
+      "Book Chapter": "Book Chapter",
+      "Journal Article": "Journal Article",
+      Patent: "Patent",
+      "Conference Paper": "Conference Paper",
+    };
+    return typeMap[type] || "Other";
+  };
 
-  //       const response = await axios.get(
-  //         `http://localhost:6005/api/v1/event/events`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //       setEventData(response.data.data.events);
-  //       console.log("EVENT DATA Is", eventData);
-  //     } catch (error) {
-  //       console.log("An error occurred while fetching teacher info.");
-  //     }
-  //   };
+  const defaultColumn = useMemo(
+    () => [
+      {
+        accessorKey: "title",
+        header: "Title",
+        cell: ({ row, getValue }) => (
+          <div
+            className="cursor-pointer flex items-center gap-2"
+            onClick={() => row.toggleExpanded()}
+          >
+            {row.getIsExpanded() ? (
+              <ChevronDown className="h-4 w-4" />
+            ) : (
+              <ChevronRight className="h-4 w-4" />
+            )}
+            <span className="font-medium">{getValue()}</span>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "authors",
+        header: "Author(s)",
+      },
+      {
+        accessorKey: "year",
+        header: "Year",
+      },
+      {
+        accessorKey: "publicationType",
+        header: "Publication Type",
+      },
+      {
+        accessorKey: "type",
+        header: "Type",
+      },
+      {
+        accessorKey: "viewUrl",
+        header: "View URL",
+        cell: ({ getValue }) => {
+          const url = getValue();
+          return url ? (
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:underline"
+            >
+              View
+            </a>
+          ) : (
+            <span className="text-gray-400">N/A</span>
+          );
+        },
+      },
+      {
+        accessorKey: "actions",
+        header: "Actions",
+        cell: ({ row }) => (
+          <div className="flex gap-2">
+            <Button
+              onClick={() => {
+                setRowToEdit(row.original);
+                setDrawerOpen(true);
+              }}
+              className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200"
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+            <Button
+              onClick={() => {
+                setRowToDelete(row.original);
+                setDeleteDialogOpen(true);
+              }}
+              className="p-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-200"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    []
+  );
 
-  //   fetchTeacherInfo();
-  // }, []);
+  const columnMap = {
+    Patent: PatentcolumnDef,
+    Book: bookColumnDef,
+    "Journal Article": JournalColumnDef,
+    "Conference Paper": conferenceColumnDef,
+    "Book Chapter" : chapterColumnDef
+  };
 
-  // get the data of the expert lectures of the teahcer
-  // const [expertLectureData, setExpertLectureData] = useState("");
-  // useEffect(() => {
-  //   const fetchTeacherInfo = async () => {
-  //     try {
-  //       const token = sessionStorage.getItem("teacherAccessToken");
+  // Dynamically set column definitions based on typeFilter
+  useEffect(() => {
+    setColu(columnMap[typeFilter] || []); // Update columnDef based on typeFilter
+  }, [typeFilter]); // Triggered when typeFilter changes
 
-  //       const response = await axios.get(
-  //         `http://localhost:6005/api/v1/expertLectures/lectures`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //       setExpertLectureData(response.data.data.expertLectures);
-  //       console.log("Expert LEcture DATA Is", expertLectureData);
-  //     } catch (error) {
-  //       console.log("An error occurred while fetching teacher info.");
-  //     }
-  //   };
+  // Fetch data based on typeFilter
+  useEffect(() => {
+    fetchData();
+  }, [typeFilter]); // Re-fetch data whenever typeFilter changes
 
-  //   fetchTeacherInfo();
-  // }, []);
-
-  // get the data of the projects of the teachers
-
-  // const [teacherProjectData, setTeacherProjectData] = useState("");
-  // useEffect(() => {
-  //   const fetchTeacherInfo = async () => {
-  //     try {
-  //       const token = sessionStorage.getItem("teacherAccessToken");
-
-  //       const response = await axios.get(
-  //         `http://localhost:6005/api/v1/projects/projects`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //       setTeacherProjectData(response.data.data.projects);
-  //       console.log("Teacher Projects DATA Is", teacherProjectData);
-  //     } catch (error) {
-  //       console.log("An error occurred while fetching teacher info.");
-  //     }
-  //   };
-
-  //   fetchTeacherInfo();
-  // }, []);
-
+  // Dynamic table rendering
   const columns = useMemo(() => {
-    return columnDef.map((col) => {
+    return colu.map((col) => {
       if (col.accessorKey === "actions") {
         return {
           ...col,
@@ -222,11 +338,12 @@ export default function AdminResearchTable() {
       }
       return col;
     });
-  }, []);
+  }, [colu]); // Recompute columns whenever colu changes
 
+  // Table configuration
   const table = useReactTable({
-    data,
-    columns,
+    data: data2, // This will update when data2 changes
+    columns, // This will update when colu changes
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -241,71 +358,289 @@ export default function AdminResearchTable() {
     onColumnVisibilityChange: setColumnVisibility,
   });
 
-  const resetFilters = () => {
-    setGlobalFilter("");
-    setSorting([]);
-    table.resetColumnVisibility();
+  // const filteredRows = React.useMemo(() => {
+  //   return table.getRowModel().rows.filter((row) => {
+  //     if (typeFilter === "all") return true;
+  //     return row.original.type === typeFilter;
+  //   });
+  // }, [table.getRowModel().rows, typeFilter]);
+
+  const handleAddEntry = async (formData) => {
+    try {
+      const token = sessionStorage.getItem("teacherAccessToken");
+
+      const type = typeFilter;
+      console.log(type);
+      const publicationType = mapPublicationType(type);
+
+      // Determine the API endpoint dynamically]
+      console.log(publicationType);
+      const endpointMap = {
+        Book: "/api/v1/book/book/add",
+        BOOK: "/api/v1/book/book/add",
+        "Book Chapter": "/api/v1/research-paper/chapter",
+        "Journal Article": "/api/v1/journals/journal/add",
+        Patent: "/api/v1/patents/patent/add",
+        "Conference Paper": "/api/v1/conferences/conference/add",
+      };
+
+      const endpoint = endpointMap[publicationType];
+
+      // Send the API request to the determined endpoint
+      const response = await axios.post(
+        `http://localhost:6005${endpoint}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(response);
+      // setData((prevData) => [...prevData, response.data.data]);
+      setDrawerOpen(false);
+    } catch (error) {
+      console.error("Error adding entry:", error);
+    }
   };
 
-  const handleAddEntry = (newData) => {
-    setData((prevData) => [...prevData, { ...newData, id: Date.now() }]);
+  const handleEditEntry = async (formData) => {
+    try {
+      const token = sessionStorage.getItem("teacherAccessToken");
+      const response = await axios.patch(
+        `http://localhost:6005/api/v1/research-paper/update/${rowToEdit._id}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setData((prevData) =>
+        prevData.map((item) =>
+          item._id === response.data.data._id ? response.data.data : item
+        )
+      );
+      setDrawerOpen(false);
+      setRowToEdit(null);
+    } catch (error) {
+      console.error("Error editing entry:", error);
+    }
   };
 
-  const handleEditEntry = (updatedData) => {
-    setData((prevData) =>
-      prevData.map((row) => (row.id === updatedData.id ? updatedData : row))
-    );
+  const handleDeleteEntry = async () => {
+    try {
+      const token = sessionStorage.getItem("teacherAccessToken");
+      await axios.delete(
+        `http://localhost:6005/api/v1/research-paper/delete/${rowToDelete._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setData((prevData) =>
+        prevData.filter((item) => item._id !== rowToDelete._id)
+      );
+      setDeleteDialogOpen(false);
+      setRowToDelete(null);
+    } catch (error) {
+      console.error("Error deleting entry:", error);
+    }
   };
 
-  const handleDeleteRow = () => {
-    setData((prevData) => prevData.filter((row) => row.id !== rowToDelete.id));
-    setDeleteDialogOpen(false);
-    setRowToDelete(null);
-  };
+  const csvData = useMemo(() => {
+    return data2.map((item) => ({
+      Title: item.title,
+      Authors: item.authors,
+      Year: item.year,
+      Type: item.type,
+      ViewURL: item.viewUrl,
+    }));
+  }, [data2]);
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between mb-4">
+    <div className="container mx-auto p-6 space-y-6">
+      <h2 className="text-2xl font-semibold text-gray-800">Research Papers</h2>
+
+      <div className="flex justify-between items-center gap-4 flex-wrap">
         <div className="flex items-center gap-2">
-          <SearchIcon className="text-gray-400" />
-          <DebouncedInput
+          <Input
             value={globalFilter ?? ""}
-            onChange={(value) => setGlobalFilter(String(value))}
-            className="p-2 bg-transparent outline-none border-b-2 w-64 focus:w-96 duration-300 border-gray-300 focus:border-blue-500"
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className="max-w-xs"
             placeholder="Search all columns..."
+            leftIcon={<Search className="h-4 w-4 text-gray-400" />}
           />
         </div>
-        <DownloadBtn data={data} fileName="Research" />
+        <div className="flex items-center gap-2">
+          <Label htmlFor="type-filter">Filter by Type:</Label>
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Select type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="Book">Book</SelectItem>
+              <SelectItem value="Book Chapter">Book Chapter</SelectItem>
+              <SelectItem value="Journal Article">Journal Article</SelectItem>
+              <SelectItem value="Patent">Patent</SelectItem>
+              <SelectItem value="Conference Paper">Conference Paper</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        {/* <div className="flex items-center gap-2">
+          <input
+            type="file"
+            accept=".ris"
+            onChange={handleRefManUpload}
+            className="hidden"
+            ref={fileInputRef}
+          />
+          <Button
+            onClick={() => fileInputRef.current?.click()}
+            className="bg-blue-500 hover:bg-blue-600"
+          >
+            <Upload className="h-4 w-4 mr-2" /> Upload RefMan
+          </Button>
+          {uploadedFileName && (
+            <span className="text-sm text-gray-600">
+              Uploaded: {uploadedFileName}
+            </span>
+          )}
+        </div> */}
+        <div className="flex items-center gap-2">
+          {/* <Button
+            onClick={() => setDrawerOpen(true)}
+            className="bg-green-500 hover:bg-green-600"
+          >
+            <Plus className="h-4 w-4 mr-2" /> Add Entry
+          </Button> */}
+          <CSVLink
+            data={csvData}
+            filename={"research_papers.csv"}
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded inline-flex items-center"
+          >
+            <Download className="h-4 w-4 mr-2" /> Export CSV
+          </CSVLink>
+        </div>
       </div>
 
-      {/* <div className="flex justify-end mb-4">
-        <Button onClick={() => setDrawerOpen(true)} className="add-entry-btn">
-          Add Entry
-        </Button>
-      </div> */}
+      {/* {data.length > 0 ? (
+        <div className="overflow-x-auto bg-white shadow-md rounded-lg border border-gray-200">
+          <table className="w-full table-auto">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      key={header.id}
+                      className="px-6 py-3 text-left text-sm font-medium text-gray-700"
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      <div className="flex items-center gap-2">
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                        {header.column.getIsSorted() && (
+                          <ChevronDown
+                            className={`h-4 w-4 ${
+                              header.column.getIsSorted() === "desc"
+                                ? "transform rotate-180"
+                                : ""
+                            }`}
+                          />
+                        )}
+                      </div>
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {filteredRows.map((row) => (
+                <React.Fragment key={row.id}>
+                  <tr className="hover:bg-gray-50 border-b border-gray-200">
+                    {row.getVisibleCells().map((cell) => (
+                      <td
+                        key={cell.id}
+                        className="px-6 py-3 text-sm text-gray-700"
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                  {row.getIsExpanded() && (
+                    <tr>
+                      <td
+                        colSpan={columns.length}
+                        className="bg-gray-50 border-b"
+                      >
+                        <ExpandedRowContent data={row.original.allFields} />
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div className="text-center py-10 text-gray-500">
+          No data available. Please upload a RefMan file or add entries.
+        </div>
+      )}
 
-      <div className="mb-4 flex flex-wrap gap-2">
-        {table.getAllLeafColumns().map((column) => (
-          <div key={column.id} className="flex items-center">
-            <Checkbox
-              checked={column.getIsVisible()}
-              onCheckedChange={(value) => column.toggleVisibility(!!value)}
-              id={column.id}
-            />
-            <label htmlFor={column.id} className="ml-2 text-sm font-medium">
-              {column.id}
-            </label>
+      {data.length > 0 && (
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="flex items-center gap-1">
+              <div>Page</div>
+              <strong>
+                {table.getState().pagination.pageIndex + 1} of{" "}
+                {Math.ceil(
+                  filteredRows.length / table.getState().pagination.pageSize
+                )}
+              </strong>
+            </span>
+            <Button
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
-        ))}
-        <Button
-          onClick={resetFilters}
-          variant="outline"
-          size="sm"
-          className="ml-2"
-        >
-          Reset Filters
-        </Button>
-      </div>
+          <Select
+            value={table.getState().pagination.pageSize.toString()}
+            onValueChange={(value) => {
+              table.setPageSize(Number(value));
+            }}
+          >
+            <SelectTrigger className="w-[100px]">
+              <SelectValue placeholder={table.getState().pagination.pageSize} />
+            </SelectTrigger>
+            <SelectContent>
+              {[10, 20, 30, 40, 50].map((pageSize) => (
+                <SelectItem key={pageSize} value={pageSize.toString()}>
+                  Show {pageSize}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )} */}
 
       <div className="table-container">
         <table className="w-full">
@@ -361,55 +696,8 @@ export default function AdminResearchTable() {
       <DeleteDialog
         isOpen={isDeleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
-        onConfirm={handleDeleteRow}
-        rowData={rowToDelete}
+        onConfirm={handleDeleteEntry}
       />
-
-      <div className="flex items-center justify-end mt-4 gap-2">
-        <Button
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
-        <span className="flex items-center gap-1">
-          <div>Page</div>
-          <strong>
-            {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
-          </strong>
-        </span>
-        <span className="flex items-center gap-1">
-          | Go to page:
-          <input
-            type="number"
-            defaultValue={table.getState().pagination.pageIndex + 1}
-            onChange={(e) => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0;
-              table.setPageIndex(page);
-            }}
-            className="border p-1 rounded w-16"
-          />
-        </span>
-        <select
-          value={table.getState().pagination.pageSize}
-          onChange={(e) => {
-            table.setPageSize(Number(e.target.value));
-          }}
-        >
-          {[10, 20, 30, 40, 50].map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              Show {pageSize}
-            </option>
-          ))}
-        </select>
-      </div>
     </div>
   );
 }

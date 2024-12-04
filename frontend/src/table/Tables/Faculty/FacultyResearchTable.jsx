@@ -37,6 +37,7 @@ import { PatentcolumnDef } from "../Columns/PatentColumn.jsx";
 import { bookColumnDef } from "../Columns/BookColumn.jsx";
 import { JournalColumnDef } from "../Columns/JournalColumn.jsx";
 import { conferenceColumnDef } from "../Columns/ConferenceColumn.jsx";
+import { chapterColumnDef } from "../Columns/ChapterColumn.jsx";
 
 function ExpandedRowContent({ data2 }) {
   const fieldLabels = {
@@ -104,13 +105,10 @@ export default function FacultyResearchTable() {
     const endpointMap = {
       Book: "/api/v1/book/book/",
       BOOK: "/api/v1/book/book/",
-      "Book Chapter": "/api/v1/research-paper/chapter",
-      "Journal Article": "/api/v1/journals/journal/get",
+      "Book Chapter": "/api/v1/chapter/chapter/",
+      "Journal Article": "/api/v1/journals/journal/",
       Patent: "/api/v1/patents/patent/get",
       "Conference Paper": "/api/v1/conferences/conference/get",
-      Thesis: "/api/v1/research-paper/thesis",
-      Report: "/api/v1/research-paper/report",
-      Other: "/api/v1/research-paper/create",
     };
 
     const publicationType = mapPublicationType(typeFilter);
@@ -125,7 +123,6 @@ export default function FacultyResearchTable() {
       });
       console.log(response.data.data);
       setData2(response.data.data);
-      // console.log(data2);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -196,12 +193,10 @@ export default function FacultyResearchTable() {
   const mapPublicationType = (type) => {
     const typeMap = {
       Book: "Book",
-      CHAP: "Book Chapter",
+      "Book Chapter": "Book Chapter",
       "Journal Article": "Journal Article",
       Patent: "Patent",
       "Conference Paper": "Conference Paper",
-      THES: "Thesis",
-      RPRT: "Report",
     };
     return typeMap[type] || "Other";
   };
@@ -294,7 +289,8 @@ export default function FacultyResearchTable() {
     Patent: PatentcolumnDef,
     Book: bookColumnDef,
     "Journal Article": JournalColumnDef,
-    "Conference Paper": conferenceColumnDef, // Add more mappings as necessary
+    "Conference Paper": conferenceColumnDef,
+    "Book Chapter": chapterColumnDef,
   };
 
   // Dynamically set column definitions based on typeFilter
@@ -379,13 +375,10 @@ export default function FacultyResearchTable() {
       const endpointMap = {
         Book: "/api/v1/book/book/add",
         BOOK: "/api/v1/book/book/add",
-        "Book Chapter": "/api/v1/research-paper/chapter",
+        "Book Chapter": "/api/v1/chapter/chapter/add",
         "Journal Article": "/api/v1/journals/journal/add",
         Patent: "/api/v1/patents/patent/add",
         "Conference Paper": "/api/v1/conferences/conference/add",
-        Thesis: "/api/v1/research-paper/thesis",
-        Report: "/api/v1/research-paper/report",
-        Other: "/api/v1/research-paper/create",
       };
 
       const endpoint = endpointMap[publicationType];
@@ -492,9 +485,6 @@ export default function FacultyResearchTable() {
               <SelectItem value="Journal Article">Journal Article</SelectItem>
               <SelectItem value="Patent">Patent</SelectItem>
               <SelectItem value="Conference Paper">Conference Paper</SelectItem>
-              <SelectItem value="Thesis">Thesis</SelectItem>
-              <SelectItem value="Report">Report</SelectItem>
-              <SelectItem value="Other">Other</SelectItem>
             </SelectContent>
           </Select>
         </div>
