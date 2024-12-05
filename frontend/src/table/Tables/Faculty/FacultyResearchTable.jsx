@@ -332,8 +332,8 @@ export default function FacultyResearchTable() {
           },
         }
       );
-      // console.log(response);
-      // setData((prevData) => [...prevData, response.data.data]);
+      console.log(response.data.data);
+      setData2((prevData) => [...prevData, response.data.data]);
       setDrawerOpen(false);
     } catch (error) {
       console.error("Error adding entry:", error);

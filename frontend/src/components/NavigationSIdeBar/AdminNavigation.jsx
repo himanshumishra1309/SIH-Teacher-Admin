@@ -1,23 +1,20 @@
-import React from 'react';
+import React from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { NavLink } from 'react-router-dom';
+import { NavLink } from "react-router-dom";
 
 export default function AdminNavigation() {
   const navigationItems = [
-    
-    // { name: "Personal Details", path: "personal-details" },
+    { name: "Personal Details", path: "personal-details" },
     { name: "Research Papers", path: "research-papers" },
     { name: "Students Guided", path: "students-guided" },
     // { name: "Portfolio At Institute Level ", path: "institute-portfolio" },
     // { name: "Portfolio At Department Level", path: "department-portfolio" },
     { name: "Expert Lecture Delivered", path: "expert-lecture" },
-    { name:  "Event Participation", path: "event-participation" },
+    { name: "Event Participation", path: "event-participation" },
     { name: "Seminars", path: "seminars" },
     { name: "Projects", path: "projects" },
     { name: "Allocate Lectures", path: "adminallocate-lectures" },
-    { name: "Books", path: "books" },
-    { name: "Journal Article", path: "journal" },
 
     // { name: "Contribution Graph", path: "Contribution-graph" }
   ];
@@ -29,9 +26,9 @@ export default function AdminNavigation() {
       </CardHeader>
       <CardContent className="p-0">
         {navigationItems.map((item, index) => (
-          <NavLink 
+          <NavLink
             to={item.path}
-            key={index} 
+            key={index}
             className="block w-full"
             activeClassName="bg-gray-200" // Optional: to highlight active link
           >
