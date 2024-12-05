@@ -123,7 +123,7 @@ export default function AdminResearchTable() {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response.data.data);
+      // console.log(response.data.data);
       setData2(response.data.data);
       // console.log(data2);
     } catch (error) {
@@ -370,11 +370,11 @@ export default function AdminResearchTable() {
       const token = sessionStorage.getItem("teacherAccessToken");
 
       const type = typeFilter;
-      console.log(type);
+      // console.log(type);
       const publicationType = mapPublicationType(type);
 
       // Determine the API endpoint dynamically]
-      console.log(publicationType);
+      // console.log(publicationType);
       const endpointMap = {
         Book: "/api/v1/book/book/add",
         BOOK: "/api/v1/book/book/add",
@@ -397,7 +397,7 @@ export default function AdminResearchTable() {
           },
         }
       );
-      console.log(response);
+      // console.log(response);
       // setData((prevData) => [...prevData, response.data.data]);
       setDrawerOpen(false);
     } catch (error) {

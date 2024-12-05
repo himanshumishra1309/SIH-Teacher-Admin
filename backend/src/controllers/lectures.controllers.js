@@ -1,6 +1,6 @@
 import { ApiError } from "../utils/ApiErrors.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { asyncHandler } from "../utils/AsyncHandler.js";
+import { asyncHandler } from "../utils/AsyncHandler2.js";
 import { AllocatedSubject } from "../models/allocated-subjects.models.js";
 import { Student } from "../models/students.models.js";
 import { Lecture } from "../models/lectures.models.js";
