@@ -55,7 +55,6 @@ import {
 } from "../controllers/admins.controllers.js";
 import { verifyAdminJWT } from "../middleware/admin.auth.middleware.js";
 import { upload } from "../middleware/multer.middleware.js";
-import { getAllJournals } from "../controllers/journal.controllers.js";
 
 const router = express.Router();
 

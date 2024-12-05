@@ -123,7 +123,7 @@ export default function AdminResearchTable() {
           Authorization: `Bearer ${token}`,
         },
       });
-      // console.log(response.data.data);
+      console.log(response);
       setData2(response.data.data);
       // console.log(data2);
     } catch (error) {
@@ -397,8 +397,6 @@ export default function AdminResearchTable() {
           },
         }
       );
-      console.log("sjsnfoinfion")
-      console.log(response.data);
       setData((prevData) => [...prevData, response.data]);
       setDrawerOpen(false);
     } catch (error) {
