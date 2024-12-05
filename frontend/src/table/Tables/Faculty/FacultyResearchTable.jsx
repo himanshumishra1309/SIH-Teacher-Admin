@@ -97,6 +97,7 @@ export default function FacultyResearchTable() {
   const [columnVisibility, setColumnVisibility] = useState({});
   const [colu, setColu] = useState(PatentcolumnDef);
 
+
   useEffect(() => {
     fetchData();
   }, [typeFilter]);
@@ -447,6 +448,13 @@ export default function FacultyResearchTable() {
       console.error("Error deleting entry:", error);
     }
   };
+
+  const filteredRows = useMemo(() => {
+    return table.getRowModel().rows.filter((row) => {
+      if (segregationFilter === "all") return true
+      return row.getValue("segregation") === segregationFilter
+    })
+  }, [table.getRowModel().rows, segregationFilter])
 
   const csvData = useMemo(() => {
     return data2.map((item) => ({
