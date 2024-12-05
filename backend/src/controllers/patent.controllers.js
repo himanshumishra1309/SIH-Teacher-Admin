@@ -4,10 +4,26 @@ import { ApiError } from "../utils/ApiErrors.js";
 import { Patent } from "../models/patent.models.js";
 
 const addPatent = asyncHandler(async (req, res) => {
-  const { title, inventors, patentOffice,  publicationDate, publicationType, patentNumber, applicationNumber } = req.body;
+  const {
+    title,
+    inventors,
+    patentOffice,
+    publicationDate,
+    patentType,
+    patentNumber,
+    applicationNumber,
+  } = req.body;
   const owner = req.teacher._id;
 
-  if (!title || !inventors || !publicationType || !patentOffice || !patentNumber || !applicationNumber) {
+  if (
+    !title ||
+    !inventors ||
+    !patentType ||
+    !publicationDate ||
+    !patentOffice ||
+    !patentNumber ||
+    !applicationNumber
+  ) {
     throw new ApiError(400, "Please provide all mandatory fields");
   }
   const patentEntry = await Patent.create({
@@ -15,7 +31,7 @@ const addPatent = asyncHandler(async (req, res) => {
     inventors,
     publicationDate,
     patentOffice,
-    patentType : publicationType,
+    patentType,
     patentNumber,
     applicationNumber,
     owner,
@@ -28,23 +44,31 @@ const addPatent = asyncHandler(async (req, res) => {
 
 const updatePatent = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { title, inventors, publicationDate, patentOffice, patentNumber, applicationNumber } = req.body;
+  const {
+    title,
+    inventors,
+    publicationDate,
+    patentOffice,
+    patentNumber,
+    applicationNumber,
+  } = req.body;
 
-  const updatedPatent = await Patent.findByIdAndUpdate(id, 
+  const updatedPatent = await Patent.findByIdAndUpdate(
+    id,
     {
-        $set: { 
-            title, 
-            inventors, 
-            publicationDate, 
-            patentOffice, 
-            patentNumber, 
-            applicationNumber 
-        }
-    }, 
+      $set: {
+        title,
+        inventors,
+        publicationDate,
+        patentOffice,
+        patentNumber,
+        applicationNumber,
+      },
+    },
     {
-        new: true,
+      new: true,
     }
-    );
+  );
 
   if (!updatedPatent) {
     throw new ApiError(404, "Patent not found");

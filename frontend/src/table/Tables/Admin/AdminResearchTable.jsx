@@ -293,7 +293,7 @@ export default function AdminResearchTable() {
     Book: bookColumnDef,
     "Journal Article": JournalColumnDef,
     "Conference Paper": conferenceColumnDef,
-    "Book Chapter" : chapterColumnDef
+    "Book Chapter": chapterColumnDef,
   };
 
   // Dynamically set column definitions based on typeFilter
@@ -397,8 +397,9 @@ export default function AdminResearchTable() {
           },
         }
       );
-      // console.log(response);
-      // setData((prevData) => [...prevData, response.data.data]);
+      console.log("sjsnfoinfion")
+      console.log(response.data);
+      setData((prevData) => [...prevData, response.data]);
       setDrawerOpen(false);
     } catch (error) {
       console.error("Error adding entry:", error);
