@@ -11,6 +11,7 @@ export default function FacultyNavigation() {
     { name: "Expert Lectures", path: "expert-lectures", icon: <Mic className="w-4 h-4" /> },
     { name: "STTP Conducted", path: "sttp-conducted", icon: <Users className="w-4 h-4" /> },
     { name: "Students Guided", path: "students-guided", icon: <GraduationCap className="w-4 h-4" /> },
+    { name: "Expert Lecture Delivered", path: "expert-lecture", icon: <Mic className="w-4 h-4" />  },
     { name: "Event Participation", path: "event-participation", icon: <Calendar className="w-4 h-4" /> },
     { name: "Seminars", path: "seminars", icon: <PresentationChart className="w-4 h-4" /> },
     { name: "Projects", path: "projects", icon: <Briefcase className="w-4 h-4" /> },
