@@ -21,7 +21,10 @@ const uploadExpertLecture = asyncHandler(async (req, res) => {
   }
 
   // const uploadExpertLectureReport = await uploadOnCloudinary(report.path);
-  const uploadExpertLectureReport = await uploadToGCS(report.path, "pdf-report"); 
+  const uploadExpertLectureReport = await uploadToGCS(
+    report.path,
+    "pdf-report"
+  );
 
   if (!uploadExpertLectureReport) {
     throw new ApiError(500, "Couldn't upload the pdf file");
@@ -89,18 +92,21 @@ const updateExpertLecture = asyncHandler(async (req, res) => {
   }
 
   if (file) {
-    if (expertLecture.report) {
-      const publicId = expertLecture.report.split("/").pop().split(".")[0]; // Extract the public_id from the Cloudinary URL
-      await cloudinary.uploader.destroy(publicId);
-    }
+    // if (expertLecture.report) {
+    //   const publicId = expertLecture.report.split("/").pop().split(".")[0]; // Extract the public_id from the Cloudinary URL
+    //   await cloudinary.uploader.destroy(publicId);
+    // }
 
-    const uploadExpertLectureReport = await uploadOnCloudinary(file.path);
+    const uploadExpertLectureReport = await uploadToGCS(
+      file.path,
+      "pdf-report"
+    );
 
     if (!uploadExpertLectureReport) {
       throw new ApiError(500, "Couldn't upload your new file");
     }
 
-    expertLecture.report = uploadExpertLectureReport.secure_url;
+    expertLecture.report = uploadExpertLectureReport;
   }
 
   const updatedExpertLecture = await ExpertLecture.findByIdAndUpdate(
