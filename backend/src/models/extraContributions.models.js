@@ -47,12 +47,12 @@ const contributionsSchema = new Schema(
 const mapContributionTypeToDomain = (type) => {
   const mapping = {
     "Industrial Visit": "Industrial-Visit-Other",
-    "Workshop Conducted": "Wookshop-Conducted-Other",
+    "Workshop Conducted": "Workshop-Conducted-Other",
     "Extra Course Studied": "Extra-Course-Studied-Other",
     "Made Study Materials": "Made-Study-Materials-Other",
-    Miscellaneous: "Task-Points-Other",
+    "Miscellaneous": "Miscellaneous",
   };
-  return mapping[type] || "Task-Points-Other";
+  return mapping[type] || "Miscellaneous";
 };
 
 // Pre-save hook to allocate points
