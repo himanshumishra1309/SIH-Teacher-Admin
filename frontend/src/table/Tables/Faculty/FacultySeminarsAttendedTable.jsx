@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { columnDef } from "../Columns/SeminarsColumn.jsx";
+import { columnDef } from "../Columns/SeminarAttendedColumn.jsx";
 import "../../table.css";
 import DownloadBtn from "../../DownloadBtn.jsx";
 import DebouncedInput from "../../DebouncedInput.jsx";
@@ -22,7 +22,7 @@ import LoadingPage from "@/pages/LoadingPage.jsx";
 import DeleteDialog from "../../DeleteDialog.jsx";
 import axios from "axios";
 
-export default function FacultySeminarsTable() {
+export default function FacultySeminarsAttendedTable() {
   const { id } = useParams();
   // console.log(id);
   const [data, setData] = useState("");

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, Outlet } from "react-router-dom";
+
 import {
   useReactTable,
   getCoreRowModel,
@@ -8,7 +9,7 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { columnDef } from "../Columns/EventsColumn.jsx";
+import { columnDef } from "../Columns/SeminarsConductedColumn.jsx";
 import "../../table.css";
 import DownloadBtn from "../../DownloadBtn.jsx";
 import DebouncedInput from "../../DebouncedInput.jsx";
@@ -16,13 +17,12 @@ import { SearchIcon, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import { Checkbox } from "@/components/ui/checkbox.jsx";
 import DrawerComponent from "../../../Forms/AddEntry/DrawerComponent.jsx";
-import DeleteDialog from "../../DeleteDialog.jsx";
 import LoadingPage from "@/pages/LoadingPage.jsx";
+
+import DeleteDialog from "../../DeleteDialog.jsx";
 import axios from "axios";
 
-export default function FacultyEventTable() {
-
-
+export default function FacultySeminarsConductedTable() {
   const { id } = useParams();
   // console.log(id);
   const [data, setData] = useState("");
@@ -35,27 +35,51 @@ export default function FacultyEventTable() {
   const [columnVisibility, setColumnVisibility] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
+  // data of the teacher email wegera
+  // useEffect(() => {
+  //   const fetchTeacherInfo = async () => {
+  //     try {
+  //       // Retrieve the token from session storage
+  //       const token = sessionStorage.getItem("adminAccessToken"); // Adjust this if using cookies
 
-  // const [eventData, setEventData] = useState("");
+  //       const response = await axios.get(
+  //         `http://localhost:6005/api/v1/admins/teachers/${id}`, // Adjust URL to your API endpoint
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`, // Set the Authorization header
+  //           },
+  //         }
+  //       );
+  //       console.log(response.data.data.teacher);
+  //       setTeacherInfo(response.data.data);
+  //     } catch (error) {
+  //       console.log("An error occurred while fetching teacher info.");
+  //     }
+  //   };
+
+  //   fetchTeacherInfo();
+  // }, [id]); // Runs when 'id' changes
+
+  // dtaa of the reaserch paper of the teacher aditi sharma
+
   useEffect(() => {
     const fetchTeacherInfo = async () => {
       try {
         const token = sessionStorage.getItem("teacherAccessToken");
 
         const response = await axios.get(
-          `http://localhost:6005/api/v1/event/events`,
+          `http://localhost:6005/api/v1/seminars/seminars/conducted`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        console.log("EVENT DATA Is", response.data.data.events);
-        setData(response.data.data.events);
+        console.log("Tecaher Seminar Data", response.data.data);
+        setData(response.data.data);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
-      }
-      finally {
+      } finally {
         setIsLoading(false);
       }
     };
@@ -102,7 +126,7 @@ export default function FacultyEventTable() {
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(), // Add filtering
+    getFilteredRowModel: getFilteredRowModel(),
     state: {
       sorting,
       globalFilter,
@@ -112,12 +136,10 @@ export default function FacultyEventTable() {
     onGlobalFilterChange: setGlobalFilter,
     onColumnVisibilityChange: setColumnVisibility,
   });
-  
 
   const resetFilters = () => {
     setGlobalFilter("");
     setSorting([]);
-    table.resetColumnFilters(); // Reset column filters
     table.resetColumnVisibility();
   };
 
@@ -137,7 +159,7 @@ export default function FacultyEventTable() {
       const token = sessionStorage.getItem("teacherAccessToken");
 
       await axios.delete(
-        `http://localhost:6005/api/v1/event/events/${rowToDelete._id}`,
+        `http://localhost:6005/api/v1/seminars/seminars/${rowToDelete._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -154,14 +176,12 @@ export default function FacultyEventTable() {
       setDeleteDialogOpen(false);
       setRowToDelete(null);
     } catch (error) {
-      console.error("Failed to delete Event Data:", error);
+      console.error("Failed to delete Seminar Data:", error);
     }
   };
 
-  
-
   if (isLoading) {
-    return <LoadingPage/>;
+    return <LoadingPage />;
   }
 
   return (
@@ -210,40 +230,38 @@ export default function FacultyEventTable() {
 
       <div className="table-container">
         <table className="w-full">
-        <thead>
-  {table.getHeaderGroups().map((headerGroup) => (
-    <tr key={headerGroup.id}>
-      {headerGroup.headers.map((header) => (
-        <th key={header.id} className="px-4 py-2">
-          {header.isPlaceholder
-            ? null
-            : flexRender(
-                header.column.columnDef.header,
-                header.getContext()
-              )}
-          {/* Render filter element if available */}
-          {header.column.columnDef.filterElement && (
-            <div className="mt-2">
-              {flexRender(
-                header.column.columnDef.filterElement,
-                header.getContext()
-              )}
-            </div>
-          )}
-        </th>
-      ))}
-    </tr>
-  ))}
-</thead>
-
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers
+                  // .filter((header) => header.column.id !== "actions") // Filter out the actions column
+                  .map((header) => (
+                    <th key={header.id} className="px-4 py-2">
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </th>
+                  ))}
+              </tr>
+            ))}
+          </thead>
           <tbody>
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-4 py-2">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
+                {row
+                  .getVisibleCells()
+                  // .filter((cell) => cell.column.id !== "actions") // Filter out the actions cell
+                  .map((cell) => (
+                    <td key={cell.id} className="px-4 py-2">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
               </tr>
             ))}
           </tbody>
@@ -263,9 +281,8 @@ export default function FacultyEventTable() {
           try {
             if (rowToEdit) {
               console.log("editing  the data", formData);
-
               const response = await axios.patch(
-                `http://localhost:6005/api/v1/event/events/${rowToEdit._id}`,
+                `http://localhost:6005/api/v1/seminars/${rowToEdit._id}`,
                 formData,
                 {
                   headers: {
@@ -280,7 +297,7 @@ export default function FacultyEventTable() {
               // Add (POST Request)
               console.log("posting the data", formData);
               const response = await axios.post(
-                `http://localhost:6005/api/v1/event/events`,
+                `http://localhost:6005/api/v1/seminars/seminars/upcoming`,
                 formData,
                 {
                   headers: {
@@ -293,7 +310,7 @@ export default function FacultyEventTable() {
               handleAddEntry(response.data.data);
             }
           } catch (error) {
-            console.error("Failed to submit Event data:", error);
+            console.error("Failed to submit Seminar data:", error);
           }
 
           setDrawerOpen(false);

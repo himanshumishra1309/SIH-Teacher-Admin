@@ -50,14 +50,15 @@ export const bookColumnDef = [
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
           <Select
+          className="text-black"
             onValueChange={(value) => {
               column.setFilterValue(value === "all" ? "" : value)
             }}
           >
-            <SelectTrigger className="w-[150px] mt-2">
-              <SelectValue placeholder="Filter Segregation" />
+            <SelectTrigger className="w-[150px] mt-2 bg-white text-black">
+              <SelectValue placeholder="All"/>
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="text-black">
               <SelectItem value="all">All</SelectItem>
               <SelectItem value="International">International</SelectItem>
               <SelectItem value="National">National</SelectItem>

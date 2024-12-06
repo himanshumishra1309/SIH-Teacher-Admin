@@ -39,7 +39,7 @@ import FacultyResearchTable from './table/Tables/Faculty/FacultyResearchTable';
 import FacultyLecturesTable from './table/Tables/Faculty/FacultyLecturesTable';
 import FacultySTTPTable from './table/Tables/Faculty/FacultySTTPTable';
 import FacultyEventTable from './table/Tables/Faculty/FacultyEventTable';
-import FacultySeminarsTable from './table/Tables/Faculty/FacultySeminarsTable';
+import FacultySeminarsTable from './table/Tables/Faculty/FacultySeminarsConductedTable';
 import FacultyProjectTable from './table/Tables/Faculty/FacultyProjectTable';
 import FacultyGuidedTable from './table/Tables/Faculty/FacultyGuidedTable';
 import FacultyDataDashboard from './pages/FacultyPortal/FacultyDataDashboard';
@@ -63,6 +63,7 @@ import AddLecMarkAttendabce from './table/Tables/Faculty/AddLecMarkAttendabce';
 import PeerReview from './pages/FacultyPortal/PeerReview';
 import SubjectList from './table/Tables/Faculty/SubjectList';
 import LectureAndAttendance from './table/Tables/Faculty/LectureAndAttendance';
+import SeminarLayout from './Layouts/SeminarLayout';
 
 
 
@@ -87,7 +88,7 @@ const router = createBrowserRouter(
         {/* <Route path="institute-portfolio" element={<ResearchTable />} errorElement={<NotFoundPage/>} /> */}
         {/* <Route path="department-portfolio" element={<ResearchTable />} errorElement={<NotFoundPage/>} /> */}
         <Route path="students-guided" element={<RouteTransitionWrapper><FacultyGuidedTable /></RouteTransitionWrapper>}errorElement={<NotFoundPage/>}  />
-        <Route path="seminars" element={<RouteTransitionWrapper><FacultySeminarsTable /></RouteTransitionWrapper>}errorElement={<NotFoundPage/>}  >
+        <Route path="seminars" element={<RouteTransitionWrapper><SeminarLayout /></RouteTransitionWrapper>}errorElement={<NotFoundPage/>}  >
            <Route path="upcoming" element={<RouteTransitionWrapper><UpcomingSeminars /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} /> 
         </Route>
         <Route path="projects" element={<RouteTransitionWrapper><FacultyProjectTable /></RouteTransitionWrapper>} />
