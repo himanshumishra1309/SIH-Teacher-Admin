@@ -1,6 +1,6 @@
-import mongoose, { Schema } from 'mongoose';
-import { Point } from './points.models.js';
-import { DomainPoint } from './domainpoints.models.js';
+import mongoose, { Schema } from "mongoose";
+import { Point } from "./points.models.js";
+import { DomainPoint } from "./domainpoints.models.js";
 
 const expertLectureSchema = new Schema(
   {
@@ -53,48 +53,51 @@ const allocatePoints = async (teacherId, domain, date) => {
   const existingPoint = await Point.findOne({ owner: teacherId, domain });
 
   if (existingPoint) {
-      // Update points if the domain exists
-      await Point.findByIdAndUpdate(existingPoint._id, {
-          $inc: { points },
-      });
+    // Update points if the domain exists
+    await Point.findByIdAndUpdate(existingPoint._id, {
+      $inc: { points },
+    });
   } else {
-      // Create a new domain if it does not exist
-      await Point.create({
-          date: date,
-          points,
-          domain,
-          owner: teacherId,
-      });
+    // Create a new domain if it does not exist
+    await Point.create({
+      date: date || new Date(),
+      points,
+      domain,
+      owner: teacherId,
+    });
   }
 };
 
 // Post-save hook to allocate points
-expertLectureSchema.post('save', async function (doc) {
+expertLectureSchema.post("save", async function (doc) {
   const domain = `${doc.level} Expert Lecture`; // Generate the domain key (e.g., "Major Expert Lecture")
   await allocatePoints(doc.owner, domain, doc.publicationDate);
 });
 
 // Post-remove hook to deduct points
-expertLectureSchema.post('findOneAndDelete', async function (doc) {
+expertLectureSchema.post("findOneAndDelete", async function (doc) {
   if (doc) {
-      const domain = `${doc.level} Expert Lecture`; // Generate the domain key (e.g., "Major Expert Lecture")
-      const points = await getPointsForDomain(domain); // Fetch points for the domain
+    const domain = `${doc.level} Expert Lecture`; // Generate the domain key (e.g., "Major Expert Lecture")
+    const points = await getPointsForDomain(domain); // Fetch points for the domain
 
-      // Search for an existing domain for the teacher
-      const existingPoint = await Point.findOne({ owner: doc.owner, domain });
+    // Search for an existing domain for the teacher
+    const existingPoint = await Point.findOne({ owner: doc.owner, domain });
 
-      if (existingPoint) {
-          // Deduct points
-          await Point.findByIdAndUpdate(existingPoint._id, {
-              $inc: { points: -points },
-          });
+    if (existingPoint) {
+      // Deduct points
+      await Point.findByIdAndUpdate(existingPoint._id, {
+        $inc: { points: -points },
+      });
 
-          // Optionally, remove the document if points drop to 0
-          if (existingPoint.points - points <= 0) {
-              await Point.findByIdAndDelete(existingPoint._id);
-          }
+      // Optionally, remove the document if points drop to 0
+      if (existingPoint.points - points <= 0) {
+        await Point.findByIdAndDelete(existingPoint._id);
       }
+    }
   }
 });
 
-export const ExpertLecture = mongoose.model("ExpertLecture", expertLectureSchema);
+export const ExpertLecture = mongoose.model(
+  "ExpertLecture",
+  expertLectureSchema
+);
