@@ -22,88 +22,73 @@ import axios from "axios";
 import AppraisalReportTable from "@/table/Tables/AppraisalReportTable";
 import { useParams } from "react-router-dom";
 
-const FacultyAppraisalReport = ({
+const AdminFacultyAppraisalReport = ({
   facultyName,
   facultyDepartment,
   facultyCode,
 }) => {
-  const [facultyData, setFacultyData] = useState("");
-
+  const { id } = useParams();
   const reportRef = useRef(null);
   const signatureRef = useRef(null);
+  const [facultyData, setFacultyData] = useState("");
   const [appraisalData, setAppraisalData] = useState([]);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:6005/api/v1/teachers/me",
-          {
+
+  const endpoints = {
+    journals: `http://localhost:6005/api/v1/points/ad-journals/${id}`,
+    books: `http://localhost:6005/api/v1/points/ad-books/${id}`,
+    patents: `http://localhost:6005/api/v1/points/ad-patents/${id}`,
+    // sttp: "http://localhost:6005/api/v1/points/sttp",
+    conferences: `http://localhost:6005/api/v1/points/ad-conferences/${id}`,
+    // seminarsConducted: "http://localhost:6005/api/v1/points/seminars-conducted",
+    // seminarsAttended: "http://localhost:6005/api/v1/points/seminar-attended",
+    // projects: "http://localhost:6005/api/v1/points/projects",
+  };
+
+  const appraisalData2 = [
+    { field: "Journals", currentPoints: 25, highestPoints: 40 },
+    { field: "Books", currentPoints: 15, highestPoints: 30 },
+    { field: "Patents", currentPoints: 10, highestPoints: 20 },
+    { field: "STTP", currentPoints: 20, highestPoints: 25 },
+    { field: "Conferences", currentPoints: 30, highestPoints: 35 },
+    { field: "Seminars Conducted", currentPoints: 18, highestPoints: 22 },
+    { field: "Seminars Attended", currentPoints: 12, highestPoints: 15 },
+    { field: "Projects", currentPoints: 35, highestPoints: 50 },
+  ];
+
+  const fetchAppraisalData = async () => {
+    try {
+      const results = await Promise.all(
+        Object.entries(endpoints).map(async ([key, url]) => {
+          const response = await axios.get(url, {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem(
-                "teacherAccessToken"
+                "adminAccessToken"
               )}`,
             },
-          }
-        );
-        console.log(response.data.data);
-        setFacultyData(response.data.data);
-      } catch (error) {
-        const errorMessage = error.response?.data?.message || error.message;
-        console.error("Error fetching teacher data:", errorMessage);
-      }
-    };
+          });
+          console.log(response);
+          return { field: key, ...response.data.data };
+        })
+      );
 
-    fetchData();
-  }, []);
-  const id = facultyData._id;
+      console.log("results", results);
 
-  useEffect(() => {
-    if (!facultyData?._id) return; // Avoid fetching if facultyData is not ready
+      const formattedData = results.map((item) => ({
+        field: item.field
+          .replace(/([A-Z])/g, " $1")
+          .replace(/^./, (str) => str.toUpperCase()),
+        currentPoints: item.requestedTeacherPoints || 0,
+        highestPoints: item.highestPoints || 0,
+      }));
 
-    const fetchAppraisalData = async () => {
-      const id = facultyData._id;
+      console.log("formattedData", formattedData);
 
-      const endpoints = {
-        journals: `http://localhost:6005/api/v1/points/journals/${id}`,
-        books: `http://localhost:6005/api/v1/points/books/${id}`,
-        patents: `http://localhost:6005/api/v1/points/patents/${id}`,
-        conferences: `http://localhost:6005/api/v1/points/conferences/${id}`,
-      };
+      setAppraisalData(formattedData);
+    } catch (error) {
+      console.error("Error fetching appraisal data:", error.message);
+    }
+  };
 
-      try {
-        const results = await Promise.all(
-          Object.entries(endpoints).map(async ([key, url]) => {
-            const response = await axios.get(url, {
-              headers: {
-                Authorization: `Bearer ${sessionStorage.getItem(
-                  "teacherAccessToken"
-                )}`,
-              },
-            });
-            console.log(`${key} data:`, response.data);
-            return { field: key, ...response.data.data };
-          })
-        );
-
-        const formattedData = results.map((item) => ({
-          field: item.field
-            .replace(/([A-Z])/g, " $1")
-            .replace(/^./, (str) => str.toUpperCase()),
-          currentPoints: item.requestedTeacherPoints || 0,
-          highestPoints: item.highestPoints || 0,
-        }));
-
-        console.log("Formatted appraisal data:", formattedData);
-        setAppraisalData(formattedData);
-      } catch (error) {
-        console.error("Error fetching appraisal data:", error.message);
-      }
-    };
-
-    fetchAppraisalData();
-  }, [facultyData]);
-
-  
   const handleDownload = () => {
     const input = reportRef.current;
     html2canvas(input).then((canvas) => {
@@ -159,6 +144,31 @@ const FacultyAppraisalReport = ({
       canvas.removeEventListener("mouseup", () => {});
       canvas.removeEventListener("mouseout", () => {});
     };
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:6005/api/v1/teachers/me",
+          {
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem(
+                "teacherAccessToken"
+              )}`,
+            },
+          }
+        );
+        // console.log(response.data.data);
+        setFacultyData(response.data.data);
+      } catch (error) {
+        const errorMessage = error.response?.data?.message || error.message;
+        console.error("Error fetching teacher data:", errorMessage);
+      }
+    };
+
+    fetchData();
+    fetchAppraisalData();
   }, []);
 
   return (
@@ -267,4 +277,4 @@ const FacultyAppraisalReport = ({
   );
 };
 
-export default FacultyAppraisalReport;
+export default AdminFacultyAppraisalReport;

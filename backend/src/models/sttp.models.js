@@ -87,7 +87,10 @@ sttpSchema.post("findOneAndDelete", async function (doc) {
     const points = await getPointsForSTTP(domainKey);
 
     if (points > 0) {
-      const existingPoint = await Point.findOne({ owner: doc.owner, domain: domainKey });
+      const existingPoint = await Point.findOne({
+        owner: doc.owner,
+        domain: domainKey,
+      });
 
       if (existingPoint) {
         await Point.findByIdAndUpdate(

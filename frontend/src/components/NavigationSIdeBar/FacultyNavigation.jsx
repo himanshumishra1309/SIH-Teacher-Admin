@@ -8,10 +8,9 @@ export default function FacultyNavigation() {
   const navigationItems = [
     { name: "Teaching Process", path: "teaching-process", icon: <BookOpen className="w-4 h-4" /> },
     { name: "Research Papers", path: "research-papers", icon: <FileText className="w-4 h-4" /> },
-    { name: "Expert Lectures", path: "expert-lectures", icon: <Mic className="w-4 h-4" /> },
+    { name: "Expert Lectures Delivered", path: "expert-lectures", icon: <Mic className="w-4 h-4" /> },
     { name: "STTP Conducted", path: "sttp-conducted", icon: <Users className="w-4 h-4" /> },
     { name: "Students Guided", path: "students-guided", icon: <GraduationCap className="w-4 h-4" /> },
-    { name: "Expert Lecture Delivered", path: "expert-lecture", icon: <Mic className="w-4 h-4" />  },
     { name: "Event Participation", path: "event-participation", icon: <Calendar className="w-4 h-4" /> },
     { name: "Seminars", path: "seminars", icon: <PresentationChart className="w-4 h-4" /> },
     { name: "Projects", path: "projects", icon: <Briefcase className="w-4 h-4" /> },

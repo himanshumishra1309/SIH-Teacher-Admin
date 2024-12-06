@@ -22,7 +22,7 @@ export default function AdminNavigation() {
     { name: "Projects", path: "projects", icon: <Briefcase className="w-4 h-4" /> },
     // { name: "Contribution Graph", path: "contribution", icon: <BarChart2 className="w-4 h-4" /> },
     { name: "Posts", path: "posts", icon: <BarChart2 className="w-4 h-4" /> },
-    { name: "Appraisal report", path: "appraisal-report", icon: <BarChart2 className="w-4 h-4" /> },
+    { name: "Appraisal report", path: "admin-teacher-appraisal", icon: <BarChart2 className="w-4 h-4" /> },
     // { name: "Add Lecture", path: "teacheraddecture", icon: <BarChart2 className="w-4 h-4" /> },
     { name: "Allocate Lectures", path: "adminallocate-lectures" },
 
