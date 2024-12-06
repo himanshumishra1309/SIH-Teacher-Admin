@@ -52,7 +52,15 @@ export default {
                     '4': 'hsl(var(--chart-4))',
                     '5': 'hsl(var(--chart-5))',
                 },
+                zIndex: {
+                    1: '1',
+                    5: '5',
+                    10: '10',
+                    50: '50',
+                },
+                
             },
+            
         },
     },
     plugins: [require("tailwindcss-animate")],
