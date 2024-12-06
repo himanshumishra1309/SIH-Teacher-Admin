@@ -40,16 +40,21 @@ export default function StudentRegister() {
     formData.append("avatar", avatar);
 
     try {
+      const token = sessionStorage.getItem("adminAccessToken");
+      console.log("Hellow1")
       const response = await axios.post(
         "http://localhost:6005/api/v1/admins/register-student",
         formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
+      // console.log("Hellow2")
 
-      const accessToken = response?.data?.data?.studentAccessToken;
-      sessionStorage.setItem("studentAccessToken", accessToken);
-      alert("Registration successful");
-      navigate("/student-home");
+      console.log(response);
+      alert("Registration successful"); 
     } catch (error) {
       console.error("Error during signup:", error.message);
       alert("Signup failed. Please try again.");

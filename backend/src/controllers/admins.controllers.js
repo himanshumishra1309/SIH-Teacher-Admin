@@ -162,7 +162,7 @@ const registerTeacher = asyncHandler(async (req, res) => {
 
   const avatarLocalPath = req.file?.path;
 
-  console.log("request: ", req.file);
+  // console.log("request: ", req.file);
 
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar is required");
@@ -1874,7 +1874,7 @@ const getMtechStudentsGuidedByTheTeacher = asyncHandler(async (req, res) => {
 
   const mtechStudentsGuided = await StudentGuided.find({
     owner: teacherId,
-    mOp: "MTech",
+    mOp: "Mtech",
   })
     .select(
       "topic student_name roll_no branch academic_year mOp createdAt addedOn"

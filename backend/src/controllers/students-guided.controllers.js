@@ -58,7 +58,7 @@ const showAllMtechStudent = asyncHandler(async (req, res) => {
 const showAllPhdStudent = asyncHandler(async (req, res) => {
   const phdStudents = await StudentGuided.find({
     owner: req.teacher._id,
-    mOp: "Phd",
+    mOp: "PhD",
   });
 
   return res
