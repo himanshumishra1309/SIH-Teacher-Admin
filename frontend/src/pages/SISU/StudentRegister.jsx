@@ -51,7 +51,7 @@ export default function StudentRegister() {
           },
         }
       );
-      console.log("Hellow2")
+      // console.log("Hellow2")
 
       console.log(response);
       alert("Registration successful"); 
