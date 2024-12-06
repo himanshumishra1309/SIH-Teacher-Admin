@@ -36,14 +36,15 @@ export const bookColumnDef = [
     },
     enableSorting: true,
   },
-  {
+   {
     accessorKey: "segregation",
     header: ({ column }) => {
       return (
-        <div className="flex items-center">
+        <div className="flex flex-col items-start">
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="px-0 font-bold"
           >
             Segregation
             <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -53,8 +54,8 @@ export const bookColumnDef = [
               column.setFilterValue(value === "all" ? "" : value)
             }}
           >
-            <SelectTrigger className="ml-2 w-[120px]">
-              <SelectValue placeholder="Filter" />
+            <SelectTrigger className="w-[150px] mt-2">
+              <SelectValue placeholder="Filter Segregation" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All</SelectItem>
@@ -66,6 +67,7 @@ export const bookColumnDef = [
         </div>
       )
     },
+    cell: ({ row }) => row.getValue("segregation"),
     enableSorting: true,
     filterFn: (row, id, value) => {
       return value === "" || row.getValue(id) === value

@@ -24,7 +24,7 @@ export default function TeacherHeader() {
       </div>
 
       <div className="flex items-center space-x-4">
-        <Link to="/home">
+        <Link to="/">
           <Button variant="ghost" size="sm" className="text-white hover:text-blue-400">
             <Home className="mr-2 h-4 w-4" />
             <span className="hidden sm:inline">Home Portal</span>

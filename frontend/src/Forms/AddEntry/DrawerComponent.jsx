@@ -77,6 +77,13 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
     }
   }, [isOpen, rowData, setValue]);
 
+  useEffect(() => {
+    if (isOpen && !rowData) {
+      console.log("Resetting form for Add Entry");
+      Object.keys(watch()).forEach((key) => setValue(key, ""));
+    }
+  }, [isOpen, rowData, setValue, watch]);
+
   const handleFormSubmit = (data) => {
     console.log(data);
     const formData = new FormData();
@@ -92,6 +99,11 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
         formData.append(key, value);
       }
     });
+
+    for (const [key, value] of formData.entries()) {
+      console.log(`FormData entry - Key: ${key}, Value:`, value);
+    }
+
 
     try {
       onSubmit(formData);

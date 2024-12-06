@@ -52,26 +52,25 @@ const getPointsForDomain = async (domain) => {
 
 // Function to allocate points in the `Point` model
 const allocatePoints = async (teacherId, domain, addedOn) => {
-    const points = await getPointsForDomain(domain); // Fetch points for the domain
+    const points = await getPointsForDomain(domain);
+    const date = addedOn || Date.now(); // Use current date if `addedOn` is undefined
 
-    // Search for an existing domain for the teacher
     const existingPoint = await Point.findOne({ owner: teacherId, domain });
 
     if (existingPoint) {
-        // Update points if the domain exists
         await Point.findByIdAndUpdate(existingPoint._id, {
             $inc: { points },
         });
     } else {
-        // Create a new domain if it does not exist
         await Point.create({
-            date: addedOn,
+            date,
             points,
             domain,
             owner: teacherId,
         });
     }
 };
+
 
 // Post-save hook to allocate points
 studentGuidedSchema.post('save', async function (doc) {

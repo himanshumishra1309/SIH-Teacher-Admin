@@ -307,7 +307,7 @@ export default function FacultyGuidedTable() {
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,
-                    "Content-Type": "application.json",
+                    "Content-Type": "application/json",
                   },
                 }
               );
