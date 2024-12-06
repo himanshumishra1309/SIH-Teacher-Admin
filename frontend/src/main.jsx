@@ -63,6 +63,8 @@ import AddLecMarkAttendabce from './table/Tables/Faculty/AddLecMarkAttendabce';
 import PeerReview from './pages/FacultyPortal/PeerReview';
 import SubjectList from './table/Tables/Faculty/SubjectList';
 import LectureAndAttendance from './table/Tables/Faculty/LectureAndAttendance';
+import AdminFacultyAppraisalReport from './table/Tables/Admin/AdminFacultyAppraisalReport';
+import AdminSTTPTable from './table/Tables/Admin/AdminSTTPTable';
 import SeminarLayout from './Layouts/SeminarLayout';
 
 
@@ -138,9 +140,11 @@ const router = createBrowserRouter(
         <Route path="expert-lecture" element={<AdminLecturesTable />} errorElement={<NotFoundPage/>} />
         <Route path="event-participation" element={<AdminEventTable />} errorElement={<NotFoundPage/>} />
         <Route path="seminars" element={<AdminSeminarsTable/>} errorElement={<NotFoundPage/>} />
+        <Route path="sttp-conducted" element={<AdminSTTPTable/>} errorElement={<NotFoundPage/>} />
+
         <Route path="projects" element={<AdminProjectTable />} errorElement={<NotFoundPage/>} />
         <Route path="adminallocate-lectures" element={<AdminAllocateSubjectToStudent />} errorElement={<NotFoundPage/>} />
-
+        <Route path="admin-teacher-appraisal" element={<AdminFacultyAppraisalReport />} errorElement={<NotFoundPage/>} />
 
         {/* <Route path="Contribution-graph" element={<ResearchTable />} errorElement={<NotFoundPage/>} /> */}
 

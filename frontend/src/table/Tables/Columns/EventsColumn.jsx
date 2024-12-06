@@ -3,7 +3,7 @@ import { ArrowUpDown, ExternalLink } from "lucide-react";
 
 export const columnDef = [
   {
-    accessorKey: "event",
+    accessorKey: "event_name",
     header: "Event",
     enableSorting: true,
   },

@@ -1823,7 +1823,7 @@ const getExpertLecturesDeliveredByTheTeacher = asyncHandler(
     }
 
     const expertLectures = await ExpertLecture.find({ owner: teacherId })
-      .select("topic duration date report")
+      .select("topic level venue duration date report")
       .lean();
 
     if (!expertLectures || expertLectures.length === 0) {

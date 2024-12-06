@@ -100,10 +100,9 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
       }
     });
 
-    for (const [key, value] of formData.entries()) {
-      console.log(`FormData entry - Key: ${key}, Value:`, value);
-    }
-
+    // for (const [key, value] of formData.entries()) {
+    //   console.log(`FormData entry - Key: ${key}, Value:`, value);
+    // }
 
     try {
       onSubmit(formData);

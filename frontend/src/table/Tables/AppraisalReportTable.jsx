@@ -31,11 +31,11 @@ export default function AppraisalReportTable() {
   const [appraisalData, setAppraisalData] = useState([]);
 
   const endpoints = {
-    journals: "http://localhost:6005/api/v1/points/journals",
-    books: "http://localhost:6005/api/v1/points/books",
-    patents: "http://localhost:6005/api/v1/points/patents",
+    journals: `http://localhost:6005/api/v1/points/journals/${id}`,
+    books: `http://localhost:6005/api/v1/points/books/${id}`,
+    patents: `http://localhost:6005/api/v1/points/patents/${id}`,
     // sttp: "http://localhost:6005/api/v1/points/sttp",
-    conferences: "http://localhost:6005/api/v1/points/conferences",
+    conferences: `http://localhost:6005/api/v1/points/conferences/${id}`,
     // seminarsConducted: "http://localhost:6005/api/v1/points/seminars-conducted",
     // seminarsAttended: "http://localhost:6005/api/v1/points/seminar-attended",
     // projects: "http://localhost:6005/api/v1/points/projects",
@@ -135,7 +135,7 @@ export default function AppraisalReportTable() {
   }, []);
 
   const table = useReactTable({
-    data : appraisalData,
+    data: appraisalData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

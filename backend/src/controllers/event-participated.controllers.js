@@ -9,11 +9,11 @@ import { uploadToGCS } from "../utils/googleCloud.js";
 // All routes checked, including delete and update
 
 const uploadParticipatedEvent = asyncHandler(async (req, res) => {
-  const { role, event, date } = req.body;
+  const { role, event_name, date, event_type } = req.body;
   const report = req.file;
   const owner = req.teacher._id;
 
-  if (!role || !event || !date || !report) {
+  if (!role || !event_name || !date || !report || !event_type) {
     throw new ApiError(400, "Please fill all fields");
   }
 
@@ -28,7 +28,8 @@ const uploadParticipatedEvent = asyncHandler(async (req, res) => {
 
   const eventParticipation = await EventParticipation.create({
     role,
-    event,
+    event_name,
+    event_type,
     date,
     report: uploadResponse,
     owner,
