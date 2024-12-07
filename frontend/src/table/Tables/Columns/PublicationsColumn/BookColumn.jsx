@@ -49,7 +49,10 @@ export const bookColumnDef = [
     enableSorting: true,
     filterFn: (row, id, value) => {
       return value === "" || row.getValue(id) === value
+      
     },
+    dropdownOptions: ["International", "National", "Regional"], // Dropdown values
+
   },
   {
     accessorKey: "publicationDate",

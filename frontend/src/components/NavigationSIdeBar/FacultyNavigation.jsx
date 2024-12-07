@@ -15,7 +15,7 @@ export default function FacultyNavigation() {
     { name: "Seminars", path: "seminars", icon: <PresentationChart className="w-4 h-4" /> },
     { name: "Projects", path: "projects", icon: <Briefcase className="w-4 h-4" /> },
     // { name: "Contribution Graph", path: "contribution", icon: <BarChart2 className="w-4 h-4" /> },
-    { name: "COntributions/ Achievements", path: "posts", icon: <BarChart2 className="w-4 h-4" /> },
+    { name: "Contributions/ Achievements", path: "posts", icon: <BarChart2 className="w-4 h-4" /> },
     { name: "Appraisal report", path: "appraisal-report", icon: <BarChart2 className="w-4 h-4" /> },
     // { name: "Add Lecture", path: "teacheraddecture", icon: <BarChart2 className="w-4 h-4" /> },
     { name: "Add Lecture", path: "lecAttend", icon: <BarChart2 className="w-4 h-4" /> },
