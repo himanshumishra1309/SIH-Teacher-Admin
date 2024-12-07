@@ -13,11 +13,8 @@ export const columnDef = [
   },
   {
     accessorKey: "attendance",
-    header: "Mark Attendance",
+    header: "View Attendance",
  
   },
-  {
-    accessorKey: "actions",
-    header: "Actions",
-  },
+
 ];

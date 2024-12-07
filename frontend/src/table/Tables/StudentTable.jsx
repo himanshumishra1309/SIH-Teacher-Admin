@@ -1,4 +1,6 @@
-import React, { useMemo } from "react";
+"use client"
+
+import React, { useState } from "react"
 import {
   useReactTable,
   getCoreRowModel,
@@ -6,15 +8,17 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   flexRender,
-} from "@tanstack/react-table";
-import { studentColumnDef } from "./Columns/StudentTableColumn";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ColumnVisibilityToggle } from "./ColumnVisiblityToggle";
-import { Checkbox } from "@/components/ui/checkbox";
+} from "@tanstack/react-table"
+import { studentColumnDef } from "./Columns/StudentTableColumn"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { ColumnVisibilityToggle } from "./ColumnVisiblityToggle"
+import { Checkbox } from "@/components/ui/checkbox"
 
 export function StudentTable({ data, setSelectedStudents }) {
-  const columns = useMemo(() => studentColumnDef, []);
+  const [rowSelection, setRowSelection] = useState({})
+
+  const columns = React.useMemo(() => studentColumnDef, [])
 
   const table = useReactTable({
     data,
@@ -25,30 +29,21 @@ export function StudentTable({ data, setSelectedStudents }) {
     getSortedRowModel: getSortedRowModel(),
     enableRowSelection: true,
     state: {
-      rowSelection: {}, // Keep track of row selection state
+      rowSelection,
     },
-    onRowSelectionChange: (newRowSelection) => {
-      const selectedRows = Object.keys(newRowSelection)
-        .filter((key) => newRowSelection[key])
-        .map((key) => table.getRowModel().rows.find((row) => row.id === key));
-      setSelectedStudents(selectedRows);
-    },
-  });
+    onRowSelectionChange: setRowSelection,
+  })
 
-  const handleSelectAll = (checked) => {
-    const allRows = table.getRowModel().rows;
-    allRows.forEach((row) => row.toggleSelected(checked));
-    const selectedRows = checked ? allRows : [];
-    setSelectedStudents(selectedRows);
-  };
-
-  const handleSelectRow = (row, checked) => {
-    row.toggleSelected(checked);
+  React.useEffect(() => {
     const selectedRows = table
       .getRowModel()
-      .rows.filter((r) => r.getIsSelected());
-    setSelectedStudents(selectedRows);
-  };
+      .rows.filter((row) => rowSelection[row.id])
+    setSelectedStudents(selectedRows)
+  }, [rowSelection, setSelectedStudents, table])
+
+  const handleSelectAll = React.useCallback(() => {
+    table.toggleAllRowsSelected(!table.getIsAllRowsSelected())
+  }, [table])
 
   return (
     <div className="space-y-4">
@@ -62,16 +57,14 @@ export function StudentTable({ data, setSelectedStudents }) {
             }
             className="max-w-sm"
           />
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id="select-all"
-              onCheckedChange={(checked) => handleSelectAll(checked)}
-              checked={table.getIsAllRowsSelected()}
-            />
-            <label htmlFor="select-all" className="text-sm font-medium">
-              Select All Students
-            </label>
-          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSelectAll}
+            className="ml-4"
+          >
+            {table.getIsAllRowsSelected() ? "Deselect All" : "Select All"} Students
+          </Button>
         </div>
         <ColumnVisibilityToggle table={table} />
       </div>
@@ -108,7 +101,7 @@ export function StudentTable({ data, setSelectedStudents }) {
                 <td className="px-4 py-3">
                   <Checkbox
                     checked={row.getIsSelected()}
-                    onCheckedChange={(checked) => handleSelectRow(row, checked)}
+                    onCheckedChange={(value) => row.toggleSelected(!!value)}
                     aria-label={`Select ${row.original.name}`}
                   />
                 </td>
@@ -125,24 +118,31 @@ export function StudentTable({ data, setSelectedStudents }) {
           </tbody>
         </table>
       </div>
-      <div className="flex items-center justify-end space-x-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
+      <div className="flex items-center justify-between">
+        <div>
+          {Object.keys(rowSelection).length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </div>
-  );
+  )
 }
+
