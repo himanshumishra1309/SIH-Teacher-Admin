@@ -2,6 +2,13 @@
 import { Checkbox } from "@/components/ui/checkbox";
 
 export const studentColumnDef = [
+    {
+        id: "srNo", // Unique ID for the column
+        header: "Sr. No.",
+        cell: ({ row }) => row.index + 1, // Automatically calculate the serial number
+        enableSorting: false, // Disable sorting for this column
+        enableHiding: false, // Prevent hiding
+      },
   {
     id: "select",
     header: ({ table }) => (

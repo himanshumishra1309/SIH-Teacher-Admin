@@ -66,6 +66,7 @@ import LectureAndAttendance from './table/Tables/Faculty/LectureAndAttendance';
 import AdminFacultyAppraisalReport from './table/Tables/Admin/AdminFacultyAppraisalReport';
 import AdminSTTPTable from './table/Tables/Admin/AdminSTTPTable';
 import SeminarLayout from './Layouts/SeminarLayout';
+import AdminPointAllocationLayout from './Layouts/AdminPointAllocationLayout';
 
 
 
@@ -124,6 +125,8 @@ const router = createBrowserRouter(
     <Route path="register-faulty" element={<FacultyRegister/>} errorElement={<NotFoundPage/>}/>
     <Route path="register-student" element={<StudentRegister/>} errorElement={<NotFoundPage/>}/>
     <Route path="allocate-sub-student" element={<AdminAllocateSubjectToStudent/>} errorElement={<NotFoundPage/>}/>
+    <Route path="appraisal-points" element={<AdminPointAllocationLayout/>} errorElement={<NotFoundPage/>}/>
+
 
     </Route>
  
