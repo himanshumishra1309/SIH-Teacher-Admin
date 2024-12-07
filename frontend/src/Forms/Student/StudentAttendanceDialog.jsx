@@ -1,4 +1,4 @@
-import React, {useState ,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import {
@@ -19,7 +19,9 @@ const StudentAttendanceDialog = ({
   setSelectedStudents,
   lectureId,
 }) => {
-  const {subjectId} = useParams();
+  console.log("lectureID", lectureId);
+
+  const { subjectId } = useParams();
   // console.log("subjectId", subjectId);
 
   const [attendanceData, setAttendanceData] = useState([]);
@@ -42,14 +44,14 @@ const StudentAttendanceDialog = ({
     };
     fetchStudents();
   }, [subjectId]);
-  
+
   const handleMarkAttendance = async () => {
     if (!lectureId) {
       alert("Lecture not added yet!");
       return;
     }
 
-
+    console.log(selectedStudents);
 
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
@@ -57,10 +59,7 @@ const StudentAttendanceDialog = ({
         selectedStudents.includes(student._id)
       );
 
-      console.log(selectedStudentDetails);
-      
-
-      await axios.post(
+      const response = await axios.post(
         `http://localhost:6005/api/v1/lecture/${lectureId}/attendance`,
         {
           students: selectedStudentDetails,
@@ -69,6 +68,8 @@ const StudentAttendanceDialog = ({
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
+      console.log(response);
 
       alert("Attendance marked successfully!");
       onClose();
@@ -80,7 +81,7 @@ const StudentAttendanceDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl">
+      <DialogContent className="max-w-4xl max-h-screen m-6">
         <DialogHeader>
           <DialogTitle>Mark Attendance</DialogTitle>
           <DialogDescription>
@@ -91,10 +92,10 @@ const StudentAttendanceDialog = ({
           <StudentAttendanceTable
             students={attendanceData}
             selectedStudents={selectedStudents}
-            setSelectedStudents={setSelectedStudents}
+            setSelectedStudents
           />
         </div>
-        <div className="mt-6">
+        <div className="mt-2">
           <Button
             onClick={handleMarkAttendance}
             className="w-full bg-primary text-white rounded hover:bg-primary-dark"
@@ -108,4 +109,3 @@ const StudentAttendanceDialog = ({
 };
 
 export default StudentAttendanceDialog;
-

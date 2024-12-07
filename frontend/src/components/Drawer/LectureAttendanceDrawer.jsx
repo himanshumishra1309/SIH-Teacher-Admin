@@ -13,12 +13,14 @@ const LectureAttendanceDrawer = ({
   selectedLecture,
   setAttendanceDialogOpen,
 }) => {
-  console.log(selectedLecture);
+  console.log("selectedLecture", selectedLecture);
 
   const [topic, setTopic] = useState("");
   const [date, setDate] = useState(null);
   const [isMarkAttendanceDialogOpen, setMarkAttendanceDialogOpen] =
     useState(false);
+  const [students, setStudents] = useState([]); // List of students for the dialog
+  const [selectedStudents, setSelectedStudents] = useState([]); // Selected students
 
   useEffect(() => {
     if (!isOpen) {
@@ -33,8 +35,12 @@ const LectureAttendanceDrawer = ({
       alert("Please fill out all fields");
       return;
     }
+
+    // Add lecture logic here
     onSubmit({ topic, date });
-    setMarkAttendanceDialogOpen(true); // Open the attendance dialog after adding a lecture
+
+    // Open the attendance dialog after successfully adding a lecture
+    setMarkAttendanceDialogOpen(true);
   };
 
   return (
@@ -88,18 +94,19 @@ const LectureAttendanceDrawer = ({
           </div>
         </DrawerContent>
       </Drawer>
-      {/* Mark Attendance Dialog */}
-      selectedLecture.data._id && (
-      <StudentAttendanceDialog
+
+      {isMarkAttendanceDialogOpen && selectedLecture?.data?._id && (
+        <StudentAttendanceDialog
         isOpen={isMarkAttendanceDialogOpen}
         onClose={() => setMarkAttendanceDialogOpen(false)}
-        students={[]}
-        selectedStudents={[]}
-        setSelectedStudents={() => {}}
-        lectureId={selectedLecture.data._id}
+        students={students} 
+        selectedStudents={selectedStudents}
+        setSelectedStudents={setSelectedStudents} 
+        lectureId={selectedLecture?.data?._id}
         handleMarkAttendance={() => console.log("Attendance marked!")}
       />
-      )
+
+      )}
     </>
   );
 };
