@@ -67,6 +67,7 @@ import AdminFacultyAppraisalReport from './table/Tables/Admin/AdminFacultyApprai
 import AdminSTTPTable from './table/Tables/Admin/AdminSTTPTable';
 import SeminarLayout from './Layouts/SeminarLayout';
 import AdminPointAllocationLayout from './Layouts/AdminPointAllocationLayout';
+import FacultyCourseTable from './table/Tables/FacultyCourseTable';
 
 
 
@@ -84,7 +85,7 @@ const router = createBrowserRouter(
         <Route path="subject/:subjectId" element={<RouteTransitionWrapper><LectureAndAttendance /></RouteTransitionWrapper>}
           errorElement={<NotFoundPage />}
         />
-        <Route path="teaching-process" element={<RouteTransitionWrapper><FacultyTeachingProcessTable/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
+        <Route path="teaching-process" element={<RouteTransitionWrapper><FacultyCourseTable/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
         <Route path="research-papers" element={<RouteTransitionWrapper><ResearchLayout/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
         <Route path="expert-lectures" element={<RouteTransitionWrapper><FacultyLecturesTable /></RouteTransitionWrapper>}errorElement={<NotFoundPage/>}  />
         <Route path="sttp-conducted" element={<RouteTransitionWrapper><FacultySTTPTable /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />

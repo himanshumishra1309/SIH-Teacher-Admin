@@ -14,29 +14,6 @@ export const bookColumnDef = [
     enableSorting: true,
   },
   {
-    accessorKey: "publicationDate",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          publicationDate
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      const dateValue = row.getValue("publicationDate")
-      if (dateValue) {
-        const date = new Date(dateValue)
-        return date.toLocaleDateString()
-      }
-      return "N/A"
-    },
-    enableSorting: true,
-  },
-   {
     accessorKey: "segregation",
     header: ({ column }) => {
       return (
@@ -74,6 +51,30 @@ export const bookColumnDef = [
       return value === "" || row.getValue(id) === value
     },
   },
+  {
+    accessorKey: "publicationDate",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          publicationDate
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => {
+      const dateValue = row.getValue("publicationDate")
+      if (dateValue) {
+        const date = new Date(dateValue)
+        return date.toLocaleDateString()
+      }
+      return "N/A"
+    },
+    enableSorting: true,
+  },
+  
   {
     accessorKey: "volume",
     header: "Volume",
