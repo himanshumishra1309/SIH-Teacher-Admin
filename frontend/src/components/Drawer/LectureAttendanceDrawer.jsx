@@ -15,7 +15,8 @@ const LectureAttendanceDrawer = ({
 }) => {
   const [topic, setTopic] = useState("");
   const [date, setDate] = useState(null);
-  const [isMarkAttendanceDialogOpen, setMarkAttendanceDialogOpen] = useState(false);
+  const [isMarkAttendanceDialogOpen, setMarkAttendanceDialogOpen] =
+    useState(false);
 
   useEffect(() => {
     if (!isOpen) {
@@ -42,7 +43,10 @@ const LectureAttendanceDrawer = ({
             <h3 className="text-lg font-semibold mb-4">Add Lecture</h3>
             <div className="space-y-4">
               <div>
-                <label htmlFor="topic" className="block text-sm font-medium mb-1">
+                <label
+                  htmlFor="topic"
+                  className="block text-sm font-medium mb-1"
+                >
                   Topic
                 </label>
                 <Input
@@ -53,7 +57,10 @@ const LectureAttendanceDrawer = ({
                 />
               </div>
               <div>
-                <label htmlFor="date" className="block text-sm font-medium mb-1">
+                <label
+                  htmlFor="date"
+                  className="block text-sm font-medium mb-1"
+                >
                   Date
                 </label>
                 <DatePicker
@@ -95,4 +102,3 @@ const LectureAttendanceDrawer = ({
 };
 
 export default LectureAttendanceDrawer;
-

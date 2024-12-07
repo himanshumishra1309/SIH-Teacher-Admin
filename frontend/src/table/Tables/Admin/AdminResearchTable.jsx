@@ -123,7 +123,7 @@ export default function AdminResearchTable() {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response);
+      // console.log(response);
       setData2(response.data.data);
       // console.log(data2);
     } catch (error) {

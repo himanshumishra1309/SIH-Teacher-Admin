@@ -7,7 +7,7 @@ const router = Router();
 
 router.post("/patent/add", verifyTeacherJWT, addPatent);
 router.get("/patent/get", verifyTeacherJWT, getAllPatents);
-router.patch("/patent/:updateId/update", verifyTeacherJWT, updatePatent);
-router.delete("/patent/:deleteId/delete", verifyTeacherJWT, deletePatent);
+router.patch("/patent/edit/:id", verifyTeacherJWT, updatePatent);
+router.delete("/patent/delete/:id", verifyTeacherJWT, deletePatent);
 
 export default router;

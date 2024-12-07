@@ -7,8 +7,8 @@ const router = Router();
 
 router.post("/conference/add", verifyTeacherJWT, addConference);
 router.post("/conference/get", verifyTeacherJWT, getAllConferences);
-router.patch("/conference/:updateId/update", verifyTeacherJWT, updateConference);
-router.delete("/conference/:deleteId/delete", verifyTeacherJWT, deleteConference);
+router.patch("/conference/get/:id", verifyTeacherJWT, updateConference);
+router.delete("/conference/delete/:id", verifyTeacherJWT, deleteConference);
 router.get("/conference/:deleteId/", verifyTeacherJWT, getAllConferences);
 
 export default router;
