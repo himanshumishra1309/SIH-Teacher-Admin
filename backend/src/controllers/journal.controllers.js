@@ -65,6 +65,20 @@ const updateJournal = asyncHandler(async (req, res) => {
     journalType,
   } = req.body;
 
+  if (
+    !title ||
+    !authors ||
+    !journalType ||
+    !publicationDate ||
+    !journal ||
+    !volume ||
+    !issue ||
+    !pages ||
+    !publisher
+  ) {
+    throw new ApiError(400, "Please provide all mandatory fields");
+  }
+  
   const updatedJournal = await Journal.findByIdAndUpdate(
     id,
     {

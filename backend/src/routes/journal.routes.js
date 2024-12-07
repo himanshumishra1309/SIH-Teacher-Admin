@@ -7,7 +7,7 @@ const router = Router();
 
 router.post("/journal/add", verifyTeacherJWT, addJournal);
 router.get("/journal/", verifyTeacherJWT, getAllJournals);
-router.post("/journal/:updateId/update", verifyTeacherJWT, updateJournal);
-router.post("/journal/:deleteId/delete", verifyTeacherJWT, deleteJournal);
+router.post("/journal/:id/update", verifyTeacherJWT, updateJournal);
+router.post("/journal/:id/delete", verifyTeacherJWT, deleteJournal);
 
 export default router;
