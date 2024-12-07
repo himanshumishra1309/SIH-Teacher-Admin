@@ -9,11 +9,7 @@ import { studentColumnDef } from "../Columns/StudentAttendanceColumn";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
-const StudentAttendanceTable = ({
-  students,
-  selectedStudents,
-  setSelectedStudents
-}) => {
+const StudentAttendanceTable = ({ students, selectedStudents, setData }) => {
   const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
@@ -28,19 +24,22 @@ const StudentAttendanceTable = ({
     onRowSelectionChange: setRowSelection,
   });
 
-  // Update  students whenever rowSelection changes
-  useEffect(() => {
-    const selectedRows = Object.keys(rowSelection)
-      .filter((rowId) => rowSelection[rowId]) // Get selected row keys
-      .map((rowId) => students.find((student) => student._id === rowId)); // Match rowId to student._id
-    
-    setSelectedStudents(selectedRows.filter(Boolean)); // Remove undefined matches
-  }, [rowSelection, students]);
-  
+  React.useEffect(() => {
+    const selectedRows = table
+      .getRowModel()
+      .rows.filter((row) => rowSelection[row.id]) // Check if the row is selected
+      .map((row) => row.original); // Get the original data of the row
+    setData(selectedRows);
+  }, [rowSelection, setData, table]);
 
   const handleSelectAll = () => {
     const isAllSelected = table.getIsAllRowsSelected();
     table.toggleAllRowsSelected(!isAllSelected);
+  };
+
+  const handleCheckboxChange = (value, row) => {
+    const updatedSelection = { ...rowSelection, [row.id]: value };
+    setRowSelection(updatedSelection);
   };
 
   return (
@@ -52,7 +51,8 @@ const StudentAttendanceTable = ({
           onClick={handleSelectAll}
           className="ml-4"
         >
-          {table.getIsAllRowsSelected() ? "Deselect All" : "Select All"} Students
+          {table.getIsAllRowsSelected() ? "Deselect All" : "Select All"}{" "}
+          Students
         </Button>
       </div>
       <div className="overflow-x-auto">
@@ -80,9 +80,9 @@ const StudentAttendanceTable = ({
                 <td className="px-4 py-2">
                   <Checkbox
                     checked={row.getIsSelected()}
-                    onCheckedChange={(value) =>
-                      row.toggleSelected(!!value)
-                    }
+                    onCheckedChange={(value) => {
+                      handleCheckboxChange(value, row);
+                    }}
                     aria-label={`Select ${row.original.name}`}
                   />
                 </td>
@@ -98,7 +98,8 @@ const StudentAttendanceTable = ({
       </div>
       <div className="flex items-center justify-between">
         <div>
-          {Object.keys(rowSelection).length} of {students.length} row(s) selected
+          {Object.keys(rowSelection).length} of {students.length} row(s)
+          selected
         </div>
         <div className="flex items-center gap-2">
           <Button
