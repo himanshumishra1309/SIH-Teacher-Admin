@@ -122,11 +122,14 @@ const FacultyAppraisalReport = ({
             },
           }
         );
+        console.log(response.data.data)
 
         // console.log("Response data:", response.data);
         const matchingTeacher = response.data?.data?.find(
-          (teacher) => teacher._id === id
+          (teacher) => teacher.teacherId === id
         );
+
+        console.log(matchingTeacher);
 
         if (matchingTeacher) {
           setRank(matchingTeacher.rank);
