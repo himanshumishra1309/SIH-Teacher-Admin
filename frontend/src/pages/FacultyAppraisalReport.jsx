@@ -75,6 +75,10 @@ const FacultyAppraisalReport = ({
         events: `http://localhost:6005/api/v1/points/events/${id}`,
         sttp: `http://localhost:6005/api/v1/points/sttp/${id}`,
         "expert-lectures": `http://localhost:6005/api/v1/points/expert-lectures/${id}`,
+        "Student-Guide": `http://localhost:6005/api/v1/points/student-guided/${id}`,
+        // lecture: `http://localhost:6005/api/v1/points/lecture/${id}`,
+        // "Contribution": `http://localhost:6005/api/v1/points/contribution/${id}`,
+
       };
 
       try {
@@ -123,14 +127,14 @@ const FacultyAppraisalReport = ({
             },
           }
         );
-        console.log(response.data.data)
+        // console.log(response.data.data);
 
         // console.log("Response data:", response.data);
         const matchingTeacher = response.data?.data?.find(
           (teacher) => teacher.teacherId === id
         );
 
-        console.log(matchingTeacher);
+        // console.log(matchingTeacher);
 
         if (matchingTeacher) {
           setRank(matchingTeacher.rank);

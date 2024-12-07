@@ -1628,7 +1628,7 @@ const completeLecturePoints = asyncHandler(async (req, res) => {
     "4-Practical",
   ];
 
-  const teacherId = req.teacher._id; // Expect teacherId from params
+  const { teacherId } = req.params;
 
   if (!teacherId) {
     throw new ApiError(400, "Teacher ID is required");
@@ -1724,7 +1724,7 @@ const completeContributionPoints = asyncHandler(async (req, res) => {
     "Miscellaneous",
   ];
 
-  const teacherId = req.teacher._id;
+  const { teacherId } = req.params;
 
   if (!teacherId) {
     throw new ApiError(400, "Teacher ID is required");
@@ -1834,7 +1834,7 @@ const completeContributionPoints = asyncHandler(async (req, res) => {
 });
 
 const completeStudentGuidedPoints = asyncHandler(async (req, res) => {
-  const studentGuidedDomains = ["PhD", "Mtech"];
+  const studentGuidedDomains = ["Mtech Students Guided", "PhD Students Guided"];
 
   const { teacherId } = req.params;
 
@@ -1944,6 +1944,7 @@ const completeStudentGuidedPoints = asyncHandler(async (req, res) => {
       )
     );
 });
+
 export {
   completeJournalPoints,
   completeBooksPoints,

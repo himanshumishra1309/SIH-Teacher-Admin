@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 
 export const columnDef = [
+  
   {
     accessorKey: "student_name",
     header: "Student Name",
