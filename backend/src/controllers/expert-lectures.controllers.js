@@ -2,11 +2,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler2.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { ExpertLecture } from "../models/expert-lectures.models.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { v2 as cloudinary } from "cloudinary";
 import { uploadToGCS } from "../utils/googleCloud.js";
-
-// all routes done including delete and update
 
 const uploadExpertLecture = asyncHandler(async (req, res) => {
   const { topic, duration, date, level, venue } = req.body;
