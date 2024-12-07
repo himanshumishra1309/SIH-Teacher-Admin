@@ -14,16 +14,11 @@ export const columnDef = [
   },
   {
     accessorKey: "projectType",
-    header: "Project Type",
-    enableSorting: true,
-  },
-  {
-    accessorKey: "projectType",
     header: "Type",
     enableSorting: true,
     filterFn: "equals",
     filterElement: ({ column }) => {
-      const options = ["National", "International", "State", "College"];
+      const options = ["Major", "Minor"];
       return (
         <div className="relative z-10">
           <select
@@ -44,7 +39,7 @@ export const columnDef = [
         </div>
       );
     },
-    dropdownOptions: ["International", "National", "Regional"], // Dropdown values
+    dropdownOptions:["Major", "Minor"], // Dropdown values
 
   },
   {

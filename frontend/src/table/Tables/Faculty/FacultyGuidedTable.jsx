@@ -242,22 +242,32 @@ export default function FacultyGuidedTable() {
 
       <div className="table-container">
         <table className="w-full">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th key={header.id} className="px-4 py-2">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
+        <thead>
+  {table.getHeaderGroups().map((headerGroup) => (
+    <tr key={headerGroup.id}>
+      {headerGroup.headers.map((header) => (
+        <th key={header.id} className="px-4 py-2">
+          {header.isPlaceholder
+            ? null
+            : flexRender(
+                header.column.columnDef.header,
+                header.getContext()
+              )}
+          {/* Render filter element if available */}
+          {header.column.columnDef.filterElement && (
+            <div className="mt-2">
+              {flexRender(
+                header.column.columnDef.filterElement,
+                header.getContext()
+              )}
+            </div>
+          )}
+        </th>
+      ))}
+    </tr>
+  ))}
+</thead>
+
           <tbody>
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id}>
@@ -271,6 +281,7 @@ export default function FacultyGuidedTable() {
           </tbody>
         </table>
       </div>
+
 
       <DrawerComponent
         isOpen={isDrawerOpen}
