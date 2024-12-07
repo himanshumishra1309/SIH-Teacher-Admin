@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import {
   Dialog,
   DialogContent,
@@ -40,6 +41,7 @@ const StudentAttendanceDialog = ({
       );
 
       alert("Attendance marked successfully!");
+      onClose();
     } catch (error) {
       console.error("Error marking attendance:", error);
       alert("Failed to mark attendance.");
@@ -76,3 +78,4 @@ const StudentAttendanceDialog = ({
 };
 
 export default StudentAttendanceDialog;
+
