@@ -19,5 +19,5 @@ export const ColumnDef = [
     accessorKey: "points",
     header: "Points",
     enableSorting: true,
-  },
+  }
 ];

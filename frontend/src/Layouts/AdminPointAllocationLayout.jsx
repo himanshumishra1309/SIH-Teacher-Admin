@@ -19,7 +19,7 @@ export default function AdminPointAllocationLayout() {
         {/* Tab Triggers */}
         <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="publications">Publications</TabsTrigger>
-          <TabsTrigger value="conferences">Conferences</TabsTrigger>
+          {/* <TabsTrigger value="conferences">Conferences</TabsTrigger> */}
           <TabsTrigger value="events">Events</TabsTrigger>
           <TabsTrigger value="projects">Research Projects</TabsTrigger>
           <TabsTrigger value="mentorship">Guidance & Mentorship</TabsTrigger>

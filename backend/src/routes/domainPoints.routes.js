@@ -61,7 +61,7 @@ const teacherRouter = express.Router();
 
 // Admin routes
 adminRouter.post("/points", addPoints);
-adminRouter.put("/points/:domainId", updatePoints);
+adminRouter.put("/points/:id", updatePoints);
 adminRouter.delete("/points/:domainId", deletePoints);
 adminRouter.get("/points", getAllPoints);
 
@@ -89,6 +89,33 @@ adminRouter.put("/practical-course", editPracticalCoursePoints);
 adminRouter.put("/sttp", editSttpPoints);
 adminRouter.put("/seminar", editSeminarPoints);
 adminRouter.put("/all-event-points", editAllEventPoints);
+
+adminRouter.get("/points", getAllPoints); // done
+adminRouter.get("/journal", getJournalPoints); // done
+adminRouter.get("/book", getBookPoints); // done
+adminRouter.get("/book", getBookPoints); // done
+adminRouter.get("/chapter", getChapterPoints); // done 
+adminRouter.get("/conference", getConferencePoints); // done
+adminRouter.get("/patent", getPatentPoints);  // done
+adminRouter.get("/project", getProjectPoints); // done
+adminRouter.get("/student-guidance", getStudentGuidancePoints);
+adminRouter.get("/event-organizer", getEventOrganizerPoints);
+adminRouter.get("/event-speaker", getEventSpeakerPoints);
+adminRouter.get("/event-judge", getEventJudgePoints);
+adminRouter.get("/event-coordinator", getEventCoordinatorPoints);
+adminRouter.get("/event-volunteer", getEventVolunteerPoints);
+adminRouter.get("/event-evaluator", getEventEvaluatorPoints);
+adminRouter.get("/event-panelist", getEventPanelistPoints);
+adminRouter.get("/event-mentor", getEventMentorPoints);
+adminRouter.get("/event-session-chair", getEventSessionChairPoints);
+adminRouter.get("/event-reviewer", getEventReviewerPoints);
+adminRouter.get("/expert-lecture", getExpertLecturePoints);
+adminRouter.get("/seminar-attended", getSeminarAttendedPoints);
+adminRouter.get("/theory-course", getTheoryCoursePoints);
+adminRouter.get("/practical-course", getPracticalCoursePoints);
+adminRouter.get("/sttp", getSttpPoints);
+adminRouter.get("/seminar", getSeminarPoints);
+adminRouter.get("/all-event-points", getAllEventPoints);
 
 // Teacher routes
 teacherRouter.get("/points", getAllPoints);

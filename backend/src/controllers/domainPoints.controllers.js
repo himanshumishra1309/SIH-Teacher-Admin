@@ -1,7 +1,7 @@
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler2.js";
 import { ApiError } from "../utils/ApiErrors.js";
-import {DomainPoint} from "../models/domainpoints.models.js"
+import { DomainPoint } from "../models/domainpoints.models.js";
 
 const addPoints = asyncHandler(async (req, res) => {
   const { domain, points } = req.body;
@@ -26,8 +26,9 @@ const addPoints = asyncHandler(async (req, res) => {
 
 // Update points for an existing domain
 const updatePoints = asyncHandler(async (req, res) => {
-  const { domainId } = req.params;
+  const { id } = req.params;
   const { points } = req.body;
+  const domainId = id;
 
   // Validate the presence of `domainId` and `points`
   if (!domainId) {
@@ -169,14 +170,15 @@ const getBookPoints = asyncHandler(async (req, res) => {
 
 // Edit book domain points
 const editBookPoints = asyncHandler(async (req, res) => {
-  const { bookPoints } = req.body;
+  const { points } = req.body;
+  console.log(points);
 
-  if (!bookPoints || !Array.isArray(bookPoints)) {
+  if (!points || !Array.isArray(points)) {
     throw new ApiError(400, "Invalid book points data");
   }
 
   const updatedBookPoints = await Promise.all(
-    bookPoints.map(async ({ domain, points }) => {
+    points.map(async ({ domain, points }) => {
       const updatedPoint = await DomainPoint.findOneAndUpdate(
         { domain },
         { points },
@@ -1488,7 +1490,8 @@ const getAllEventPoints = asyncHandler(async (req, res) => {
 
 // Edit all event-related domain points
 const editAllEventPoints = asyncHandler(async (req, res) => {
-  const { eventPoints } = req.body;
+  const { points } = req.body;
+  const eventRouter = points;
 
   if (!eventPoints || !Array.isArray(eventPoints)) {
     throw new ApiError(400, "Invalid event points data");
