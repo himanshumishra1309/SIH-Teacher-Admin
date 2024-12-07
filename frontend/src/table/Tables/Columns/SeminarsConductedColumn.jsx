@@ -7,11 +7,11 @@ export const columnDef = [
     header: "Topic",
     enableSorting: true,
   },
-  {
-    accessorKey: "department",
-    header: "Department",
-    enableSorting: true,
-  },
+  // {
+  //   accessorKey: "department",
+  //   header: "Department",
+  //   enableSorting: true,
+  // },
   {
     accessorKey: "duration",
     header: "Duration",
@@ -40,11 +40,11 @@ export const columnDef = [
     },
     enableSorting: true,
   },
-  {
-    accessorKey: "Feedbacks",
-    header: "feedback",
-    enableSorting: true,
-  },
+  // {
+  //   accessorKey: "Feedbacks",
+  //   header: "feedback",
+  //   enableSorting: true,
+  // },
   {
     accessorKey: "report",
     header: "View Report",

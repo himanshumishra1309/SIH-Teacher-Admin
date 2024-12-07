@@ -28,6 +28,8 @@ const FacultyAppraisalReport = ({
   facultyCode,
 }) => {
   const [facultyData, setFacultyData] = useState("");
+  const [rank, setRank] = useState(null);
+  const [performance, setPerformance] = useState(null);
 
   const reportRef = useRef(null);
   const signatureRef = useRef(null);
@@ -45,7 +47,7 @@ const FacultyAppraisalReport = ({
             },
           }
         );
-        console.log(response.data.data);
+        // console.log(response.data.data);
         setFacultyData(response.data.data);
       } catch (error) {
         const errorMessage = error.response?.data?.message || error.message;
@@ -68,6 +70,10 @@ const FacultyAppraisalReport = ({
         books: `http://localhost:6005/api/v1/points/books/${id}`,
         patents: `http://localhost:6005/api/v1/points/patents/${id}`,
         conferences: `http://localhost:6005/api/v1/points/conferences/${id}`,
+        projects: `http://localhost:6005/api/v1/points/projects/${id}`,
+        events: `http://localhost:6005/api/v1/points/events/${id}`,
+        sttp: `http://localhost:6005/api/v1/points/sttp/${id}`,
+        "expert-lectures": `http://localhost:6005/api/v1/points/expert-lectures/${id}`,
       };
 
       try {
@@ -80,7 +86,7 @@ const FacultyAppraisalReport = ({
                 )}`,
               },
             });
-            console.log(`${key} data:`, response.data);
+            // console.log(`${key} data:`, response.data);
             return { field: key, ...response.data.data };
           })
         );
@@ -93,7 +99,7 @@ const FacultyAppraisalReport = ({
           highestPoints: item.highestPoints || 0,
         }));
 
-        console.log("Formatted appraisal data:", formattedData);
+        // console.log("Formatted appraisal data:", formattedData);
         setAppraisalData(formattedData);
       } catch (error) {
         console.error("Error fetching appraisal data:", error.message);
@@ -103,7 +109,40 @@ const FacultyAppraisalReport = ({
     fetchAppraisalData();
   }, [facultyData]);
 
-  
+  useEffect(() => {
+    const fetchRank = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:6005/api/v1/points/teacher-ranks",
+          {
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem(
+                "teacherAccessToken"
+              )}`,
+            },
+          }
+        );
+
+        // console.log("Response data:", response.data);
+        const matchingTeacher = response.data?.data?.find(
+          (teacher) => teacher._id === id
+        );
+
+        if (matchingTeacher) {
+          setRank(matchingTeacher.rank);
+          setPerformance(matchingTeacher.performanceCategory);
+        } else {
+          console.log("No matching teacher found for the given facultyId");
+        }
+      } catch (error) {
+        const errorMessage = error.response?.data?.message || error.message;
+        console.error("Error fetching teacher data:", errorMessage);
+      }
+    };
+
+    fetchRank();
+  }, [id]);
+
   const handleDownload = () => {
     const input = reportRef.current;
     html2canvas(input).then((canvas) => {
@@ -244,8 +283,8 @@ const FacultyAppraisalReport = ({
             <CardTitle>Appraisal Rank</CardTitle>
           </CardHeader>
           <CardContent className="text-center">
-            <p className="text-4xl font-bold mb-2">A</p>
-            <p className="text-xl text-gray-600">Outstanding Performance</p>
+            <p className="text-4xl font-bold mb-2">Rank : {rank}</p>
+            <p className="text-xl text-gray-600">Performance : {performance}</p>
           </CardContent>
         </Card>
         <div>

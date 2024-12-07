@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, Outlet } from "react-router-dom";
-import { ColumnVisibilityToggle } from "./ColumnVisiblityToggle";
+import { ColumnVisibilityToggle } from "../ColumnVisiblityToggle.jsx";
 import {
   useReactTable,
   getCoreRowModel,
@@ -9,15 +9,15 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { columnDef } from "./Columns/AppraisalReportColumn";
-import "../table.css";
-import DebouncedInput from "../DebouncedInput.jsx";
+import { columnDef } from "../Columns/AppraisalReportColumn";
+import "../../table.css";
+import DebouncedInput from "../../DebouncedInput.jsx";
 import { SearchIcon, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import { Checkbox } from "@/components/ui/checkbox.jsx";
 import axios from "axios";
 
-export default function AppraisalReportTable() {
+export default function AdminAppraisalReportTable() {
   const { id } = useParams();
   const [data, setData] = useState("");
   const [globalFilter, setGlobalFilter] = useState("");
@@ -31,14 +31,14 @@ export default function AppraisalReportTable() {
   const [appraisalData, setAppraisalData] = useState([]);
 
   const endpoints = {
-    journals: `http://localhost:6005/api/v1/points/journals/${id}`,
-    books: `http://localhost:6005/api/v1/points/books/${id}`,
-    patents: `http://localhost:6005/api/v1/points/patents/${id}`,
-    conferences: `http://localhost:6005/api/v1/points/conferences/${id}`,
-    projects: `http://localhost:6005/api/v1/points/projects/${id}`,
-    events: `http://localhost:6005/api/v1/points/events/${id}`,
-    sttp: `http://localhost:6005/api/v1/points/sttp/${id}`,
-    "expert-lectures": `http://localhost:6005/api/v1/points/expert-lectures/${id}`,
+    journals: `http://localhost:6005/api/v1/points/ad-journals/${id}`,
+    books: `http://localhost:6005/api/v1/points/ad-books/${id}`,
+    patents: `http://localhost:6005/api/v1/points/ad-patents/${id}`,
+    conferences: `http://localhost:6005/api/v1/points/ad-conferences/${id}`,
+    projects: `http://localhost:6005/api/v1/points/ad-projects/${id}`,
+    events: `http://localhost:6005/api/v1/points/ad-events/${id}`,
+    sttp: `http://localhost:6005/api/v1/points/ad-sttp/${id}`,
+    "expert-lectures": `http://localhost:6005/api/v1/points/ad-expert-lectures/${id}`,
   };
 
   const [seminarData, setSeminarData] = useState("");
@@ -55,7 +55,7 @@ export default function AppraisalReportTable() {
             },
           }
         );
-        console.log("Tecaher Seminar Data", response.data.data);
+        // console.log("Tecaher Seminar Data", response.data.data);
         setData(response.data.data);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
@@ -73,16 +73,16 @@ export default function AppraisalReportTable() {
           const response = await axios.get(url, {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem(
-                "teacherAccessToken"
+                "adminAccessToken"
               )}`,
             },
           });
-          console.log(response);
+          // console.log(response);
           return { field: key, ...response.data.data };
         })
       );
 
-      console.log("results", results);
+      // console.log("results", results);
 
       const formattedData = results.map((item) => ({
         field: item.field
@@ -93,7 +93,7 @@ export default function AppraisalReportTable() {
         rank: item.requestedTeacherRank || 0,
       }));
 
-      console.log("formattedData", formattedData);
+      // console.log("formattedData", formattedData);
 
       setAppraisalData(formattedData);
     } catch (error) {

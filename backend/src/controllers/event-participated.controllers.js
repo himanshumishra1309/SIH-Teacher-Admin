@@ -56,7 +56,9 @@ const showAllParticipatedEvent = asyncHandler(async (req, res) => {
     EventParticipation.find({ owner: req.teacher._id })
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit),
+      .limit(limit)
+      .populate("owner")
+      .lean(),
   ]);
 
   return res.status(200).json(

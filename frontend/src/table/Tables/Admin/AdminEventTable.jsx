@@ -46,7 +46,7 @@ export default function AdminEventTable() {
             },
           }
         );
-        // console.log("EVENT DATA Is", response.data.data);
+        console.log(response.data.data);
         setData(response.data.data);
         console.log("EVENT DATA Is", eventData);
       } catch (error) {
