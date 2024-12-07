@@ -87,7 +87,7 @@ const AdminAllocateSubjectToStudent = () => {
     setLoading(true);
     try {
       const token = sessionStorage.getItem("adminAccessToken");
-      console.log(selectedStudents);
+      // console.log(selectedStudents);
       console.log(selectedSubject);
 
 
@@ -98,10 +98,12 @@ const AdminAllocateSubjectToStudent = () => {
         subject_type: selectedSubject.type,
         teacherId: selectedSubject.teacher,
         selectedStudents: selectedStudents.map(
-          (student) => student.original._id
+          (student) => student._id
         ),
       };
 
+      console.log("HELLOE");
+      
 
       console.log(payload);
 
@@ -110,6 +112,9 @@ const AdminAllocateSubjectToStudent = () => {
         payload,
         { headers: { Authorization: `Bearer ${token}` } }
       );
+
+      console.log(response);
+      
 
       toast.success(
         response.data.message || "Subjects allocated successfully!"
