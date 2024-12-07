@@ -22,9 +22,10 @@ const StudentAttendanceDialog = ({
   console.log("lectureID", lectureId);
 
   const { subjectId } = useParams();
-  // console.log("subjectId", subjectId);
+  const [data, setData] = useState([]);
 
   const [attendanceData, setAttendanceData] = useState([]);
+  const [sub, setSub] = useState("");
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -36,7 +37,9 @@ const StudentAttendanceDialog = ({
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        // console.log("response data:",response.data);
+        console.log("response data:", response.data);
+
+        setSub(response.data.data.subjectInfo);
         setAttendanceData(response.data.data.students || []);
       } catch (error) {
         console.error("Error fetching students:", error);
@@ -45,24 +48,34 @@ const StudentAttendanceDialog = ({
     fetchStudents();
   }, [subjectId]);
 
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
+
   const handleMarkAttendance = async () => {
     if (!lectureId) {
       alert("Lecture not added yet!");
       return;
     }
 
-    console.log(selectedStudents);
+    console.log(data);
 
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
-      const selectedStudentDetails = students.filter((student) =>
-        selectedStudents.includes(student._id)
-      );
+      const selectedStudentIds = data.map((student) => student._id);
+
+      // console.log(selectedStudentDetails);
 
       const response = await axios.post(
         `http://localhost:6005/api/v1/lecture/${lectureId}/attendance`,
         {
-          students: selectedStudentDetails,
+          studentIds: selectedStudentIds,
+          subject_name: sub.subject_name,
+          subject_code: sub.subject_code,
+          subject_credit: sub.subject_credit,
+          branch: sub.branch,
+          year: sub.year,
+          date: Date.now(),
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -91,8 +104,8 @@ const StudentAttendanceDialog = ({
         <div className="mt-4">
           <StudentAttendanceTable
             students={attendanceData}
-            selectedStudents={selectedStudents}
-            setSelectedStudents
+            data={data}
+            setData={setData}
           />
         </div>
         <div className="mt-2">
