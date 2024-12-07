@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React, { useMemo } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -6,15 +6,15 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   flexRender,
-} from "@tanstack/react-table"
-import { studentColumnDef } from "./Columns/StudentTableColumn"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { ColumnVisibilityToggle } from "./ColumnVisiblityToggle"
-import { Checkbox } from "@/components/ui/checkbox"
+} from "@tanstack/react-table";
+import { studentColumnDef } from "./Columns/StudentTableColumn";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ColumnVisibilityToggle } from "./ColumnVisiblityToggle";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export function StudentTable({ data, setSelectedStudents }) {
-  const columns = useMemo(() => studentColumnDef, [])
+  const columns = useMemo(() => studentColumnDef, []);
 
   const table = useReactTable({
     data,
@@ -25,23 +25,30 @@ export function StudentTable({ data, setSelectedStudents }) {
     getSortedRowModel: getSortedRowModel(),
     enableRowSelection: true,
     state: {
-      rowSelection: {},
+      rowSelection: {}, // Keep track of row selection state
     },
-  })
+    onRowSelectionChange: (newRowSelection) => {
+      const selectedRows = Object.keys(newRowSelection)
+        .filter((key) => newRowSelection[key])
+        .map((key) => table.getRowModel().rows.find((row) => row.id === key));
+      setSelectedStudents(selectedRows);
+    },
+  });
 
   const handleSelectAll = (checked) => {
-    const allRows = table.getRowModel().rows
-    const selectedIds = checked ? allRows.map(row => row.original._id) : []
-    const selectedRows = checked ? allRows : []
-    setSelectedStudents(selectedRows)
-    allRows.forEach(row => row.toggleSelected(checked))
-  }
+    const allRows = table.getRowModel().rows;
+    allRows.forEach((row) => row.toggleSelected(checked));
+    const selectedRows = checked ? allRows : [];
+    setSelectedStudents(selectedRows);
+  };
 
   const handleSelectRow = (row, checked) => {
-    row.toggleSelected(checked)
-    const selectedRows = table.getRowModel().rows.filter(r => r.getIsSelected())
-    setSelectedStudents(selectedRows)
-  }
+    row.toggleSelected(checked);
+    const selectedRows = table
+      .getRowModel()
+      .rows.filter((r) => r.getIsSelected());
+    setSelectedStudents(selectedRows);
+  };
 
   return (
     <div className="space-y-4">
@@ -49,16 +56,16 @@ export function StudentTable({ data, setSelectedStudents }) {
         <div className="flex items-center gap-4">
           <Input
             placeholder="Filter students..."
-            value={(table.getColumn("name")?.getFilterValue()) ?? ""}
+            value={table.getColumn("name")?.getFilterValue() ?? ""}
             onChange={(event) =>
               table.getColumn("name")?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
           <div className="flex items-center gap-2">
-            <Checkbox 
+            <Checkbox
               id="select-all"
-              onCheckedChange={handleSelectAll}
+              onCheckedChange={(checked) => handleSelectAll(checked)}
               checked={table.getIsAllRowsSelected()}
             />
             <label htmlFor="select-all" className="text-sm font-medium">
@@ -77,8 +84,8 @@ export function StudentTable({ data, setSelectedStudents }) {
                   Select
                 </th>
                 {headerGroup.headers.map((header) => (
-                  <th 
-                    key={header.id} 
+                  <th
+                    key={header.id}
                     className="px-4 py-3 text-left text-sm font-medium text-slate-500"
                   >
                     {header.isPlaceholder
@@ -94,7 +101,7 @@ export function StudentTable({ data, setSelectedStudents }) {
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row) => (
-              <tr 
+              <tr
                 key={row.id}
                 className="border-t border-slate-200 hover:bg-slate-50"
               >
@@ -106,8 +113,8 @@ export function StudentTable({ data, setSelectedStudents }) {
                   />
                 </td>
                 {row.getVisibleCells().map((cell) => (
-                  <td 
-                    key={cell.id} 
+                  <td
+                    key={cell.id}
                     className="px-4 py-3 text-sm text-slate-700"
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -137,6 +144,5 @@ export function StudentTable({ data, setSelectedStudents }) {
         </Button>
       </div>
     </div>
-  )
+  );
 }
-

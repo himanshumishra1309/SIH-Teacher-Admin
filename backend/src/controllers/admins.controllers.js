@@ -394,7 +394,7 @@ const viewAllAllocatedSubjectsOfTheTeacher = asyncHandler(async (req, res) => {
   }
 
   const allocatedSubjects = await AllocatedSubject.find({ teacher: teacherId })
-    .select("subject_name min_lectures subject_code subject_credit branch year")
+    .select("subject_name type min_lectures subject_code subject_credit branch year")
     .lean();
 
   if (!allocatedSubjects || allocatedSubjects.length === 0) {

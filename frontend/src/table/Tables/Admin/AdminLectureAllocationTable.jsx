@@ -35,6 +35,8 @@ export default function AdminLectureAllocationTable() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // setIsLoading(false);
+    console.log(id);
     const fetchTeacherInfo = async () => {
       try {
         const token = sessionStorage.getItem("adminAccessToken");

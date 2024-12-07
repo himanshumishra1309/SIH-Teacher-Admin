@@ -18,6 +18,11 @@ export const columnDef = [
     enableSorting: true,
   },
   {
+    accessorKey: "type",
+    header: "Type",
+    enableSorting: true,
+  },
+  {
     accessorKey: "branch",
     header: "Branch",
     enableSorting: true,

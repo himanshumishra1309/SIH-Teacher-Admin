@@ -143,7 +143,7 @@ const router = createBrowserRouter(
         <Route path="sttp-conducted" element={<AdminSTTPTable/>} errorElement={<NotFoundPage/>} />
 
         <Route path="projects" element={<AdminProjectTable />} errorElement={<NotFoundPage/>} />
-        <Route path="adminallocate-lectures" element={<AdminAllocateSubjectToStudent />} errorElement={<NotFoundPage/>} />
+        <Route path="adminallocate-lectures" element={<AdminLectureAllocationTable />} errorElement={<NotFoundPage/>} />
         <Route path="admin-teacher-appraisal" element={<AdminFacultyAppraisalReport />} errorElement={<NotFoundPage/>} />
 
         {/* <Route path="Contribution-graph" element={<ResearchTable />} errorElement={<NotFoundPage/>} /> */}
