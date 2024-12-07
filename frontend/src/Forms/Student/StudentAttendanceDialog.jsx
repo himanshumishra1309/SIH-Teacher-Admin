@@ -19,8 +19,10 @@ const StudentAttendanceDialog = ({
   setSelectedStudents,
   lectureId,
 }) => {
+  console.log("lectureID", lectureId);
+  
   const {subjectId} = useParams();
-  console.log("subjectId", subjectId);
+  // console.log("subjectId", subjectId);
 
   const [attendanceData, setAttendanceData] = useState([]);
 
@@ -34,7 +36,7 @@ const StudentAttendanceDialog = ({
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        console.log("response data:",response.data);
+        // console.log("response data:",response.data);
         setAttendanceData(response.data.data.students || []);
       } catch (error) {
         console.error("Error fetching students:", error);
@@ -49,13 +51,17 @@ const StudentAttendanceDialog = ({
       return;
     }
 
+    console.log(selectedStudents);
+    
+    
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
       const selectedStudentDetails = students.filter((student) =>
         selectedStudents.includes(student._id)
       );
 
-      await axios.post(
+
+      const response = await axios.post(
         `http://localhost:6005/api/v1/lecture/${lectureId}/attendance`,
         {
           students: selectedStudentDetails,
@@ -65,6 +71,8 @@ const StudentAttendanceDialog = ({
         }
       );
 
+      console.log(response);
+      
       alert("Attendance marked successfully!");
       onClose();
     } catch (error) {
@@ -75,7 +83,7 @@ const StudentAttendanceDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl">
+      <DialogContent className="max-w-4xl max-h-screen m-6">
         <DialogHeader>
           <DialogTitle>Mark Attendance</DialogTitle>
           <DialogDescription>
@@ -86,10 +94,10 @@ const StudentAttendanceDialog = ({
           <StudentAttendanceTable
             students={attendanceData}
             selectedStudents={selectedStudents}
-            setSelectedStudents={setSelectedStudents}
+            setSelectedStudents
           />
         </div>
-        <div className="mt-6">
+        <div className="mt-2">
           <Button
             onClick={handleMarkAttendance}
             className="w-full bg-primary text-white rounded hover:bg-primary-dark"
