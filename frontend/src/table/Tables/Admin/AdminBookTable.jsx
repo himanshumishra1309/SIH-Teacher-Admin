@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { bookColumnDef } from "../Columns/BookColumn.jsx";
+import { bookColumnDef } from "../Columns/PublicationsColumn/BookColumn.jsx";
 import "../../table.css";
 import DownloadBtn from "../../DownloadBtn.jsx";
 import DebouncedInput from "../../DebouncedInput.jsx";

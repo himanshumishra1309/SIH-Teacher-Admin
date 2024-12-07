@@ -33,11 +33,11 @@ import DrawerComponent from "../../../Forms/AddEntry/DrawerComponent.jsx";
 import DeleteDialog from "../../DeleteDialog.jsx";
 import axios from "axios";
 import { CSVLink } from "react-csv";
-import { PatentcolumnDef } from "../Columns/PatentColumn.jsx";
-import { bookColumnDef } from "../Columns/BookColumn.jsx";
-import { JournalColumnDef } from "../Columns/JournalColumn.jsx";
-import { conferenceColumnDef } from "../Columns/ConferenceColumn.jsx";
-import { chapterColumnDef } from "../Columns/ChapterColumn.jsx";
+import { PatentcolumnDef } from "../Columns/PublicationsColumn/PatentColumn.jsx";
+import { bookColumnDef } from "../Columns/PublicationsColumn/BookColumn.jsx";
+import { JournalColumnDef } from "../Columns/PublicationsColumn/JournalColumn.jsx";
+import { conferenceColumnDef } from "../Columns/PublicationsColumn/ConferenceColumn.jsx";
+import { chapterColumnDef } from "../Columns/PublicationsColumn/ChapterColumn.jsx";
 import { useParams } from "react-router-dom";
 
 function ExpandedRowContent({ data2 }) {
