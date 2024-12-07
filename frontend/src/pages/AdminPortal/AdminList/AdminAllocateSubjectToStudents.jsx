@@ -87,6 +87,10 @@ const AdminAllocateSubjectToStudent = () => {
     setLoading(true);
     try {
       const token = sessionStorage.getItem("adminAccessToken");
+      // console.log(selectedStudents);
+      console.log(selectedSubject);
+
+
       const payload = {
         subject_name: selectedSubject.subject_name,
         subject_code: selectedSubject.subject_code,
@@ -94,15 +98,23 @@ const AdminAllocateSubjectToStudent = () => {
         subject_type: selectedSubject.type,
         teacherId: selectedSubject.teacher,
         selectedStudents: selectedStudents.map(
-          (student) => student.original._id
+          (student) => student._id
         ),
       };
+
+      console.log("HELLOE");
+      
+
+      console.log(payload);
 
       const response = await axios.post(
         `http://localhost:6005/api/v1/admins/subjects/student-allocate`,
         payload,
         { headers: { Authorization: `Bearer ${token}` } }
       );
+
+      console.log(response);
+      
 
       toast.success(
         response.data.message || "Subjects allocated successfully!"
@@ -152,7 +164,6 @@ const AdminAllocateSubjectToStudent = () => {
             data={students}
             setSelectedStudents={setSelectedStudents}
           />
-
           <h3 className="text-lg font-semibold mt-6 mb-4">Subjects</h3>
           <Card className="p-4 bg-gradient-to-r from-green-500 via-green-400 to-green-300">
             <Select
@@ -167,14 +178,13 @@ const AdminAllocateSubjectToStudent = () => {
                     key={subject.subject_code}
                     value={JSON.stringify(subject)}
                   >
-                    {subject.subject_name} ({subject.subject_type} -{" "}
+                    {subject.subject_name} ({subject.subject_type} {" "}
                     {subject.subject_credit} credits)
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </Card>
-
           <Button
             className="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors duration-300"
             onClick={handleSubmit}

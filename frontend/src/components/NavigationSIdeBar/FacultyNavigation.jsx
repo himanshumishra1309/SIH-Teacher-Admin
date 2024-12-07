@@ -6,21 +6,21 @@ import { BookOpen, FileText, Mic, Users, GraduationCap, Calendar, PresentationIc
 
 export default function FacultyNavigation() {
   const navigationItems = [
+    { name: "Appraisal report", path: "appraisal-report", icon: <BarChart2 className="w-4 h-4" /> },
     { name: "Teaching Process", path: "teaching-process", icon: <BookOpen className="w-4 h-4" /> },
     { name: "Research Papers", path: "research-papers", icon: <FileText className="w-4 h-4" /> },
-    { name: "Expert Lectures", path: "expert-lectures", icon: <Mic className="w-4 h-4" /> },
+    { name: "Expert Lectures Delivered", path: "expert-lectures", icon: <Mic className="w-4 h-4" /> },
     { name: "STTP Conducted", path: "sttp-conducted", icon: <Users className="w-4 h-4" /> },
     { name: "Students Guided", path: "students-guided", icon: <GraduationCap className="w-4 h-4" /> },
     { name: "Event Participation", path: "event-participation", icon: <Calendar className="w-4 h-4" /> },
     { name: "Seminars", path: "seminars", icon: <PresentationChart className="w-4 h-4" /> },
     { name: "Projects", path: "projects", icon: <Briefcase className="w-4 h-4" /> },
-    { name: "Contribution Graph", path: "contribution", icon: <BarChart2 className="w-4 h-4" /> },
-    { name: "Posts", path: "posts", icon: <BarChart2 className="w-4 h-4" /> },
-    { name: "Appraisal report", path: "appraisal-report", icon: <BarChart2 className="w-4 h-4" /> },
+    // { name: "Contribution Graph", path: "contribution", icon: <BarChart2 className="w-4 h-4" /> },
+    { name: "Contributions/ Achievements", path: "posts", icon: <BarChart2 className="w-4 h-4" /> },
     // { name: "Add Lecture", path: "teacheraddecture", icon: <BarChart2 className="w-4 h-4" /> },
     { name: "Add Lecture", path: "lecAttend", icon: <BarChart2 className="w-4 h-4" /> },
 
-    { name: "Peer Review", path: "peer-review", icon: <BarChart2 className="w-4 h-4" /> }
+    // { name: "Peer Review", path: "peer-review", icon: <BarChart2 className="w-4 h-4" /> }
 
 
   ];

@@ -32,15 +32,14 @@ import teacherProject from "./routes/projects.routes.js";
 import studentGuide from "./routes/students-guided.routes.js";
 import lecture from "./routes/lecture.routes.js";
 import research from "./routes/research-papers.routes.js";
-import domainPoints from './routes/domainPoints.routes.js'
-import bookRouter from "./routes/books.routes.js"
-import journalRouter from "./routes/journal.routes.js"
-import patentRouter from "./routes/patent.routes.js"
-import conferenceRouter from "./routes/conference.routes.js"
-import pointRouter from "./routes/points.routes.js"
-import postRouter from "./routes/extracontribution.routes.js"
-import chapterRouter from "./routes/chapter.routes.js"
-
+import domainPoints from "./routes/domainPoints.routes.js";
+import bookRouter from "./routes/books.routes.js";
+import journalRouter from "./routes/journal.routes.js";
+import patentRouter from "./routes/patent.routes.js";
+import conferenceRouter from "./routes/conference.routes.js";
+import pointRouter from "./routes/points.routes.js";
+import postRouter from "./routes/extracontribution.routes.js";
+import chapterRouter from "./routes/chapter.routes.js";
 
 app.use("/api/v1/teachers", teacherRouter);
 app.use("/api/v1/admins", adminRouter);
@@ -63,6 +62,5 @@ app.use("/api/v1/patents", patentRouter);
 app.use("/api/v1/conferences", conferenceRouter);
 app.use("/api/v1/points", pointRouter);
 app.use("/api/v1/posts", postRouter);
-
 
 export { app };

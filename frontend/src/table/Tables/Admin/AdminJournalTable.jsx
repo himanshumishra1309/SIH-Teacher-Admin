@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { JournalColumnDef } from "../Columns/JournalColumn.jsx";
+import { JournalColumnDef } from "../Columns/PublicationsColumn/JournalColumn.jsx";
 import "../../table.css";
 import DownloadBtn from "../../DownloadBtn.jsx";
 import DebouncedInput from "../../DebouncedInput.jsx";
@@ -31,6 +31,8 @@ export default function AdminJournalTable() {
   const [rowToDelete, setRowToDelete] = useState(null);
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
+
 
   useEffect(() => {
     fetchData();

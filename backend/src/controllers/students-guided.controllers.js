@@ -7,6 +7,8 @@ import { StudentGuided } from "../models/students-guided.models.js";
 
 const uploadStudentInfo = asyncHandler(async (req, res) => {
   const { topic, student_name, roll_no, branch, mOp, academic_year } = req.body;
+  
+  
   if (
     [topic, student_name, branch, mOp, academic_year].some(
       (field) => typeof field !== "string" || field.trim() === ""
@@ -17,6 +19,12 @@ const uploadStudentInfo = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields are required");
   }
 
+  const existingStudent = await StudentGuided.findOne({ roll_no, topic });
+  if (existingStudent) {
+    throw new ApiError(409, "Student with the same roll number and topic already exists");
+  }
+
+
   const newStudent = await StudentGuided.create({
     topic,
     student_name,
@@ -24,9 +32,12 @@ const uploadStudentInfo = asyncHandler(async (req, res) => {
     branch,
     mOp,
     academic_year,
-    addedOn: Date.now(),
+    addedOn: Date.now() ,
     owner: req.teacher._id,
   });
+
+  // console.log("hellow2");
+  
 
   return res
     .status(200)
@@ -36,7 +47,7 @@ const uploadStudentInfo = asyncHandler(async (req, res) => {
 const showAllMtechStudent = asyncHandler(async (req, res) => {
   const mtechStudents = await StudentGuided.find({
     owner: req.teacher._id,
-    mOp: "MTech",
+    mOp: "Mtech",
   });
 
   return res
@@ -47,7 +58,7 @@ const showAllMtechStudent = asyncHandler(async (req, res) => {
 const showAllPhdStudent = asyncHandler(async (req, res) => {
   const phdStudents = await StudentGuided.find({
     owner: req.teacher._id,
-    mOp: "Phd",
+    mOp: "PhD",
   });
 
   return res

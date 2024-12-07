@@ -162,7 +162,7 @@ const registerTeacher = asyncHandler(async (req, res) => {
 
   const avatarLocalPath = req.file?.path;
 
-  console.log("request: ", req.file);
+  // console.log("request: ", req.file);
 
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar is required");
@@ -394,7 +394,7 @@ const viewAllAllocatedSubjectsOfTheTeacher = asyncHandler(async (req, res) => {
   }
 
   const allocatedSubjects = await AllocatedSubject.find({ teacher: teacherId })
-    .select("subject_name min_lectures subject_code subject_credit branch year")
+    .select("subject_name type min_lectures subject_code subject_credit branch year")
     .lean();
 
   if (!allocatedSubjects || allocatedSubjects.length === 0) {
@@ -1796,7 +1796,7 @@ const getEventsParticipatedByTheTeacher = asyncHandler(async (req, res) => {
   }
 
   const eventsParticipated = await EventParticipation.find({ owner: teacherId })
-    .select("role event date report")
+    .select("role event_name event_type date report")
     .lean();
 
   if (!eventsParticipated || eventsParticipated.length === 0) {
@@ -1823,7 +1823,7 @@ const getExpertLecturesDeliveredByTheTeacher = asyncHandler(
     }
 
     const expertLectures = await ExpertLecture.find({ owner: teacherId })
-      .select("topic duration date report")
+      .select("topic level venue duration date report")
       .lean();
 
     if (!expertLectures || expertLectures.length === 0) {
@@ -1853,7 +1853,7 @@ const getSTTPConductedByTheTeacher = asyncHandler(async (req, res) => {
   }
 
   const sttps = await STTP.find({ owner: teacherId })
-    .select("topic duration startDate endDate venue report")
+    .select("topic dailyDuration startDate endDate venue report")
     .lean();
 
   if (!sttps || sttps.length === 0) {
@@ -1874,7 +1874,7 @@ const getMtechStudentsGuidedByTheTeacher = asyncHandler(async (req, res) => {
 
   const mtechStudentsGuided = await StudentGuided.find({
     owner: teacherId,
-    mOp: "MTech",
+    mOp: "Mtech",
   })
     .select(
       "topic student_name roll_no branch academic_year mOp createdAt addedOn"
@@ -1936,7 +1936,7 @@ const getProjectsHeldByTheTeacher = asyncHandler(async (req, res) => {
   }
 
   const projects = await Project.find({ owner: teacherId })
-    .select("topic branch_name daily_duration startDate endDate report")
+    .select("topic branch_name projectType daily_duration startDate endDate report")
     .lean();
 
   if (!projects || projects.length === 0) {

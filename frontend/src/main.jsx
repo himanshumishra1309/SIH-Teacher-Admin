@@ -39,7 +39,7 @@ import FacultyResearchTable from './table/Tables/Faculty/FacultyResearchTable';
 import FacultyLecturesTable from './table/Tables/Faculty/FacultyLecturesTable';
 import FacultySTTPTable from './table/Tables/Faculty/FacultySTTPTable';
 import FacultyEventTable from './table/Tables/Faculty/FacultyEventTable';
-import FacultySeminarsTable from './table/Tables/Faculty/FacultySeminarsTable';
+import FacultySeminarsTable from './table/Tables/Faculty/FacultySeminarsConductedTable';
 import FacultyProjectTable from './table/Tables/Faculty/FacultyProjectTable';
 import FacultyGuidedTable from './table/Tables/Faculty/FacultyGuidedTable';
 import FacultyDataDashboard from './pages/FacultyPortal/FacultyDataDashboard';
@@ -63,6 +63,11 @@ import AddLecMarkAttendabce from './table/Tables/Faculty/AddLecMarkAttendabce';
 import PeerReview from './pages/FacultyPortal/PeerReview';
 import SubjectList from './table/Tables/Faculty/SubjectList';
 import LectureAndAttendance from './table/Tables/Faculty/LectureAndAttendance';
+import AdminFacultyAppraisalReport from './table/Tables/Admin/AdminFacultyAppraisalReport';
+import AdminSTTPTable from './table/Tables/Admin/AdminSTTPTable';
+import SeminarLayout from './Layouts/SeminarLayout';
+import AdminPointAllocationLayout from './Layouts/AdminPointAllocationLayout';
+import FacultyCourseTable from './table/Tables/FacultyCourseTable';
 
 
 
@@ -73,29 +78,23 @@ const router = createBrowserRouter(
       <Route index element={<Home />} /> {/* Render Home on the root path */}
       <Route path="font-size-handler" element={<FontSizeHandler />} />
       <Route path="/faculty/:id" element={<FacultyLayout />}>
-        {/* <Route index element={<ResearchTable />} /> Default to ResearchTable */}
-        <Route index element={<FacultyDataDashboard/>} errorElement={<NotFoundPage/>} />
-        
+       <Route index element={<FacultyDataDashboard/>} errorElement={<NotFoundPage/>} />
+    
         <Route path="contribution" element={<RouteTransitionWrapper><FacultyDataDashboard/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
-        <Route path="subject/:subjectId" element={<RouteTransitionWrapper><LectureAndAttendance /></RouteTransitionWrapper>}
-          errorElement={<NotFoundPage />}
-        />
-        <Route path="teaching-process" element={<RouteTransitionWrapper><FacultyTeachingProcessTable/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
+        <Route path="subject/:subjectId" element={<RouteTransitionWrapper><LectureAndAttendance /></RouteTransitionWrapper>}  errorElement={<NotFoundPage />}/>
+        <Route path="teaching-process" element={<RouteTransitionWrapper><FacultyCourseTable/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
         <Route path="research-papers" element={<RouteTransitionWrapper><ResearchLayout/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
         <Route path="expert-lectures" element={<RouteTransitionWrapper><FacultyLecturesTable /></RouteTransitionWrapper>}errorElement={<NotFoundPage/>}  />
         <Route path="sttp-conducted" element={<RouteTransitionWrapper><FacultySTTPTable /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
-        {/* <Route path="institute-portfolio" element={<ResearchTable />} errorElement={<NotFoundPage/>} /> */}
-        {/* <Route path="department-portfolio" element={<ResearchTable />} errorElement={<NotFoundPage/>} /> */}
         <Route path="students-guided" element={<RouteTransitionWrapper><FacultyGuidedTable /></RouteTransitionWrapper>}errorElement={<NotFoundPage/>}  />
-        <Route path="seminars" element={<RouteTransitionWrapper><FacultySeminarsTable /></RouteTransitionWrapper>}errorElement={<NotFoundPage/>}  >
-           <Route path="upcoming" element={<RouteTransitionWrapper><UpcomingSeminars /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} /> 
+        <Route path="seminars" element={<RouteTransitionWrapper><SeminarLayout /></RouteTransitionWrapper>}errorElement={<NotFoundPage/>}  >
+         <Route path="upcoming" element={<RouteTransitionWrapper><UpcomingSeminars /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} /> 
         </Route>
         <Route path="projects" element={<RouteTransitionWrapper><FacultyProjectTable /></RouteTransitionWrapper>} />
-        {/* <Route path="lectures" element={<LecturesTable />} /> */}
         <Route path="event-participation" element={<RouteTransitionWrapper><FacultyEventTable /></RouteTransitionWrapper>} errorElement={<NotFoundPage />} />
         <Route path="posts" element={<RouteTransitionWrapper><PostsPage/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
         <Route path="appraisal-report" element={<RouteTransitionWrapper><AppraisalReport/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
-        <Route path="peer-review" element={<RouteTransitionWrapper><PeerReview/></RouteTransitionWrapper>}errorElement={<NotFoundPage/>} />
+        {/* <Route path="peer-review" element={<RouteTransitionWrapper><PeerReview/></RouteTransitionWrapper>}errorElement={<NotFoundPage/>} /> */}
 
         <Route path="lecAttend" element={<RouteTransitionWrapper><SubjectList/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
         {/* <Route path="teacheraddecture" element={<RouteTransitionWrapper><AddLecMarkAttendabce/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} /> */}
@@ -121,6 +120,8 @@ const router = createBrowserRouter(
     <Route path="register-faulty" element={<FacultyRegister/>} errorElement={<NotFoundPage/>}/>
     <Route path="register-student" element={<StudentRegister/>} errorElement={<NotFoundPage/>}/>
     <Route path="allocate-sub-student" element={<AdminAllocateSubjectToStudent/>} errorElement={<NotFoundPage/>}/>
+    <Route path="appraisal-points" element={<AdminPointAllocationLayout/>} errorElement={<NotFoundPage/>}/>
+
 
     </Route>
  
@@ -132,14 +133,13 @@ const router = createBrowserRouter(
         {/* <Route path="personal-details" element={<ResearchTable />} errorElement={<NotFoundPage/>} /> */}
         <Route path="research-papers" element={<AdminResearchTable />} errorElement={<NotFoundPage/>} />
         <Route path="students-guided" element={<AdminStudentsGuidedTable />} errorElement={<NotFoundPage/>} />
-        {/* <Route path="institute-portfolio" element={<ResearchTable />} errorElement={<NotFoundPage/>} /> */}
-        {/* <Route path="department-portfolio" element={<ResearchTable />} errorElement={<NotFoundPage/>} /> */}
         <Route path="expert-lecture" element={<AdminLecturesTable />} errorElement={<NotFoundPage/>} />
         <Route path="event-participation" element={<AdminEventTable />} errorElement={<NotFoundPage/>} />
         <Route path="seminars" element={<AdminSeminarsTable/>} errorElement={<NotFoundPage/>} />
+        <Route path="sttp-conducted" element={<AdminSTTPTable/>} errorElement={<NotFoundPage/>} />
         <Route path="projects" element={<AdminProjectTable />} errorElement={<NotFoundPage/>} />
-        <Route path="adminallocate-lectures" element={<AdminAllocateSubjectToStudent />} errorElement={<NotFoundPage/>} />
-
+        <Route path="adminallocate-lectures" element={<AdminLectureAllocationTable />} errorElement={<NotFoundPage/>} />
+        <Route path="admin-teacher-appraisal" element={<AdminFacultyAppraisalReport />} errorElement={<NotFoundPage/>} />
 
         {/* <Route path="Contribution-graph" element={<ResearchTable />} errorElement={<NotFoundPage/>} /> */}
 

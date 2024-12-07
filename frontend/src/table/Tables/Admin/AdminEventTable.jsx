@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { columnDef } from "../Columns/EventsColumn.jsx";
+import { columnDef } from "../Columns/PublicationsColumn/EventsColumn.jsx";
 import "../../table.css";
 import DownloadBtn from "../../DownloadBtn.jsx";
 import DebouncedInput from "../../DebouncedInput.jsx";
@@ -46,7 +46,7 @@ export default function AdminEventTable() {
             },
           }
         );
-        // console.log("EVENT DATA Is", response.data.data);
+        console.log(response.data.data);
         setData(response.data.data);
         console.log("EVENT DATA Is", eventData);
       } catch (error) {

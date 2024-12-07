@@ -92,25 +92,6 @@ const FacultyLayout = () => {
     fetchProfileData();
   }, [location, toast]);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (mainContentRef.current && navigationRef.current) {
-        const { top, bottom } = mainContentRef.current.getBoundingClientRect();
-        const navHeight = navigationRef.current.offsetHeight;
-        const viewportHeight = window.innerHeight;
-
-        if (top <= 0 && bottom >= navHeight) {
-          setIsNavigationFixed(true);
-        } else if (bottom < navHeight || top > 0) {
-          setIsNavigationFixed(false);
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   return (
     <>
       <div className="flex flex-col min-h-screen">

@@ -112,6 +112,8 @@ const PostsPage = () => {
     report: null,
   });
 
+  // console.log(posts);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
 
@@ -197,6 +199,68 @@ const PostsPage = () => {
     }
   };
 
+  // Function to handle the post update
+  const handleEditPost = async (e, p) => {
+    e.preventDefault();
+    console.log(p)
+
+    try {
+      console.log(newPost);
+      
+      const formData = new FormData();
+      formData.append("title", newPost.title);
+      formData.append("description", newPost.description);
+      formData.append("contributionType", newPost.contributionType);
+
+      newPost.attachments.forEach((file) => {
+        formData.append("images", file);
+      });
+
+      if (newPost.report) {
+        formData.append("report", newPost.report);
+      }
+
+      const teacherAccessToken = sessionStorage.getItem("teacherAccessToken");
+
+      // Send the request to the server to update the post
+      const response = await axios.patch(
+        `http://localhost:6005/api/v1/posts/post/update/${p.id}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${teacherAccessToken}`,
+          },
+        }
+      );
+
+      console.log(response);
+
+      if (response.status === 200) {
+        // Update the local state with the edited post details
+        setPosts((prevPosts) =>
+          prevPosts.map((existingPost) =>
+            existingPost.id === post.id
+              ? { ...existingPost, ...newPost, updatedAt: new Date() }
+              : existingPost
+          )
+        );
+        alert("Post updated successfully!");
+
+        // Reset the form and close the modal/dialog
+        setNewPost({
+          title: "",
+          contributionType: "",
+          description: "",
+          attachments: [],
+          report: null,
+        });
+        setIsCreatePostOpen(false); // Assuming you're using the same dialog for editing
+      }
+    } catch (error) {
+      console.error("Error updating post:", error);
+      alert("Failed to update the post.");
+    }
+  };
   const handleAttachment = (e) => {
     const files = Array.from(e.target.files);
     setNewPost({ ...newPost, attachments: [...newPost.attachments, ...files] });
@@ -234,6 +298,7 @@ const PostsPage = () => {
               {/* Title Input */}
               <Input
                 placeholder="Title"
+                a
                 value={newPost.title}
                 onChange={(e) =>
                   setNewPost({ ...newPost, title: e.target.value })
@@ -327,7 +392,7 @@ const PostsPage = () => {
               </CardContent>
 
               {/* Card Footer */}
-              <CardFooter className="flex justify-between items-center p-4 border-t border-gray-200">
+              <CardFooter className="flex flex-col space-y-2 p-4 border-t border-gray-200">
                 {/* Post Date */}
                 <div className="flex items-center text-gray-600 text-sm">
                   <CalendarIcon className="mr-2 h-4 w-4 opacity-80" />
@@ -335,7 +400,7 @@ const PostsPage = () => {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex items-center space-x-2">
+                <div className="flex justify-between items-center space-x-2">
                   {/* View Report Button */}
                   {post.report && (
                     <Button
@@ -349,7 +414,8 @@ const PostsPage = () => {
                       View Report
                     </Button>
                   )}
-                  {/* View Post Button */}
+
+                  {/* View Post Dialog */}
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button
@@ -371,12 +437,121 @@ const PostsPage = () => {
                         <p className="text-gray-600">{post.description}</p>
 
                         {/* Carousel for Attachments */}
-                        <AttachmentCarousel
-                          attachments={post.attachments.map((url) => ({
-                            type: "image/jpeg", // Assuming image type; adjust as needed
-                            url,
-                          }))}
-                        />
+                        <AttachmentCarousel attachments={post.attachments} />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
+                  {/* Edit Post Dialog */}
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-gray-600 border-gray-400 hover:bg-gray-100"
+                      >
+                        Edit Post
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[700px] max-h-[80vh] overflow-y-auto rounded-lg shadow-lg">
+                      <DialogHeader>
+                        <DialogTitle className="text-center font-bold text-lg">
+                          Edit Post: {post.title}
+                        </DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4 p-4">
+                        {/* Edit Form (To be implemented) */}
+                        <p>Edit form content goes here...</p>
+                        <form onSubmit={(e) => (handleEditPost(e, post))} className="space-y-4">
+                          {/* Title Input */}
+                          <Input
+                            placeholder="Title"
+                            a
+                            value={newPost.title}
+                            onChange={(e) =>
+                              setNewPost({ ...newPost, title: e.target.value })
+                            }
+                          />
+
+                          {/* Contribution Type Input */}
+                          <Input
+                            placeholder="Contribution Type"
+                            value={newPost.contributionType}
+                            onChange={(e) =>
+                              setNewPost({
+                                ...newPost,
+                                contributionType: e.target.value,
+                              })
+                            }
+                          />
+
+                          {/* Description Input */}
+                          <Textarea
+                            placeholder="Share your achievement..."
+                            value={newPost.description}
+                            onChange={(e) =>
+                              setNewPost({
+                                ...newPost,
+                                description: e.target.value,
+                              })
+                            }
+                          />
+
+                          {/* Attachments Input */}
+                          <div className="flex items-center space-x-2">
+                            <Input
+                              type="file"
+                              multiple
+                              onChange={handleAttachment}
+                              className="hidden"
+                              id="file-upload"
+                              accept="image/*,video/*"
+                            />
+                            <Button type="button" variant="outline" asChild>
+                              <label
+                                htmlFor="file-upload"
+                                className="cursor-pointer"
+                              >
+                                <PaperclipIcon className="mr-2 h-4 w-4" />
+                                Attach Files
+                              </label>
+                            </Button>
+                            <span>
+                              {newPost.attachments.length} file(s) selected
+                            </span>
+                          </div>
+
+                          {/* Report File Input */}
+                          <div className="flex items-center space-x-2">
+                            <Input
+                              type="file"
+                              onChange={handleReportFile}
+                              className="hidden"
+                              id="report-upload"
+                              accept=".pdf,.doc,.docx"
+                            />
+                            <Button type="button" variant="outline" asChild>
+                              <label
+                                htmlFor="report-upload"
+                                className="cursor-pointer"
+                              >
+                                <PaperclipIcon className="mr-2 h-4 w-4" />
+                                Upload Report
+                              </label>
+                            </Button>
+                            <span>
+                              {newPost.report
+                                ? newPost.report.name
+                                : "No report selected"}
+                            </span>
+                          </div>
+
+                          {/* Submit Button */}
+                          <Button type="submit">
+                            <SendIcon className="mr-2 h-4 w-4" />
+                            Edit
+                          </Button>
+                        </form>
                       </div>
                     </DialogContent>
                   </Dialog>

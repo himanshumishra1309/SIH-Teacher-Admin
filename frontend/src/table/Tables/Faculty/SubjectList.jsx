@@ -4,15 +4,18 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import SubjectCard from "./SubjectCard";
+import LoadingPage from "@/pages/LoadingPage";
 
 const SubjectList = () => {
   const { id } = useParams(); // Teacher ID
   const navigate = useNavigate();
   const [subjects, setSubjects] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
+        setIsLoading(true);
         const token = sessionStorage.getItem("teacherAccessToken");
         const response = await axios.get(
           `http://localhost:6005/api/v1/allocated-subjects/subjects/${id}`,
@@ -23,6 +26,8 @@ const SubjectList = () => {
         setSubjects(response.data.data.subjects || []);
       } catch (error) {
         console.error("Error fetching subjects:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchSubjects();
@@ -32,6 +37,10 @@ const SubjectList = () => {
     const subjectId = subject._id;
     navigate(`/faculty/${id}/subject/${subjectId}`, { state: { subject } });
   };
+
+  if (isLoading) {
+    return <LoadingPage />;
+  }
 
   return (
     <div className="container mx-auto p-8 bg-white rounded-lg shadow-lg mt-10">
@@ -52,3 +61,4 @@ const SubjectList = () => {
 };
 
 export default SubjectList;
+

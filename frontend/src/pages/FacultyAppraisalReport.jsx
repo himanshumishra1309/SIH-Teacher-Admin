@@ -20,72 +20,138 @@ import jsPDF from "jspdf";
 import { Download } from "lucide-react";
 import axios from "axios";
 import AppraisalReportTable from "@/table/Tables/AppraisalReportTable";
+import { useParams } from "react-router-dom";
 
 const FacultyAppraisalReport = ({
   facultyName,
   facultyDepartment,
   facultyCode,
 }) => {
+  const [facultyData, setFacultyData] = useState("");
+  const [rank, setRank] = useState(null);
+  const [point, setPoint] = useState(null);
+  const [performance, setPerformance] = useState(null);
+
   const reportRef = useRef(null);
   const signatureRef = useRef(null);
-  const [facultyData, setFacultyData] = useState("");
   const [appraisalData, setAppraisalData] = useState([]);
-
-  const endpoints = {
-    journals: "http://localhost:6005/api/v1/points/journals",
-    books: "http://localhost:6005/api/v1/points/books",
-    patents: "http://localhost:6005/api/v1/points/patents",
-    // sttp: "http://localhost:6005/api/v1/points/sttp",
-    conferences: "http://localhost:6005/api/v1/points/conferences",
-    // seminarsConducted: "http://localhost:6005/api/v1/points/seminars-conducted",
-    // seminarsAttended: "http://localhost:6005/api/v1/points/seminar-attended",
-    // projects: "http://localhost:6005/api/v1/points/projects",
-  };
-
-  const appraisalData2 = [
-    { field: "Journals", currentPoints: 25, highestPoints: 40 },
-    { field: "Books", currentPoints: 15, highestPoints: 30 },
-    { field: "Patents", currentPoints: 10, highestPoints: 20 },
-    { field: "STTP", currentPoints: 20, highestPoints: 25 },
-    { field: "Conferences", currentPoints: 30, highestPoints: 35 },
-    { field: "Seminars Conducted", currentPoints: 18, highestPoints: 22 },
-    { field: "Seminars Attended", currentPoints: 12, highestPoints: 15 },
-    { field: "Projects", currentPoints: 35, highestPoints: 50 },
-  ];
-
-  const fetchAppraisalData = async () => {
-    try {
-      const results = await Promise.all(
-        Object.entries(endpoints).map(async ([key, url]) => {
-          const response = await axios.get(url, {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:6005/api/v1/teachers/me",
+          {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem(
                 "teacherAccessToken"
               )}`,
             },
-          });
-          console.log(response);
-          return { field: key, ...response.data.data };
-        })
-      );
+          }
+        );
+        // console.log(response.data.data);
+        setFacultyData(response.data.data);
+      } catch (error) {
+        const errorMessage = error.response?.data?.message || error.message;
+        console.error("Error fetching teacher data:", errorMessage);
+      }
+    };
 
-      console.log("results", results);
+    fetchData();
+  }, []);
+  const id = facultyData._id;
 
-      const formattedData = results.map((item) => ({
-        field: item.field
-          .replace(/([A-Z])/g, " $1")
-          .replace(/^./, (str) => str.toUpperCase()),
-        currentPoints: item.requestedTeacherPoints || 0,
-        highestPoints: item.highestPoints || 0,
-      }));
+  useEffect(() => {
+    if (!facultyData?._id) return; // Avoid fetching if facultyData is not ready
 
-      console.log("formattedData", formattedData);
+    const fetchAppraisalData = async () => {
+      const id = facultyData._id;
 
-      setAppraisalData(formattedData);
-    } catch (error) {
-      console.error("Error fetching appraisal data:", error.message);
-    }
-  };
+      const endpoints = {
+        journals: `http://localhost:6005/api/v1/points/journals/${id}`,
+        books: `http://localhost:6005/api/v1/points/books/${id}`,
+        chapter: `http://localhost:6005/api/v1/points/chapter/${id}`,
+        patents: `http://localhost:6005/api/v1/points/patents/${id}`,
+        conferences: `http://localhost:6005/api/v1/points/conferences/${id}`,
+        projects: `http://localhost:6005/api/v1/points/projects/${id}`,
+        events: `http://localhost:6005/api/v1/points/events/${id}`,
+        sttp: `http://localhost:6005/api/v1/points/sttp/${id}`,
+        "expert-lectures": `http://localhost:6005/api/v1/points/expert-lectures/${id}`,
+        "Student-Guide": `http://localhost:6005/api/v1/points/student-guided/${id}`,
+        // lecture: `http://localhost:6005/api/v1/points/lecture/${id}`,
+        // "Contribution": `http://localhost:6005/api/v1/points/contribution/${id}`,
+
+      };
+
+      try {
+        const results = await Promise.all(
+          Object.entries(endpoints).map(async ([key, url]) => {
+            const response = await axios.get(url, {
+              headers: {
+                Authorization: `Bearer ${sessionStorage.getItem(
+                  "teacherAccessToken"
+                )}`,
+              },
+            });
+            // console.log(`${key} data:`, response.data);
+            return { field: key, ...response.data.data };
+          })
+        );
+
+        const formattedData = results.map((item) => ({
+          field: item.field
+            .replace(/([A-Z])/g, " $1")
+            .replace(/^./, (str) => str.toUpperCase()),
+          currentPoints: item.requestedTeacherPoints || 0,
+          highestPoints: item.highestPoints || 0,
+        }));
+
+        // console.log("Formatted appraisal data:", formattedData);
+        setAppraisalData(formattedData);
+      } catch (error) {
+        console.error("Error fetching appraisal data:", error.message);
+      }
+    };
+
+    fetchAppraisalData();
+  }, [facultyData]);
+
+  useEffect(() => {
+    const fetchRank = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:6005/api/v1/points/teacher-ranks",
+          {
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem(
+                "teacherAccessToken"
+              )}`,
+            },
+          }
+        );
+        console.log(response.data.data);
+
+        // console.log("Response data:", response.data);
+        const matchingTeacher = response.data?.data?.find(
+          (teacher) => teacher.teacherId === id
+        );
+
+        // console.log(matchingTeacher);
+
+        if (matchingTeacher) {
+          setRank(matchingTeacher.rank);
+          setPerformance(matchingTeacher.performanceCategory);
+          setPoint(matchingTeacher.totalPoints)
+        } else {
+          console.log("No matching teacher found for the given facultyId");
+        }
+      } catch (error) {
+        const errorMessage = error.response?.data?.message || error.message;
+        console.error("Error fetching teacher data:", errorMessage);
+      }
+    };
+
+    fetchRank();
+  }, [id]);
 
   const handleDownload = () => {
     const input = reportRef.current;
@@ -142,31 +208,6 @@ const FacultyAppraisalReport = ({
       canvas.removeEventListener("mouseup", () => {});
       canvas.removeEventListener("mouseout", () => {});
     };
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:6005/api/v1/teachers/me",
-          {
-            headers: {
-              Authorization: `Bearer ${sessionStorage.getItem(
-                "teacherAccessToken"
-              )}`,
-            },
-          }
-        );
-        // console.log(response.data.data);
-        setFacultyData(response.data.data);
-      } catch (error) {
-        const errorMessage = error.response?.data?.message || error.message;
-        console.error("Error fetching teacher data:", errorMessage);
-      }
-    };
-
-    fetchData();
-    fetchAppraisalData();
   }, []);
 
   return (
@@ -252,8 +293,10 @@ const FacultyAppraisalReport = ({
             <CardTitle>Appraisal Rank</CardTitle>
           </CardHeader>
           <CardContent className="text-center">
-            <p className="text-4xl font-bold mb-2">A</p>
-            <p className="text-xl text-gray-600">Outstanding Performance</p>
+            <p className="text-4xl font-bold mb-2">Rank : {rank}</p>
+            <p className="text-xl text-gray-600">Performance : {performance}</p>
+            <p className="text-xl text-gray-600">Points : {point}</p>
+
           </CardContent>
         </Card>
         <div>

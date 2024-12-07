@@ -1,4 +1,6 @@
-import React, { useMemo } from "react"
+"use client";
+
+import React, { useEffect, useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -6,15 +8,17 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   flexRender,
-} from "@tanstack/react-table"
-import { studentColumnDef } from "./Columns/StudentTableColumn"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { ColumnVisibilityToggle } from "./ColumnVisiblityToggle"
-import { Checkbox } from "@/components/ui/checkbox"
+} from "@tanstack/react-table";
+import { studentColumnDef } from "./Columns/StudentTableColumn";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ColumnVisibilityToggle } from "./ColumnVisiblityToggle";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export function StudentTable({ data, setSelectedStudents }) {
-  const columns = useMemo(() => studentColumnDef, [])
+  const [rowSelection, setRowSelection] = useState({});
+
+  const columns = React.useMemo(() => studentColumnDef, []);
 
   const table = useReactTable({
     data,
@@ -25,23 +29,27 @@ export function StudentTable({ data, setSelectedStudents }) {
     getSortedRowModel: getSortedRowModel(),
     enableRowSelection: true,
     state: {
-      rowSelection: {},
+      rowSelection,
     },
-  })
+    onRowSelectionChange: setRowSelection,
+  });
 
-  const handleSelectAll = (checked) => {
-    const allRows = table.getRowModel().rows
-    const selectedIds = checked ? allRows.map(row => row.original._id) : []
-    const selectedRows = checked ? allRows : []
-    setSelectedStudents(selectedRows)
-    allRows.forEach(row => row.toggleSelected(checked))
-  }
+  // Sync selected rows data to `setSelectedStudents`
+  React.useEffect(() => {
+    const selectedRows = table
+      .getRowModel()
+      .rows.filter((row) => rowSelection[row.id]) // Check if the row is selected
+      .map((row) => row.original); // Get the original data of the row
+    setSelectedStudents(selectedRows);
+  }, [rowSelection, setSelectedStudents, table]);
 
-  const handleSelectRow = (row, checked) => {
-    row.toggleSelected(checked)
-    const selectedRows = table.getRowModel().rows.filter(r => r.getIsSelected())
-    setSelectedStudents(selectedRows)
-  }
+  const handleSelectAll = React.useCallback(() => {
+    table.toggleAllRowsSelected(!table.getIsAllRowsSelected());
+  }, [table]);
+
+  useEffect(() => {
+    console.log(rowSelection);
+  }, [rowSelection]);
 
   return (
     <div className="space-y-4">
@@ -49,22 +57,21 @@ export function StudentTable({ data, setSelectedStudents }) {
         <div className="flex items-center gap-4">
           <Input
             placeholder="Filter students..."
-            value={(table.getColumn("name")?.getFilterValue()) ?? ""}
+            value={table.getColumn("name")?.getFilterValue() ?? ""}
             onChange={(event) =>
               table.getColumn("name")?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
-          <div className="flex items-center gap-2">
-            <Checkbox 
-              id="select-all"
-              onCheckedChange={handleSelectAll}
-              checked={table.getIsAllRowsSelected()}
-            />
-            <label htmlFor="select-all" className="text-sm font-medium">
-              Select All Students
-            </label>
-          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSelectAll}
+            className="ml-4"
+          >
+            {table.getIsAllRowsSelected() ? "Deselect All" : "Select All"}{" "}
+            Students
+          </Button>
         </div>
         <ColumnVisibilityToggle table={table} />
       </div>
@@ -77,8 +84,8 @@ export function StudentTable({ data, setSelectedStudents }) {
                   Select
                 </th>
                 {headerGroup.headers.map((header) => (
-                  <th 
-                    key={header.id} 
+                  <th
+                    key={header.id}
                     className="px-4 py-3 text-left text-sm font-medium text-slate-500"
                   >
                     {header.isPlaceholder
@@ -94,20 +101,20 @@ export function StudentTable({ data, setSelectedStudents }) {
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row) => (
-              <tr 
+              <tr
                 key={row.id}
                 className="border-t border-slate-200 hover:bg-slate-50"
               >
                 <td className="px-4 py-3">
                   <Checkbox
                     checked={row.getIsSelected()}
-                    onCheckedChange={(checked) => handleSelectRow(row, checked)}
+                    onCheckedChange={(value) => row.toggleSelected(!!value)}
                     aria-label={`Select ${row.original.name}`}
                   />
                 </td>
                 {row.getVisibleCells().map((cell) => (
-                  <td 
-                    key={cell.id} 
+                  <td
+                    key={cell.id}
                     className="px-4 py-3 text-sm text-slate-700"
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -118,25 +125,30 @@ export function StudentTable({ data, setSelectedStudents }) {
           </tbody>
         </table>
       </div>
-      <div className="flex items-center justify-end space-x-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
+      <div className="flex items-center justify-between">
+        <div>
+          {Object.keys(rowSelection).length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </div>
-  )
+  );
 }
-

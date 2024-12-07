@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 @layer base {
+
+  select {
+    color: inherit;
+    background-color: inherit;
+    border-color: inherit;
+}
+
+::placeholder {
+    color: hsl(var(--foreground, 0, 0, 0)); /* Fallback to black */
+    opacity: 1;
+}
+
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;

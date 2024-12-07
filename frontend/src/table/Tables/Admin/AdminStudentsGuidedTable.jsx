@@ -73,7 +73,8 @@ export default function AdminStudentsGuidedTable() {
             },
           }
         );
-        console.log("student-guuide", response.data.data);
+
+        console.log(response.data);
         setData(response.data.data);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
@@ -82,6 +83,47 @@ export default function AdminStudentsGuidedTable() {
 
     fetchTeacherInfo();
   }, []);
+
+  // useEffect(() => {
+  //   const fetchTeacherInfo = async () => {
+  //     try {
+  //       const token = sessionStorage.getItem("adminAccessToken");
+
+  //       // Fetch both responses concurrently
+  //       const [mtechResponse, phdResponse] = await Promise.all([
+  //         axios.get(
+  //           `http://localhost:6005/api/v1/admins/teachers/${id}/students-guided/mtech`,
+  //           {
+  //             headers: {
+  //               Authorization: `Bearer ${token}`,
+  //             },
+  //           }
+  //         ),
+  //         axios.get(
+  //           `http://localhost:6005/api/v1/admins/teachers/${id}/students-guided/phd`,
+  //           {
+  //             headers: {
+  //               Authorization: `Bearer ${token}`,
+  //             },
+  //           }
+  //         ),
+  //       ]);
+
+  //       // Merge the data from both responses
+  //       const mergedData = {
+  //         mtech: mtechResponse.data.data,
+  //         phd: phdResponse.data.data,
+  //       };
+
+  //       console.log(mergedData);
+  //       setData(mergedData);
+  //     } catch (error) {
+  //       console.log("An error occurred while fetching teacher info.");
+  //     }
+  //   };
+
+  //   fetchTeacherInfo();
+  // }, []);
 
   const columns = useMemo(() => {
     return columnDef.map((col) => {

@@ -6,11 +6,11 @@ import { uploadToGCS } from "../utils/googleCloud.js";
 import path from "path";
 
 const uploadEvent = asyncHandler(async (req, res) => {
-  const { topic, duration, startDate, endDate, venue } = req.body;
+  const { topic, dailyDuration, startDate, endDate, venue } = req.body;
   const file = req.file;
 
   if (
-    [topic, duration, startDate, endDate, venue].some(
+    [topic, dailyDuration, startDate, endDate, venue].some(
       (field) => field.trim() === ''
     )
   ) {
@@ -34,7 +34,7 @@ const uploadEvent = asyncHandler(async (req, res) => {
 
   const sttp = await STTP.create({
     topic,
-    duration,
+    dailyDuration,
     startDate,
     endDate,
     venue,

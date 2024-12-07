@@ -8,7 +8,7 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { columnDef } from "../Columns/EventsColumn.jsx";
+import { columnDef } from "../Columns/PublicationsColumn/EventsColumn.jsx";
 import "../../table.css";
 import DownloadBtn from "../../DownloadBtn.jsx";
 import DebouncedInput from "../../DebouncedInput.jsx";
@@ -102,7 +102,7 @@ export default function FacultyEventTable() {
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
+    getFilteredRowModel: getFilteredRowModel(), // Add filtering
     state: {
       sorting,
       globalFilter,
@@ -112,10 +112,12 @@ export default function FacultyEventTable() {
     onGlobalFilterChange: setGlobalFilter,
     onColumnVisibilityChange: setColumnVisibility,
   });
+  
 
   const resetFilters = () => {
     setGlobalFilter("");
     setSorting([]);
+    table.resetColumnFilters(); // Reset column filters
     table.resetColumnVisibility();
   };
 
@@ -208,22 +210,32 @@ export default function FacultyEventTable() {
 
       <div className="table-container">
         <table className="w-full">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th key={header.id} className="px-4 py-2">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
+        <thead>
+  {table.getHeaderGroups().map((headerGroup) => (
+    <tr key={headerGroup.id}>
+      {headerGroup.headers.map((header) => (
+        <th key={header.id} className="px-4 py-2">
+          {header.isPlaceholder
+            ? null
+            : flexRender(
+                header.column.columnDef.header,
+                header.getContext()
+              )}
+          {/* Render filter element if available */}
+          {header.column.columnDef.filterElement && (
+            <div className="mt-2">
+              {flexRender(
+                header.column.columnDef.filterElement,
+                header.getContext()
+              )}
+            </div>
+          )}
+        </th>
+      ))}
+    </tr>
+  ))}
+</thead>
+
           <tbody>
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id}>
