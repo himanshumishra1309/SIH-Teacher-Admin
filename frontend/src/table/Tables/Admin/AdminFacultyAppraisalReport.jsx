@@ -35,6 +35,8 @@ const AdminFacultyAppraisalReport = ({
   const [appraisalData, setAppraisalData] = useState([]);
   const [rank, setRank] = useState(null);
   const [performance, setPerformance] = useState(null);
+  const [point, setPoint] = useState(null);
+
 
   const endpoints = {
     journals: `http://localhost:6005/api/v1/points/ad-journals/${id}`,
@@ -201,6 +203,7 @@ const AdminFacultyAppraisalReport = ({
         if (matchingTeacher) {
           setRank(matchingTeacher.rank);
           setPerformance(matchingTeacher.performanceCategory);
+          setPoint(matchingTeacher.totalPoints)
         } else {
           console.log("No matching teacher found for the given facultyId");
         }
@@ -298,6 +301,8 @@ const AdminFacultyAppraisalReport = ({
           <CardContent className="text-center">
             <p className="text-4xl font-bold mb-2">Rank : {rank}</p>
             <p className="text-xl text-gray-600">Performance : {performance}</p>
+            <p className="text-xl text-gray-600">Points : {point}</p>
+            
           </CardContent>
         </Card>
         <div>
