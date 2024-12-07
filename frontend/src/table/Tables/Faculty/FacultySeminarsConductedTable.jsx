@@ -75,7 +75,7 @@ export default function FacultySeminarsConductedTable() {
             },
           }
         );
-        console.log("Tecaher Seminar Data", response.data.data);
+        // console.log( response.data.data);
         setData(response.data.data);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
@@ -149,7 +149,7 @@ export default function FacultySeminarsConductedTable() {
 
   const handleEditEntry = (updatedData) => {
     setData((prevData) =>
-      prevData.map((row) => (row.id === updatedData.id ? updatedData : row))
+      prevData.map((row) => (row._id === updatedData._id ? updatedData : row))
     );
   };
 
@@ -275,14 +275,14 @@ export default function FacultySeminarsConductedTable() {
           setRowToEdit(null);
         }}
         onSubmit={async (formData) => {
-          console.log(formData);
+          // console.log(formData);
           const token = sessionStorage.getItem("teacherAccessToken");
 
           try {
             if (rowToEdit) {
-              console.log("editing  the data", formData);
-              const response = await axios.patch(
-                `http://localhost:6005/api/v1/seminars/${rowToEdit._id}`,
+              // console.log("editing  the data", formData);
+              const response = await axios.put(
+                `http://localhost:6005/api/v1/seminars/seminars/${rowToEdit._id}`,
                 formData,
                 {
                   headers: {
@@ -291,13 +291,13 @@ export default function FacultySeminarsConductedTable() {
                   },
                 }
               );
-              console.log(response.data.data);
+              // console.log(response.data.data);
               handleEditEntry(response.data.data);
             } else {
               // Add (POST Request)
-              console.log("posting the data", formData);
+              // console.log("posting the data", formData);
               const response = await axios.post(
-                `http://localhost:6005/api/v1/seminars/seminars/upcoming`,
+                `http://localhost:6005/api/v1/seminars/seminars/conducted`,
                 formData,
                 {
                   headers: {

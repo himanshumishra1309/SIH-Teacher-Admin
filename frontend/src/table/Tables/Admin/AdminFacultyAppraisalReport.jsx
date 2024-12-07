@@ -21,6 +21,7 @@ import { Download } from "lucide-react";
 import axios from "axios";
 import AppraisalReportTable from "@/table/Tables/AppraisalReportTable";
 import { useParams } from "react-router-dom";
+import AdminAppraisalReportTable from "./AdminAppraisalReportTable";
 
 const AdminFacultyAppraisalReport = ({
   facultyName,
@@ -32,16 +33,18 @@ const AdminFacultyAppraisalReport = ({
   const signatureRef = useRef(null);
   const [facultyData, setFacultyData] = useState("");
   const [appraisalData, setAppraisalData] = useState([]);
+  const [rank, setRank] = useState(null);
+  const [performance, setPerformance] = useState(null);
 
   const endpoints = {
     journals: `http://localhost:6005/api/v1/points/ad-journals/${id}`,
     books: `http://localhost:6005/api/v1/points/ad-books/${id}`,
     patents: `http://localhost:6005/api/v1/points/ad-patents/${id}`,
-    // sttp: "http://localhost:6005/api/v1/points/sttp",
     conferences: `http://localhost:6005/api/v1/points/ad-conferences/${id}`,
-    // seminarsConducted: "http://localhost:6005/api/v1/points/seminars-conducted",
-    // seminarsAttended: "http://localhost:6005/api/v1/points/seminar-attended",
-    // projects: "http://localhost:6005/api/v1/points/projects",
+    projects: `http://localhost:6005/api/v1/points/ad-projects/${id}`,
+    events: `http://localhost:6005/api/v1/points/ad-events/${id}`,
+    sttp: `http://localhost:6005/api/v1/points/ad-sttp/${id}`,
+    "expert-lectures": `http://localhost:6005/api/v1/points/ad-expert-lectures/${id}`,
   };
 
   const appraisalData2 = [
@@ -66,7 +69,7 @@ const AdminFacultyAppraisalReport = ({
               )}`,
             },
           });
-          console.log(response);
+          // console.log(response);
           return { field: key, ...response.data.data };
         })
       );
@@ -81,7 +84,7 @@ const AdminFacultyAppraisalReport = ({
         highestPoints: item.highestPoints || 0,
       }));
 
-      console.log("formattedData", formattedData);
+      // console.log("formattedData", formattedData);
 
       setAppraisalData(formattedData);
     } catch (error) {
@@ -150,16 +153,16 @@ const AdminFacultyAppraisalReport = ({
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:6005/api/v1/teachers/me",
+          `http://localhost:6005/api/v1/admins/teacher/${id}`,
           {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem(
-                "teacherAccessToken"
+                "adminAccessToken"
               )}`,
             },
           }
         );
-        // console.log(response.data.data);
+        // console.log("response", response.data.data);
         setFacultyData(response.data.data);
       } catch (error) {
         const errorMessage = error.response?.data?.message || error.message;
@@ -170,6 +173,40 @@ const AdminFacultyAppraisalReport = ({
     fetchData();
     fetchAppraisalData();
   }, []);
+
+  useEffect(() => {
+    const fetchRank = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:6005/api/v1/points/ad-teacher-ranks",
+          {
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem(
+                "adminAccessToken"
+              )}`,
+            },
+          }
+        );
+
+        // console.log(response);
+        const matchingTeacher = response.data?.data?.find(
+          (teacher) => teacher.teacherId === id
+        );
+
+        if (matchingTeacher) {
+          setRank(matchingTeacher.rank);
+          setPerformance(matchingTeacher.performanceCategory);
+        } else {
+          console.log("No matching teacher found for the given facultyId");
+        }
+      } catch (error) {
+        const errorMessage = error.response?.data?.message || error.message;
+        console.error("Error fetching teacher data:", errorMessage);
+      }
+    };
+
+    fetchRank();
+  }, [id]);
 
   return (
     <div className="container mx-auto p-4 relative">
@@ -245,7 +282,7 @@ const AdminFacultyAppraisalReport = ({
           </CardHeader>
           <CardContent>
             {/* Your custom component will go here */}
-            <AppraisalReportTable />
+            <AdminAppraisalReportTable />
           </CardContent>
         </Card>
 
@@ -254,8 +291,8 @@ const AdminFacultyAppraisalReport = ({
             <CardTitle>Appraisal Rank</CardTitle>
           </CardHeader>
           <CardContent className="text-center">
-            <p className="text-4xl font-bold mb-2">A</p>
-            <p className="text-xl text-gray-600">Outstanding Performance</p>
+            <p className="text-4xl font-bold mb-2">Rank : {rank}</p>
+            <p className="text-xl text-gray-600">Performance : {performance}</p>
           </CardContent>
         </Card>
         <div>

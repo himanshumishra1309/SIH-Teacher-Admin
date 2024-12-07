@@ -70,7 +70,7 @@ router.get("/ad-seminar/:teacherId", verifyAdminJWT, completeSeminarPoints);
 // Comparative data route
 router.get("/comparative", verifyAdminJWT, getComparativePointsData);
 
-router.get('/teacher-ranks', verifyAdminJWT, calculateTeacherRanks);
+router.get('/ad-teacher-ranks', verifyAdminJWT, calculateTeacherRanks);
 
 
 export default router;

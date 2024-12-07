@@ -1796,7 +1796,7 @@ const getEventsParticipatedByTheTeacher = asyncHandler(async (req, res) => {
   }
 
   const eventsParticipated = await EventParticipation.find({ owner: teacherId })
-    .select("role event date report")
+    .select("role event_name event_type date report")
     .lean();
 
   if (!eventsParticipated || eventsParticipated.length === 0) {
@@ -1853,7 +1853,7 @@ const getSTTPConductedByTheTeacher = asyncHandler(async (req, res) => {
   }
 
   const sttps = await STTP.find({ owner: teacherId })
-    .select("topic duration startDate endDate venue report")
+    .select("topic dailyDuration startDate endDate venue report")
     .lean();
 
   if (!sttps || sttps.length === 0) {
@@ -1936,7 +1936,7 @@ const getProjectsHeldByTheTeacher = asyncHandler(async (req, res) => {
   }
 
   const projects = await Project.find({ owner: teacherId })
-    .select("topic branch_name daily_duration startDate endDate report")
+    .select("topic branch_name projectType daily_duration startDate endDate report")
     .lean();
 
   if (!projects || projects.length === 0) {

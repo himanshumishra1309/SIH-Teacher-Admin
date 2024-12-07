@@ -399,7 +399,7 @@ const completeProjectsPoints = asyncHandler(async (req, res) => {
   const projectPointsBreakdown = await Point.aggregate([
     {
       $match: {
-        owner: mongoose.Types.ObjectId(teacherId),
+        owner: new mongoose.Types.ObjectId(teacherId),
         domain: { $in: projectDomains },
       },
     },
@@ -1616,6 +1616,334 @@ const calculateTeacherRanks = asyncHandler(async (req, res) => {
     );
 });
 
+const completeLecturePoints = asyncHandler(async (req, res) => {
+  const lectureDomain = [
+    "1-Theory",
+    "2-Theory",
+    "3-Theory",
+    "4-Theory",
+    "1-Practical",
+    "2-Practical",
+    "3-Practical",
+    "4-Practical",
+  ];
+
+  const teacherId = req.teacher._id; // Expect teacherId from params
+
+  if (!teacherId) {
+    throw new ApiError(400, "Teacher ID is required");
+  }
+
+  // Aggregate total lecture points for each teacher
+  const aggregatedPoints = await Point.aggregate([
+    {
+      $match: { domain: lectureDomain }, // Filter by lecture domain
+    },
+    {
+      $group: {
+        _id: "$owner", // Group by teacher (owner)
+        totalPoints: { $sum: "$points" }, // Calculate total points
+      },
+    },
+    {
+      $lookup: {
+        from: "teachers", // Ensure this matches your Teacher collection name
+        localField: "_id", // Match owner ID
+        foreignField: "_id", // Match Teacher ID
+        as: "teacher",
+      },
+    },
+    {
+      $unwind: "$teacher", // Flatten the teacher data
+    },
+    {
+      $sort: { totalPoints: -1 }, // Sort by total points (descending)
+    },
+  ]);
+
+  if (aggregatedPoints.length === 0) {
+    throw new ApiError(404, "No lecture points found");
+  }
+
+  // Identify the teacher with the highest points
+  const maxPointsEntry = aggregatedPoints[0];
+  const highestPoints = maxPointsEntry.totalPoints;
+  const teacherWithHighestPoints = maxPointsEntry.teacher.name;
+
+  // Find the requested teacher's rank and points
+  const requestedTeacher = aggregatedPoints.find(
+    (entry) => entry._id.toString() === teacherId.toString()
+  );
+  const requestedTeacherRank = requestedTeacher
+    ? aggregatedPoints.findIndex(
+        (entry) => entry._id.toString() === teacherId.toString()
+      ) + 1
+    : null;
+  const requestedTeacherPoints = requestedTeacher
+    ? requestedTeacher.totalPoints
+    : null;
+  const requestedTeacherName = requestedTeacher
+    ? requestedTeacher.teacher.name
+    : null;
+
+  if (
+    !requestedTeacherRank ||
+    !requestedTeacherPoints ||
+    !requestedTeacherName
+  ) {
+    throw new ApiError(404, "Teacher's data not found");
+  }
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        highestPoints,
+        teacherWithHighestPoints,
+        teachers: aggregatedPoints.map((entry, index) => ({
+          rank: index + 1,
+          teacherName: entry.teacher.name,
+          totalPoints: entry.totalPoints,
+        })),
+        requestedTeacherRank,
+        requestedTeacherName,
+        requestedTeacherPoints,
+      },
+
+      "Lecture points calculated successfully"
+    )
+  );
+});
+
+const completeContributionPoints = asyncHandler(async (req, res) => {
+  const contributionDomains = [
+    "Industrial Visit",
+    "Workshop Conducted",
+    "Extra Course Studied",
+    "Made Study Materials",
+    "Miscellaneous",
+  ];
+
+  const teacherId = req.teacher._id;
+
+  if (!teacherId) {
+    throw new ApiError(400, "Teacher ID is required");
+  }
+
+  // Aggregate total contribution points for each teacher
+  const aggregatedPoints = await Point.aggregate([
+    {
+      $match: { domain: { $in: contributionDomains } }, // Filter by contribution domains
+    },
+    {
+      $group: {
+        _id: "$owner", // Group by teacher (owner)
+        totalPoints: { $sum: "$points" }, // Calculate total points
+      },
+    },
+    {
+      $lookup: {
+        from: "teachers", // Ensure this matches your Teacher collection name
+        localField: "_id", // Match owner ID
+        foreignField: "_id", // Match Teacher ID
+        as: "teacher",
+      },
+    },
+    {
+      $unwind: "$teacher", // Flatten the teacher data
+    },
+    {
+      $sort: { totalPoints: -1 }, // Sort by total points (descending)
+    },
+  ]);
+
+  if (aggregatedPoints.length === 0) {
+    throw new ApiError(404, "No contribution points found");
+  }
+
+  // Identify the teacher with the highest points
+  const maxPointsEntry = aggregatedPoints[0];
+  const highestPoints = maxPointsEntry.totalPoints;
+  const teacherWithHighestPoints = maxPointsEntry.teacher.name;
+
+  // Find the requested teacher's rank and points
+  const requestedTeacher = aggregatedPoints.find(
+    (entry) => entry._id.toString() === teacherId.toString()
+  );
+  const requestedTeacherRank = requestedTeacher
+    ? aggregatedPoints.findIndex(
+        (entry) => entry._id.toString() === teacherId.toString()
+      ) + 1
+    : null;
+  const requestedTeacherPoints = requestedTeacher
+    ? requestedTeacher.totalPoints
+    : null;
+  const requestedTeacherName = requestedTeacher
+    ? requestedTeacher.teacher.name
+    : null;
+
+  // Fetch individual contribution points for the requested teacher
+  const contributionPointsBreakdown = await Point.aggregate([
+    {
+      $match: {
+        owner: new mongoose.Types.ObjectId(teacherId),
+        domain: { $in: contributionDomains },
+      },
+    },
+    {
+      $group: {
+        _id: "$domain", // Group by contribution type
+        totalPoints: { $sum: "$points" }, // Sum points for each type
+      },
+    },
+  ]);
+
+  // Format breakdown as a dictionary for clarity
+  const contributionPoints = contributionDomains.reduce((acc, domain) => {
+    const entry = contributionPointsBreakdown.find(
+      (item) => item._id === domain
+    );
+    acc[domain] = entry ? entry.totalPoints : 0;
+    return acc;
+  }, {});
+
+  // Prepare the response
+  const response = {
+    highestPoints,
+    teacherWithHighestPoints,
+    teachers: aggregatedPoints.map((entry, index) => ({
+      rank: index + 1,
+      teacherName: entry.teacher.name,
+      totalPoints: entry.totalPoints,
+    })),
+    requestedTeacherRank,
+    requestedTeacherName,
+    requestedTeacherPoints,
+    contributionPoints, // Include contribution-specific points for requested teacher
+  };
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        response,
+        "Contribution points calculated successfully"
+      )
+    );
+});
+
+const completeStudentGuidedPoints = asyncHandler(async (req, res) => {
+  const studentGuidedDomains = ["PhD", "Mtech"];
+
+  const { teacherId } = req.params;
+
+  if (!teacherId) {
+    throw new ApiError(400, "Teacher ID is required");
+  }
+
+  // Aggregate total student guided points for each teacher
+  const aggregatedPoints = await Point.aggregate([
+    {
+      $match: { domain: { $in: studentGuidedDomains } }, // Filter by student guided domains
+    },
+    {
+      $group: {
+        _id: "$owner", // Group by teacher (owner)
+        totalPoints: { $sum: "$points" }, // Calculate total points
+      },
+    },
+    {
+      $lookup: {
+        from: "teachers", // Ensure this matches your Teacher collection name
+        localField: "_id", // Match owner ID
+        foreignField: "_id", // Match Teacher ID
+        as: "teacher",
+      },
+    },
+    {
+      $unwind: "$teacher", // Flatten the teacher data
+    },
+    {
+      $sort: { totalPoints: -1 }, // Sort by total points (descending)
+    },
+  ]);
+
+  if (aggregatedPoints.length === 0) {
+    throw new ApiError(404, "No student guided points found");
+  }
+
+  // Identify the teacher with the highest points
+  const maxPointsEntry = aggregatedPoints[0];
+  const highestPoints = maxPointsEntry.totalPoints;
+  const teacherWithHighestPoints = maxPointsEntry.teacher.name;
+
+  // Find the requested teacher's rank and points
+  const requestedTeacher = aggregatedPoints.find(
+    (entry) => entry._id.toString() === teacherId.toString()
+  );
+  const requestedTeacherRank = requestedTeacher
+    ? aggregatedPoints.findIndex(
+        (entry) => entry._id.toString() === teacherId.toString()
+      ) + 1
+    : null;
+  const requestedTeacherPoints = requestedTeacher
+    ? requestedTeacher.totalPoints
+    : null;
+  const requestedTeacherName = requestedTeacher
+    ? requestedTeacher.teacher.name
+    : null;
+
+  // Fetch individual student guided points for the requested teacher
+  const studentGuidedPointsBreakdown = await Point.aggregate([
+    {
+      $match: {
+        owner: new mongoose.Types.ObjectId(teacherId),
+        domain: { $in: studentGuidedDomains },
+      },
+    },
+    {
+      $group: {
+        _id: "$domain", // Group by student guided type
+        totalPoints: { $sum: "$points" }, // Sum points for each type
+      },
+    },
+  ]);
+
+  // Format breakdown as a dictionary for clarity
+  const studentGuidedPoints = studentGuidedDomains.reduce((acc, domain) => {
+    const entry = studentGuidedPointsBreakdown.find(
+      (item) => item._id === domain
+    );
+    acc[domain] = entry ? entry.totalPoints : 0;
+    return acc;
+  }, {});
+
+  // Prepare the response
+  const response = {
+    highestPoints,
+    teacherWithHighestPoints,
+    teachers: aggregatedPoints.map((entry, index) => ({
+      rank: index + 1,
+      teacherName: entry.teacher.name,
+      totalPoints: entry.totalPoints,
+    })),
+    requestedTeacherRank,
+    requestedTeacherName,
+    requestedTeacherPoints,
+    studentGuidedPoints, // Include student guided-specific points for requested teacher
+  };
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        response,
+        "Student guided points calculated successfully"
+      )
+    );
+});
 export {
   completeJournalPoints,
   completeBooksPoints,
@@ -1630,4 +1958,7 @@ export {
   completeSeminarPoints,
   getComparativePointsData,
   calculateTeacherRanks,
+  completeContributionPoints,
+  completeStudentGuidedPoints,
+  completeLecturePoints,
 };

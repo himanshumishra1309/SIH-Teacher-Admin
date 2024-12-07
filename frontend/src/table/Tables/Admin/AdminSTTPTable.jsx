@@ -66,14 +66,14 @@ export default function AdminSTTPTable() {
         const token = sessionStorage.getItem("adminAccessToken");
 
         const response = await axios.get(
-          `http://localhost:6005/api/v1/admins/teachers/${id}/expert-lectures`,
+          `http://localhost:6005/api/v1/admins/teachers/${id}/sttps`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        console.log("Expert LEcture DATA Is", response.data.data);
+        // console.log(response.data.data);
         setData(response.data.data);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
@@ -169,7 +169,7 @@ export default function AdminSTTPTable() {
         </div>
         <DownloadBtn data={data} fileName="Research" />
       </div>
-{/* 
+      {/* 
       <div className="flex justify-end mb-4">
         <Button onClick={() => setDrawerOpen(true)} className="add-entry-btn">
           Add Entry
