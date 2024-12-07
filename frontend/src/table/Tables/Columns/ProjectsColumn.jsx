@@ -18,6 +18,36 @@ export const columnDef = [
     enableSorting: true,
   },
   {
+    accessorKey: "projectType",
+    header: "Type",
+    enableSorting: true,
+    filterFn: "equals",
+    filterElement: ({ column }) => {
+      const options = ["National", "International", "State", "College"];
+      return (
+        <div className="relative z-10">
+          <select
+            onChange={(e) => {
+              console.log("Selected:", e.target.value); // Debugging
+              column.setFilterValue(e.target.value || undefined);
+            }}
+            value={column.getFilterValue() || ""}
+            className="p-2 border rounded"
+          >
+            <option value="" className="text-black">All</option>
+            {options.map((option) => (
+              <option key={option} value={option} className="text-black">
+                {option}
+              </option>
+            ))}
+          </select>
+        </div>
+      );
+    },
+    dropdownOptions: ["International", "National", "Regional"], // Dropdown values
+
+  },
+  {
     accessorKey: "daily_duration",
     header: "Daily Duration",
     enableSorting: true,

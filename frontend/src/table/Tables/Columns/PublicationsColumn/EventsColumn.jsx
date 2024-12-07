@@ -39,6 +39,8 @@ export const columnDef = [
         </div>
       );
     },
+    dropdownOptions: ["International", "National", "Regional"], // Dropdown values
+
   },
   
   {

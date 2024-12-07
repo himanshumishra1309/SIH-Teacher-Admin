@@ -24,7 +24,7 @@ export const chapterColumnDef = [
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="px-0 font-bold"
           >
-            Segregation
+            Chapter Type
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
           <Select
@@ -51,6 +51,8 @@ export const chapterColumnDef = [
     filterFn: (row, id, value) => {
       return value === "" || row.getValue(id) === value
     },
+    dropdownOptions: ["International", "National", "Regional"], // Dropdown values
+
   },
   {
     accessorKey: "book",
