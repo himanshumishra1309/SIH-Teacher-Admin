@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -8,17 +8,17 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   flexRender,
-} from "@tanstack/react-table"
-import { studentColumnDef } from "./Columns/StudentTableColumn"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { ColumnVisibilityToggle } from "./ColumnVisiblityToggle"
-import { Checkbox } from "@/components/ui/checkbox"
+} from "@tanstack/react-table";
+import { studentColumnDef } from "./Columns/StudentTableColumn";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ColumnVisibilityToggle } from "./ColumnVisiblityToggle";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export function StudentTable({ data, setSelectedStudents }) {
-  const [rowSelection, setRowSelection] = useState({})
+  const [rowSelection, setRowSelection] = useState({});
 
-  const columns = React.useMemo(() => studentColumnDef, [])
+  const columns = React.useMemo(() => studentColumnDef, []);
 
   const table = useReactTable({
     data,
@@ -32,18 +32,24 @@ export function StudentTable({ data, setSelectedStudents }) {
       rowSelection,
     },
     onRowSelectionChange: setRowSelection,
-  })
+  });
 
+  // Sync selected rows data to `setSelectedStudents`
   React.useEffect(() => {
     const selectedRows = table
       .getRowModel()
-      .rows.filter((row) => rowSelection[row.id])
-    setSelectedStudents(selectedRows)
-  }, [rowSelection, setSelectedStudents, table])
+      .rows.filter((row) => rowSelection[row.id]) // Check if the row is selected
+      .map((row) => row.original); // Get the original data of the row
+    setSelectedStudents(selectedRows);
+  }, [rowSelection, setSelectedStudents, table]);
 
   const handleSelectAll = React.useCallback(() => {
-    table.toggleAllRowsSelected(!table.getIsAllRowsSelected())
-  }, [table])
+    table.toggleAllRowsSelected(!table.getIsAllRowsSelected());
+  }, [table]);
+
+  useEffect(() => {
+    console.log(rowSelection);
+  }, [rowSelection]);
 
   return (
     <div className="space-y-4">
@@ -63,7 +69,8 @@ export function StudentTable({ data, setSelectedStudents }) {
             onClick={handleSelectAll}
             className="ml-4"
           >
-            {table.getIsAllRowsSelected() ? "Deselect All" : "Select All"} Students
+            {table.getIsAllRowsSelected() ? "Deselect All" : "Select All"}{" "}
+            Students
           </Button>
         </div>
         <ColumnVisibilityToggle table={table} />
@@ -143,6 +150,5 @@ export function StudentTable({ data, setSelectedStudents }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
-

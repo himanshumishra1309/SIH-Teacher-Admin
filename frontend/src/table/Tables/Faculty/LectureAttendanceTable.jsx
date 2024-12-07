@@ -62,6 +62,7 @@ export default function LectureAndAttendanceTable({ teacherId, subjectId }) {
               },
             }
           );
+          console.log(response.data)
           setStudents(response.data.data);
           setSelectedStudents([]); // Reset selected students
         } catch (error) {
@@ -70,7 +71,7 @@ export default function LectureAndAttendanceTable({ teacherId, subjectId }) {
       };
       fetchStudents();
     }
-  }, [selectedLecture, isMarkAttendanceDialogOpen]);
+  }, [selectedLecture, isMarkAttendanceDialogOpen, ]);
 
   // Memoize columns
   const columns = useMemo(() => {
@@ -110,7 +111,7 @@ export default function LectureAndAttendanceTable({ teacherId, subjectId }) {
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
       const response = await axios.post(
-        `http://localhost:6005/api/v1/lecture`,
+        `http://localhost:6005/api/v1/lecture/${subjectId}/${teacherId}/lectures`,
         lectureData,
         {
           headers: {

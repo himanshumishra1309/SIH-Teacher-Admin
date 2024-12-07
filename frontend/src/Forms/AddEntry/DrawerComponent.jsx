@@ -85,6 +85,7 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
   }, [isOpen, rowData, setValue, watch]);
 
   const handleFormSubmit = (data) => {
+    // console.log(data);
     const formData = new FormData();
 
     Object.entries(data).forEach(([key, value]) => {

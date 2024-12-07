@@ -1,31 +1,30 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowUpDown, ExternalLink } from 'lucide-react';
+import { ArrowUpDown, ExternalLink } from "lucide-react";
 
 export const columnDef = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+  // {
+  //   id: "select",
+  //   header: ({ table }) => (
+  //     <Checkbox
+  //       checked={table.getIsAllPageRowsSelected()}
+  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //       aria-label="Select all"
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <Checkbox
+  //       checked={row.getIsSelected()}
+  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+  //       aria-label="Select row"
+  //     />
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
   {
     accessorKey: "subject_name",
-    header : "Subject",
-
+    header: "Subject",
   },
   {
     accessorKey: "subject_code",
@@ -38,10 +37,9 @@ export const columnDef = [
           Course Code
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     enableSorting: false,
-
   },
   {
     accessorKey: "subject_credit",
@@ -54,10 +52,9 @@ export const columnDef = [
           Credits
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     enableSorting: false,
-
   },
   {
     accessorKey: "branch",
@@ -70,10 +67,9 @@ export const columnDef = [
           Branch
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     enableSorting: false,
-
   },
   {
     accessorKey: "year",
@@ -86,10 +82,9 @@ export const columnDef = [
           Year
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     enableSorting: false,
-
   },
   {
     accessorKey: "feedbackForm",
@@ -105,4 +100,3 @@ export const columnDef = [
     enableSorting: false,
   },
 ];
-
