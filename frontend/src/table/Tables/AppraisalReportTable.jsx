@@ -34,13 +34,15 @@ export default function AppraisalReportTable() {
     journals: `http://localhost:6005/api/v1/points/journals/${id}`,
     books: `http://localhost:6005/api/v1/points/books/${id}`,
     chapter: `http://localhost:6005/api/v1/points/chapter/${id}`,
-
     patents: `http://localhost:6005/api/v1/points/patents/${id}`,
     conferences: `http://localhost:6005/api/v1/points/conferences/${id}`,
     projects: `http://localhost:6005/api/v1/points/projects/${id}`,
     events: `http://localhost:6005/api/v1/points/events/${id}`,
     sttp: `http://localhost:6005/api/v1/points/sttp/${id}`,
     "expert-lectures": `http://localhost:6005/api/v1/points/expert-lectures/${id}`,
+    "Student-Guide": `http://localhost:6005/api/v1/points/student-guided/${id}`,
+    // lecture: `http://localhost:6005/api/v1/points/lecture/${id}`,
+    // "Contribution": `http://localhost:6005/api/v1/points/contribution/${id}`,
   };
 
   const [seminarData, setSeminarData] = useState("");
@@ -57,7 +59,7 @@ export default function AppraisalReportTable() {
             },
           }
         );
-        console.log("Tecaher Seminar Data", response.data.data);
+        // console.log("Tecaher Seminar Data", response.data.data);
         setData(response.data.data);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
@@ -79,12 +81,12 @@ export default function AppraisalReportTable() {
               )}`,
             },
           });
-          console.log(response);
+          // console.log(response);
           return { field: key, ...response.data.data };
         })
       );
 
-      console.log("results", results);
+      // console.log("results", results);
 
       const formattedData = results.map((item) => ({
         field: item.field
@@ -95,7 +97,7 @@ export default function AppraisalReportTable() {
         rank: item.requestedTeacherRank || 0,
       }));
 
-      console.log("formattedData", formattedData);
+      // console.log("formattedData", formattedData);
 
       setAppraisalData(formattedData);
     } catch (error) {

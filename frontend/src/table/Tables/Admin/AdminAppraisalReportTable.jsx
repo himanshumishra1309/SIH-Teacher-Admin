@@ -39,7 +39,10 @@ export default function AdminAppraisalReportTable() {
     projects: `http://localhost:6005/api/v1/points/ad-projects/${id}`,
     events: `http://localhost:6005/api/v1/points/ad-events/${id}`,
     sttp: `http://localhost:6005/api/v1/points/ad-sttp/${id}`,
-    "expert-lectures": `http://localhost:6005/api/v1/points/ad-expert-lectures/${id}`,
+    "Expert-lectures": `http://localhost:6005/api/v1/points/ad-expert-lectures/${id}`,
+    "Student-Guide": `http://localhost:6005/api/v1/points/ad-student-guided/${id}`,
+    // lecture: `http://localhost:6005/api/v1/points/ad-lecture/${id}`,
+    // Contribution: `http://localhost:6005/api/v1/points/ad-contribution/${id}`,
   };
 
   const [seminarData, setSeminarData] = useState("");
