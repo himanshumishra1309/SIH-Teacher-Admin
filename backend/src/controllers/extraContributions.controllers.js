@@ -105,10 +105,12 @@ const editContribution = asyncHandler(async (req, res) => {
     );
   }
 
+  // Update basic fields
   if (title) contribution.title = title;
   if (description) contribution.description = description;
   if (contributionType) contribution.contributionType = contributionType;
 
+  // Handle images to delete
   if (deleteImages.length) {
     for (const imageUrl of deleteImages) {
       const fileName = path.basename(imageUrl);
@@ -118,6 +120,8 @@ const editContribution = asyncHandler(async (req, res) => {
       (img) => !deleteImages.includes(img)
     );
   }
+
+  // Handle new image uploads
   if (files.images) {
     for (const file of files.images) {
       const result = await uploadToGCS(file.path, "images");
@@ -130,8 +134,8 @@ const editContribution = asyncHandler(async (req, res) => {
       contribution.images.push(result);
     }
   }
-  contribution.report = result.secure_url;
 
+  // Handle report deletion and upload
   if (deleteReport && contribution.report) {
     const reportFileName = path.basename(contribution.report);
     await deleteFromGCS(reportFileName, "pdf-report");
@@ -143,9 +147,10 @@ const editContribution = asyncHandler(async (req, res) => {
     if (!result) {
       throw new ApiError(500, "Failed to upload the report. Please try again.");
     }
-    contribution.report = result;
+    contribution.report = result.secure_url; // Correct placement of result
   }
 
+  // Save the updated contribution
   await contribution.save();
 
   res

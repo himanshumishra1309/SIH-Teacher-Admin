@@ -1,4 +1,4 @@
-import React, {useState ,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import {
@@ -20,8 +20,8 @@ const StudentAttendanceDialog = ({
   lectureId,
 }) => {
   console.log("lectureID", lectureId);
-  
-  const {subjectId} = useParams();
+
+  const { subjectId } = useParams();
   // console.log("subjectId", subjectId);
 
   const [attendanceData, setAttendanceData] = useState([]);
@@ -44,7 +44,7 @@ const StudentAttendanceDialog = ({
     };
     fetchStudents();
   }, [subjectId]);
-  
+
   const handleMarkAttendance = async () => {
     if (!lectureId) {
       alert("Lecture not added yet!");
@@ -52,14 +52,12 @@ const StudentAttendanceDialog = ({
     }
 
     console.log(selectedStudents);
-    
-    
+
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
       const selectedStudentDetails = students.filter((student) =>
         selectedStudents.includes(student._id)
       );
-
 
       const response = await axios.post(
         `http://localhost:6005/api/v1/lecture/${lectureId}/attendance`,
@@ -72,7 +70,7 @@ const StudentAttendanceDialog = ({
       );
 
       console.log(response);
-      
+
       alert("Attendance marked successfully!");
       onClose();
     } catch (error) {
@@ -111,4 +109,3 @@ const StudentAttendanceDialog = ({
 };
 
 export default StudentAttendanceDialog;
-
