@@ -33,6 +33,8 @@ export default function AppraisalReportTable() {
   const endpoints = {
     journals: `http://localhost:6005/api/v1/points/journals/${id}`,
     books: `http://localhost:6005/api/v1/points/books/${id}`,
+    chapter: `http://localhost:6005/api/v1/points/chapter/${id}`,
+
     patents: `http://localhost:6005/api/v1/points/patents/${id}`,
     conferences: `http://localhost:6005/api/v1/points/conferences/${id}`,
     projects: `http://localhost:6005/api/v1/points/projects/${id}`,

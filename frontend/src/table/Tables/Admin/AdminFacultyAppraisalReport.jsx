@@ -39,6 +39,7 @@ const AdminFacultyAppraisalReport = ({
   const endpoints = {
     journals: `http://localhost:6005/api/v1/points/ad-journals/${id}`,
     books: `http://localhost:6005/api/v1/points/ad-books/${id}`,
+    "chapter": `http://localhost:6005/api/v1/points/ad-chapter/${id}`,
     patents: `http://localhost:6005/api/v1/points/ad-patents/${id}`,
     conferences: `http://localhost:6005/api/v1/points/ad-conferences/${id}`,
     projects: `http://localhost:6005/api/v1/points/ad-projects/${id}`,
@@ -193,6 +194,7 @@ const AdminFacultyAppraisalReport = ({
           (teacher) => teacher.teacherId === id
         );
 
+        console.log(matchingTeacher)
         if (matchingTeacher) {
           setRank(matchingTeacher.rank);
           setPerformance(matchingTeacher.performanceCategory);

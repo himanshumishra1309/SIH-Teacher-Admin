@@ -327,7 +327,7 @@ const PostsPage = () => {
               </CardContent>
 
               {/* Card Footer */}
-              <CardFooter className="flex justify-between items-center p-4 border-t border-gray-200">
+              <CardFooter className="flex flex-col space-y-2 p-4 border-t border-gray-200">
                 {/* Post Date */}
                 <div className="flex items-center text-gray-600 text-sm">
                   <CalendarIcon className="mr-2 h-4 w-4 opacity-80" />
@@ -335,7 +335,7 @@ const PostsPage = () => {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex items-center space-x-2">
+                <div className="flex justify-between items-center space-x-2">
                   {/* View Report Button */}
                   {post.report && (
                     <Button
@@ -349,7 +349,8 @@ const PostsPage = () => {
                       View Report
                     </Button>
                   )}
-                  {/* View Post Button */}
+
+                  {/* View Post Dialog */}
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button
@@ -371,12 +372,31 @@ const PostsPage = () => {
                         <p className="text-gray-600">{post.description}</p>
 
                         {/* Carousel for Attachments */}
-                        <AttachmentCarousel
-                          attachments={post.attachments.map((url) => ({
-                            type: "image/jpeg", // Assuming image type; adjust as needed
-                            url,
-                          }))}
-                        />
+                        <AttachmentCarousel attachments={post.attachments} />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
+                  {/* Edit Post Dialog */}
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-gray-600 border-gray-400 hover:bg-gray-100"
+                      >
+                        Edit Post
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[700px] max-h-[80vh] overflow-y-auto rounded-lg shadow-lg">
+                      <DialogHeader>
+                        <DialogTitle className="text-center font-bold text-lg">
+                          Edit Post: {post.title}
+                        </DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4 p-4">
+                        {/* Edit Form (To be implemented) */}
+                        <p>Edit form content goes here...</p>
                       </div>
                     </DialogContent>
                   </Dialog>
