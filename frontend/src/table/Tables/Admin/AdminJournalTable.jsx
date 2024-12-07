@@ -31,6 +31,8 @@ export default function AdminJournalTable() {
   const [rowToDelete, setRowToDelete] = useState(null);
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
+
 
   useEffect(() => {
     fetchData();

@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useParams, Outlet } from "react-router-dom";
-
+import { useParams } from "react-router-dom";
 import {
   useReactTable,
   getCoreRowModel,
@@ -9,58 +8,65 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { columnDef } from "../Columns/LectureAndAttendaceCol.jsx";
+import { columnDef } from "../Columns/LectureAndAttendaceCol"; // Adjust path as necessary
 import "../../table.css";
-import DownloadBtn from "../../DownloadBtn.jsx";
-import DebouncedInput from "../../DebouncedInput.jsx";
-import { SearchIcon, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
-import { Checkbox } from "@/components/ui/checkbox.jsx";
-import DrawerComponent from "../../../Forms/AddEntry/DrawerComponent.jsx";
-import LoadingPage from "@/pages/LoadingPage.jsx";
-
-import DeleteDialog from "../../DeleteDialog.jsx";
 import axios from "axios";
+import StudentAttendanceDialog from "@/Forms/Student/StudentAttendanceDialog"; // Adjust path as necessary
+import LectureAttendanceDrawer from "@/components/Drawer/LectureAttendanceDrawer";
 
-export default function LectureAndAttendaceTable({ teacherId, subjectId }) {
+export default function LectureAndAttendanceTable({ teacherId, subjectId }) {
   const { id } = useParams();
-  // console.log(id);
-  const [data, setData] = useState("");
-  const [globalFilter, setGlobalFilter] = useState("");
-  const [isDrawerOpen, setDrawerOpen] = useState(false);
-  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [rowToEdit, setRowToEdit] = useState(null);
-  const [rowToDelete, setRowToDelete] = useState(null);
-  const [sorting, setSorting] = useState([]);
-  const [columnVisibility, setColumnVisibility] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState([]);
+  const [isAttendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
+  const [selectedLecture, setSelectedLecture] = useState(null);
+  const [students, setStudents] = useState([]);
+const [selectedStudents, setSelectedStudents] = useState([]);
+const [isDrawerOpen, setDrawerOpen] = useState(false);
 
-  // data of the teacher email wegera
-  // useEffect(() => {
-  //   const fetchTeacherInfo = async () => {
-  //     try {
-  //       // Retrieve the token from session storage
-  //       const token = sessionStorage.getItem("adminAccessToken"); // Adjust this if using cookies
 
-  //       const response = await axios.get(
-  //         `http://localhost:6005/api/v1/admins/teachers/${id}`, // Adjust URL to your API endpoint
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`, // Set the Authorization header
-  //           },
-  //         }
-  //       );
-  //       console.log(response.data.data.teacher);
-  //       setTeacherInfo(response.data.data);
-  //     } catch (error) {
-  //       console.log("An error occurred while fetching teacher info.");
-  //     }
-  //   };
 
-  //   fetchTeacherInfo();
-  // }, [id]); // Runs when 'id' changes
+const handleAddLecture = async (lectureData) => {
+  try {
+    const token = sessionStorage.getItem("teacherAccessToken");
+    const response = await axios.post(
+      `http://localhost:6005/api/v1/lecture`,
+      lectureData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log("Lecture Added:", response.data);
+    setData((prev) => [...prev, response.data]); // Update table data
+    setSelectedLecture(response.data); // Store the added lecture for attendance
+  } catch (error) {
+    console.error("Failed to add lecture:", error);
+  }
+};
 
-  // dtaa of the reaserch paper of the teacher aditi sharma
+
+  const handleAttendanceSubmit = async (attendanceData) => {
+    try {
+      const token = sessionStorage.getItem("teacherAccessToken");
+      await axios.post(
+        `http://localhost:6005/api/v1/attendance/${selectedLecture._id}`,
+        { attendanceData },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("Attendance submitted successfully");
+      setAttendanceDialogOpen(false);
+    } catch (error) {
+      console.error("Failed to submit attendance:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchLecture = async () => {
@@ -75,50 +81,61 @@ export default function LectureAndAttendaceTable({ teacherId, subjectId }) {
             },
           }
         );
-        console.log(response.data.data);
         setData(response.data.data);
       } catch (error) {
-        console.log("An error occurred while fetching teacher info.");
-      } finally {
-        setIsLoading(false);
+        console.error("An error occurred while fetching lectures.");
       }
     };
 
     fetchLecture();
   }, [subjectId, teacherId]);
 
+  useEffect(() => {
+    if (selectedLecture) {
+      const fetchStudents = async () => {
+        try {
+          const token = sessionStorage.getItem("teacherAccessToken");
+          const response = await axios.get(
+            `http://localhost:6005/api/v1/students/${selectedLecture._id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          setStudents(response.data.data);
+          setSelectedStudents([]); // Reset selected students
+        } catch (error) {
+          console.error("Failed to fetch students:", error);
+        }
+      };
+      fetchStudents();
+    }
+  }, [selectedLecture]);
+
+
   const columns = useMemo(() => {
     return columnDef.map((col) => {
-      if (col.accessorKey === "actions") {
+      if (col.accessorKey === "attendance") {
         return {
           ...col,
           cell: ({ row }) => (
-            <div className="flex gap-2">
-              <Button
-                onClick={() => {
-                  setRowToEdit(row.original);
-                  setDrawerOpen(true);
-                }}
-                className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200"
-              >
-                Edit
-              </Button>
-              <Button
-                onClick={() => {
-                  setRowToDelete(row.original);
-                  setDeleteDialogOpen(true);
-                }}
-                className="p-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-200"
-              >
-                Delete
-              </Button>
-            </div>
+            <Button
+              onClick={() => {
+                setSelectedLecture(row.original); // Set lecture for viewing attendance
+                setAttendanceDialogOpen(true); // Open the dialog
+              }}
+              className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              View Attendance
+            </Button>
           ),
         };
       }
       return col;
     });
-  }, []);
+  }, [columnDef, setSelectedLecture, setAttendanceDialogOpen]);
+  
 
   const table = useReactTable({
     data,
@@ -127,250 +144,69 @@ export default function LectureAndAttendaceTable({ teacherId, subjectId }) {
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      sorting,
-      globalFilter,
-      columnVisibility,
-    },
-    onSortingChange: setSorting,
-    onGlobalFilterChange: setGlobalFilter,
-    onColumnVisibilityChange: setColumnVisibility,
   });
-
-  const resetFilters = () => {
-    setGlobalFilter("");
-    setSorting([]);
-    table.resetColumnVisibility();
-  };
-
-  const handleAddEntry = (newData) => {
-    setData((prevData) => [...prevData, { ...newData, id: Date.now() }]);
-  };
-
-  const handleEditEntry = (updatedData) => {
-    setData((prevData) =>
-      prevData.map((row) => (row.id === updatedData.id ? updatedData : row))
-    );
-  };
-
-  const handleDeleteRow = async () => {
-    try {
-      console.log(rowToDelete);
-      const token = sessionStorage.getItem("teacherAccessToken");
-
-      await axios.delete(
-        `http://localhost:6005/api/v1/seminars/${rowToDelete._id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      // Remove the deleted item from the local state
-      setData((prevData) =>
-        prevData.filter((row) => row._id !== rowToDelete._id)
-      );
-
-      setDeleteDialogOpen(false);
-      setRowToDelete(null);
-    } catch (error) {
-      console.error("Failed to delete Seminar Data:", error);
-    }
-  };
-
-  // if (isLoading) {
-  //   return <LoadingPage/>;
-  // }
 
   return (
     <div className="container mx-auto p-4">
-      <div className="flex justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <SearchIcon className="text-gray-400" />
-          <DebouncedInput
-            value={globalFilter ?? ""}
-            onChange={(value) => setGlobalFilter(String(value))}
-            className="p-2 bg-transparent outline-none border-b-2 w-64 focus:w-96 duration-300 border-gray-300 focus:border-blue-500"
-            placeholder="Search all columns..."
-          />
-        </div>
-        <DownloadBtn data={data} fileName="Research" />
+      <div className="flex justify-end mb-4">
+        <Button onClick={() => setDrawerOpen(true)}>Add Entry</Button>
       </div>
-
-      {/* <div className="flex justify-end mb-4">
-        <Button onClick={() => setDrawerOpen(true)} className="add-entry-btn">
-          Add Entry
-        </Button>
-      </div> */}
-
-      <div className="mb-4 flex flex-wrap gap-2">
-        {table.getAllLeafColumns().map((column) => (
-          <div key={column.id} className="flex items-center">
-            <Checkbox
-              checked={column.getIsVisible()}
-              onCheckedChange={(value) => column.toggleVisibility(!!value)}
-              id={column.id}
-            />
-            <label htmlFor={column.id} className="ml-2 text-sm font-medium">
-              {column.id}
-            </label>
-          </div>
-        ))}
-        <Button
-          onClick={resetFilters}
-          variant="outline"
-          size="sm"
-          className="ml-2"
-        >
-          Reset Filters
-        </Button>
-      </div>
-
       <div className="table-container">
         <table className="w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
-                {headerGroup.headers
-                  // .filter((header) => header.column.id !== "actions") // Filter out the actions column
-                  .map((header) => (
-                    <th key={header.id} className="px-4 py-2">
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </th>
-                  ))}
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} className="px-4 py-2">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </th>
+                ))}
               </tr>
             ))}
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id}>
-                {row
-                  .getVisibleCells()
-                  // .filter((cell) => cell.column.id !== "actions") // Filter out the actions cell
-                  .map((cell) => (
-                    <td key={cell.id} className="px-4 py-2">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id} className="px-4 py-2">
+                    {flexRender(
+                      cell.column.columnDef.cell,
+                      cell.getContext()
+                    )}
+                  </td>
+                ))}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      <DrawerComponent
-        isOpen={isDrawerOpen}
-        onClose={() => {
-          setDrawerOpen(false);
-          setRowToEdit(null);
-        }}
-        onSubmit={async (formData) => {
-          console.log(formData);
-          const token = sessionStorage.getItem("teacherAccessToken");
+      <LectureAttendanceDrawer
+  isOpen={isDrawerOpen}
+  onClose={() => setDrawerOpen(false)}
+  onSubmit={handleAddLecture}
+  selectedLecture={selectedLecture} // Pass the selected lecture
+  setAttendanceDialogOpen={setAttendanceDialogOpen} // Pass dialog state handler
+/>
 
-          try {
-            if (rowToEdit) {
-              console.log("editing  the data", formData);
-              const response = await axios.patch(
-                `http://localhost:6005/api/v1/seminars/${rowToEdit._id}`,
-                formData,
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                  },
-                }
-              );
-              console.log(response.data.data);
-              handleEditEntry(response.data.data);
-            } else {
-              // Add (POST Request)
-              console.log("posting the data", formData);
-              const response = await axios.post(
-                `http://localhost:6005/api/v1/seminars/seminars/upcoming`,
-                formData,
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application.json",
-                  },
-                }
-              );
-              console.log(response.data.data);
-              handleAddEntry(response.data.data);
-            }
-          } catch (error) {
-            console.error("Failed to submit Seminar data:", error);
-          }
-
-          setDrawerOpen(false);
-        }}
-        columns={columns}
-        rowData={rowToEdit}
+    
+    <StudentAttendanceDialog
+        isOpen={isAttendanceDialogOpen}
+        onClose={() => setAttendanceDialogOpen(false)}
+        students={students}
+        selectedStudents={selectedStudents}
+        setSelectedStudents={setSelectedStudents}
+        lectureId={selectedLecture?._id}
+        handleMarkAttendance={() => console.log("Attendance marked!")} // Handle attendance submission
       />
 
-      <DeleteDialog
-        isOpen={isDeleteDialogOpen}
-        onClose={() => setDeleteDialogOpen(false)}
-        onConfirm={handleDeleteRow}
-        rowData={rowToDelete}
-      />
 
-      <div className="flex items-center justify-end mt-4 gap-2">
-        <Button
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
-        <span className="flex items-center gap-1">
-          <div>Page</div>
-          <strong>
-            {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
-          </strong>
-        </span>
-        <span className="flex items-center gap-1">
-          | Go to page:
-          <input
-            type="number"
-            defaultValue={table.getState().pagination.pageIndex + 1}
-            onChange={(e) => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0;
-              table.setPageIndex(page);
-            }}
-            className="border p-1 rounded w-16"
-          />
-        </span>
-        <select
-          value={table.getState().pagination.pageSize}
-          onChange={(e) => {
-            table.setPageSize(Number(e.target.value));
-          }}
-        >
-          {[10, 20, 30, 40, 50].map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              Show {pageSize}
-            </option>
-          ))}
-        </select>
-      </div>
+
     </div>
   );
 }
