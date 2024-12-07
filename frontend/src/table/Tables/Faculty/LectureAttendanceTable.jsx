@@ -62,7 +62,7 @@ export default function LectureAndAttendanceTable({ teacherId, subjectId }) {
               },
             }
           );
-          console.log(response.data)
+          // console.log(response.data)
           setStudents(response.data.data);
           setSelectedStudents([]); // Reset selected students
         } catch (error) {
@@ -120,7 +120,7 @@ export default function LectureAndAttendanceTable({ teacherId, subjectId }) {
           },
         }
       );
-      console.log("Lecture Added:", response.data);
+      // console.log("Lecture Added:", response.data);
       setData((prev) => [...prev, response.data]); // Update table data
       setSelectedLecture(response.data); // Store the added lecture for attendance
     } catch (error) {

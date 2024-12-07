@@ -13,6 +13,8 @@ const LectureAttendanceDrawer = ({
   selectedLecture,
   setAttendanceDialogOpen,
 }) => {
+  console.log(selectedLecture);
+
   const [topic, setTopic] = useState("");
   const [date, setDate] = useState(null);
   const [isMarkAttendanceDialogOpen, setMarkAttendanceDialogOpen] =
@@ -86,17 +88,18 @@ const LectureAttendanceDrawer = ({
           </div>
         </DrawerContent>
       </Drawer>
-
       {/* Mark Attendance Dialog */}
+      selectedLecture.data._id && (
       <StudentAttendanceDialog
         isOpen={isMarkAttendanceDialogOpen}
         onClose={() => setMarkAttendanceDialogOpen(false)}
         students={[]}
         selectedStudents={[]}
         setSelectedStudents={() => {}}
-        lectureId={selectedLecture?._id}
+        lectureId={selectedLecture.data._id}
         handleMarkAttendance={() => console.log("Attendance marked!")}
       />
+      )
     </>
   );
 };

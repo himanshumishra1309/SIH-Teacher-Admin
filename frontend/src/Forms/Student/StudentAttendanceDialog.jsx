@@ -20,7 +20,7 @@ const StudentAttendanceDialog = ({
   lectureId,
 }) => {
   const {subjectId} = useParams();
-  console.log("subjectId", subjectId);
+  // console.log("subjectId", subjectId);
 
   const [attendanceData, setAttendanceData] = useState([]);
 
@@ -34,7 +34,7 @@ const StudentAttendanceDialog = ({
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        console.log("response data:",response.data);
+        // console.log("response data:",response.data);
         setAttendanceData(response.data.data.students || []);
       } catch (error) {
         console.error("Error fetching students:", error);
@@ -49,11 +49,16 @@ const StudentAttendanceDialog = ({
       return;
     }
 
+
+
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
       const selectedStudentDetails = students.filter((student) =>
         selectedStudents.includes(student._id)
       );
+
+      console.log(selectedStudentDetails);
+      
 
       await axios.post(
         `http://localhost:6005/api/v1/lecture/${lectureId}/attendance`,
