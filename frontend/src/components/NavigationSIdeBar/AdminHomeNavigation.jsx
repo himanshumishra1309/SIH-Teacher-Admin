@@ -7,7 +7,7 @@ import { BookOpen, FileText, Mic, Users, GraduationCap, Calendar, PresentationIc
 export default function AdminHomeNavigation() {
   const navigationItems = [
     { name: "Faculty Data", path: "faculty-data", icon: <Users className="w-4 h-4" /> },
-    { name: "Allocate lectures", path: "allocate-lectures", icon: <BookOpen className="w-4 h-4" /> },
+    // { name: "Allocate lectures", path: "allocate-lectures", icon: <BookOpen className="w-4 h-4" /> },
     { name: "Release Feedbacks", path: "release-feedbacks", icon: <FileText className="w-4 h-4" /> },
     { name: "Register Teacher", path: "register-faulty", icon: <Users className="w-4 h-4" /> },
     { name: "Register Student", path: "register-student", icon: <Users className="w-4 h-4" /> },

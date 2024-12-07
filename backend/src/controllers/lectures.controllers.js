@@ -20,14 +20,14 @@ const addNewLecture = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Subject Not Found");
   }
 
-  if (!topic || !duration || !date) {
+  if (!topic || !date) {
     throw new ApiError(400, "All fields are required");
   }
 
   const lecture = await Lecture.create({
     subject: subjectId,
     topic,
-    duration,
+    duration : 2,
     date,
     owner: teacherId,
   });

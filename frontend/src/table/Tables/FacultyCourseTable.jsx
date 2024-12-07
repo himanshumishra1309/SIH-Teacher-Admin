@@ -2,23 +2,23 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useParams, Outlet } from "react-router-dom";
 
 import {
-    useReactTable,
-    getCoreRowModel,
-    getPaginationRowModel,
-    getFilteredRowModel,
-    getSortedRowModel,
-    flexRender,
-  } from "@tanstack/react-table";
-  import { columnDef } from "./Columns/FacultyCourseColumn";
-  import "../table.css";
-  import DownloadBtn from "../DownloadBtn.jsx";
-  import DebouncedInput from "../DebouncedInput.jsx";
-  import { SearchIcon, Eye, EyeOff } from "lucide-react";
-  import { Button } from "@/components/ui/button.jsx";
-  import { Checkbox } from "@/components/ui/checkbox.jsx";
-  import DrawerComponent from "../../Forms/AddEntry/DrawerComponent.jsx";
-  import DeleteDialog from "../DeleteDialog.jsx";
-  import axios from "axios";
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  flexRender,
+} from "@tanstack/react-table";
+import { columnDef } from "./Columns/FacultyCourseColumn";
+import "../table.css";
+import DownloadBtn from "../DownloadBtn.jsx";
+import DebouncedInput from "../DebouncedInput.jsx";
+import { SearchIcon, Eye, EyeOff } from "lucide-react";
+import { Button } from "@/components/ui/button.jsx";
+import { Checkbox } from "@/components/ui/checkbox.jsx";
+import DrawerComponent from "../../Forms/AddEntry/DrawerComponent.jsx";
+import DeleteDialog from "../DeleteDialog.jsx";
+import axios from "axios";
 
 export default function FacultyCourseTable() {
   const { id } = useParams();
@@ -60,6 +60,25 @@ export default function FacultyCourseTable() {
   // dtaa of the reaserch paper of the teacher aditi sharma
 
   const [courseData, setCourseData] = useState("");
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        const token = sessionStorage.getItem("teacherAccessToken");
+        const response = await axios.get(
+          `http://localhost:6005/api/v1/allocated-subjects/subjects/${id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        // console.log(response.data.data);
+
+        setCourseData(response.data.data.subjects || []);
+      } catch (error) {
+        console.error("Error fetching subjects:", error);
+      }
+    };
+    fetchSubjects();
+  }, [id]);
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
@@ -117,7 +136,7 @@ export default function FacultyCourseTable() {
   }, []);
 
   const table = useReactTable({
-    data,
+    data : courseData ,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
