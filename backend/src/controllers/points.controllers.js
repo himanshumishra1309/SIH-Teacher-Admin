@@ -1637,7 +1637,7 @@ const completeLecturePoints = asyncHandler(async (req, res) => {
   // Aggregate total lecture points for each teacher
   const aggregatedPoints = await Point.aggregate([
     {
-      $match: { domain: lectureDomain }, // Filter by lecture domain
+      $match: { domain : {$in : lectureDomain}}, // Filter by lecture domain
     },
     {
       $group: {
@@ -1686,14 +1686,7 @@ const completeLecturePoints = asyncHandler(async (req, res) => {
     ? requestedTeacher.teacher.name
     : null;
 
-  if (
-    !requestedTeacherRank ||
-    !requestedTeacherPoints ||
-    !requestedTeacherName
-  ) {
-    throw new ApiError(404, "Teacher's data not found");
-  }
-
+ 
   return res.status(200).json(
     new ApiResponse(
       200,

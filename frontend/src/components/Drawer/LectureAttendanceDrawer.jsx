@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import StudentAttendanceDialog from "@/Forms/Student/StudentAttendanceDialog";
+import { useToast } from "@/components/ui/hooks/use-toast";
 
 const LectureAttendanceDrawer = ({
   isOpen,
@@ -19,8 +20,9 @@ const LectureAttendanceDrawer = ({
   const [date, setDate] = useState(null);
   const [isMarkAttendanceDialogOpen, setMarkAttendanceDialogOpen] =
     useState(false);
-  const [students, setStudents] = useState([]); // List of students for the dialog
-  const [selectedStudents, setSelectedStudents] = useState([]); // Selected students
+  const [students, setStudents] = useState([]);
+  const [selectedStudents, setSelectedStudents] = useState([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!isOpen) {
@@ -36,11 +38,13 @@ const LectureAttendanceDrawer = ({
       return;
     }
 
-    // Add lecture logic here
     onSubmit({ topic, date });
-
-    // Open the attendance dialog after successfully adding a lecture
     setMarkAttendanceDialogOpen(true);
+  };
+
+  const handleCloseAll = () => {
+    setMarkAttendanceDialogOpen(false);
+    onClose();
   };
 
   return (
@@ -97,18 +101,18 @@ const LectureAttendanceDrawer = ({
 
       {isMarkAttendanceDialogOpen && selectedLecture?.data?._id && (
         <StudentAttendanceDialog
-        isOpen={isMarkAttendanceDialogOpen}
-        onClose={() => setMarkAttendanceDialogOpen(false)}
-        students={students} 
-        selectedStudents={selectedStudents}
-        setSelectedStudents={setSelectedStudents} 
-        lectureId={selectedLecture?.data?._id}
-        handleMarkAttendance={() => console.log("Attendance marked!")}
-      />
-
+          isOpen={isMarkAttendanceDialogOpen}
+          onClose={handleCloseAll}
+          students={students}
+          selectedStudents={selectedStudents}
+          setSelectedStudents={setSelectedStudents}
+          lectureId={selectedLecture?.data?._id}
+          toast={toast}
+        />
       )}
     </>
   );
 };
 
 export default LectureAttendanceDrawer;
+

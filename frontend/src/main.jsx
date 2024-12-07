@@ -130,7 +130,7 @@ const router = createBrowserRouter(
         <Route path="facultyList" element={<FacultyCards/>}/>
         <Route index element={<AdminResearchTable />} errorElement={<NotFoundPage/>} />
 
-        {/* <Route path="personal-details" element={<ResearchTable />} errorElement={<NotFoundPage/>} /> */}
+        {/* <Route path="personal-details" element={<FacultyInfoCard />} errorElement={<NotFoundPage/>} /> */}
         <Route path="research-papers" element={<AdminResearchTable />} errorElement={<NotFoundPage/>} />
         <Route path="students-guided" element={<AdminStudentsGuidedTable />} errorElement={<NotFoundPage/>} />
         <Route path="expert-lecture" element={<AdminLecturesTable />} errorElement={<NotFoundPage/>} />

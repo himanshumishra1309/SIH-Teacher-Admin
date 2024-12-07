@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import StudentAttendanceTable from "@/table/Tables/Columns/StudentAttendanceTable";
 import { Button } from "@/components/ui/button";
+import ConfirmationDialog from "./ConfirmationDialog";
 
 const StudentAttendanceDialog = ({
   isOpen,
@@ -18,14 +19,15 @@ const StudentAttendanceDialog = ({
   selectedStudents,
   setSelectedStudents,
   lectureId,
+  toast,
 }) => {
   console.log("lectureID", lectureId);
 
   const { subjectId } = useParams();
   const [data, setData] = useState([]);
-
   const [attendanceData, setAttendanceData] = useState([]);
   const [sub, setSub] = useState("");
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
 
   useEffect(() => {
     const fetchStudents = async () => {
@@ -58,13 +60,13 @@ const StudentAttendanceDialog = ({
       return;
     }
 
-    console.log(data);
+    setIsConfirmationOpen(true);
+  };
 
+  const confirmMarkAttendance = async () => {
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
       const selectedStudentIds = data.map((student) => student._id);
-
-      // console.log(selectedStudentDetails);
 
       const response = await axios.post(
         `http://localhost:6005/api/v1/lecture/${lectureId}/attendance`,
@@ -84,41 +86,63 @@ const StudentAttendanceDialog = ({
 
       console.log(response);
 
-      alert("Attendance marked successfully!");
+      toast({
+        title: "Success",
+        description: "Attendance marked successfully!",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+
       onClose();
     } catch (error) {
       console.error("Error marking attendance:", error);
-      alert("Failed to mark attendance.");
+      toast({
+        title: "Error",
+        description: "Failed to mark attendance.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-screen m-6">
-        <DialogHeader>
-          <DialogTitle>Mark Attendance</DialogTitle>
-          <DialogDescription>
-            Select the students who were present for the lecture.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="mt-4">
-          <StudentAttendanceTable
-            students={attendanceData}
-            data={data}
-            setData={setData}
-          />
-        </div>
-        <div className="mt-2">
-          <Button
-            onClick={handleMarkAttendance}
-            className="w-full bg-primary text-white rounded hover:bg-primary-dark"
-          >
-            Mark Attendance
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+    <>
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-4xl max-h-screen m-6">
+          <DialogHeader>
+            <DialogTitle>Mark Attendance</DialogTitle>
+            <DialogDescription>
+              Select the students who were present for the lecture.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-4">
+            <StudentAttendanceTable
+              students={attendanceData}
+              data={data}
+              setData={setData}
+            />
+          </div>
+          <div className="mt-2">
+            <Button
+              onClick={handleMarkAttendance}
+              className="w-full bg-primary text-white rounded hover:bg-primary-dark"
+            >
+              Mark Attendance
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <ConfirmationDialog
+        isOpen={isConfirmationOpen}
+        onClose={() => setIsConfirmationOpen(false)}
+        onConfirm={confirmMarkAttendance}
+      />
+    </>
   );
 };
 
 export default StudentAttendanceDialog;
+

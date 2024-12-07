@@ -16,12 +16,17 @@ import {
 
 export default function AdminNavigation() {
   const navigationItems = [
-    {
-      name: "Personal Details",
-      path: "personal-details",
-      icon: <Users className="w-4 h-4" />,
-    },
+    // {
+    //   name: "Personal Details",
+    //   path: "personal-details",
+    //   icon: <Users className="w-4 h-4" />,
+    // },
     // { name: "Teaching Process", path: "teaching-process", icon: <BookOpen className="w-4 h-4" /> },
+    {
+      name: "Appraisal report",
+      path: "admin-teacher-appraisal",
+      icon: <BarChart2 className="w-4 h-4" />,
+    },
     {
       name: "Research Papers",
       path: "research-papers",
@@ -59,13 +64,9 @@ export default function AdminNavigation() {
     },
     // { name: "Contribution Graph", path: "contribution", icon: <BarChart2 className="w-4 h-4" /> },
     // { name: "Posts", path: "posts", icon: <BarChart2 className="w-4 h-4" /> },
-    {
-      name: "Appraisal report",
-      path: "admin-teacher-appraisal",
-      icon: <BarChart2 className="w-4 h-4" />,
-    },
+
     // { name: "Add Lecture", path: "teacheraddecture", icon: <BarChart2 className="w-4 h-4" /> },
-    { name: "Allocate Subject To Teacher", path: "adminallocate-lectures" },
+    { name: "Allocate Subject To Teacher", path: "adminallocate-lectures", icon: <FileText className="w-4 h-4" />, },
 
     // { name: "Add Lecture", path: "lecAttend", icon: <BarChart2 className="w-4 h-4" /> },
 

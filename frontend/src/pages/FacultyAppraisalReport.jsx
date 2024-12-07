@@ -295,8 +295,9 @@ const FacultyAppraisalReport = ({
           <CardContent className="text-center">
             <p className="text-4xl font-bold mb-2">Rank : {rank}</p>
             <p className="text-xl text-gray-600">Performance : {performance}</p>
-            <p className="text-xl text-gray-600">Points : {point}</p>
-
+            <p className="text-xl text-gray-700 font-semibold">
+  Points out of 100: {point !== null ? point.toFixed(2) : "Loading..."}
+</p>
           </CardContent>
         </Card>
         <div>
