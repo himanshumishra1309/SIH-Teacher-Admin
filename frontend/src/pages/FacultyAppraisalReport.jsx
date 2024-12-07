@@ -29,6 +29,7 @@ const FacultyAppraisalReport = ({
 }) => {
   const [facultyData, setFacultyData] = useState("");
   const [rank, setRank] = useState(null);
+  const [point, setPoint] = useState(null);
   const [performance, setPerformance] = useState(null);
 
   const reportRef = useRef(null);
@@ -127,7 +128,7 @@ const FacultyAppraisalReport = ({
             },
           }
         );
-        // console.log(response.data.data);
+        console.log(response.data.data);
 
         // console.log("Response data:", response.data);
         const matchingTeacher = response.data?.data?.find(
@@ -139,6 +140,7 @@ const FacultyAppraisalReport = ({
         if (matchingTeacher) {
           setRank(matchingTeacher.rank);
           setPerformance(matchingTeacher.performanceCategory);
+          setPoint(matchingTeacher.totalPoints)
         } else {
           console.log("No matching teacher found for the given facultyId");
         }
@@ -293,6 +295,8 @@ const FacultyAppraisalReport = ({
           <CardContent className="text-center">
             <p className="text-4xl font-bold mb-2">Rank : {rank}</p>
             <p className="text-xl text-gray-600">Performance : {performance}</p>
+            <p className="text-xl text-gray-600">Points : {point}</p>
+
           </CardContent>
         </Card>
         <div>
