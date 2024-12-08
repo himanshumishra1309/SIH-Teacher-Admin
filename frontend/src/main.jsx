@@ -69,6 +69,8 @@ import SeminarLayout from './Layouts/SeminarLayout';
 import AdminPointAllocationLayout from './Layouts/AdminPointAllocationLayout';
 import FacultyCourseTable from './table/Tables/FacultyCourseTable';
 import FacultyAppraisalReport from './pages/FacultyAppraisalReport';
+import FacultyPointAllocationLayout from './Layouts/FacultyPointAllocationLayout';
+import AdminSeminarLayout from './Layouts/AdminSeminarLayouy';
 
 
 
@@ -98,6 +100,8 @@ const router = createBrowserRouter(
         {/* <Route path="peer-review" element={<RouteTransitionWrapper><PeerReview/></RouteTransitionWrapper>}errorElement={<NotFoundPage/>} /> */}
 
         <Route path="lecAttend" element={<RouteTransitionWrapper><SubjectList/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
+
+        <Route path="faculty-points" element={<RouteTransitionWrapper><FacultyPointAllocationLayout/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
         {/* <Route path="teacheraddecture" element={<RouteTransitionWrapper><AddLecMarkAttendabce/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} /> */}
 
       </Route>
@@ -123,7 +127,6 @@ const router = createBrowserRouter(
     <Route path="allocate-sub-student" element={<AdminAllocateSubjectToStudent/>} errorElement={<NotFoundPage/>}/>
     <Route path="appraisal-points" element={<AdminPointAllocationLayout/>} errorElement={<NotFoundPage/>}/>
 
-
     </Route>
  
       <Route path="admin-info/:id" element={<AdminLayout/>}> 
@@ -136,7 +139,7 @@ const router = createBrowserRouter(
         <Route path="students-guided" element={<AdminStudentsGuidedTable />} errorElement={<NotFoundPage/>} />
         <Route path="expert-lecture" element={<AdminLecturesTable />} errorElement={<NotFoundPage/>} />
         <Route path="event-participation" element={<AdminEventTable />} errorElement={<NotFoundPage/>} />
-        <Route path="seminars" element={<AdminSeminarsTable/>} errorElement={<NotFoundPage/>} />
+        <Route path="seminars" element={<AdminSeminarLayout/>} errorElement={<NotFoundPage/>} />
         <Route path="sttp-conducted" element={<AdminSTTPTable/>} errorElement={<NotFoundPage/>} />
         <Route path="projects" element={<AdminProjectTable />} errorElement={<NotFoundPage/>} />
         <Route path="adminallocate-lectures" element={<AdminLectureAllocationTable />} errorElement={<NotFoundPage/>} />

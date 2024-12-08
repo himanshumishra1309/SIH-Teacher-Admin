@@ -5,46 +5,32 @@ import {
   getPaginationRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { ColumnDef } from "./Column/DomainPointsColumn";
-import "../../table.css";
+import { ColumnDef } from "./DomainPointsColumn";
+import "../../../table.css";
 import { Button } from "@/components/ui/button.jsx";
 import axios from "axios";
 
-export default function FacultyPublicationTable() {
+export default function FacultyGuidanceDomainTable() {
   const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true); 
 
   useEffect(() => {
     const fetchPublicationData = async () => {
       try {
-        const token = sessionStorage.getItem("adminAccessToken");
+        const token = sessionStorage.getItem("teacherAccessToken");
 
-        // Define all endpoints
-        const endpoints = [
-          "http://localhost:6005/api/v1/domain-points/admin/book",
-          "http://localhost:6005/api/v1/domain-points/admin/patent",
-          "http://localhost:6005/api/v1/domain-points/admin/journal",
-          "http://localhost:6005/api/v1/domain-points/admin/conference",
-          "http://localhost:6005/api/v1/domain-points/admin/chapter",
-        ];
-
-        // Fetch all data concurrently
-        const responses = await Promise.all(
-          endpoints.map((endpoint) =>
-            axios.get(endpoint, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            })
-          )
+        const response = await axios.get(
+          `http://localhost:6005/api/v1/domain-points/teacher/te-student-guidance`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
-        // Combine data from all responses
-        const combinedData = responses.flatMap(
-          (response) => response.data.data
-        );
-        // console.log(combinedData);
-        setData(combinedData);
+        console.log(response);
+
+        setData(response.data.data);
       } catch (error) {
         console.error("Failed to fetch publications:", error);
       } finally {
@@ -55,18 +41,13 @@ export default function FacultyPublicationTable() {
     fetchPublicationData();
   }, []);
 
-  const updatePoints = async (row, newPoints) => {
-    const id = row._id;
-    const points = Number(newPoints);
-    console.log(points);
-    console.log(id);
-
+  const updatePoints = async (id, newPoints) => {
     try {
       const token = sessionStorage.getItem("adminAccessToken");
 
       const response = await axios.put(
         `http://localhost:6005/api/v1/domain-points/admin/points/${id}`,
-        { points: points },
+        { points: newPoints },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -75,7 +56,6 @@ export default function FacultyPublicationTable() {
       );
 
       if (response.status === 200) {
-        // Update the state with the new points
         setData((prevData) =>
           prevData.map((item) =>
             item._id === id ? { ...item, points: newPoints } : item
@@ -99,50 +79,49 @@ export default function FacultyPublicationTable() {
       {
         accessorKey: "points",
         header: "Points",
-        cell: ({ row, getValue }) => {
-          const [isEditing, setIsEditing] = useState(false);
-          const [newPoints, setNewPoints] = useState(getValue());
+        // cell: ({ row, getValue }) => {
+        //   const [isEditing, setIsEditing] = useState(false);
+        //   const [newPoints, setNewPoints] = useState(getValue());
 
-          const handleSave = () => {
-            updatePoints(row.original, newPoints);
+        //   const handleSave = () => {
+        //     updatePoints(row.original._id, newPoints);
+        //     setIsEditing(false);
+        //   };
 
-            setIsEditing(false);
-          };
-
-          return isEditing ? (
-            <div className="flex gap-2 items-center">
-              <input
-                type="number"
-                className="border rounded px-2 py-1 w-20 text-center"
-                value={newPoints}
-                onChange={(e) => setNewPoints(Number(e.target.value))}
-                min={0}
-              />
-              <Button
-                onClick={handleSave}
-                className="bg-green-500 text-white hover:bg-green-600"
-              >
-                Save
-              </Button>
-              <Button
-                onClick={() => setIsEditing(false)}
-                className="bg-red-500 text-white hover:bg-red-600"
-              >
-                Cancel
-              </Button>
-            </div>
-          ) : (
-            <div className="flex justify-between items-center">
-              <span className="text-gray-700">{getValue()}</span>
-              <Button
-                onClick={() => setIsEditing(true)}
-                className="bg-blue-500 text-white hover:bg-blue-600"
-              >
-                Edit
-              </Button>
-            </div>
-          );
-        },
+        //   return isEditing ? (
+        //     <div className="flex gap-2 items-center">
+        //       <input
+        //         type="number"
+        //         className="border rounded px-2 py-1 w-20 text-center"
+        //         value={newPoints}
+        //         onChange={(e) => setNewPoints(Number(e.target.value))}
+        //         min={0}
+        //       />
+        //       <Button
+        //         onClick={handleSave}
+        //         className="bg-green-500 text-white hover:bg-green-600"
+        //       >
+        //         Save
+        //       </Button>
+        //       <Button
+        //         onClick={() => setIsEditing(false)}
+        //         className="bg-red-500 text-white hover:bg-red-600"
+        //       >
+        //         Cancel
+        //       </Button>
+        //     </div>
+        //   ) : (
+        //     <div className="flex justify-between items-center">
+        //       <span className="text-gray-700">{getValue()}</span>
+        //       <Button
+        //         onClick={() => setIsEditing(true)}
+        //         className="bg-blue-500 text-white hover:bg-blue-600"
+        //       >
+        //         Edit
+        //       </Button>
+        //     </div>
+        //   );
+        // },
       },
     ],
     [data]

@@ -9,8 +9,14 @@ import GuidanceDomainTable from "@/table/Tables/Domain/Column/GuidanceDomainTabl
 import OtherDomainTable from "@/table/Tables/Domain/Column/OtherDomainTable";
 import ResearchProjectsDomainTable from "@/table/Tables/Domain/Column/ResearchProjectsDomainTable";
 import { motion } from "framer-motion";
+import FacultyResearchProjectsDomainTable from "../table/Tables/Domain/Column/FacultyResearchProjectsDomainTable";
+import FacultyGuidanceDomainTable from "../table/Tables/Domain/Column/FacultyGuidanceDomainTable";
+import FacultyOtherDomainTable from "../table/Tables/Domain/Column/FacultyOtherDomainTable";
+import FacultyEventsDomainTable from "../table/Tables/Domain/Column/FacultyEventsDomainTable";
+import FacultyConferencesDomainTable from "../table/Tables/Domain/Column/FacultyConferencesDomainTable";
+import FacultyPublicationTable from "../table/Tables/Domain/FacultyPublicationDomainTable";
 
-export default function AdminPointAllocationLayout() {
+export default function FacultyPointAllocationLayout() {
   return (
     <div className="container mx-auto p-4 space-y-6">
       <h1 className="text-2xl font-bold text-center">
@@ -37,7 +43,7 @@ export default function AdminPointAllocationLayout() {
           >
             <Card className="p-4">
               <h2 className="text-xl font-semibold mb-4">Publications</h2>
-              <PublicationDomainTable />
+              <FacultyPublicationTable />
             </Card>
           </motion.div>
         </TabsContent>
@@ -51,7 +57,7 @@ export default function AdminPointAllocationLayout() {
           >
             <Card className="p-4">
               <h2 className="text-xl font-semibold mb-4">Conferences</h2>
-              <ConferencesDomainTable />
+              <FacultyConferencesDomainTable />
             </Card>
           </motion.div>
         </TabsContent>
@@ -72,7 +78,7 @@ export default function AdminPointAllocationLayout() {
                   Content for managing Events (e.g., Organizing, Speaking,
                   Judging).
                 </p>
-                <EventsDomainTable />
+                <FacultyEventsDomainTable />
               </div>
             </Card>
           </motion.div>
@@ -94,7 +100,7 @@ export default function AdminPointAllocationLayout() {
                   Content for managing Research Projects (e.g., Funded,
                   Completed).
                 </p>
-                <ResearchProjectsDomainTable />
+                <FacultyResearchProjectsDomainTable />
               </div>
             </Card>
           </motion.div>
@@ -118,7 +124,7 @@ export default function AdminPointAllocationLayout() {
                   Content for managing Mentorship (e.g., PhD, M.Tech,
                   Undergraduate).
                 </p>
-                <GuidanceDomainTable />
+                <FacultyGuidanceDomainTable />
               </div>
             </Card>
           </motion.div>
@@ -140,7 +146,7 @@ export default function AdminPointAllocationLayout() {
                   Content for managing other activities (e.g., Miscellaneous,
                   STTPs).
                 </p>
-                <OtherDomainTable />
+                <FacultyOtherDomainTable />
               </div>
             </Card>
           </motion.div>

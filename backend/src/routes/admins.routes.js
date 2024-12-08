@@ -52,6 +52,7 @@ import {
   getAllConferences,
   getAllChapters,
   getAllTheJournals,
+  getAllseminarAttended,
 } from "../controllers/admins.controllers.js";
 import { verifyAdminJWT } from "../middleware/admin.auth.middleware.js";
 import { upload } from "../middleware/multer.middleware.js";
@@ -181,11 +182,20 @@ router.get(
   verifyAdminJWT,
   getProjectsHeldByTheTeacher
 );
+
+router.get(
+  "/teachers/:teacherId/seminars/attended",
+  verifyAdminJWT,
+  getAllseminarAttended
+)
+
 router.get(
   "/teachers/:teacherId/seminars/conducted",
   verifyAdminJWT,
   getSeminarsConductedByTheTeacher
 );
+
+
 router.get(
   "/teachers/:teacherId/seminars/upcoming",
   verifyAdminJWT,

@@ -17,15 +17,15 @@ export default function FacultyPublicationTable() {
   useEffect(() => {
     const fetchPublicationData = async () => {
       try {
-        const token = sessionStorage.getItem("adminAccessToken");
+        const token = sessionStorage.getItem("teacherAccessToken");
 
         // Define all endpoints
         const endpoints = [
-          "http://localhost:6005/api/v1/domain-points/admin/book",
-          "http://localhost:6005/api/v1/domain-points/admin/patent",
-          "http://localhost:6005/api/v1/domain-points/admin/journal",
-          "http://localhost:6005/api/v1/domain-points/admin/conference",
-          "http://localhost:6005/api/v1/domain-points/admin/chapter",
+          "http://localhost:6005/api/v1/domain-points/teacher/te-book",
+          "http://localhost:6005/api/v1/domain-points/teacher/te-patent",
+          "http://localhost:6005/api/v1/domain-points/teacher/te-journal",
+          "http://localhost:6005/api/v1/domain-points/teacher/te-conference",
+          "http://localhost:6005/api/v1/domain-points/teacher/te-chapter",
         ];
 
         // Fetch all data concurrently
@@ -99,50 +99,50 @@ export default function FacultyPublicationTable() {
       {
         accessorKey: "points",
         header: "Points",
-        cell: ({ row, getValue }) => {
-          const [isEditing, setIsEditing] = useState(false);
-          const [newPoints, setNewPoints] = useState(getValue());
+        // cell: ({ row, getValue }) => {
+        //   const [isEditing, setIsEditing] = useState(false);
+        //   const [newPoints, setNewPoints] = useState(getValue());
 
-          const handleSave = () => {
-            updatePoints(row.original, newPoints);
+        //   const handleSave = () => {
+        //     updatePoints(row.original, newPoints);
 
-            setIsEditing(false);
-          };
+        //     setIsEditing(false);
+        //   };
 
-          return isEditing ? (
-            <div className="flex gap-2 items-center">
-              <input
-                type="number"
-                className="border rounded px-2 py-1 w-20 text-center"
-                value={newPoints}
-                onChange={(e) => setNewPoints(Number(e.target.value))}
-                min={0}
-              />
-              <Button
-                onClick={handleSave}
-                className="bg-green-500 text-white hover:bg-green-600"
-              >
-                Save
-              </Button>
-              <Button
-                onClick={() => setIsEditing(false)}
-                className="bg-red-500 text-white hover:bg-red-600"
-              >
-                Cancel
-              </Button>
-            </div>
-          ) : (
-            <div className="flex justify-between items-center">
-              <span className="text-gray-700">{getValue()}</span>
-              <Button
-                onClick={() => setIsEditing(true)}
-                className="bg-blue-500 text-white hover:bg-blue-600"
-              >
-                Edit
-              </Button>
-            </div>
-          );
-        },
+        //   return isEditing ? (
+        //     <div className="flex gap-2 items-center">
+        //       <input
+        //         type="number"
+        //         className="border rounded px-2 py-1 w-20 text-center"
+        //         value={newPoints}
+        //         onChange={(e) => setNewPoints(Number(e.target.value))}
+        //         min={0}
+        //       />
+        //       <Button
+        //         onClick={handleSave}
+        //         className="bg-green-500 text-white hover:bg-green-600"
+        //       >
+        //         Save
+        //       </Button>
+        //       <Button
+        //         onClick={() => setIsEditing(false)}
+        //         className="bg-red-500 text-white hover:bg-red-600"
+        //       >
+        //         Cancel
+        //       </Button>
+        //     </div>
+        //   ) : (
+        //     <div className="flex justify-between items-center">
+        //       <span className="text-gray-700">{getValue()}</span>
+        //       <Button
+        //         onClick={() => setIsEditing(true)}
+        //         className="bg-blue-500 text-white hover:bg-blue-600"
+        //       >
+        //         Edit
+        //       </Button>
+        //     </div>
+        //   );
+        // },
       },
     ],
     [data]

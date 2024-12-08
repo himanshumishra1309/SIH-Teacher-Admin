@@ -1957,7 +1957,7 @@ const getSeminarsConductedByTheTeacher = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid teacher ID format.");
   }
 
-  const seminars = await Seminar.find({ owner: teacherId, status: "conducted" })
+  const seminars = await Seminar.find({ owner: teacherId })
     .select("topic department duration date report")
     .lean();
 
