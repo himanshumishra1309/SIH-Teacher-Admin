@@ -11,6 +11,31 @@ export const columnDef = [
     accessorKey: "seminarType",
     header: "Type",
     enableSorting: true,
+    filterFn: "equals",
+    filterElement: ({ column }) => {
+      const options =  ['International', 'National', 'State'];
+      return (
+        <div className="relative z-10">
+          <select
+            onChange={(e) => {
+              console.log("Selected:", e.target.value); // Debugging
+              column.setFilterValue(e.target.value || undefined);
+            }}
+            value={column.getFilterValue() || ""}
+            className="p-2 border rounded"
+          >
+            <option value="" className="text-black">All</option>
+            {options.map((option) => (
+              <option key={option} value={option} className="text-black">
+                {option}
+              </option>
+            ))}
+          </select>
+        </div>
+      );
+    },
+    dropdownOptions: ['International', 'National', 'State'], // Dropdown values
+
   },
   {
     accessorKey: "venue",
@@ -43,11 +68,6 @@ export const columnDef = [
       }
       return "N/A";
     },
-    enableSorting: true,
-  },
-  {
-    accessorKey: "Feedbacks",
-    header: "feedback",
     enableSorting: true,
   },
   {

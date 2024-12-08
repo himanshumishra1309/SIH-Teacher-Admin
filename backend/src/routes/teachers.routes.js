@@ -15,4 +15,5 @@ router.route("/logout").post(verifyTeacherJWT, logoutTeacher);
 router.route("/me").get(verifyTeacherJWT, getTeacherProfile);
 router.post("/me/graph", verifyTeacherJWT, getTeacherGraph);
 
+
 export default router;

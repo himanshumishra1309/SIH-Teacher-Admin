@@ -68,6 +68,14 @@ export default function AdminHome() {
             ),
             duration: 5000,
             className: "bg-gradient-to-r from-blue-700 to-blue-900 border border-blue-300 shadow-lg rounded-lg p-6",
+            action: (
+              <button
+                className="absolute top-2 right-2 text-white hover:text-gray-300"
+                onClick={() => toast.dismiss()}
+              >
+                ✕
+              </button>
+            ),
           });
         }
       } catch (error) {

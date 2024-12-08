@@ -117,9 +117,8 @@ const processFeedback = async (doc) => {
     });
 
     if (feedbacks.length > 0) {
-      const totalRating = feedbacks.reduce((sum, feedback) => {
-        return (
-          sum +
+      const totalAverageRating = feedbacks.reduce((sum, feedback) => {
+        const feedbackAverage =
           (feedback.question1_rating +
             feedback.question2_rating +
             feedback.question3_rating +
@@ -130,18 +129,14 @@ const processFeedback = async (doc) => {
             feedback.question8_rating +
             feedback.question9_rating +
             feedback.question10_rating) /
-            10
-        );
+          10;
+        return sum + feedbackAverage;
       }, 0);
 
-      const averageRating = totalRating / feedbacks.length;
+      const averageRating = totalAverageRating / feedbacks.length;
 
       const domainKey = getDomainKey(doc.subject_credit, doc.type);
-      const domainPoints = await getPointsForDomain(domainKey);
-      const feedbackPoints = Math.max(
-        0,
-        (averageRating - 3) * (domainPoints * 0.1) // Example: 10% of domain points per star above 3
-      );
+      const feedbackPoints = averageRating; // Feedback points are now directly the average rating
 
       // Update teacher's points
       const existingPoints = await Point.findOne({
