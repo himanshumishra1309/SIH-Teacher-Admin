@@ -68,7 +68,7 @@ export default function FacultySeminarsConductedTable() {
         const token = sessionStorage.getItem("teacherAccessToken");
 
         const response = await axios.get(
-          `http://localhost:6005/api/v1/seminars/seminars/conducted`,
+          `http://localhost:6005/api/v1/seminars/conducted`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -159,7 +159,7 @@ export default function FacultySeminarsConductedTable() {
       const token = sessionStorage.getItem("teacherAccessToken");
 
       await axios.delete(
-        `http://localhost:6005/api/v1/seminars/seminars/${rowToDelete._id}`,
+        `http://localhost:6005/api/v1/seminars/${rowToDelete._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -282,7 +282,7 @@ export default function FacultySeminarsConductedTable() {
             if (rowToEdit) {
               // console.log("editing  the data", formData);
               const response = await axios.put(
-                `http://localhost:6005/api/v1/seminars/seminars/${rowToEdit._id}`,
+                `http://localhost:6005/api/v1/seminars/${rowToEdit._id}/edit`,
                 formData,
                 {
                   headers: {
