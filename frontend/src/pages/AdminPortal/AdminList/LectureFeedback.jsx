@@ -158,8 +158,10 @@ export default function EnhancedLectureFeedback({
           },
         }
       );
+
+      console.log(response);
+
       setShowDialog(false);
-      console.log("Feedback submitted:", response);
       toast({
         title: "Feedback Submitted",
         description: "Thank you for your detailed feedback!",
