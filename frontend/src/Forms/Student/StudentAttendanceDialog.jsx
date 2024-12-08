@@ -34,7 +34,7 @@ const StudentAttendanceDialog = ({
       try {
         const token = sessionStorage.getItem("teacherAccessToken");
         const response = await axios.get(
-          `http://localhost:6005/api/v1/lecture/${subjectId}/students`,
+          `https.facultyappraisal.software/api/v1/lecture/${subjectId}/students`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -69,7 +69,7 @@ const StudentAttendanceDialog = ({
       const selectedStudentIds = data.map((student) => student._id);
 
       const response = await axios.post(
-        `http://localhost:6005/api/v1/lecture/${lectureId}/attendance`,
+        `https.facultyappraisal.software/api/v1/lecture/${lectureId}/attendance`,
         {
           studentIds: selectedStudentIds,
           subject_name: sub.subject_name,

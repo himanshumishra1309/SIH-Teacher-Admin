@@ -39,7 +39,7 @@ export default function AdminEventTable() {
         const token = sessionStorage.getItem("adminAccessToken");
 
         const response = await axios.get(
-          `http://localhost:6005/api/v1/admins/teachers/${id}/events-participated`,
+          `https.facultyappraisal.software/api/v1/admins/teachers/${id}/events-participated`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

@@ -38,7 +38,7 @@ export default function PeerReview() {
     const fetchData = async () => {
       const token = sessionStorage.getItem("teacherAccessToken");
       try {
-        const response = await axios.get("http://localhost:6005/api/v1/", {
+        const response = await axios.get("https.facultyappraisal.software/api/v1/", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

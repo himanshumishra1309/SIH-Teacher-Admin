@@ -21,11 +21,11 @@ export default function FacultyPublicationTable() {
 
         // Define all endpoints
         const endpoints = [
-          "http://localhost:6005/api/v1/domain-points/teacher/te-book",
-          "http://localhost:6005/api/v1/domain-points/teacher/te-patent",
-          "http://localhost:6005/api/v1/domain-points/teacher/te-journal",
-          "http://localhost:6005/api/v1/domain-points/teacher/te-conference",
-          "http://localhost:6005/api/v1/domain-points/teacher/te-chapter",
+          "https.facultyappraisal.software/api/v1/domain-points/teacher/te-book",
+          "https.facultyappraisal.software/api/v1/domain-points/teacher/te-patent",
+          "https.facultyappraisal.software/api/v1/domain-points/teacher/te-journal",
+          "https.facultyappraisal.software/api/v1/domain-points/teacher/te-conference",
+          "https.facultyappraisal.software/api/v1/domain-points/teacher/te-chapter",
         ];
 
         // Fetch all data concurrently
@@ -65,7 +65,7 @@ export default function FacultyPublicationTable() {
       const token = sessionStorage.getItem("adminAccessToken");
 
       const response = await axios.put(
-        `http://localhost:6005/api/v1/domain-points/admin/points/${id}`,
+        `https.facultyappraisal.software/api/v1/domain-points/admin/points/${id}`,
         { points: points },
         {
           headers: {

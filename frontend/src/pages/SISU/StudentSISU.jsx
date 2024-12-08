@@ -73,7 +73,7 @@ export default function StudentSISU() {
 
     try {
       const response = await axios.post(
-        "http://localhost:6005/api/v1/students/register",
+        "https.facultyappraisal.software/api/v1/students/register",
         formData,
         {
           headers: {
@@ -118,7 +118,7 @@ export default function StudentSISU() {
 
   //   try {
   //     const response = await axios.post(
-  //       "http://localhost:6005/api/v1/students/register",
+  //       "https.facultyappraisal.software/api/v1/students/register",
   //       formData,
   //       {
   //         headers: {
@@ -141,7 +141,7 @@ export default function StudentSISU() {
 
     try {
       const response = await axios.post(
-        "http://localhost:6005/api/v1/students/login",
+        "https.facultyappraisal.software/api/v1/students/login",
         loginData,
         {
           headers: {

@@ -40,7 +40,7 @@ export default function AdminPatentsTable() {
     try {
       const token = sessionStorage.getItem("adminAccessToken");
       const response = await axios.get(
-        `http://localhost:6005/api/v1/admins/patent/${id}`,
+        `https.facultyappraisal.software/api/v1/admins/patent/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

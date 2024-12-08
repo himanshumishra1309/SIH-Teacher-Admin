@@ -43,7 +43,7 @@ export default function FacultyEventTable() {
         const token = sessionStorage.getItem("teacherAccessToken");
 
         const response = await axios.get(
-          `http://localhost:6005/api/v1/event/events`,
+          `https.facultyappraisal.software/api/v1/event/events`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -135,7 +135,7 @@ export default function FacultyEventTable() {
       const token = sessionStorage.getItem("teacherAccessToken");
 
       await axios.delete(
-        `http://localhost:6005/api/v1/event/events/${rowToDelete._id}`,
+        `https.facultyappraisal.software/api/v1/event/events/${rowToDelete._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -253,7 +253,7 @@ export default function FacultyEventTable() {
               console.log("editing  the data", formData);
 
               const response = await axios.patch(
-                `http://localhost:6005/api/v1/event/events/${rowToEdit._id}`,
+                `https.facultyappraisal.software/api/v1/event/events/${rowToEdit._id}`,
                 formData,
                 {
                   headers: {
@@ -268,7 +268,7 @@ export default function FacultyEventTable() {
               // Add (POST Request)
               console.log("posting the data", formData);
               const response = await axios.post(
-                `http://localhost:6005/api/v1/event/events`,
+                `https.facultyappraisal.software/api/v1/event/events`,
                 formData,
                 {
                   headers: {

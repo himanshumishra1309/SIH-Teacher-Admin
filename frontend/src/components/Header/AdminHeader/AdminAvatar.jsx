@@ -19,7 +19,7 @@ export default function AdminAvatar() {
 
     try {
       await axios.post(
-        "http://localhost:6005/api/v1/admins/logout",
+        "https.facultyappraisal.software/api/v1/admins/logout",
         {},
         {
           headers: {

@@ -34,7 +34,7 @@ export default function LectureAndAttendanceTable({ teacherId, subjectId }) {
         const token = sessionStorage.getItem("teacherAccessToken");
 
         const response = await axios.get(
-          `http://localhost:6005/api/v1/lecture/${subjectId}/${teacherId}/lectures`,
+          `https.facultyappraisal.software/api/v1/lecture/${subjectId}/${teacherId}/lectures`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -57,7 +57,7 @@ export default function LectureAndAttendanceTable({ teacherId, subjectId }) {
         try {
           const token = sessionStorage.getItem("teacherAccessToken");
           const response = await axios.get(
-            `http://localhost:6005/api/v1/students/${selectedLecture._id}`,
+            `https.facultyappraisal.software/api/v1/students/${selectedLecture._id}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -113,7 +113,7 @@ export default function LectureAndAttendanceTable({ teacherId, subjectId }) {
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
       const response = await axios.post(
-        `http://localhost:6005/api/v1/lecture/${subjectId}/${teacherId}/lectures`,
+        `https.facultyappraisal.software/api/v1/lecture/${subjectId}/${teacherId}/lectures`,
         lectureData,
         {
           headers: {

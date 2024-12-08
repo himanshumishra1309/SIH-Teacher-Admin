@@ -75,7 +75,7 @@ export default function FacultyResearchFundingTable() {
       setIsLoading(true);
       const token = sessionStorage.getItem("teacherAccessToken");
       const response = await axios.get(
-        `http://localhost:6005/api/v1/research-funding/all?page=${page}&limit=${pageSize}&researchType=${researchTypeFilter}&fundingAmount=${fundingFilter}`,
+        `https.facultyappraisal.software/api/v1/research-funding/all?page=${page}&limit=${pageSize}&researchType=${researchTypeFilter}&fundingAmount=${fundingFilter}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -196,7 +196,7 @@ export default function FacultyResearchFundingTable() {
       setIsActionLoading(true);
       const token = sessionStorage.getItem("teacherAccessToken");
       const response = await axios.post(
-        `http://localhost:6005/api/v1/research-funding`,
+        `https.facultyappraisal.software/api/v1/research-funding`,
         newData,
         {
           headers: {
@@ -226,7 +226,7 @@ export default function FacultyResearchFundingTable() {
       setIsActionLoading(true);
       const token = sessionStorage.getItem("teacherAccessToken");
       const response = await axios.patch(
-        `http://localhost:6005/api/v1/research-funding/${updatedData._id}`,
+        `https.facultyappraisal.software/api/v1/research-funding/${updatedData._id}`,
         updatedData,
         {
           headers: {
@@ -261,7 +261,7 @@ export default function FacultyResearchFundingTable() {
       setIsActionLoading(true);
       const token = sessionStorage.getItem("teacherAccessToken");
       await axios.delete(
-        `http://localhost:6005/api/v1/research-funding/${rowToDelete._id}`,
+        `https.facultyappraisal.software/api/v1/research-funding/${rowToDelete._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

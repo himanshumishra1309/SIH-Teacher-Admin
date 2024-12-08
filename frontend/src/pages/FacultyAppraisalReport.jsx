@@ -39,7 +39,7 @@ const FacultyAppraisalReport = ({
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:6005/api/v1/teachers/me",
+          "https.facultyappraisal.software/api/v1/teachers/me",
           {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem(
@@ -67,20 +67,20 @@ const FacultyAppraisalReport = ({
       const id = facultyData._id;
 
       const endpoints = {
-        journals: `http://localhost:6005/api/v1/points/journals/${id}`,
-        books: `http://localhost:6005/api/v1/points/books/${id}`,
-        chapter: `http://localhost:6005/api/v1/points/chapter/${id}`,
-        patents: `http://localhost:6005/api/v1/points/patents/${id}`,
-        conferences: `http://localhost:6005/api/v1/points/conferences/${id}`,
-        projects: `http://localhost:6005/api/v1/points/projects/${id}`,
-        events: `http://localhost:6005/api/v1/points/events/${id}`,
-        sttp: `http://localhost:6005/api/v1/points/sttp/${id}`,
-        "expert-lectures": `http://localhost:6005/api/v1/points/expert-lectures/${id}`,
-        "Student-Guide": `http://localhost:6005/api/v1/points/student-guided/${id}`,
-        lecture: `http://localhost:6005/api/v1/points/lecture/${id}`,
-        // "Contribution": `http://localhost:6005/api/v1/points/contribution/${id}`,
-        // "Seminar-conducted": `http://localhost:6005/api/v1/points/contribution/${id}`,
-        // "Seminar-attented": `http://localhost:6005/api/v1/points/seminar-attended/${id}`,
+        journals: `https.facultyappraisal.software/api/v1/points/journals/${id}`,
+        books: `https.facultyappraisal.software/api/v1/points/books/${id}`,
+        chapter: `https.facultyappraisal.software/api/v1/points/chapter/${id}`,
+        patents: `https.facultyappraisal.software/api/v1/points/patents/${id}`,
+        conferences: `https.facultyappraisal.software/api/v1/points/conferences/${id}`,
+        projects: `https.facultyappraisal.software/api/v1/points/projects/${id}`,
+        events: `https.facultyappraisal.software/api/v1/points/events/${id}`,
+        sttp: `https.facultyappraisal.software/api/v1/points/sttp/${id}`,
+        "expert-lectures": `https.facultyappraisal.software/api/v1/points/expert-lectures/${id}`,
+        "Student-Guide": `https.facultyappraisal.software/api/v1/points/student-guided/${id}`,
+        lecture: `https.facultyappraisal.software/api/v1/points/lecture/${id}`,
+        // "Contribution": `https.facultyappraisal.software/api/v1/points/contribution/${id}`,
+        // "Seminar-conducted": `https.facultyappraisal.software/api/v1/points/contribution/${id}`,
+        // "Seminar-attented": `https.facultyappraisal.software/api/v1/points/seminar-attended/${id}`,
       };
 
       try {
@@ -120,7 +120,7 @@ const FacultyAppraisalReport = ({
     const fetchRank = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:6005/api/v1/points/teacher-ranks",
+          "https.facultyappraisal.software/api/v1/points/teacher-ranks",
           {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem(

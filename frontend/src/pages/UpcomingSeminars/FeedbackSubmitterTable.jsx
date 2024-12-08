@@ -24,7 +24,7 @@ const FeedbackSubmitterTable = ({
         console.log(feedback.subject_name);
         const teacherAccessToken = sessionStorage.getItem("teacherAccessToken");
         const response = await axios.post(
-          `http://localhost:6005/api/v1/lec-feedback/submitters`,
+          `https.facultyappraisal.software/api/v1/lec-feedback/submitters`,
           {
             subject_name: feedback.subject_name,
             subject_code: feedback.subject_code,

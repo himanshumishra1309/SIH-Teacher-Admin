@@ -30,7 +30,7 @@ export default function AdminHome() {
           Authorization: `Bearer ${accessToken}`,
         };
         const response = await axios.get(
-          "http://localhost:6005/api/v1/admins/me",
+          "https.facultyappraisal.software/api/v1/admins/me",
           { headers }
         );
         // console.log("Admin data fetched:", response.data);

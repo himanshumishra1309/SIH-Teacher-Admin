@@ -31,7 +31,7 @@ export default function Component() {
       try {
         setIsLoading(true)
         const token = sessionStorage.getItem("adminAccessToken")
-        const response = await axios.get("http://localhost:6005/api/v1/admins/teachers", {
+        const response = await axios.get("https.facultyappraisal.software/api/v1/admins/teachers", {
           headers: { Authorization: `Bearer ${token}` },
         })
         setFacultyData(response.data.data.teachers)

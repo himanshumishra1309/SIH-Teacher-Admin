@@ -35,7 +35,7 @@
 //           Authorization: `Bearer ${accessToken}`,
 //         };
 //         const response = await axios.get(
-//           "http://localhost:6005/api/v1/teachers/me",
+//           "https.facultyappraisal.software/api/v1/teachers/me",
 //           { headers }
 //         );
 //         setFacultyData(response.data.data);
@@ -66,7 +66,7 @@
 //         Authorization: `Bearer ${accessToken}`,
 //       };
 //       const response = await axios.patch(
-//         "http://localhost:6005/api/v1/teachers/me/update",
+//         "https.facultyappraisal.software/api/v1/teachers/me/update",
 //         facultyData,
 //         { headers }
 //       );
@@ -93,7 +93,7 @@
 //       };
 
 //       const response = await axios.put(
-//         "http://localhost:6005/api/v1/teachers/me/avatar",
+//         "https.facultyappraisal.software/api/v1/teachers/me/avatar",
 //         formData,
 //         { headers }
 //       );

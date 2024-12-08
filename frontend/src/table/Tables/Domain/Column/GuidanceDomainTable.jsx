@@ -14,7 +14,7 @@ export default function GuidanceDomainTable() {
       try {
         const token = sessionStorage.getItem("adminAccessToken");
 
-        const response = await axios.get(`http://localhost:6005/api/v1/domain-points/admin/student-guidance`, {
+        const response = await axios.get(`https.facultyappraisal.software/api/v1/domain-points/admin/student-guidance`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -38,7 +38,7 @@ export default function GuidanceDomainTable() {
       const token = sessionStorage.getItem("adminAccessToken");
 
       const response = await axios.put(
-        `http://localhost:6005/api/v1/domain-points/admin/points/${id}`,
+        `https.facultyappraisal.software/api/v1/domain-points/admin/points/${id}`,
         { points: newPoints },
         {
           headers: {
