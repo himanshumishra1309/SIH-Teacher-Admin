@@ -40,6 +40,8 @@ import conferenceRouter from "./routes/conference.routes.js";
 import pointRouter from "./routes/points.routes.js";
 import postRouter from "./routes/extracontribution.routes.js";
 import chapterRouter from "./routes/chapter.routes.js";
+import lecfeedback from "./routes/lecture-feedbacks.routes.js";
+
 
 app.use("/api/v1/teachers", teacherRouter);
 app.use("/api/v1/admins", adminRouter);
@@ -53,6 +55,8 @@ app.use("/api/v1/expertLectures", expLectureRouter);
 app.use("/api/v1/projects", teacherProject);
 app.use("/api/v1/student-guide", studentGuide);
 app.use("/api/v1/lecture", lecture);
+app.use("/api/v1/lec-feedback", lecfeedback);
+
 app.use("/api/v1/research-paper", research);
 app.use("/api/v1/domain-points", domainPoints);
 app.use("/api/v1/book", bookRouter);

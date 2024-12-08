@@ -121,7 +121,10 @@ const getJournalPoints = asyncHandler(async (req, res) => {
 
 // Edit journal domain points
 const editJournalPoints = asyncHandler(async (req, res) => {
-  const { journalPoints } = req.body;
+  const { points } = req.body;
+
+  // const { journalPoints } = req.body;
+  const journalPoints = points;
 
   if (!journalPoints || !Array.isArray(journalPoints)) {
     throw new ApiError(400, "Invalid journal points data");
@@ -230,7 +233,9 @@ const getChapterPoints = asyncHandler(async (req, res) => {
 
 // Edit chapter domain points
 const editChapterPoints = asyncHandler(async (req, res) => {
-  const { chapterPoints } = req.body;
+  
+  const { points } = req.body;
+  const chapterPoints = points;
 
   if (!chapterPoints || !Array.isArray(chapterPoints)) {
     throw new ApiError(400, "Invalid chapter points data");
@@ -289,7 +294,9 @@ const getConferencePoints = asyncHandler(async (req, res) => {
 
 // Edit conference domain points
 const editConferencePoints = asyncHandler(async (req, res) => {
-  const { conferencePoints } = req.body;
+  const { points } = req.body;
+
+  const conferencePoints = points
 
   if (!conferencePoints || !Array.isArray(conferencePoints)) {
     throw new ApiError(400, "Invalid conference points data");
@@ -344,7 +351,9 @@ const getPatentPoints = asyncHandler(async (req, res) => {
 
 // Edit patent domain points
 const editPatentPoints = asyncHandler(async (req, res) => {
-  const { patentPoints } = req.body;
+  const { points } = req.body;
+
+  const patentPoints = points
 
   if (!patentPoints || !Array.isArray(patentPoints)) {
     throw new ApiError(400, "Invalid patent points data");

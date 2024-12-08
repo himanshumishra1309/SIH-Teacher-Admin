@@ -19,6 +19,8 @@ export default function FacultyNavigation() {
     { name: "Contributions/ Achievements", path: "posts", icon: <BarChart2 className="w-4 h-4" /> },
     // { name: "Add Lecture", path: "teacheraddecture", icon: <BarChart2 className="w-4 h-4" /> },
     { name: "Add Lecture", path: "lecAttend", icon: <BarChart2 className="w-4 h-4" /> },
+    { name: "Points", path: "faculty-points", icon: <BarChart2 className="w-4 h-4" /> },
+
 
     // { name: "Peer Review", path: "peer-review", icon: <BarChart2 className="w-4 h-4" /> }
 

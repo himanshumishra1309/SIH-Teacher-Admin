@@ -77,9 +77,10 @@ const FacultyAppraisalReport = ({
         sttp: `http://localhost:6005/api/v1/points/sttp/${id}`,
         "expert-lectures": `http://localhost:6005/api/v1/points/expert-lectures/${id}`,
         "Student-Guide": `http://localhost:6005/api/v1/points/student-guided/${id}`,
-        // lecture: `http://localhost:6005/api/v1/points/lecture/${id}`,
+        lecture: `http://localhost:6005/api/v1/points/lecture/${id}`,
         // "Contribution": `http://localhost:6005/api/v1/points/contribution/${id}`,
-
+        // "Seminar-conducted": `http://localhost:6005/api/v1/points/contribution/${id}`,
+        // "Seminar-attented": `http://localhost:6005/api/v1/points/seminar-attended/${id}`,
       };
 
       try {
@@ -140,7 +141,7 @@ const FacultyAppraisalReport = ({
         if (matchingTeacher) {
           setRank(matchingTeacher.rank);
           setPerformance(matchingTeacher.performanceCategory);
-          setPoint(matchingTeacher.totalPoints)
+          setPoint(matchingTeacher.totalPoints);
         } else {
           console.log("No matching teacher found for the given facultyId");
         }

@@ -68,14 +68,14 @@ export default function FacultySeminarsAttendedTable() {
         const token = sessionStorage.getItem("teacherAccessToken");
 
         const response = await axios.get(
-          `http://localhost:6005/api/v1/seminars/seminars/conducted`,
+          `http://localhost:6005/api/v1/seminars/seminars/attended`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        console.log("Tecaher Seminar Data", response.data.data);
+        // console.log(response);
         setData(response.data.data);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
@@ -149,7 +149,7 @@ export default function FacultySeminarsAttendedTable() {
 
   const handleEditEntry = (updatedData) => {
     setData((prevData) =>
-      prevData.map((row) => (row.id === updatedData.id ? updatedData : row))
+      prevData.map((row) => (row._id === updatedData._id ? updatedData : row))
     );
   };
 
@@ -159,7 +159,7 @@ export default function FacultySeminarsAttendedTable() {
       const token = sessionStorage.getItem("teacherAccessToken");
 
       await axios.delete(
-        `http://localhost:6005/api/v1/seminars/seminars/${rowToDelete._id}`,
+        `http://localhost:6005/api/v1/seminars/seminars/attended/${rowToDelete._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -230,31 +230,31 @@ export default function FacultySeminarsAttendedTable() {
 
       <div className="table-container">
         <table className="w-full">
-        <thead>
-  {table.getHeaderGroups().map((headerGroup) => (
-    <tr key={headerGroup.id}>
-      {headerGroup.headers.map((header) => (
-        <th key={header.id} className="px-4 py-2">
-          {header.isPlaceholder
-            ? null
-            : flexRender(
-                header.column.columnDef.header,
-                header.getContext()
-              )}
-          {/* Render filter element if available */}
-          {header.column.columnDef.filterElement && (
-            <div className="mt-2">
-              {flexRender(
-                header.column.columnDef.filterElement,
-                header.getContext()
-              )}
-            </div>
-          )}
-        </th>
-      ))}
-    </tr>
-  ))}
-</thead>
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} className="px-4 py-2">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                    {/* Render filter element if available */}
+                    {header.column.columnDef.filterElement && (
+                      <div className="mt-2">
+                        {flexRender(
+                          header.column.columnDef.filterElement,
+                          header.getContext()
+                        )}
+                      </div>
+                    )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
 
           <tbody>
             {table.getRowModel().rows.map((row) => (
@@ -283,8 +283,8 @@ export default function FacultySeminarsAttendedTable() {
           try {
             if (rowToEdit) {
               console.log("editing  the data", formData);
-              const response = await axios.patch(
-                `http://localhost:6005/api/v1/seminars/${rowToEdit._id}`,
+              const response = await axios.put(
+                `http://localhost:6005/api/v1/seminars/seminars/attended/${rowToEdit._id}`,
                 formData,
                 {
                   headers: {
@@ -299,7 +299,7 @@ export default function FacultySeminarsAttendedTable() {
               // Add (POST Request)
               console.log("posting the data", formData);
               const response = await axios.post(
-                `http://localhost:6005/api/v1/seminars/seminars/upcoming`,
+                `http://localhost:6005/api/v1/seminars/seminars/attended`,
                 formData,
                 {
                   headers: {

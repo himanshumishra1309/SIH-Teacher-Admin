@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { columnDef } from "../Columns/LecturesColumn.jsx";
+import { columnDef } from "../Columns/SeminarsConductedColumn.jsx";
 import "../../table.css";
 import DownloadBtn from "../../DownloadBtn.jsx";
 import DebouncedInput from "../../DebouncedInput.jsx";
@@ -17,11 +17,12 @@ import { SearchIcon, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button.jsx";
 import { Checkbox } from "@/components/ui/checkbox.jsx";
 import DrawerComponent from "../../../Forms/AddEntry/DrawerComponent.jsx";
-import DeleteDialog from "../../DeleteDialog.jsx";
-import axios from "axios";
 import LoadingPage from "@/pages/LoadingPage.jsx";
 
-export default function FacultyLecturesTable() {
+import DeleteDialog from "../../DeleteDialog.jsx";
+import axios from "axios";
+
+export default function AdminSeminarsAttendedTable() {
   const { id } = useParams();
   // console.log(id);
   const [data, setData] = useState("");
@@ -34,27 +35,48 @@ export default function FacultyLecturesTable() {
   const [columnVisibility, setColumnVisibility] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
-  // const [expertLectureData, setExpertLectureData] = useState("");
+  // data of the teacher email wegera
+  // useEffect(() => {
+  //   const fetchTeacherInfo = async () => {
+  //     try {
+  //       // Retrieve the token from session storage
+  //       const token = sessionStorage.getItem("adminAccessToken"); // Adjust this if using cookies
+
+  //       const response = await axios.get(
+  //         `http://localhost:6005/api/v1/admins/teachers/${id}`, // Adjust URL to your API endpoint
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`, // Set the Authorization header
+  //           },
+  //         }
+  //       );
+  //       console.log(response.data.data.teacher);
+  //       setTeacherInfo(response.data.data);
+  //     } catch (error) {
+  //       console.log("An error occurred while fetching teacher info.");
+  //     }
+  //   };
+
+  //   fetchTeacherInfo();
+  // }, [id]); // Runs when 'id' changes
+
+  // dtaa of the reaserch paper of the teacher aditi sharma
+
   useEffect(() => {
     const fetchTeacherInfo = async () => {
       try {
-        const token = sessionStorage.getItem("teacherAccessToken");
+        const token = sessionStorage.getItem("adminAccessToken");
 
         const response = await axios.get(
-          `http://localhost:6005/api/v1/expertLectures/lectures`,
+          `http://localhost:6005/api/v1/admins/teachers/${id}/seminars/conducted`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        // console.log(response.data.data.expertLectures);
-        // const formattedData = response.data.data.map((item) => ({
-        //   ...item,
-        //   publishedDate: item.publishedDate.split("T")[0],
-        // }));
-
-        setData(response.data.data.expertLectures);
+        console.log(response);
+        setData(response.data.data);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
       } finally {
@@ -63,7 +85,7 @@ export default function FacultyLecturesTable() {
     };
 
     fetchTeacherInfo();
-  }, [id]);
+  }, []);
 
   const columns = useMemo(() => {
     return columnDef.map((col) => {
@@ -132,16 +154,16 @@ export default function FacultyLecturesTable() {
   };
 
   const handleDeleteRow = async () => {
-    // console.log(rowToDelete);
     try {
+      console.log(rowToDelete);
       const token = sessionStorage.getItem("teacherAccessToken");
 
-      // Make DELETE request to the server
       await axios.delete(
-        `http://localhost:6005/api/v1/expertLectures/lectures/${rowToDelete._id}`,
+        `http://localhost:6005/api/v1/seminars/seminars/attended/${rowToDelete._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );
@@ -154,13 +176,14 @@ export default function FacultyLecturesTable() {
       setDeleteDialogOpen(false);
       setRowToDelete(null);
     } catch (error) {
-      console.error("Failed to delete Expert Lecture delivered:", error);
+      console.error("Failed to delete Seminar Data:", error);
     }
   };
 
   if (isLoading) {
     return <LoadingPage />;
   }
+
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between mb-4">
@@ -176,11 +199,11 @@ export default function FacultyLecturesTable() {
         <DownloadBtn data={data} fileName="Research" />
       </div>
 
-      <div className="flex justify-end mb-4">
+      {/* <div className="flex justify-end mb-4">
         <Button onClick={() => setDrawerOpen(true)} className="add-entry-btn">
           Add Entry
         </Button>
-      </div>
+      </div> */}
 
       <div className="mb-4 flex flex-wrap gap-2">
         {table.getAllLeafColumns().map((column) => (
@@ -206,46 +229,44 @@ export default function FacultyLecturesTable() {
       </div>
 
       <div className="table-container">
-        <table className="w-full">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th key={header.id} className="px-4 py-2">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                    {/* Render filter element if available */}
-                    {header.column.columnDef.filterElement && (
-                      <div className="mt-2">
+          <table className="w-full">
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers
+                    .filter((header) => header.column.id !== "actions") // Filter out the actions column
+                    .map((header) => (
+                      <th key={header.id} className="px-4 py-2">
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </th>
+                    ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {table.getRowModel().rows.map((row) => (
+                <tr key={row.id}>
+                  {row
+                    .getVisibleCells()
+                    .filter((cell) => cell.column.id !== "actions") // Filter out the actions cell
+                    .map((cell) => (
+                      <td key={cell.id} className="px-4 py-2">
                         {flexRender(
-                          header.column.columnDef.filterElement,
-                          header.getContext()
+                          cell.column.columnDef.cell,
+                          cell.getContext()
                         )}
-                      </div>
-                    )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-4 py-2">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                      </td>
+                    ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
       <DrawerComponent
         isOpen={isDrawerOpen}
@@ -254,43 +275,42 @@ export default function FacultyLecturesTable() {
           setRowToEdit(null);
         }}
         onSubmit={async (formData) => {
-          // console.log(formData);
+          console.log(formData);
           const token = sessionStorage.getItem("teacherAccessToken");
 
           try {
             if (rowToEdit) {
-              // console.log(rowToEdit);
-              // Edit (PUT Request)
-              // console.log("editing  the data", formData);
-
-              const response = await axios.patch(
-                `http://localhost:6005/api/v1/expertLectures/lectures/${rowToEdit._id}`,
+              console.log("editing  the data", formData);
+              const response = await axios.put(
+                `http://localhost:6005/api/v1/seminars/seminars/attended/${rowToEdit._id}`,
                 formData,
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
                   },
                 }
               );
-              // console.log(response.data);
-              handleEditEntry(response.data.data); // Update table data
+              console.log(response.data.data);
+              handleEditEntry(response.data.data);
             } else {
               // Add (POST Request)
-              // console.log("posting the data", formData);
+              console.log("posting the data", formData);
               const response = await axios.post(
-                `http://localhost:6005/api/v1/expertLectures/lectures`,
+                `http://localhost:6005/api/v1/seminars/seminars/attended`,
                 formData,
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,
+                    "Content-Type": "application.json",
                   },
                 }
               );
-              // console.log(response.data);
+              console.log(response.data.data);
               handleAddEntry(response.data.data);
             }
           } catch (error) {
-            console.error("Failed to submit research data:", error);
+            console.error("Failed to submit Seminar data:", error);
           }
 
           setDrawerOpen(false);
@@ -354,3 +374,29 @@ export default function FacultyLecturesTable() {
     </div>
   );
 }
+
+
+// useEffect(() => {
+//   const fetchTeacherInfo = async () => {
+//     try {
+//       const token = sessionStorage.getItem("adminAccessToken");
+
+//       const response = await axios.get(
+//         `http://localhost:6005/api/v1/admins/teachers/${id}/seminars/conducted`,
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//         }
+//       );
+//       console.log( response.data.data);
+//       setData(response.data.data.data);
+//     } catch (error) {
+//       console.log("An error occurred while fetching teacher info.");
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   fetchTeacherInfo();
+// }, []);

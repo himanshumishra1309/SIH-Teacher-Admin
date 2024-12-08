@@ -23,7 +23,7 @@ router.get(
 );
 
 // Get submitters who have submitted feedback for a specific subject
-router.get(
+router.post(
   "/submitters",
   verifyTeacherJWT, 
   getSubmitters

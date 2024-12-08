@@ -42,11 +42,11 @@ export const columnDef = [
     header: "Venue",
     enableSorting: true,
   },
-  {
-    accessorKey: "duration",
-    header: "Duration",
-    enableSorting: true,
-  },
+  // {
+  //   accessorKey: "duration",
+  //   header: "Duration",
+  //   enableSorting: true,
+  // },
   {
     accessorKey: "date",
     header: ({ column }) => {

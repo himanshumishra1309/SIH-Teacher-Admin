@@ -49,7 +49,7 @@ const AdminFacultyAppraisalReport = ({
     sttp: `http://localhost:6005/api/v1/points/ad-sttp/${id}`,
     "expert-lectures": `http://localhost:6005/api/v1/points/ad-expert-lectures/${id}`,
     "Student-Guide": `http://localhost:6005/api/v1/points/ad-student-guided/${id}`,
-    // lecture: `http://localhost:6005/api/v1/points/ad-lecture/${id}`,
+    lecture: `http://localhost:6005/api/v1/points/ad-lecture/${id}`,
     // Contribution: `http://localhost:6005/api/v1/points/ad-contribution/${id}`,
   };
 

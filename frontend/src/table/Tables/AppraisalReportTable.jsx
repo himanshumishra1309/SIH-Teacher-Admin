@@ -41,8 +41,9 @@ export default function AppraisalReportTable() {
     sttp: `http://localhost:6005/api/v1/points/sttp/${id}`,
     "expert-lectures": `http://localhost:6005/api/v1/points/expert-lectures/${id}`,
     "Student-Guide": `http://localhost:6005/api/v1/points/student-guided/${id}`,
-    // lecture: `http://localhost:6005/api/v1/points/lecture/${id}`,
+    lecture: `http://localhost:6005/api/v1/points/lecture/${id}`,
     // "Contribution": `http://localhost:6005/api/v1/points/contribution/${id}`,
+    // "Seminar-attented": `http://localhost:6005/api/v1/points/seminar-attended/${id}`,
   };
 
   const [seminarData, setSeminarData] = useState("");

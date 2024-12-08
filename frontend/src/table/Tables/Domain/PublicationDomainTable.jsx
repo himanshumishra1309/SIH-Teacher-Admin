@@ -10,7 +10,7 @@ import "../../table.css";
 import { Button } from "@/components/ui/button.jsx";
 import axios from "axios";
 
-export default function PublicationTable() {
+export default function FacultyPublicationTable() {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
