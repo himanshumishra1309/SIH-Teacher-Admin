@@ -2,7 +2,13 @@ import React, { useEffect } from "react";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DatePicker from "react-datepicker";
@@ -33,6 +39,13 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
           schemaFields[col.accessorKey] = z.date().nullable();
         } else if (col.accessorKey === "report") {
           schemaFields[col.accessorKey] = z.instanceof(File).optional();
+        } else if (col.accessorKey === "duration") {
+          schemaFields[col.accessorKey] = z
+            .union([
+              z.string().min(1, { message: `${col.header} is required` }),
+              z.number(),
+            ])
+            .transform((val) => String(val)); // Always transform to string
         } else {
           schemaFields[col.accessorKey] = z
             .string()
@@ -58,7 +71,7 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
 
   useEffect(() => {
     if (isOpen && rowData) {
-      Object.keys(rowData).forEach((key) => {
+      Object.entries(rowData).forEach(([key, value]) => {
         if (
           [
             "Date",
@@ -70,9 +83,20 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
             "endDate",
           ].includes(key)
         ) {
-          setValue(key, rowData[key] ? new Date(rowData[key]) : null);
+          // Convert date strings to Date objects or set null if value is falsy
+          setValue(key, value ? new Date(value) : null);
+        } else if (key === "duration") {
+          // Convert duration to a string
+          setValue(
+            key,
+            value !== null && value !== undefined ? String(value) : ""
+          );
+        } else if (value === null || value === undefined) {
+          // Set default empty string for undefined or null values
+          setValue(key, "");
         } else {
-          setValue(key, rowData[key]);
+          // Set other values directly
+          setValue(key, value);
         }
       });
     }
@@ -116,103 +140,104 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
             {rowData ? "Edit Entry" : "Add a New Entry"}
           </h3>
           <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {columns.map((col) => {
-        if (
-          col.accessorKey &&
-          col.accessorKey !== "actions" &&
-          col.accessorKey !== "View"
-        ) {
-          // Extract plain text from header
-          const headerText = typeof col.header === 'function'
-            ? col.accessorKey // Use accessorKey instead of hardcoded 'Segregation'
-            : typeof col.header === 'string'
-              ? col.header
-              : col.accessorKey;
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {columns.map((col) => {
+                if (
+                  col.accessorKey &&
+                  col.accessorKey !== "actions" &&
+                  col.accessorKey !== "View"
+                ) {
+                  // Extract plain text from header
+                  const headerText =
+                    typeof col.header === "function"
+                      ? col.accessorKey // Use accessorKey instead of hardcoded 'Segregation'
+                      : typeof col.header === "string"
+                      ? col.header
+                      : col.accessorKey;
 
-          return (
-            <div key={col.accessorKey}>
-              <label
-                htmlFor={col.accessorKey}
-                className="block text-sm font-medium mb-1"
-              >
-                {headerText}
-              </label>
-              {col.dropdownOptions ? (
-                <Select
-                  onValueChange={(value) => setValue(col.accessorKey, value)}
-                  value={watch(col.accessorKey) || ""}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={`Select ${headerText}`} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {col.dropdownOptions.map((option) => (
-                      <SelectItem key={option} value={option}>
-                        {option}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : col.accessorKey === "Date" ||
-                col.accessorKey === "startDate" ||
-                col.accessorKey === "publishedDate" ||
-                col.accessorKey === "publicationDate" ||
-                col.accessorKey === "addedOn" ||
-                col.accessorKey === "endDate" ||
-                col.accessorKey === "date" ? (
-                <DatePicker
-                  selected={watch(col.accessorKey)}
-                  onChange={(date) => setValue(col.accessorKey, date)}
-                  className={`w-full p-2 border rounded ${
-                    errors[col.accessorKey]
-                      ? "border-red-500"
-                      : "border-gray-300"
-                  }`}
-                />
-              ) : col.accessorKey === "report" ? (
-                <input
-                  type="file"
-                  id={col.accessorKey}
-                  onChange={(e) =>
-                    setValue(col.accessorKey, e.target.files[0] || null)
-                  }
-                  className={`w-full p-2 border rounded ${
-                    errors[col.accessorKey]
-                      ? "border-red-500"
-                      : "border-gray-300"
-                  }`}
-                />
-              ) : (
-                <Input
-                  id={col.accessorKey}
-                  {...register(col.accessorKey)}
-                  className={
-                    errors[col.accessorKey] ? "border-red-500" : ""
-                  }
-                />
-              )}
-              {errors[col.accessorKey] && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors[col.accessorKey].message}
-                </p>
-              )}
+                  return (
+                    <div key={col.accessorKey}>
+                      <label
+                        htmlFor={col.accessorKey}
+                        className="block text-sm font-medium mb-1"
+                      >
+                        {headerText}
+                      </label>
+                      {col.dropdownOptions ? (
+                        <Select
+                          onValueChange={(value) =>
+                            setValue(col.accessorKey, value)
+                          }
+                          value={watch(col.accessorKey) || ""}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder={`Select ${headerText}`} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {col.dropdownOptions.map((option) => (
+                              <SelectItem key={option} value={option}>
+                                {option}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : col.accessorKey === "Date" ||
+                        col.accessorKey === "startDate" ||
+                        col.accessorKey === "publishedDate" ||
+                        col.accessorKey === "publicationDate" ||
+                        col.accessorKey === "addedOn" ||
+                        col.accessorKey === "endDate" ||
+                        col.accessorKey === "date" ? (
+                        <DatePicker
+                          selected={watch(col.accessorKey)}
+                          onChange={(date) => setValue(col.accessorKey, date)}
+                          className={`w-full p-2 border rounded ${
+                            errors[col.accessorKey]
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          }`}
+                        />
+                      ) : col.accessorKey === "report" ? (
+                        <input
+                          type="file"
+                          id={col.accessorKey}
+                          onChange={(e) =>
+                            setValue(col.accessorKey, e.target.files[0] || null)
+                          }
+                          className={`w-full p-2 border rounded ${
+                            errors[col.accessorKey]
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          }`}
+                        />
+                      ) : (
+                        <Input
+                          id={col.accessorKey}
+                          {...register(col.accessorKey)}
+                          className={
+                            errors[col.accessorKey] ? "border-red-500" : ""
+                          }
+                        />
+                      )}
+                      {errors[col.accessorKey] && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors[col.accessorKey].message}
+                        </p>
+                      )}
+                    </div>
+                  );
+                }
+                return null;
+              })}
             </div>
-          );
-        }
-        return null;
-      })}
-</div>
-<div className="flex justify-end gap-2 mt-6">
-  <Button type="button" onClick={onClose} variant="outline">
-    Cancel
-  </Button>
-  <Button type="submit">
-    {rowData ? "Save Changes" : "Add Entry"}
-  </Button>
-</div>
-
-
+            <div className="flex justify-end gap-2 mt-6">
+              <Button type="button" onClick={onClose} variant="outline">
+                Cancel
+              </Button>
+              <Button type="submit">
+                {rowData ? "Save Changes" : "Add Entry"}
+              </Button>
+            </div>
           </form>
         </div>
       </DrawerContent>
