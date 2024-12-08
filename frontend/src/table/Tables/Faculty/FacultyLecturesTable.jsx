@@ -34,7 +34,6 @@ export default function FacultyLecturesTable() {
   const [columnVisibility, setColumnVisibility] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
-
   // const [expertLectureData, setExpertLectureData] = useState("");
   useEffect(() => {
     const fetchTeacherInfo = async () => {
@@ -58,8 +57,7 @@ export default function FacultyLecturesTable() {
         setData(response.data.data.expertLectures);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
-      }
-      finally {
+      } finally {
         setIsLoading(false);
       }
     };
@@ -158,11 +156,10 @@ export default function FacultyLecturesTable() {
     } catch (error) {
       console.error("Failed to delete Expert Lecture delivered:", error);
     }
-    
   };
 
   if (isLoading) {
-    return <LoadingPage/>;
+    return <LoadingPage />;
   }
   return (
     <div className="container mx-auto p-4">
@@ -210,31 +207,31 @@ export default function FacultyLecturesTable() {
 
       <div className="table-container">
         <table className="w-full">
-        <thead>
-  {table.getHeaderGroups().map((headerGroup) => (
-    <tr key={headerGroup.id}>
-      {headerGroup.headers.map((header) => (
-        <th key={header.id} className="px-4 py-2">
-          {header.isPlaceholder
-            ? null
-            : flexRender(
-                header.column.columnDef.header,
-                header.getContext()
-              )}
-          {/* Render filter element if available */}
-          {header.column.columnDef.filterElement && (
-            <div className="mt-2">
-              {flexRender(
-                header.column.columnDef.filterElement,
-                header.getContext()
-              )}
-            </div>
-          )}
-        </th>
-      ))}
-    </tr>
-  ))}
-</thead>
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} className="px-4 py-2">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                    {/* Render filter element if available */}
+                    {header.column.columnDef.filterElement && (
+                      <div className="mt-2">
+                        {flexRender(
+                          header.column.columnDef.filterElement,
+                          header.getContext()
+                        )}
+                      </div>
+                    )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
 
           <tbody>
             {table.getRowModel().rows.map((row) => (
@@ -249,7 +246,7 @@ export default function FacultyLecturesTable() {
           </tbody>
         </table>
       </div>
-      
+
       <DrawerComponent
         isOpen={isDrawerOpen}
         onClose={() => {

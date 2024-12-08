@@ -4,10 +4,24 @@ import { ApiError } from "../utils/ApiErrors.js";
 import { LectureFeedback } from "../models/lectureFeedbacks.models.js";
 
 const getAllFeedbackCards = asyncHandler(async (req, res) => {
-  const { subject_name, subject_code, subject_credit, branch, year, teacherId } = req.body;
+  const {
+    subject_name,
+    subject_code,
+    subject_credit,
+    branch,
+    year,
+    teacherId,
+  } = req.body;
 
   // Validate query parameters
-  if (!subject_name || !subject_code || !subject_credit || !branch || !year || !teacherId) {
+  if (
+    !subject_name ||
+    !subject_code ||
+    !subject_credit ||
+    !branch ||
+    !year ||
+    !teacherId
+  ) {
     throw new ApiError(
       400,
       "All fields (subject_name, subject_code, subject_credit, branch, year) are required."
@@ -22,7 +36,8 @@ const getAllFeedbackCards = asyncHandler(async (req, res) => {
     teacher: teacherId,
     branch: branch,
     year: year,
-  }).sort({ submissionTime: -1 }) // Sort by most recent submission
+  })
+    .sort({ submissionTime: -1 }) // Sort by most recent submission
     .lean();
 
   // If no feedback is found, return an error
@@ -57,7 +72,13 @@ const getAllFeedbackCards = asyncHandler(async (req, res) => {
   // Send the feedback cards as the response
   return res
     .status(200)
-    .json(new ApiResponse(200, feedbackCards, "Feedback cards fetched successfully."));
+    .json(
+      new ApiResponse(
+        200,
+        feedbackCards,
+        "Feedback cards fetched successfully."
+      )
+    );
 });
 
 const getDetailedFeedback = asyncHandler(async (req, res) => {
@@ -101,14 +122,36 @@ const getDetailedFeedback = asyncHandler(async (req, res) => {
   // Send the detailed feedback as the response
   return res
     .status(200)
-    .json(new ApiResponse(200, detailedFeedback, "Detailed feedback fetched successfully."));
+    .json(
+      new ApiResponse(
+        200,
+        detailedFeedback,
+        "Detailed feedback fetched successfully."
+      )
+    );
 });
 
 const getSubmitters = asyncHandler(async (req, res) => {
-  const { subject_name, subject_code, subject_credit, branch, year, teacherId } = req.query;
+  const {
+    subject_name,
+    subject_code,
+    subject_credit,
+    branch,
+    year,
+    teacherId,
+  } = req.body;
+
+  // console.log(subject_code);
 
   // Validate input
-  if (!subject_name || !subject_code || !subject_credit || !branch || !year || !teacherId) {
+  if (
+    !subject_name ||
+    !subject_code ||
+    !subject_credit ||
+    !branch ||
+    !year ||
+    !teacherId
+  ) {
     throw new ApiError(
       400,
       "All fields (subject_name, subject_code, subject_credit, branch, year, teacherId) are required."
@@ -119,7 +162,7 @@ const getSubmitters = asyncHandler(async (req, res) => {
   const feedbackData = await LectureFeedback.find({
     subject_name: subject_name,
     subject_code: subject_code,
-    subject_credit:subject_credit,
+    subject_credit: subject_credit,
     branch: branch,
     year: year,
     teacher: teacherId,
@@ -130,13 +173,18 @@ const getSubmitters = asyncHandler(async (req, res) => {
 
   // If no feedback is found, return an error
   if (!feedbackData || feedbackData.length === 0) {
-    throw new ApiError(404, "No feedback found for the specified subject and teacher.");
+    throw new ApiError(
+      404,
+      "No feedback found for the specified subject and teacher."
+    );
   }
 
   // Prepare response: List of submitters with submission times
   const submitters = feedbackData.map((feedback) => ({
-    submitter: feedback.submitter ? feedback.submitter.name || "Anonymous" : "Anonymous",
-    rollNumber: feedback.submitter?.rollNumber || "N/A", // Include rollNumber if required
+    submitter: feedback.submitter
+      ? feedback.submitter.name || "Anonymous"
+      : "Anonymous",
+    rollNumber: feedback.submitter?.roll_no || "N/A", // Include rollNumber if required
     submissionTime: feedback.submissionTime,
   }));
 

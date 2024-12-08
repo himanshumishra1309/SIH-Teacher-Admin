@@ -11,12 +11,12 @@ export const columnDef = [
         enableHiding: false,
       },
       {
-        accessorKey: "name",
-        header: "Name",
+        accessorKey: "submitter",
+        header: "Student Name",
         enableSorting: true,
       },
       {
-        accessorKey: "roll_no",
+        accessorKey: "rollNumber",
         header: "Roll No",
         enableSorting: true,
       },
