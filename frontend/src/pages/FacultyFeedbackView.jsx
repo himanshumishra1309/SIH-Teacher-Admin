@@ -1,31 +1,49 @@
-"use client";
+import React, { useState } from 'react'
+import { Card } from "@/components/ui/card"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Star } from 'lucide-react'
+import { Button } from "@/components/ui/button"
+import { X } from 'lucide-react'
+import FeedbackSubmitterTable from './UpcomingSeminars/feedbackSubmitterTable'
 
-import { Card } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Star } from "lucide-react";
+export default function FacultyFeedbackView({ feedback, onClose, isOpen }) {
+  if (!isOpen) return null;
 
-export default function FacultyFeedbackView() {
-  // Mock data - replace with actual API call
-  const averageRating = 4.2;
+  const [isSubmittersModalOpen, setIsSubmittersModalOpen] = useState(false);
+
+  // Mock data - replace with actual data from the feedback prop
+  const averageRating = 4.2
   const feedbackData = [
     {
       studentName: "Anonymous Student",
       rating: 4,
       comment: "Excellent teaching methodology and very helpful in clearing doubts.",
-      date: "2024-01-15",
+      date: "2024-01-15"
     },
     {
       studentName: "Anonymous Student",
       rating: 5,
       comment: "The professor made complex topics easy to understand.",
-      date: "2024-01-14",
+      date: "2024-01-14"
     },
     // Add more feedback items as needed
-  ];
+  ]
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl h-[80vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center mt-40">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl h-[80vh] overflow-hidden relative">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
+        >
+          <X className="h-5 w-5 text-gray-700" />
+        </button>
+        <Button
+          onClick={() => setIsSubmittersModalOpen(true)}
+          className="absolute top-4 right-16 bg-blue-500 hover:bg-blue-600 text-white"
+        >
+          View Submitters
+        </Button>
         <div className="flex h-full">
           {/* Left Side - Rating Overview */}
           <div className="w-1/3 border-r border-gray-200 p-6 bg-blue-50">
@@ -52,7 +70,9 @@ export default function FacultyFeedbackView() {
 
           {/* Right Side - Feedback Cards */}
           <div className="flex-1 p-6">
-            <h2 className="text-2xl font-bold text-blue-900 mb-6">Student Feedback</h2>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-blue-900">Student Feedback</h2>
+            </div>
             <ScrollArea className="h-[calc(80vh-120px)]">
               <div className="space-y-4 pr-4">
                 {feedbackData.map((feedback, index) => (
@@ -83,6 +103,24 @@ export default function FacultyFeedbackView() {
           </div>
         </div>
       </div>
+      {isSubmittersModalOpen && (
+        <div className="fixed inset-0 z-60 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl h-[70vh] overflow-hidden relative">
+            <button
+              onClick={() => setIsSubmittersModalOpen(false)}
+              className="absolute top-4 right-4 p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
+            >
+              <X className="h-5 w-5 text-gray-700" />
+            </button>
+            <div className="p-6">
+              <h2 className="text-2xl font-bold text-blue-900 mb-4">Feedback Submitters</h2>
+              <FeedbackSubmitterTable/>
+              <p className="text-gray-600">Submitters table will be displayed here.</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-  );
+  )
 }
+

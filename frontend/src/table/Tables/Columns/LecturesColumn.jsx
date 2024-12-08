@@ -7,11 +7,7 @@ export const columnDef = [
     header: "Topic",
     enableSorting: true,
   },
-  {
-    accessorKey: "level",
-    header: "Level",
-    enableSorting: true,
-  },
+ 
   {
     accessorKey: "level",
     header: "Level",

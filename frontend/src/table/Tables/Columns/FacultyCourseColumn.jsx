@@ -89,14 +89,19 @@ export const columnDef = [
   {
     accessorKey: "feedbackForm",
     header: "View Feedback",
-    cell: ({ row }) => (
-      <Button
-        onClick={() => window.open(row.getValue("URL"), "_blank")}
-        className="view-btn"
-      >
-        View <ExternalLink className="ml-2 h-4 w-4" />
-      </Button>
-    ),
+    cell: ({ row }) => {
+      const navigate = useNavigate();
+      const id = row.original.id; // Replace with actual data
+      return (
+        <Button
+          onClick={() => navigate(`/faculty/${id}/feedback`)}
+          className="view-btn"
+        >
+          View <ExternalLink className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     enableSorting: false,
-  },
+  }
+  
 ];
