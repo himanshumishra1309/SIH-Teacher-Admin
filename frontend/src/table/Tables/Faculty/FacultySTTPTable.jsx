@@ -243,18 +243,18 @@ export default function FacultySTTPTable() {
           try {
             if (rowToEdit) {
               console.log("editing  the data", formData);
+              console.log("jifnuinfiuwefnu", rowToEdit._id);
+              
               const response = await axios.put(
                 `http://localhost:6005/api/v1/sttp/${rowToEdit._id}`,
                 formData,
                 {
                   headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    // "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${token}`
                   },
                 }
               );
-              console.log(response.data.data);
+              console.log(response);
               handleEditEntry(response.data.data); // Update table data
             } else {
               console.log("posting the data", formData);

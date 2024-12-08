@@ -34,7 +34,6 @@ export default function FacultyProjectTable() {
   const [columnVisibility, setColumnVisibility] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
-
   // const [teacherProjectData, setTeacherProjectData] = useState("");
   useEffect(() => {
     const fetchTeacherInfo = async () => {
@@ -53,8 +52,7 @@ export default function FacultyProjectTable() {
         setData(response.data.data.projects);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
-      }
-      finally {
+      } finally {
         setIsLoading(false);
       }
     };
@@ -154,9 +152,9 @@ export default function FacultyProjectTable() {
       console.error("Failed to delete projects Data:", error);
     }
   };
-  
+
   if (isLoading) {
-    return <LoadingPage/>;
+    return <LoadingPage />;
   }
 
   return (
@@ -202,34 +200,34 @@ export default function FacultyProjectTable() {
           Reset Filters
         </Button>
       </div>
-      
+
       <div className="table-container">
         <table className="w-full">
-        <thead>
-  {table.getHeaderGroups().map((headerGroup) => (
-    <tr key={headerGroup.id}>
-      {headerGroup.headers.map((header) => (
-        <th key={header.id} className="px-4 py-2">
-          {header.isPlaceholder
-            ? null
-            : flexRender(
-                header.column.columnDef.header,
-                header.getContext()
-              )}
-          {/* Render filter element if available */}
-          {header.column.columnDef.filterElement && (
-            <div className="mt-2">
-              {flexRender(
-                header.column.columnDef.filterElement,
-                header.getContext()
-              )}
-            </div>
-          )}
-        </th>
-      ))}
-    </tr>
-  ))}
-</thead>
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} className="px-4 py-2">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                    {/* Render filter element if available */}
+                    {header.column.columnDef.filterElement && (
+                      <div className="mt-2">
+                        {flexRender(
+                          header.column.columnDef.filterElement,
+                          header.getContext()
+                        )}
+                      </div>
+                    )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
 
           <tbody>
             {table.getRowModel().rows.map((row) => (
@@ -245,7 +243,6 @@ export default function FacultyProjectTable() {
         </table>
       </div>
 
-
       <DrawerComponent
         isOpen={isDrawerOpen}
         onClose={() => {
@@ -258,14 +255,16 @@ export default function FacultyProjectTable() {
 
           try {
             if (rowToEdit) {
-              console.log("editing  the data", formData);
+              // console.log("Editing the data:");
+              // for (const [key, value] of formData.entries()) {
+              //   console.log(`${key}:`, value);
+              // }
               const response = await axios.patch(
                 `http://localhost:6005/api/v1/projects/projects/${rowToEdit._id}`,
                 formData,
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
                   },
                 }
               );

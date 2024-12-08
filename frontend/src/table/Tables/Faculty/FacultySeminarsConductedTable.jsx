@@ -280,18 +280,17 @@ export default function FacultySeminarsConductedTable() {
 
           try {
             if (rowToEdit) {
-              // console.log("editing  the data", formData);
+              console.log("editing  the data", formData);
               const response = await axios.put(
                 `http://localhost:6005/api/v1/seminars/${rowToEdit._id}/edit`,
                 formData,
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
                   },
                 }
               );
-              // console.log(response.data.data);
+              console.log(response.data.data);
               handleEditEntry(response.data.data);
             } else {
               // Add (POST Request)

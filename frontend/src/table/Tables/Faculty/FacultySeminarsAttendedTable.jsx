@@ -289,7 +289,6 @@ export default function FacultySeminarsAttendedTable() {
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
                   },
                 }
               );
@@ -297,7 +296,7 @@ export default function FacultySeminarsAttendedTable() {
               handleEditEntry(response.data.data);
             } else {
               // Add (POST Request)
-              console.log("posting the data", formData);
+              // console.log("posting the data", formData);
               const response = await axios.post(
                 `http://localhost:6005/api/v1/seminars/seminars/attended`,
                 formData,

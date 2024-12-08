@@ -98,7 +98,7 @@ export const columnDef = [
     header: "View Report",
     cell: ({ row }) => (
       <Button
-        onClick={() => window.open(row.getValue("URL"), "_blank")}
+        onClick={() => window.open(row.getValue("report"), "_blank")}
         className="view-btn"
       >
         View <ExternalLink className="ml-2 h-4 w-4" />

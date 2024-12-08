@@ -2,15 +2,22 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler2.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { Project } from "../models/projects.models.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { v2 as cloudinary } from "cloudinary";
-import fs from "fs";
 import { uploadToGCS } from "../utils/googleCloud.js";
+import path from "path";
+import { Storage } from "@google-cloud/storage";
+const storage = new Storage();
 
 // All the routes are done including update and delete also :)
 
 const uploadProject = asyncHandler(async (req, res) => {
-  const { topic, branch_name, daily_duration, projectType, startDate, endDate } = req.body;
+  const {
+    topic,
+    branch_name,
+    daily_duration,
+    projectType,
+    startDate,
+    endDate,
+  } = req.body;
   const file = req.file;
 
   if (
@@ -26,7 +33,7 @@ const uploadProject = asyncHandler(async (req, res) => {
   }
 
   // const uploadResponse = await uploadOnCloudinary(file.path);
-  const uploadResponse = await uploadToGCS(file.path, "pdf-report"); 
+  const uploadResponse = await uploadToGCS(file.path, "pdf-report");
 
   if (!uploadResponse) {
     throw new ApiError(500, "error in uploading file to Google Cloud");
@@ -81,49 +88,50 @@ const updateProject = asyncHandler(async (req, res) => {
   const { topic, branch_name, daily_duration, startDate, endDate } = req.body;
   const file = req.file;
 
-  let updateFields = { topic, branch_name, daily_duration, startDate, endDate };
-
   const project = await Project.findById(id);
 
   if (!project) {
     throw new ApiError(400, "No such record found in project");
   }
 
-  // Handle file upload if a new file is provided
-  if (file) {
-    // Delete the previous file from Cloudinary if it exists
-    if (project.report) {
-      const publicId = project.report.split("/").pop().split(".")[0]; // Extract the public_id from the Cloudinary URL
-      await cloudinary.uploader.destroy(publicId);
-    }
+  if (topic) project.topic = topic;
+  if (branch_name) project.branch_name = branch_name;
+  if (daily_duration) project.daily_duration = daily_duration;
+  if (startDate) project.startDate = startDate;
+  if (endDate) project.endDate = endDate;
 
-    // Upload the new file to Cloudinary
-    const uploadResponse = await uploadOnCloudinary(file.path);
+  if (file) {
+    // Delete the previous file from GCS if it exists
+    // if (expertLecture.report) {
+    //   const publicUrlParts = expertLecture.report.split('/');
+    //   const fileName = publicUrlParts.slice(-2).join('/'); // Extract folder and filename
+    //   await storage.bucket(process.env.GCLOUD_STORAGE_BUCKET).file(fileName).delete();
+    // }
+
+    // Detect file type and set folder
+    const fileExtension = path.extname(file.originalname).toLowerCase();
+    const folder = fileExtension === ".pdf" ? "pdf-reports" : "images";
+
+    // Upload the new file to the appropriate folder
+    const fileUrl = await uploadToGCS(file.path, folder);
 
     // Check if the upload was successful
-    if (!uploadResponse) {
-      throw new ApiError(500, "Error in uploading new file to Cloudinary");
+    if (!fileUrl) {
+      throw new ApiError(500, "Error in uploading new file to Google Cloud");
     }
 
-    // Update the report field with the new Cloudinary URL
-    updateFields.report = uploadResponse.secure_url;
+    // Update the report field with the new public URL
+    project.report = fileUrl;
   }
 
-  const updatedProject = await Project.findByIdAndUpdate(
-    id,
-    { $set: updateFields },
-    { new: true }
-  );
-
-  if (!updatedProject) {
-    throw new ApiError(404, "Project not found");
+  await project.save();
+  if (!project) {
+    throw new ApiError(500, "Something went wrong");
   }
 
   return res
     .status(200)
-    .json(
-      new ApiResponse(200, updatedProject, "Project event updated successfully")
-    );
+    .json(new ApiResponse(200, project, "Project event updated successfully"));
 });
 
 const deleteProject = asyncHandler(async (req, res) => {
