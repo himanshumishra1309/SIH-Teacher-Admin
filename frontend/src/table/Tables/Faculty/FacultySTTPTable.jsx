@@ -40,7 +40,7 @@ export default function FacultySTTPTable() {
       try {
         const token = sessionStorage.getItem("teacherAccessToken");
 
-        const response = await axios.get(`http://localhost:6005/api/v1/sttp/`, {
+        const response = await axios.get(`https://facultyappraisal.software/api/v1/sttp/`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -130,7 +130,7 @@ export default function FacultySTTPTable() {
 
       // Make DELETE request to the server
       await axios.delete(
-        `http://localhost:6005/api/v1/sttp/${rowToDelete._id}`,
+        `https://facultyappraisal.software/api/v1/sttp/${rowToDelete._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -243,23 +243,23 @@ export default function FacultySTTPTable() {
           try {
             if (rowToEdit) {
               console.log("editing  the data", formData);
+              console.log("jifnuinfiuwefnu", rowToEdit._id);
+              
               const response = await axios.put(
-                `http://localhost:6005/api/v1/sttp/${rowToEdit._id}`,
+                `https://facultyappraisal.software/api/v1/sttp/${rowToEdit._id}`,
                 formData,
                 {
                   headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    // "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${token}`
                   },
                 }
               );
-              console.log(response.data.data);
+              console.log(response);
               handleEditEntry(response.data.data); // Update table data
             } else {
               console.log("posting the data", formData);
               const response = await axios.post(
-                `http://localhost:6005/api/v1/sttp/upload`,
+                `https://facultyappraisal.software/api/v1/sttp/upload`,
                 formData,
                 {
                   headers: {

@@ -3,10 +3,13 @@ import { asyncHandler } from "../utils/AsyncHandler2.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { Seminar } from "../models/seminars.models.js";
 import { SeminarFeedback } from "../models/feedback-seminars.models.js";
-import { uploadToGCS, deleteFromGCS } from "../utils/googleCloud.js";
 import { SAttendance } from "../models/seminarAttendance.models.js";
 import { Student } from "../models/students.models.js";
 import { SeminarAttended } from "../models/seminarAttended.models.js";
+import { uploadToGCS } from "../utils/googleCloud.js";
+import path from "path";
+import { Storage } from "@google-cloud/storage";
+const storage = new Storage();
 
 const uploadConductedSeminar = asyncHandler(async (req, res) => {
   const { topic, duration, date } = req.body;
@@ -57,8 +60,8 @@ const getConductedSeminars = asyncHandler(async (req, res) => {
 
 const editUploadedSeminar = asyncHandler(async (req, res) => {
   const { seminarId } = req.params;
-  const { topic, duration, date, deleteReport } = req.body;
-
+  const { topic, duration, date } = req.body;
+  const file = req.file;
   // Find the seminar
   const seminar = await Seminar.findById(seminarId);
   if (!seminar) {
@@ -70,19 +73,35 @@ const editUploadedSeminar = asyncHandler(async (req, res) => {
   if (duration) seminar.duration = duration;
   if (date) seminar.date = new Date(date);
 
-  // Handle report updates
-  if (deleteReport && seminar.report) {
-    await deleteFromGCS(seminar.report); // Remove the report from GCS
-    seminar.report = undefined; // Clear the report field
-  }
+  if (file) {
+    // Delete the previous file from GCS if it exists
+    // if (expertLecture.report) {
+    //   const publicUrlParts = expertLecture.report.split('/');
+    //   const fileName = publicUrlParts.slice(-2).join('/'); // Extract folder and filename
+    //   await storage.bucket(process.env.GCLOUD_STORAGE_BUCKET).file(fileName).delete();
+    // }
 
-  if (req.file) {
-    const reportUrl = await uploadToGCS(req.file.path, "reports");
-    seminar.report = reportUrl; // Update with new report
+    // Detect file type and set folder
+    const fileExtension = path.extname(file.originalname).toLowerCase();
+    const folder = fileExtension === ".pdf" ? "pdf-reports" : "images";
+
+    // Upload the new file to the appropriate folder
+    const fileUrl = await uploadToGCS(file.path, folder);
+
+    // Check if the upload was successful
+    if (!fileUrl) {
+      throw new ApiError(500, "Error in uploading new file to Google Cloud");
+    }
+
+    // Update the report field with the new public URL
+    seminar.report = fileUrl;
   }
 
   await seminar.save();
 
+  if (!seminar) {
+    throw new ApiError(500, "Something went wrong");
+  }
   res
     .status(200)
     .json(new ApiResponse(200, seminar, "Seminar updated successfully"));

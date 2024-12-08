@@ -29,7 +29,7 @@ export default function FacultyCourseFeedbackTable({ setSelectedCourses }) {
 
         // Step 1: Fetch all subjects
         const response = await axios.get(
-          "http://localhost:6005/api/v1/admins/subjects/allSubjects",
+          "https://facultyappraisal.software/api/v1/admins/subjects/allSubjects",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -45,7 +45,7 @@ export default function FacultyCourseFeedbackTable({ setSelectedCourses }) {
             // console.log(subject)
             try {
               const teacherResponse = await axios.get(
-                `http://localhost:6005/api/v1/admins/teacher/${subject.teacher}`,
+                `https://facultyappraisal.software/api/v1/admins/teacher/${subject.teacher}`,
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,

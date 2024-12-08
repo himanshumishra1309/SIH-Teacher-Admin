@@ -2,13 +2,19 @@ import React, { useEffect } from "react";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { z } from "zod";
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink } from "lucide-react";
 
 function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
   const generateSchema = () => {
@@ -31,20 +37,51 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
           ].includes(col.accessorKey)
         ) {
           schemaFields[col.accessorKey] = z.date().nullable();
+        } else if (col.accessorKey === "report") {
+          schemaFields[col.accessorKey] = z
+            .union([z.instanceof(File), z.string().url(), z.string().length(0)])
+            .optional();
         }
-        else if (col.accessorKey === "report") {
-          schemaFields[col.accessorKey] = z.union([
-            z.instanceof(File),
-            z.string().url(),
-            z.string().length(0)
-          ]).optional();
-        }
-        else if (["dailyDuration", "duration"].includes(col.accessorKey)) {
+        // Handle numeric fields
+        else if (
+          [
+            "volume",
+            "issue",
+            "dailyDuration",
+            "duration",
+            "daily_duration",
+          ].includes(col.accessorKey)
+        ) {
           schemaFields[col.accessorKey] = z.coerce
             .number()
             .min(1, { message: `${col.header} must be greater than 0` });
         }
-        else {
+        // Handle authors array
+        else if (col.accessorKey === "authors") {
+          schemaFields[col.accessorKey] = z
+            .string()
+            .transform((str) => str.split(",").map((s) => s.trim()))
+            .pipe(z.array(z.string().min(1)));
+        }
+        // Handle journal type enum
+        else if (col.accessorKey === "journalType") {
+          schemaFields[col.accessorKey] = z.enum([
+            "International",
+            "National",
+            "Regional",
+          ]);
+        } else if (col.accessorKey === "branch_name") {
+          schemaFields[col.accessorKey] = z.enum([
+            "CSE",
+            "IT",
+            "ECE",
+            "EEE",
+            "MECH",
+            "CIVIL",
+          ]);
+        } else if (col.accessorKey === "projectType") {
+          schemaFields[col.accessorKey] = z.enum(["Major", "Minor"]);
+        } else {
           schemaFields[col.accessorKey] = z
             .string()
             .min(1, { message: `${col.header} is required` });
@@ -64,7 +101,14 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
-    defaultValues: rowData || {},
+    defaultValues: rowData
+      ? {
+          ...rowData,
+          authors: Array.isArray(rowData.authors)
+            ? rowData.authors.join(", ")
+            : rowData.authors,
+        }
+      : {},
   });
 
   useEffect(() => {
@@ -82,6 +126,11 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
           ].includes(key)
         ) {
           setValue(key, rowData[key] ? new Date(rowData[key]) : null);
+        } else if (key === "authors") {
+          setValue(
+            key,
+            Array.isArray(rowData[key]) ? rowData[key].join(", ") : rowData[key]
+          );
         } else {
           setValue(key, rowData[key]);
         }
@@ -96,6 +145,8 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
   }, [isOpen, rowData, setValue, watch]);
 
   const handleFormSubmit = (data) => {
+    console.log(data);
+
     const formData = new FormData();
 
     Object.entries(data).forEach(([key, value]) => {
@@ -105,14 +156,21 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
         } else if (typeof value === "string" && value.startsWith("http")) {
           formData.append(key, value);
         }
-      } else if (value instanceof Date) {
-        formData.append(key, value.toISOString());
       } else {
         formData.append(key, value);
       }
     });
 
+    console.log("Editing the data:");
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}:`, value);
+    }
+
     try {
+      // Pass the updated report URL back to the parent component
+      const updatedData = Object.fromEntries(formData);
+      // console.log(updatedData);
+
       onSubmit(formData);
       onClose();
     } catch (error) {
@@ -135,9 +193,10 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
                   col.accessorKey !== "actions" &&
                   col.accessorKey !== "View"
                 ) {
-                  const headerText = typeof col.header === 'function'
-                    ? col.accessorKey
-                    : typeof col.header === 'string'
+                  const headerText =
+                    typeof col.header === "function"
+                      ? col.accessorKey
+                      : typeof col.header === "string"
                       ? col.header
                       : col.accessorKey;
 
@@ -151,21 +210,33 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
                       </label>
                       {col.dropdownOptions ? (
                         <Select
-                          onValueChange={(value) => setValue(col.accessorKey, value)}
+                          onValueChange={(value) =>
+                            setValue(col.accessorKey, value)
+                          }
                           value={watch(col.accessorKey) || ""}
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder={`Select ${headerText}`} />
                           </SelectTrigger>
                           <SelectContent>
-                            {col.dropdownOptions.map((option) => (
-                              <SelectItem key={option} value={option}>
-                                {option}
-                              </SelectItem>
-                            ))}
+                            {["International", "National", "Regional"].map(
+                              (type) => (
+                                <SelectItem key={type} value={type}>
+                                  {type}
+                                </SelectItem>
+                              )
+                            )}
                           </SelectContent>
                         </Select>
-                      ) : ["Date", "startDate", "publishedDate", "publicationDate", "addedOn", "endDate", "date"].includes(col.accessorKey) ? (
+                      ) : [
+                          "Date",
+                          "startDate",
+                          "publishedDate",
+                          "publicationDate",
+                          "addedOn",
+                          "endDate",
+                          "date",
+                        ].includes(col.accessorKey) ? (
                         <DatePicker
                           selected={watch(col.accessorKey)}
                           onChange={(date) => setValue(col.accessorKey, date)}
@@ -175,30 +246,100 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
                               : "border-gray-300"
                           }`}
                         />
+                      ) : [
+                          "volume",
+                          "issue",
+                          "dailyDuration",
+                          "duration",
+                          "daily_duration",
+                        ].includes(col.accessorKey) ? (
+                        <Input
+                          id={col.accessorKey}
+                          type="number"
+                          min="1"
+                          {...register(col.accessorKey)}
+                          className={
+                            errors[col.accessorKey] ? "border-red-500" : ""
+                          }
+                        />
+                      ) : col.accessorKey === "authors" ? (
+                        <div>
+                          <Input
+                            id={col.accessorKey}
+                            {...register(col.accessorKey)}
+                            className={
+                              errors[col.accessorKey] ? "border-red-500" : ""
+                            }
+                            placeholder="Enter authors separated by commas"
+                          />
+                          <p className="text-sm text-gray-500 mt-1">
+                            Separate multiple authors with commas
+                          </p>
+                        </div>
+                      ) : col.accessorKey === "branch_name" ? (
+                        <Select
+                          onValueChange={(value) =>
+                            setValue(col.accessorKey, value)
+                          }
+                          value={watch(col.accessorKey) || ""}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select branch name" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {["CSE", "IT", "ECE", "EEE", "MECH", "CIVIL"].map(
+                              (type) => (
+                                <SelectItem key={type} value={type}>
+                                  {type}
+                                </SelectItem>
+                              )
+                            )}
+                          </SelectContent>
+                        </Select>
+                      ) : col.accessorKey === "projectType" ? (
+                        <Select
+                          onValueChange={(value) =>
+                            setValue(col.accessorKey, value)
+                          }
+                          value={watch(col.accessorKey) || ""}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select project type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {["Major", "Minor"].map((type) => (
+                              <SelectItem key={type} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       ) : col.accessorKey === "report" ? (
                         <div className="space-y-2">
-                          {rowData && rowData.report && (
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className="text-sm text-gray-500">Current file:</span>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => window.open(rowData.report, '_blank')}
-                                className="flex items-center gap-2"
+                          {/* {rowData && rowData.report && (
+                            <div className="mb-2">
+                              <span className="text-sm font-medium">
+                                Current file:
+                              </span>
+                              <a
+                                href={rowData.report}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-500 hover:underline ml-2"
                               >
                                 View Report <ExternalLink className="h-4 w-4" />
                               </Button>
                             </div>
-                          )}
+                          )} */}
                           <input
                             type="file"
                             id={col.accessorKey}
                             onChange={(e) => {
                               const file = e.target.files?.[0];
-                              if (file) {
-                                setValue(col.accessorKey, file);
-                              }
+                              setValue(
+                                col.accessorKey,
+                                file || rowData?.report || ""
+                              );
                             }}
                             className={`w-full p-2 border rounded ${
                               errors[col.accessorKey]
@@ -207,7 +348,9 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
                             }`}
                           />
                           <p className="text-sm text-gray-500">
-                            {rowData?.report ? "Upload new file to replace current one" : "Choose a file"}
+                            {rowData?.report
+                              ? "Choose a file to replace the current report"
+                              : "Choose a file"}
                           </p>
                         </div>
                       ) : ["dailyDuration", "duration"].includes(col.accessorKey) ? (
@@ -222,7 +365,9 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
                         <Input
                           id={col.accessorKey}
                           {...register(col.accessorKey)}
-                          className={errors[col.accessorKey] ? "border-red-500" : ""}
+                          className={
+                            errors[col.accessorKey] ? "border-red-500" : ""
+                          }
                         />
                       )}
                       {errors[col.accessorKey] && (
@@ -252,4 +397,3 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
 }
 
 export default DrawerComponent;
-

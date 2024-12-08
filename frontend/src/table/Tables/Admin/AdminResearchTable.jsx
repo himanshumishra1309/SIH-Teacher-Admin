@@ -119,7 +119,7 @@ export default function AdminResearchTable() {
     const endpoint = endpointMap[publicationType];
     try {
       const token = sessionStorage.getItem("adminAccessToken");
-      const response = await axios.get(`http://localhost:6005${endpoint}`, {
+      const response = await axios.get(`https://facultyappraisal.software${endpoint}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -389,7 +389,7 @@ export default function AdminResearchTable() {
 
       // Send the API request to the determined endpoint
       const response = await axios.post(
-        `http://localhost:6005${endpoint}`,
+        `https://facultyappraisal.software${endpoint}`,
         formData,
         {
           headers: {
@@ -409,7 +409,7 @@ export default function AdminResearchTable() {
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
       const response = await axios.patch(
-        `http://localhost:6005/api/v1/research-paper/update/${rowToEdit._id}`,
+        `https://facultyappraisal.software/api/v1/research-paper/update/${rowToEdit._id}`,
         formData,
         {
           headers: {
@@ -434,7 +434,7 @@ export default function AdminResearchTable() {
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
       await axios.delete(
-        `http://localhost:6005/api/v1/research-paper/delete/${rowToDelete._id}`,
+        `https://facultyappraisal.software/api/v1/research-paper/delete/${rowToDelete._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

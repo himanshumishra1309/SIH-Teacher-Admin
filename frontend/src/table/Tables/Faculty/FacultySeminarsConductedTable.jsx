@@ -43,7 +43,7 @@ export default function FacultySeminarsConductedTable() {
   //       const token = sessionStorage.getItem("adminAccessToken"); // Adjust this if using cookies
 
   //       const response = await axios.get(
-  //         `http://localhost:6005/api/v1/admins/teachers/${id}`, // Adjust URL to your API endpoint
+  //         `https://facultyappraisal.software/api/v1/admins/teachers/${id}`, // Adjust URL to your API endpoint
   //         {
   //           headers: {
   //             Authorization: `Bearer ${token}`, // Set the Authorization header
@@ -68,7 +68,7 @@ export default function FacultySeminarsConductedTable() {
         const token = sessionStorage.getItem("teacherAccessToken");
 
         const response = await axios.get(
-          `http://localhost:6005/api/v1/seminars/conducted`,
+          `https://facultyappraisal.software/api/v1/seminars/conducted`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -159,7 +159,7 @@ export default function FacultySeminarsConductedTable() {
       const token = sessionStorage.getItem("teacherAccessToken");
 
       await axios.delete(
-        `http://localhost:6005/api/v1/seminars/${rowToDelete._id}`,
+        `https://facultyappraisal.software/api/v1/seminars/${rowToDelete._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -280,24 +280,23 @@ export default function FacultySeminarsConductedTable() {
 
           try {
             if (rowToEdit) {
-              // console.log("editing  the data", formData);
+              console.log("editing  the data", formData);
               const response = await axios.put(
-                `http://localhost:6005/api/v1/seminars/${rowToEdit._id}/edit`,
+                `https://facultyappraisal.software/api/v1/seminars/${rowToEdit._id}/edit`,
                 formData,
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
                   },
                 }
               );
-              // console.log(response.data.data);
+              console.log(response.data.data);
               handleEditEntry(response.data.data);
             } else {
               // Add (POST Request)
               // console.log("posting the data", formData);
               const response = await axios.post(
-                `http://localhost:6005/api/v1/seminars/seminars/conducted`,
+                `https://facultyappraisal.software/api/v1/seminars/seminars/conducted`,
                 formData,
                 {
                   headers: {
