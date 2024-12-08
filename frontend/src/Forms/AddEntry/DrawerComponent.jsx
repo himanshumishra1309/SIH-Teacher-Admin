@@ -8,7 +8,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { z } from "zod";
-import { ExternalLink } from 'lucide-react';
 
 function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
   const generateSchema = () => {
@@ -39,10 +38,27 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
             z.string().length(0)
           ]).optional();
         }
-        else if (["dailyDuration", "duration"].includes(col.accessorKey)) {
+        // Handle numeric fields
+        else if (["volume", "issue", "dailyDuration", "duration", "daily_duration"].includes(col.accessorKey)) {
           schemaFields[col.accessorKey] = z.coerce
             .number()
             .min(1, { message: `${col.header} must be greater than 0` });
+        }
+        // Handle authors array
+        else if (col.accessorKey === "authors") {
+          schemaFields[col.accessorKey] = z.string()
+            .transform((str) => str.split(',').map(s => s.trim()))
+            .pipe(z.array(z.string().min(1)));
+        }
+        // Handle journal type enum
+        else if (col.accessorKey === "journalType") {
+          schemaFields[col.accessorKey] = z.enum(["International", "National", "Regional"]);
+        }
+        else if (col.accessorKey === "branch_name") {
+          schemaFields[col.accessorKey] = z.enum(["CSE", "IT", "ECE", "EEE", "MECH", "CIVIL"]);
+        }
+        else if (col.accessorKey === "projectType") {
+          schemaFields[col.accessorKey] = z.enum(["Major", "Minor"]);
         }
         else {
           schemaFields[col.accessorKey] = z
@@ -64,7 +80,10 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
-    defaultValues: rowData || {},
+    defaultValues: rowData ? {
+      ...rowData,
+      authors: Array.isArray(rowData.authors) ? rowData.authors.join(', ') : rowData.authors
+    } : {},
   });
 
   useEffect(() => {
@@ -82,6 +101,8 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
           ].includes(key)
         ) {
           setValue(key, rowData[key] ? new Date(rowData[key]) : null);
+        } else if (key === "authors") {
+          setValue(key, Array.isArray(rowData[key]) ? rowData[key].join(', ') : rowData[key]);
         } else {
           setValue(key, rowData[key]);
         }
@@ -107,6 +128,9 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
         }
       } else if (value instanceof Date) {
         formData.append(key, value.toISOString());
+      } else if (key === "authors" && typeof value === "string") {
+        const authors = value.split(',').map(author => author.trim());
+        formData.append(key, JSON.stringify(authors));
       } else {
         formData.append(key, value);
       }
@@ -149,18 +173,18 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
                       >
                         {headerText}
                       </label>
-                      {col.dropdownOptions ? (
+                      {col.accessorKey === "journalType" ? (
                         <Select
                           onValueChange={(value) => setValue(col.accessorKey, value)}
                           value={watch(col.accessorKey) || ""}
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder={`Select ${headerText}`} />
+                            <SelectValue placeholder="Select journal type" />
                           </SelectTrigger>
                           <SelectContent>
-                            {col.dropdownOptions.map((option) => (
-                              <SelectItem key={option} value={option}>
-                                {option}
+                            {["International", "National", "Regional"].map((type) => (
+                              <SelectItem key={type} value={type}>
+                                {type}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -175,40 +199,7 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
                               : "border-gray-300"
                           }`}
                         />
-                      ) : col.accessorKey === "report" ? (
-                        <div className="space-y-2">
-                          {rowData && rowData.report && (
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className="text-sm text-gray-500">Current file:</span>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => window.open(rowData.report, '_blank')}
-                                className="flex items-center gap-2"
-                              >
-                                View Report <ExternalLink className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          )}
-                          <input
-                            type="file"
-                            id={col.accessorKey}
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              setValue(col.accessorKey, file || (rowData?.report || ""));
-                            }}
-                            className={`w-full p-2 border rounded ${
-                              errors[col.accessorKey]
-                                ? "border-red-500"
-                                : "border-gray-300"
-                            }`}
-                          />
-                          <p className="text-sm text-gray-500">
-                            {rowData?.report ? "Upload new file to replace current one" : "Choose a file"}
-                          </p>
-                        </div>
-                      ) : ["dailyDuration", "duration"].includes(col.accessorKey) ? (
+                      ) : ["volume", "issue", "dailyDuration", "duration", "daily_duration"].includes(col.accessorKey) ? (
                         <Input
                           id={col.accessorKey}
                           type="number"
@@ -216,6 +207,50 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
                           {...register(col.accessorKey)}
                           className={errors[col.accessorKey] ? "border-red-500" : ""}
                         />
+                      ) : col.accessorKey === "authors" ? (
+                        <div>
+                          <Input
+                            id={col.accessorKey}
+                            {...register(col.accessorKey)}
+                            className={errors[col.accessorKey] ? "border-red-500" : ""}
+                            placeholder="Enter authors separated by commas"
+                          />
+                          <p className="text-sm text-gray-500 mt-1">
+                            Separate multiple authors with commas
+                          </p>
+                        </div>
+                      ) : col.accessorKey === "branch_name" ? (
+                        <Select
+                          onValueChange={(value) => setValue(col.accessorKey, value)}
+                          value={watch(col.accessorKey) || ""}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select branch name" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {["CSE", "IT", "ECE", "EEE", "MECH", "CIVIL"].map((type) => (
+                              <SelectItem key={type} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : col.accessorKey === "projectType" ? (
+                        <Select
+                          onValueChange={(value) => setValue(col.accessorKey, value)}
+                          value={watch(col.accessorKey) || ""}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select project type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {["Major", "Minor"].map((type) => (
+                              <SelectItem key={type} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       ) : (
                         <Input
                           id={col.accessorKey}

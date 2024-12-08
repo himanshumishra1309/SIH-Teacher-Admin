@@ -132,7 +132,7 @@ const router = createBrowserRouter(
       <Route path="admin-info/:id" element={<AdminLayout/>}> 
         
         <Route path="facultyList" element={<FacultyCards/>}/>
-        <Route index element={<AdminResearchTable />} errorElement={<NotFoundPage/>} />
+        <Route index element={<FacultyAppraisalReport/>} errorElement={<NotFoundPage/>} />
 
         {/* <Route path="personal-details" element={<FacultyInfoCard />} errorElement={<NotFoundPage/>} /> */}
         <Route path="research-papers" element={<AdminResearchTable />} errorElement={<NotFoundPage/>} />

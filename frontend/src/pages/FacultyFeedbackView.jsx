@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Star } from "lucide-react";
+import { Star } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { X } from 'lucide-react';
 import FeedbackSubmitterTable from "./UpcomingSeminars/feedbackSubmitterTable";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -91,22 +91,28 @@ export default function FacultyFeedbackView({ feedback, onClose, isOpen }) {
               Overall Rating
             </h2>
             <div className="text-center">
-              <div className="text-5xl font-bold text-blue-900 mb-4">
-                {averageRating.toFixed(1)}
-              </div>
-              <div className="flex justify-center gap-1 mb-4">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    className={`h-8 w-8 ${
-                      star <= Math.round(averageRating)
-                        ? "text-yellow-400 fill-yellow-400"
-                        : "text-gray-300"
-                    }`}
-                  />
-                ))}
-              </div>
-              <p className="text-blue-700">Based on student feedback</p>
+              {data.length > 0 ? (
+                <>
+                  <div className="text-5xl font-bold text-blue-900 mb-4">
+                    {averageRating.toFixed(1)}
+                  </div>
+                  <div className="flex justify-center gap-1 mb-4">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star
+                        key={star}
+                        className={`h-8 w-8 ${
+                          star <= Math.round(averageRating)
+                            ? "text-yellow-400 fill-yellow-400"
+                            : "text-gray-300"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-blue-700">Based on student feedback</p>
+                </>
+              ) : (
+                <p className="text-xl text-blue-900">No feedback received</p>
+              )}
             </div>
           </div>
 
@@ -118,36 +124,40 @@ export default function FacultyFeedbackView({ feedback, onClose, isOpen }) {
               </h2>
             </div>
             <ScrollArea className="h-[calc(80vh-120px)]">
-              <div className="space-y-4 pr-4">
-                {data.map((feedback, index) => (
-                  <Card
-                    key={index}
-                    className="p-4 hover:shadow-md transition-shadow"
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex gap-1">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star
-                            key={star}
-                            className={`h-4 w-4 ${
-                              star <= feedback.averageRating
-                                ? "text-yellow-400 fill-yellow-400"
-                                : "text-gray-300"
-                            }`}
-                          />
-                        ))}
+              {data.length > 0 ? (
+                <div className="space-y-4 pr-4">
+                  {data.map((feedback, index) => (
+                    <Card
+                      key={index}
+                      className="p-4 hover:shadow-md transition-shadow"
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex gap-1">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                              key={star}
+                              className={`h-4 w-4 ${
+                                star <= feedback.averageRating
+                                  ? "text-yellow-400 fill-yellow-400"
+                                  : "text-gray-300"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-sm text-gray-500">
+                          {new Date(feedback.submissionTime).toLocaleDateString()}
+                        </span>
                       </div>
-                      <span className="text-sm text-gray-500">
-                        {new Date(feedback.submissionTime).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <p className="text-gray-700 mt-2">{feedback.comment}</p>
-                    <p className="text-sm text-gray-500 mt-2">
-                      {feedback.studentName}
-                    </p>
-                  </Card>
-                ))}
-              </div>
+                      <p className="text-gray-700 mt-2">{feedback.comment}</p>
+                      <p className="text-sm text-gray-500 mt-2">
+                        {feedback.studentName}
+                      </p>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-gray-500 mt-4">No feedback received</p>
+              )}
             </ScrollArea>
           </div>
         </div>
@@ -176,3 +186,4 @@ export default function FacultyFeedbackView({ feedback, onClose, isOpen }) {
     </div>
   );
 }
+
