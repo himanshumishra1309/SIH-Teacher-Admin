@@ -13,6 +13,7 @@ const projectSchema = new Schema(
       type: String,
       required: true,
       trim: true,
+      enum: ["CSE", "IT", "ECE", "EEE", "MECH", "CIVIL"],
     },
     daily_duration: {
       type: Number,
