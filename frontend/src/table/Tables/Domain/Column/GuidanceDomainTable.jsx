@@ -12,14 +12,16 @@ export default function GuidanceDomainTable() {
   useEffect(() => {
     const fetchPublicationData = async () => {
       try {
-        const token = sessionStorage.getItem("teacherAccessToken");
+        const token = sessionStorage.getItem("adminAccessToken");
 
-        const response = await axios.get(`http://localhost:6005/api/v1/publications`, {
+        const response = await axios.get(`http://localhost:6005/api/v1/domain-points/admin/student-guidance`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
+        console.log(response);
+        
         setData(response.data.data);
       } catch (error) {
         console.error("Failed to fetch publications:", error);
@@ -33,10 +35,10 @@ export default function GuidanceDomainTable() {
 
   const updatePoints = async (id, newPoints) => {
     try {
-      const token = sessionStorage.getItem("teacherAccessToken");
+      const token = sessionStorage.getItem("adminAccessToken");
 
-      const response = await axios.patch(
-        `http://localhost:6005/api/v1/publications/${id}`,
+      const response = await axios.put(
+        `http://localhost:6005/api/v1/domain-points/admin/points/${id}`,
         { points: newPoints },
         {
           headers: {

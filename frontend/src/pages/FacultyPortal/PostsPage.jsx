@@ -234,12 +234,13 @@ const PostsPage = () => {
       );
 
       console.log(response);
+      setIsCreatePostOpen(false);
 
       if (response.status === 200) {
         // Update the local state with the edited post details
         setPosts((prevPosts) =>
           prevPosts.map((existingPost) =>
-            existingPost.id === post.id
+            existingPost._id === posts._id
               ? { ...existingPost, ...newPost, updatedAt: new Date() }
               : existingPost
           )
