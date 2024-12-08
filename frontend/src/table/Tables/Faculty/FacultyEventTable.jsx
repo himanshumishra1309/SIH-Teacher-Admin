@@ -21,8 +21,6 @@ import LoadingPage from "@/pages/LoadingPage.jsx";
 import axios from "axios";
 
 export default function FacultyEventTable() {
-
-
   const { id } = useParams();
   // console.log(id);
   const [data, setData] = useState("");
@@ -34,7 +32,6 @@ export default function FacultyEventTable() {
   const [sorting, setSorting] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-
 
   // const [eventData, setEventData] = useState("");
   useEffect(() => {
@@ -54,8 +51,7 @@ export default function FacultyEventTable() {
         setData(response.data.data.events);
       } catch (error) {
         console.log("An error occurred while fetching teacher info.");
-      }
-      finally {
+      } finally {
         setIsLoading(false);
       }
     };
@@ -112,7 +108,6 @@ export default function FacultyEventTable() {
     onGlobalFilterChange: setGlobalFilter,
     onColumnVisibilityChange: setColumnVisibility,
   });
-  
 
   const resetFilters = () => {
     setGlobalFilter("");
@@ -127,7 +122,7 @@ export default function FacultyEventTable() {
 
   const handleEditEntry = (updatedData) => {
     setData((prevData) =>
-      prevData.map((row) => (row.id === updatedData.id ? updatedData : row))
+      prevData.map((row) => (row._id === updatedData._id ? updatedData : row))
     );
   };
 
@@ -158,10 +153,8 @@ export default function FacultyEventTable() {
     }
   };
 
-  
-
   if (isLoading) {
-    return <LoadingPage/>;
+    return <LoadingPage />;
   }
 
   return (
@@ -210,31 +203,31 @@ export default function FacultyEventTable() {
 
       <div className="table-container">
         <table className="w-full">
-        <thead>
-  {table.getHeaderGroups().map((headerGroup) => (
-    <tr key={headerGroup.id}>
-      {headerGroup.headers.map((header) => (
-        <th key={header.id} className="px-4 py-2">
-          {header.isPlaceholder
-            ? null
-            : flexRender(
-                header.column.columnDef.header,
-                header.getContext()
-              )}
-          {/* Render filter element if available */}
-          {header.column.columnDef.filterElement && (
-            <div className="mt-2">
-              {flexRender(
-                header.column.columnDef.filterElement,
-                header.getContext()
-              )}
-            </div>
-          )}
-        </th>
-      ))}
-    </tr>
-  ))}
-</thead>
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} className="px-4 py-2">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                    {/* Render filter element if available */}
+                    {header.column.columnDef.filterElement && (
+                      <div className="mt-2">
+                        {flexRender(
+                          header.column.columnDef.filterElement,
+                          header.getContext()
+                        )}
+                      </div>
+                    )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
 
           <tbody>
             {table.getRowModel().rows.map((row) => (
