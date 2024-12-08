@@ -20,7 +20,7 @@ export default function FacultyOtherDomainTable() {
         const token = sessionStorage.getItem("teacherAccessToken");
 
         const response = await axios.get(
-          `https.facultyappraisal.software/api/v1/domain-points/teacher/te-sttp`,
+          `https://facultyappraisal.software/api/v1/domain-points/teacher/te-sttp`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -44,7 +44,7 @@ export default function FacultyOtherDomainTable() {
       const token = sessionStorage.getItem("adminAccessToken");
 
       const response = await axios.put(
-        `https.facultyappraisal.software/api/v1/domain-points/admin/points/${id}`,
+        `https://facultyappraisal.software/api/v1/domain-points/admin/points/${id}`,
         { points: newPoints },
         {
           headers: {

@@ -29,7 +29,7 @@ const AdminHomeLayout = () => {
 //           Authorization: `Bearer ${accessToken}`,
 //         };
 //         const response = await axios.get(
-//           "https.facultyappraisal.software/api/v1/teachers/me",
+//           "https://facultyappraisal.software/api/v1/teachers/me",
 //           { headers }
 //         );
 //         console.log("Faculty data fetched:", response.data);

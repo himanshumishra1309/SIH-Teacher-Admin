@@ -19,7 +19,7 @@ export default function StudentAvatar() {
 
     try {
       await axios.post(
-        "https.facultyappraisal.software/api/v1/students/logout",
+        "https://facultyappraisal.software/api/v1/students/logout",
         {},
         {
           headers: {

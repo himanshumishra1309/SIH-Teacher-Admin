@@ -31,19 +31,19 @@ export default function AppraisalReportTable() {
   const [appraisalData, setAppraisalData] = useState([]);
 
   const endpoints = {
-    journals: `https.facultyappraisal.software/api/v1/points/journals/${id}`,
-    books: `https.facultyappraisal.software/api/v1/points/books/${id}`,
-    chapter: `https.facultyappraisal.software/api/v1/points/chapter/${id}`,
-    patents: `https.facultyappraisal.software/api/v1/points/patents/${id}`,
-    conferences: `https.facultyappraisal.software/api/v1/points/conferences/${id}`,
-    projects: `https.facultyappraisal.software/api/v1/points/projects/${id}`,
-    events: `https.facultyappraisal.software/api/v1/points/events/${id}`,
-    sttp: `https.facultyappraisal.software/api/v1/points/sttp/${id}`,
-    "expert-lectures": `https.facultyappraisal.software/api/v1/points/expert-lectures/${id}`,
-    "Student-Guide": `https.facultyappraisal.software/api/v1/points/student-guided/${id}`,
-    lecture: `https.facultyappraisal.software/api/v1/points/lecture/${id}`,
-    // "Contribution": `https.facultyappraisal.software/api/v1/points/contribution/${id}`,
-    // "Seminar-attented": `https.facultyappraisal.software/api/v1/points/seminar-attended/${id}`,
+    journals: `https://facultyappraisal.software/api/v1/points/journals/${id}`,
+    books: `https://facultyappraisal.software/api/v1/points/books/${id}`,
+    chapter: `https://facultyappraisal.software/api/v1/points/chapter/${id}`,
+    patents: `https://facultyappraisal.software/api/v1/points/patents/${id}`,
+    conferences: `https://facultyappraisal.software/api/v1/points/conferences/${id}`,
+    projects: `https://facultyappraisal.software/api/v1/points/projects/${id}`,
+    events: `https://facultyappraisal.software/api/v1/points/events/${id}`,
+    sttp: `https://facultyappraisal.software/api/v1/points/sttp/${id}`,
+    "expert-lectures": `https://facultyappraisal.software/api/v1/points/expert-lectures/${id}`,
+    "Student-Guide": `https://facultyappraisal.software/api/v1/points/student-guided/${id}`,
+    lecture: `https://facultyappraisal.software/api/v1/points/lecture/${id}`,
+    // "Contribution": `https://facultyappraisal.software/api/v1/points/contribution/${id}`,
+    // "Seminar-attented": `https://facultyappraisal.software/api/v1/points/seminar-attended/${id}`,
   };
 
   const [seminarData, setSeminarData] = useState("");
@@ -53,7 +53,7 @@ export default function AppraisalReportTable() {
         const token = sessionStorage.getItem("adminAccessToken");
 
         const response = await axios.get(
-          `https.facultyappraisal.software/api/v1/admins/teachers/${id}/seminars/conducted`,
+          `https://facultyappraisal.software/api/v1/admins/teachers/${id}/seminars/conducted`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

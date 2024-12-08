@@ -73,7 +73,7 @@ export default function AdminSISU() {
 
     try {
       const response = await axios.post(
-        "https.facultyappraisal.software/api/v1/admins/register",
+        "https://facultyappraisal.software/api/v1/admins/register",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -90,7 +90,7 @@ export default function AdminSISU() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "https.facultyappraisal.software/api/v1/admins/login",
+        "https://facultyappraisal.software/api/v1/admins/login",
         loginData,
         { headers: { "Content-Type": "application/json" } }
       );

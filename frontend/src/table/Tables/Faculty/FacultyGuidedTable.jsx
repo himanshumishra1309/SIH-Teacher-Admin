@@ -44,7 +44,7 @@ export default function FacultyGuidedTable() {
   //       const token = sessionStorage.getItem("adminAccessToken"); // Adjust this if using cookies
 
   //       const response = await axios.get(
-  //         `https.facultyappraisal.software/api/v1/admins/teachers/${id}`, // Adjust URL to your API endpoint
+  //         `https://facultyappraisal.software/api/v1/admins/teachers/${id}`, // Adjust URL to your API endpoint
   //         {
   //           headers: {
   //             Authorization: `Bearer ${token}`, // Set the Authorization header
@@ -70,14 +70,14 @@ export default function FacultyGuidedTable() {
 
         const [response1, response2] = await Promise.all([
           axios.get(
-            `https.facultyappraisal.software/api/v1/student-guide/mtech-students`,
+            `https://facultyappraisal.software/api/v1/student-guide/mtech-students`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
             }
           ),
-          axios.get(`https.facultyappraisal.software/api/v1/student-guide/phd-students`, {
+          axios.get(`https://facultyappraisal.software/api/v1/student-guide/phd-students`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -171,7 +171,7 @@ export default function FacultyGuidedTable() {
       const token = sessionStorage.getItem("teacherAccessToken");
 
       await axios.delete(
-        `https.facultyappraisal.software/api/v1/student-guide/${rowToDelete._id}`,
+        `https://facultyappraisal.software/api/v1/student-guide/${rowToDelete._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -298,7 +298,7 @@ export default function FacultyGuidedTable() {
               console.log("editing  the data", formData);
 
               const response = await axios.put(
-                `https.facultyappraisal.software/api/v1/student-guide/${rowToEdit._id}`,
+                `https://facultyappraisal.software/api/v1/student-guide/${rowToEdit._id}`,
                 formData,
                 {
                   headers: {
@@ -313,7 +313,7 @@ export default function FacultyGuidedTable() {
               // Add (POST Request)
               console.log("posting the data", formData);
               const response = await axios.post(
-                `https.facultyappraisal.software/api/v1/student-guide/upload`,
+                `https://facultyappraisal.software/api/v1/student-guide/upload`,
                 formData,
                 {
                   headers: {

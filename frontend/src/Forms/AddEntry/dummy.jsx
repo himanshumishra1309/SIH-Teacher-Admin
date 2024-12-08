@@ -85,7 +85,7 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
       // Send a POST request to the backend
       console.log(newData);
       await axios.post(
-        "https.facultyappraisal.software/api/v1/research-paper/papers",
+        "https://facultyappraisal.software/api/v1/research-paper/papers",
         newData,
         {
           headers: {

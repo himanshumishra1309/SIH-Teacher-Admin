@@ -42,7 +42,7 @@ export default function AdminJournalTable() {
     try {
       const token = sessionStorage.getItem("adminAccessToken");
       const response = await axios.get(
-        `https.facultyappraisal.software/api/v1/admins/journal/${id}`,
+        `https://facultyappraisal.software/api/v1/admins/journal/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

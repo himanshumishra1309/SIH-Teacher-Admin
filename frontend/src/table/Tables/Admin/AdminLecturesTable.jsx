@@ -39,7 +39,7 @@ export default function AdminLecturesTable() {
         const token = sessionStorage.getItem("adminAccessToken");
 
         const response = await axios.get(
-          `https.facultyappraisal.software/api/v1/admins/teachers/${id}/expert-lectures`,
+          `https://facultyappraisal.software/api/v1/admins/teachers/${id}/expert-lectures`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

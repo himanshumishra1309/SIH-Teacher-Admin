@@ -91,7 +91,7 @@ export default function FacultyRefManResearchTable() {
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
       const response = await axios.get(
-        "https.facultyappraisal.software/api/v1/research-paper/allPapers",
+        "https://facultyappraisal.software/api/v1/research-paper/allPapers",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -284,7 +284,7 @@ export default function FacultyRefManResearchTable() {
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
       const response = await axios.post(
-        "https.facultyappraisal.software/api/v1/research-paper/create",
+        "https://facultyappraisal.software/api/v1/research-paper/create",
         formData,
         {
           headers: {
@@ -304,7 +304,7 @@ export default function FacultyRefManResearchTable() {
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
       const response = await axios.patch(
-        `https.facultyappraisal.software/api/v1/research-paper/update/${rowToEdit._id}`,
+        `https://facultyappraisal.software/api/v1/research-paper/update/${rowToEdit._id}`,
         formData,
         {
           headers: {
@@ -329,7 +329,7 @@ export default function FacultyRefManResearchTable() {
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
       await axios.delete(
-        `https.facultyappraisal.software/api/v1/research-paper/delete/${rowToDelete._id}`,
+        `https://facultyappraisal.software/api/v1/research-paper/delete/${rowToDelete._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

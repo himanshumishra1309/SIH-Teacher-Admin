@@ -53,7 +53,7 @@ export default function LectureCards() {
       const token = sessionStorage.getItem("studentAccessToken");
       try {
         const response = await axios.get(
-          "https.facultyappraisal.software/api/v1/students/feedBackForms",
+          "https://facultyappraisal.software/api/v1/students/feedBackForms",
           {
             headers: {
               Authorization: `Bearer ${token}`,

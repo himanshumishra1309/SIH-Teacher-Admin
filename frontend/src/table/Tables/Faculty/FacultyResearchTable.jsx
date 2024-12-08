@@ -82,7 +82,7 @@ export default function FacultyResearchTable() {
     const endpoint = endpointMap[publicationType];
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
-      const response = await axios.get(`https.facultyappraisal.software${endpoint}`, {
+      const response = await axios.get(`https://facultyappraisal.software${endpoint}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -183,7 +183,7 @@ export default function FacultyResearchTable() {
       };
       const endpoint = endpointMap[publicationType];
       const response = await axios.post(
-        `https.facultyappraisal.software${endpoint}`,
+        `https://facultyappraisal.software${endpoint}`,
         formData,
         {
           headers: {
@@ -217,7 +217,7 @@ export default function FacultyResearchTable() {
         return;
       }
       const response = await axios.patch(
-        `https.facultyappraisal.software${endpoint}/${rowToEdit._id}`,
+        `https://facultyappraisal.software${endpoint}/${rowToEdit._id}`,
         formData,
         {
           headers: {
@@ -256,7 +256,7 @@ export default function FacultyResearchTable() {
         console.error("Unsupported publication type");
         return;
       }
-      const deleteUrl = `https.facultyappraisal.software${endpoint}/${rowToDelete._id}`;
+      const deleteUrl = `https://facultyappraisal.software${endpoint}/${rowToDelete._id}`;
       const response = await axios.delete(deleteUrl, {
         headers: {
           Authorization: `Bearer ${token}`,

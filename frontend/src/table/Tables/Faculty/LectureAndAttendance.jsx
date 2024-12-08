@@ -30,7 +30,7 @@ const LectureAndAttendance = () => {
       try {
         const token = sessionStorage.getItem("teacherAccessToken");
         const response = await axios.get(
-          `https.facultyappraisal.software/api/v1/lecture/${subjectId}/students`,
+          `https://facultyappraisal.software/api/v1/lecture/${subjectId}/students`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -49,7 +49,7 @@ const LectureAndAttendance = () => {
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
       const response = await axios.post(
-        `https.facultyappraisal.software/api/v1/lecture/${subjectId}/${id}/lectures`,
+        `https://facultyappraisal.software/api/v1/lecture/${subjectId}/${id}/lectures`,
         lectureDetails,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -70,7 +70,7 @@ const LectureAndAttendance = () => {
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
       await axios.post(
-        `https.facultyappraisal.software/api/v1/lecture/${lectureId}/attendance`,
+        `https://facultyappraisal.software/api/v1/lecture/${lectureId}/attendance`,
         {
           studentIds: selectedStudents,
           date: lectureDetails.date,
