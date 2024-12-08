@@ -21,6 +21,7 @@ import { Download } from "lucide-react";
 import axios from "axios";
 import AppraisalReportTable from "@/table/Tables/AppraisalReportTable";
 import { useParams } from "react-router-dom";
+import LoadingPage from "./LoadingPage";
 
 const FacultyAppraisalReport = ({
   facultyName,
@@ -31,6 +32,7 @@ const FacultyAppraisalReport = ({
   const [rank, setRank] = useState(null);
   const [point, setPoint] = useState(null);
   const [performance, setPerformance] = useState(null);
+  const [loading, setIsLoading] = useState(true)
 
   const reportRef = useRef(null);
   const signatureRef = useRef(null);
@@ -54,6 +56,7 @@ const FacultyAppraisalReport = ({
         const errorMessage = error.response?.data?.message || error.message;
         console.error("Error fetching teacher data:", errorMessage);
       }
+
     };
 
     fetchData();
@@ -77,10 +80,9 @@ const FacultyAppraisalReport = ({
         sttp: `http://localhost:6005/api/v1/points/sttp/${id}`,
         "expert-lectures": `http://localhost:6005/api/v1/points/expert-lectures/${id}`,
         "Student-Guide": `http://localhost:6005/api/v1/points/student-guided/${id}`,
-        lecture: `http://localhost:6005/api/v1/points/lecture/${id}`,
+        // lecture: `http://localhost:6005/api/v1/points/lecture/${id}`,
         // "Contribution": `http://localhost:6005/api/v1/points/contribution/${id}`,
-        // "Seminar-conducted": `http://localhost:6005/api/v1/points/contribution/${id}`,
-        // "Seminar-attented": `http://localhost:6005/api/v1/points/seminar-attended/${id}`,
+
       };
 
       try {
@@ -111,6 +113,7 @@ const FacultyAppraisalReport = ({
       } catch (error) {
         console.error("Error fetching appraisal data:", error.message);
       }
+   
     };
 
     fetchAppraisalData();
@@ -141,7 +144,7 @@ const FacultyAppraisalReport = ({
         if (matchingTeacher) {
           setRank(matchingTeacher.rank);
           setPerformance(matchingTeacher.performanceCategory);
-          setPoint(matchingTeacher.totalPoints);
+          setPoint(matchingTeacher.totalPoints)
         } else {
           console.log("No matching teacher found for the given facultyId");
         }
@@ -153,6 +156,8 @@ const FacultyAppraisalReport = ({
 
     fetchRank();
   }, [id]);
+
+
 
   const handleDownload = () => {
     const input = reportRef.current;
@@ -211,10 +216,22 @@ const FacultyAppraisalReport = ({
     };
   }, []);
 
+
+//   if(loading){
+// return (
+//   <LoadingPage/>
+// )
+//   }
+
+
+//   if(appraisalData){
+//     setIsLoading(false);
+//   }
+
   return (
     <div className="container mx-auto p-4 relative">
-      <Button onClick={handleDownload} className="absolute top-4 right-4 z-10 text-white">
-        <Download className="mr-2 h-4 w-4 text-white" /> Download Report
+      <Button onClick={handleDownload} className="absolute top-4 right-4 z-10">
+        <Download className="mr-2 h-4 w-4" /> Download Report
       </Button>
       <div
         ref={reportRef}
@@ -297,8 +314,7 @@ const FacultyAppraisalReport = ({
             <p className="text-4xl font-bold mb-2">Rank : {rank}</p>
             <p className="text-xl text-gray-600">Performance : {performance}</p>
             <p className="text-xl text-gray-700 font-semibold">
-            Points out of 100: {point != null ? point.toFixed(2) : "0"}
-
+  Points out of 100: {point !== null ? point.toFixed(2) : "Loading..."}
 </p>
           </CardContent>
         </Card>

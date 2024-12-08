@@ -131,7 +131,7 @@ export default function Component() {
                       <span className="font-medium">Email:</span>
                       <span className="ml-2 truncate">{faculty.email}</span>
                     </div>
-                    <Link to={`/admin-info/${faculty._id}`} className="mt-4 block">
+                    <Link to={`/admin-info/${faculty._id}/admin-teacher-appraisal`} className="mt-4 block">
                       <Button className="w-full bg-blue-500 text-white hover:bg-blue-600">
                         View Profile
                       </Button>

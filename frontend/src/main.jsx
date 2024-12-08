@@ -81,7 +81,7 @@ const router = createBrowserRouter(
       <Route index element={<Home />} /> {/* Render Home on the root path */}
       <Route path="font-size-handler" element={<FontSizeHandler />} />
       <Route path="/faculty/:id" element={<FacultyLayout />}>
-       <Route index element={<FacultyAppraisalReport/>} errorElement={<NotFoundPage/>} />
+       <Route  index element={<RouteTransitionWrapper><FacultyAppraisalReport/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
     
         {/* <Route path="contribution" element={<RouteTransitionWrapper><FacultyDataDashboard/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} /> */}
         <Route path="subject/:subjectId" element={<RouteTransitionWrapper><LectureAndAttendance /></RouteTransitionWrapper>}  errorElement={<NotFoundPage />}/>
@@ -132,18 +132,18 @@ const router = createBrowserRouter(
       <Route path="admin-info/:id" element={<AdminLayout/>}> 
         
         <Route path="facultyList" element={<FacultyCards/>}/>
-        <Route index element={<FacultyAppraisalReport/>} errorElement={<NotFoundPage/>} />
+        <Route path="admin-teacher-appraisal" index element={<RouteTransitionWrapper><AdminFacultyAppraisalReport/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
 
         {/* <Route path="personal-details" element={<FacultyInfoCard />} errorElement={<NotFoundPage/>} /> */}
-        <Route path="research-papers" element={<AdminResearchTable />} errorElement={<NotFoundPage/>} />
-        <Route path="students-guided" element={<AdminStudentsGuidedTable />} errorElement={<NotFoundPage/>} />
-        <Route path="expert-lecture" element={<AdminLecturesTable />} errorElement={<NotFoundPage/>} />
-        <Route path="event-participation" element={<AdminEventTable />} errorElement={<NotFoundPage/>} />
-        <Route path="seminars" element={<AdminSeminarLayout/>} errorElement={<NotFoundPage/>} />
-        <Route path="sttp-conducted" element={<AdminSTTPTable/>} errorElement={<NotFoundPage/>} />
-        <Route path="projects" element={<AdminProjectTable />} errorElement={<NotFoundPage/>} />
-        <Route path="adminallocate-lectures" element={<AdminLectureAllocationTable />} errorElement={<NotFoundPage/>} />
-        <Route path="admin-teacher-appraisal" element={<AdminFacultyAppraisalReport />} errorElement={<NotFoundPage/>} />
+        <Route path="research-papers" element={<RouteTransitionWrapper><AdminResearchTable /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
+        <Route path="students-guided" element={<RouteTransitionWrapper><AdminStudentsGuidedTable /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
+        <Route path="expert-lecture" element={<RouteTransitionWrapper><AdminLecturesTable /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
+        <Route path="event-participation" element={<RouteTransitionWrapper><AdminEventTable /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
+        <Route path="seminars" element={<RouteTransitionWrapper><AdminSeminarLayout/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
+        <Route path="sttp-conducted" element={<RouteTransitionWrapper><AdminSTTPTable/></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
+        <Route path="projects" element={<RouteTransitionWrapper><AdminProjectTable /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
+        <Route path="adminallocate-lectures" element={<RouteTransitionWrapper><AdminLectureAllocationTable /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
+        <Route path="admin-teacher-appraisal" element={<RouteTransitionWrapper><AdminFacultyAppraisalReport /></RouteTransitionWrapper>} errorElement={<NotFoundPage/>} />
 
         {/* <Route path="Contribution-graph" element={<ResearchTable />} errorElement={<NotFoundPage/>} /> */}
 
