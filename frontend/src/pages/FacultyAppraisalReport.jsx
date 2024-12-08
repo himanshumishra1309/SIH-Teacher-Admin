@@ -212,8 +212,8 @@ const FacultyAppraisalReport = ({
 
   return (
     <div className="container mx-auto p-4 relative">
-      <Button onClick={handleDownload} className="absolute top-4 right-4 z-10">
-        <Download className="mr-2 h-4 w-4" /> Download Report
+      <Button onClick={handleDownload} className="absolute top-4 right-4 z-10 text-white">
+        <Download className="mr-2 h-4 w-4 text-white" /> Download Report
       </Button>
       <div
         ref={reportRef}
@@ -296,7 +296,8 @@ const FacultyAppraisalReport = ({
             <p className="text-4xl font-bold mb-2">Rank : {rank}</p>
             <p className="text-xl text-gray-600">Performance : {performance}</p>
             <p className="text-xl text-gray-700 font-semibold">
-  Points out of 100: {point !== null ? point.toFixed(2) : "Loading..."}
+            Points out of 100: {point != null ? point.toFixed(2) : "0"}
+
 </p>
           </CardContent>
         </Card>
