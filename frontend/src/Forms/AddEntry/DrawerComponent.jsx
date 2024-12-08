@@ -138,7 +138,9 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
     });
 
     try {
-      onSubmit(formData);
+      // Pass the updated report URL back to the parent component
+      const updatedData = Object.fromEntries(formData);
+      onSubmit(updatedData);
       onClose();
     } catch (error) {
       console.error("Error submitting the form:", error);
