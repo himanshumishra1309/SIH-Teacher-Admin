@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { z } from "zod";
+import { ExternalLink } from 'lucide-react';
 
 function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
   const generateSchema = () => {
@@ -251,6 +252,38 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
                             ))}
                           </SelectContent>
                         </Select>
+                      ) : col.accessorKey === "report" ? (
+                        <div className="space-y-2">
+                          {rowData && rowData.report && (
+                            <div className="mb-2">
+                              <span className="text-sm font-medium">Current file:</span>
+                              <a
+                                href={rowData.report}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-500 hover:underline ml-2"
+                              >
+                                {rowData.report}
+                              </a>
+                            </div>
+                          )}
+                          <input
+                            type="file"
+                            id={col.accessorKey}
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              setValue(col.accessorKey, file || (rowData?.report || ""));
+                            }}
+                            className={`w-full p-2 border rounded ${
+                              errors[col.accessorKey]
+                                ? "border-red-500"
+                                : "border-gray-300"
+                            }`}
+                          />
+                          <p className="text-sm text-gray-500">
+                            {rowData?.report ? "Choose a file to replace the current report" : "Choose a file"}
+                          </p>
+                        </div>
                       ) : (
                         <Input
                           id={col.accessorKey}
