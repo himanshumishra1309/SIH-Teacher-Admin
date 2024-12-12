@@ -27,7 +27,7 @@ export const getAllTables = async (extraTables) => {
   const navigationItems = ['research', 'teaching', 'service']; // Add all your navigation items here
   for (const item of navigationItems) {
     try {
-      const response = await axios.get(`http://localhost:6005/api/v1/teachers/${item}Tables`, {
+      const response = await axios.get(`https://facultyappraisal.software/api/v1/teachers/${item}Tables`, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem('teacherAccessToken')}`,
         },

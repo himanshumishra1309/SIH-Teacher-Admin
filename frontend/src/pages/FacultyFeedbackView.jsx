@@ -24,7 +24,7 @@ export default function FacultyFeedbackView({ feedback, onClose, isOpen, subject
       try {
         const teacherAccessToken = sessionStorage.getItem("teacherAccessToken");
         const response = await axios.post(
-          `http://localhost:6005/api/v1/lec-feedback/cards`,
+          `https://facultyappraisal.software/api/v1/lec-feedback/cards`,
           {
             subject_name: feedback.subject_name,
             subject_code: feedback.subject_code,

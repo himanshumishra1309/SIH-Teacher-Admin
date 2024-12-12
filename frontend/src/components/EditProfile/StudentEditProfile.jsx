@@ -37,7 +37,7 @@ export default function StudentEditProfile() {
           Authorization: `Bearer ${accessToken}`,
         };
         const response = await axios.get(
-          "http://localhost:6005/api/v1/students/me",
+          "https://facultyappraisal.software/api/v1/students/me",
           { headers }
         );
         console.log("Student data fetched:", response.data);
@@ -81,7 +81,7 @@ export default function StudentEditProfile() {
       };
       console.log("Saving changes:", studentData);
       const response = axios.patch(
-        "http://localhost:6005/api/v1/students/me/update",
+        "https://facultyappraisal.software/api/v1/students/me/update",
         studentData,
         { headers }
       );
@@ -109,7 +109,7 @@ export default function StudentEditProfile() {
       };
 
       const response = await axios.put(
-        "http://localhost:6005/api/v1/students/me/avatar",
+        "https://facultyappraisal.software/api/v1/students/me/avatar",
         formData,
         { headers }
       );

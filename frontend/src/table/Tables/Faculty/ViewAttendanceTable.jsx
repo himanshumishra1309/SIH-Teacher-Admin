@@ -45,7 +45,7 @@ export default function ViewAttendanceTable({ lectureData }) {
         const token = sessionStorage.getItem("teacherAccessToken");
 
         const response = await axios.get(
-          `http://localhost:6005/api/v1/lecture/${lectureId}/viewattendance`,
+          `https://facultyappraisal.software/api/v1/lecture/${lectureId}/viewattendance`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

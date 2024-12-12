@@ -123,7 +123,7 @@ const AdminPostsPage = () => {
       console.log(id);
       const teacherAccessToken = sessionStorage.getItem("adminAccessToken");
       const response = await axios.get(
-        `http://localhost:6005/api/v1/admins/post/${id}`,
+        `https://facultyappraisal.software/api/v1/admins/post/${id}`,
         {
           headers: {
             Authorization: `Bearer ${teacherAccessToken}`,
@@ -170,7 +170,7 @@ const AdminPostsPage = () => {
 
       // Make the POST request with the teacher access token in the Authorization header
       const response = await axios.post(
-        "http://localhost:6005/api/v1/posts/post/create",
+        "https://facultyappraisal.software/api/v1/posts/post/create",
         formData,
         {
           headers: {
@@ -226,7 +226,7 @@ const AdminPostsPage = () => {
 
       // Send the request to the server to update the post
       const response = await axios.patch(
-        `http://localhost:6005/api/v1/posts/post/update/${p.id}`,
+        `https://facultyappraisal.software/api/v1/posts/post/update/${p.id}`,
         formData,
         {
           headers: {

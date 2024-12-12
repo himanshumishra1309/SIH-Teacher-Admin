@@ -86,7 +86,7 @@ export default function FacultyResearchTable() {
     const endpoint = endpointMap[publicationType];
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
-      const response = await axios.get(`http://localhost:6005${endpoint}`, {
+      const response = await axios.get(`https://facultyappraisal.software${endpoint}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -95,7 +95,7 @@ export default function FacultyResearchTable() {
       console.log(response.data.data);
 
       const response2 = await axios.get(
-        `http://localhost:6005/api/v1/publication/all`
+        `https://facultyappraisal.software/api/v1/publication/all`
       );
       console.log(response2.data.data);
 
@@ -217,7 +217,7 @@ export default function FacultyResearchTable() {
         "Conference Paper": `/api/v1/conferences2/conference/add/${id}`,
       };
       const response2 = await axios.get(
-        `http://localhost:6005/api/v1/publication/all`
+        `https://facultyappraisal.software/api/v1/publication/all`
       );
       console.log(response2.data.data);
       const publication = response2.data.data.find(
@@ -232,7 +232,7 @@ export default function FacultyResearchTable() {
       formData.append("publication", publication._id);
       const endpoint = endpointMap[publicationType];
       const response = await axios.post(
-        `http://localhost:6005${endpoint}`,
+        `https://facultyappraisal.software${endpoint}`,
         formData,
         {
           headers: {
@@ -269,7 +269,7 @@ export default function FacultyResearchTable() {
       }
       // console.log(rowToEdit._id);
       const response2 = await axios.get(
-        `http://localhost:6005/api/v1/publication/all`
+        `https://facultyappraisal.software/api/v1/publication/all`
       );
       // console.log(response2.data.data);
       const publication = response2.data.data.find(
@@ -279,7 +279,7 @@ export default function FacultyResearchTable() {
 
       formData.append("publication", publication._id);
       const response = await axios.patch(
-        `http://localhost:6005${endpoint}/${rowToEdit._id}`,
+        `https://facultyappraisal.software${endpoint}/${rowToEdit._id}`,
         formData,
         {
           headers: {
@@ -317,7 +317,7 @@ export default function FacultyResearchTable() {
         console.error("Unsupported publication type");
         return;
       }
-      const deleteUrl = `http://localhost:6005${endpoint}/${rowToDelete._id}`;
+      const deleteUrl = `https://facultyappraisal.software${endpoint}/${rowToDelete._id}`;
       const response = await axios.delete(deleteUrl, {
         headers: {
           Authorization: `Bearer ${token}`,

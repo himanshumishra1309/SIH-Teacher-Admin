@@ -20,7 +20,7 @@ export default function AdminDomainSttpTable() {
         const token = sessionStorage.getItem("adminAccessToken");
 
         const response = await axios.get(
-          `http://localhost:6005/api/v1/domain-points/admin/sttp`,
+          `https://facultyappraisal.software/api/v1/domain-points/admin/sttp`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -44,7 +44,7 @@ export default function AdminDomainSttpTable() {
       const token = sessionStorage.getItem("adminAccessToken");
 
       const response = await axios.put(
-        `http://localhost:6005/api/v1/domain-points/admin/points/${id}`,
+        `https://facultyappraisal.software/api/v1/domain-points/admin/points/${id}`,
         { points: newPoints },
         {
           headers: {

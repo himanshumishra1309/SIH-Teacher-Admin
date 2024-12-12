@@ -40,7 +40,7 @@ export default function FacultyInfoCard() {
           Authorization: `Bearer ${accessToken}`,
         };
         const response = await axios.get(
-          `http://localhost:6005/api/v1/admins/teacher/${id}`,
+          `https://facultyappraisal.software/api/v1/admins/teacher/${id}`,
           { headers }
         );
         console.log(response.data.data);
@@ -73,7 +73,7 @@ export default function FacultyInfoCard() {
         Authorization: `Bearer ${accessToken}`,
       };
       const response = await axios.patch(
-        `http://localhost:6005/api/v1/admins/teacher/${id}/update`,
+        `https://facultyappraisal.software/api/v1/admins/teacher/${id}/update`,
         facultyData,
         { headers }
       );
@@ -102,7 +102,7 @@ export default function FacultyInfoCard() {
       };
 
       const response = await axios.put(
-        "http://localhost:6005/api/v1/teachers/me/avatar",
+        "https://facultyappraisal.software/api/v1/teachers/me/avatar",
         formData,
         { headers }
       );

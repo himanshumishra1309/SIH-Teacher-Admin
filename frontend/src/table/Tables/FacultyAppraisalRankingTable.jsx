@@ -39,7 +39,7 @@ export default function FacultyAppraisalRankingTable() {
         const token = sessionStorage.getItem("adminAccessToken");
         
         const response = await axios.get(
-          `http://localhost:6005/api/v1/points2/ad-teacher-ranks`,
+          `https://facultyappraisal.software/api/v1/points2/ad-teacher-ranks`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

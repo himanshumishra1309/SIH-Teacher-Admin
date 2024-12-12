@@ -25,15 +25,15 @@ export default function OtherDomainTable() {
 
         const [response1, response2, response3] = await Promise.all([
           axios.get(
-            `http://localhost:6005/api/v1/domain-points/admin/seminar-attended`,
+            `https://facultyappraisal.software/api/v1/domain-points/admin/seminar-attended`,
             { headers }
           ),
           axios.get(
-            `http://localhost:6005/api/v1/domain-points/admin/theory-course`,
+            `https://facultyappraisal.software/api/v1/domain-points/admin/theory-course`,
             { headers }
           ),
           axios.get(
-            `http://localhost:6005/api/v1/domain-points/admin/practical-course`,
+            `https://facultyappraisal.software/api/v1/domain-points/admin/practical-course`,
             { headers }
           ),
         ]);
@@ -60,7 +60,7 @@ export default function OtherDomainTable() {
       const token = sessionStorage.getItem("adminAccessToken");
 
       const response = await axios.put(
-        `http://localhost:6005/api/v1/domain-points/admin/points/${id}`,
+        `https://facultyappraisal.software/api/v1/domain-points/admin/points/${id}`,
         { points: newPoints },
         {
           headers: {

@@ -40,7 +40,7 @@ const FacultyLayout = () => {
           Authorization: `Bearer ${accessToken}`,
         };
         const response = await axios.get(
-          "http://localhost:6005/api/v1/teachers/me",
+          "https://facultyappraisal.software/api/v1/teachers/me",
           { headers }
         );
 
@@ -110,7 +110,7 @@ const FacultyLayout = () => {
       const headers = {
         Authorization: `Bearer ${accessToken}`,
       };
-      const response = await axios.get("http://localhost:6005/api/v1/teachers/extraTables", { headers });
+      const response = await axios.get("https://facultyappraisal.software/api/v1/teachers/extraTables", { headers });
       setExtraTables(response.data.tables || []);
     } catch (error) {
       console.error("Error fetching additional tables:", error);

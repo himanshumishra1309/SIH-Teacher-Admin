@@ -247,7 +247,7 @@ function DrawerComponent({ isOpen, onClose, onSubmit, columns, rowData }) {
       try {
         const token = sessionStorage.getItem("teacherAccessToken");
         const response = await axios.get(
-          `http://localhost:6005/api/v1/publication/`,
+          `https://facultyappraisal.software/api/v1/publication/`,
           {
             headers: {
               Authorization: `Bearer ${token}`, // Ensure you send the token as an Authorization header
