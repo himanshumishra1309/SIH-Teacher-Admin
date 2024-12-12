@@ -11,9 +11,8 @@ import {
 const router = Router();
 
 router.post("/book/add", verifyTeacherJWT, addBook);
-router.get("/book/", verifyTeacherJWT, getAllBooks);
+router.get("/book/", getAllBooks);
 router.patch("/book/edit/:id", verifyTeacherJWT, updateBook);
 router.delete("/book/delete/:id", verifyTeacherJWT, deleteBook);
-
 
 export default router;

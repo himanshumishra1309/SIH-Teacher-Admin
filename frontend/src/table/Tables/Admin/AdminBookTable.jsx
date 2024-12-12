@@ -40,7 +40,7 @@ export default function AdminBookTable() {
     try {
       const token = sessionStorage.getItem("adminAccessToken");
       const response = await axios.get(
-        `https://facultyappraisal.software/api/v1/admins/book/${id}`,
+        `http://localhost:6005/api/v1/admins/book/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -9,6 +9,8 @@ import GuidanceDomainTable from "@/table/Tables/Domain/Column/GuidanceDomainTabl
 import OtherDomainTable from "@/table/Tables/Domain/Column/OtherDomainTable";
 import ResearchProjectsDomainTable from "@/table/Tables/Domain/Column/ResearchProjectsDomainTable";
 import { motion } from "framer-motion";
+import FacultyDomainSttpTable from "../table/Tables/Domain/Column/FacultyDomainSttpTable";
+import AdminDomainSttpTable from "../table/Tables/Domain/Column/AdminDomainSttpTable";
 
 export default function AdminPointAllocationLayout() {
   return (
@@ -25,6 +27,7 @@ export default function AdminPointAllocationLayout() {
           <TabsTrigger value="events">Events</TabsTrigger>
           <TabsTrigger value="projects">Research Projects</TabsTrigger>
           <TabsTrigger value="mentorship">Guidance & Mentorship</TabsTrigger>
+          <TabsTrigger value="sttp">STTP</TabsTrigger>
           <TabsTrigger value="others">Other Activities</TabsTrigger>
         </TabsList>
 
@@ -119,6 +122,25 @@ export default function AdminPointAllocationLayout() {
                   Undergraduate).
                 </p>
                 <GuidanceDomainTable />
+              </div>
+            </Card>
+          </motion.div>
+        </TabsContent>
+
+        <TabsContent value="sttp">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Card className="p-4">
+              <h2 className="text-xl font-semibold mb-4">
+                STTP
+              </h2>
+              {/* Replace the following with your table or content component */}
+              <div>
+                <AdminDomainSttpTable />
               </div>
             </Card>
           </motion.div>

@@ -37,20 +37,19 @@ const AdminFacultyAppraisalReport = ({
   const [performance, setPerformance] = useState(null);
   const [point, setPoint] = useState(null);
 
-
   const endpoints = {
-    journals: `https://facultyappraisal.software/api/v1/points/ad-journals/${id}`,
-    books: `https://facultyappraisal.software/api/v1/points/ad-books/${id}`,
-    chapter: `https://facultyappraisal.software/api/v1/points/ad-chapter/${id}`,
-    patents: `https://facultyappraisal.software/api/v1/points/ad-patents/${id}`,
-    conferences: `https://facultyappraisal.software/api/v1/points/ad-conferences/${id}`,
-    projects: `https://facultyappraisal.software/api/v1/points/ad-projects/${id}`,
-    events: `https://facultyappraisal.software/api/v1/points/ad-events/${id}`,
-    sttp: `https://facultyappraisal.software/api/v1/points/ad-sttp/${id}`,
-    "expert-lectures": `https://facultyappraisal.software/api/v1/points/ad-expert-lectures/${id}`,
-    "Student-Guide": `https://facultyappraisal.software/api/v1/points/ad-student-guided/${id}`,
-    lecture: `https://facultyappraisal.software/api/v1/points/ad-lecture/${id}`,
-    // Contribution: `https://facultyappraisal.software/api/v1/points/ad-contribution/${id}`,
+    journals: `http://localhost:6005/api/v1/points2/ad-journals/${id}`,
+    books: `http://localhost:6005/api/v1/points2/ad-books/${id}`,
+    chapter: `http://localhost:6005/api/v1/points2/ad-chapter/${id}`,
+    patents: `http://localhost:6005/api/v1/points2/ad-patents/${id}`,
+    conferences: `http://localhost:6005/api/v1/points2/ad-conferences/${id}`,
+    projects: `http://localhost:6005/api/v1/points2/ad-projects/${id}`,
+    events: `http://localhost:6005/api/v1/points2/ad-events/${id}`,
+    sttp: `http://localhost:6005/api/v1/points2/ad-sttp/${id}`,
+    "expert-lectures": `http://localhost:6005/api/v1/points2/ad-expert-lectures/${id}`,
+    "Student-Guide": `http://localhost:6005/api/v1/points2/ad-student-guided/${id}`,
+    lecture: `http://localhost:6005/api/v1/points2/ad-lecture/${id}`,
+    // Contribution: `http://localhost:6005/api/v1/points/ad-contribution/${id}`,
   };
 
   const appraisalData2 = [
@@ -90,7 +89,7 @@ const AdminFacultyAppraisalReport = ({
         highestPoints: item.highestPoints || 0,
       }));
 
-      // console.log("formattedData", formattedData);
+      console.log(formattedData);
 
       setAppraisalData(formattedData);
     } catch (error) {
@@ -159,7 +158,7 @@ const AdminFacultyAppraisalReport = ({
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `https://facultyappraisal.software/api/v1/admins/teacher/${id}`,
+          `http://localhost:6005/api/v1/admins/teacher/${id}`,
           {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem(
@@ -184,7 +183,7 @@ const AdminFacultyAppraisalReport = ({
     const fetchRank = async () => {
       try {
         const response = await axios.get(
-          `https://facultyappraisal.software/api/v1/points/ad-teacher-ranks`,
+          `http://localhost:6005/api/v1/points/ad-teacher-ranks`,
           {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem(
@@ -203,7 +202,7 @@ const AdminFacultyAppraisalReport = ({
         if (matchingTeacher) {
           setRank(matchingTeacher.rank);
           setPerformance(matchingTeacher.performanceCategory);
-          setPoint(matchingTeacher.totalPoints)
+          setPoint(matchingTeacher.totalPoints);
         } else {
           console.log("No matching teacher found for the given facultyId");
         }
@@ -302,8 +301,9 @@ const AdminFacultyAppraisalReport = ({
             <p className="text-4xl font-bold mb-2">Rank : {rank}</p>
             <p className="text-xl text-gray-600">Performance : {performance}</p>
             <p className="text-xl text-gray-700 font-semibold">
-  Points out of 100: {point !== null ? point.toFixed(2) : "Loading..."}
-</p>            
+              Points out of 100:{" "}
+              {point !== null ? point.toFixed(2) : "Loading..."}
+            </p>
           </CardContent>
         </Card>
         <div>

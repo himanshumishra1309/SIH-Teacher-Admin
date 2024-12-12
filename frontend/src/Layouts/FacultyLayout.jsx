@@ -8,7 +8,10 @@ import FacultyNavigation from "@/components/NavigationSIdeBar/FacultyNavigation"
 import TeacherHeader from "@/components/Header/TeacherHeader/TeacherHeader";
 import { Footer } from "@/components";
 import LoadingPage from "@/pages/LoadingPage";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import "./loading.css";
+import { getAllTables } from "../components/tableUtils";
 
 const FacultyLayout = () => {
   const [facultyData, setFacultyData] = useState({
@@ -22,6 +25,7 @@ const FacultyLayout = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [isNavigationFixed, setIsNavigationFixed] = useState(false);
+  const [extraTables, setExtraTables] = useState([]); // State to store fetched extra tables
 
   const location = useLocation();
   const navigation = useNavigation();
@@ -36,10 +40,9 @@ const FacultyLayout = () => {
           Authorization: `Bearer ${accessToken}`,
         };
         const response = await axios.get(
-          "https://facultyappraisal.software/api/v1/teachers/me",
+          "http://localhost:6005/api/v1/teachers/me",
           { headers }
         );
-        // console.log("Faculty data fetched:", response.data);
 
         const data = response.data.data;
         setFacultyData({
@@ -100,23 +103,74 @@ const FacultyLayout = () => {
     fetchProfileData();
   }, [location, toast]);
 
+  // Fetch additional tables for the report
+  const fetchAdditionalTables = async () => {
+    try {
+      const accessToken = sessionStorage.getItem("teacherAccessToken");
+      const headers = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+      const response = await axios.get("http://localhost:6005/api/v1/teachers/extraTables", { headers });
+      setExtraTables(response.data.tables || []);
+    } catch (error) {
+      console.error("Error fetching additional tables:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAdditionalTables();
+  }, []);
+
+  // Function to download tables as a PDF
+  const handleDownloadPDF = async () => {
+    const pdf = new jsPDF();
+    let isFirstPage = true;
+
+    // Get all tables from the current view and additional fetched tables
+    const allTables = await getAllTables(extraTables);
+
+    for (const table of allTables) {
+      const canvas = await html2canvas(table, { scale: 2 });
+      const imgData = canvas.toDataURL("image/png");
+      const imgWidth = 190; // A4 size width in mm (approx)
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      if (!isFirstPage) pdf.addPage();
+      pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
+      isFirstPage = false;
+    }
+
+    pdf.save("Faculty_Detailed_Report.pdf");
+  };
+
   return (
     <>
       <div className="flex flex-col min-h-screen">
         <TeacherHeader />
         <div className="flex flex-1 overflow-hidden">
-          <aside 
+          <aside
             ref={navigationRef}
             className={`w-68 ${
-              isNavigationFixed 
-                ? 'fixed top-0 bottom-0 overflow-y-auto' 
-                : 'relative overflow-y-auto'
+              isNavigationFixed
+                ? "fixed top-0 bottom-0 overflow-y-auto"
+                : "relative overflow-y-auto"
             }`}
           >
             <FacultyNavigation />
           </aside>
-          <main ref={mainContentRef} className="flex-1 flex flex-col overflow-hidden min-h-screen ml-68">
-            <h1 className="text-xl font-bold text-center p-4">Faculty Portal</h1>
+          <main
+            ref={mainContentRef}
+            className="flex-1 flex flex-col overflow-hidden min-h-screen ml-68"
+          >
+            <div className="flex justify-between items-center p-4">
+              <h1 className="text-xl font-bold">Faculty Portal</h1>
+              <button
+                onClick={handleDownloadPDF}
+                className="bg-blue-500 text-white p-2 rounded shadow hover:bg-blue-600 transition"
+              >
+                Download Detailed Report
+              </button>
+            </div>
             <div className="flex-1 overflow-auto p-4 bg-gray-100">
               {navigation.state === "loading" ? <LoadingPage /> : <Outlet />}
             </div>

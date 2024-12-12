@@ -9,7 +9,7 @@ export const columnDef = [
   },
   {
     accessorKey: "role",
-    header: "Type",
+    header: "Role",
     enableSorting: true,
     filterFn: "equals",
     filterElement: ({ column }) => {

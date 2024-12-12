@@ -6,7 +6,7 @@ import { addConference, deleteConference, getAllConferences, updateConference } 
 const router = Router();
 
 router.post("/conference/add", verifyTeacherJWT, addConference);
-router.post("/conference/get", verifyTeacherJWT, getAllConferences);
+router.post("/conference/get", getAllConferences);
 router.patch("/conference/get/:id", verifyTeacherJWT, updateConference);
 router.delete("/conference/delete/:id", verifyTeacherJWT, deleteConference);
 router.get("/conference/:deleteId/", verifyTeacherJWT, getAllConferences);

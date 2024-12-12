@@ -25,37 +25,37 @@ export const columnDef = [
   {
     accessorKey: "subject_name",
     header: "Subject",
-    enableSorting: true,
+    enableSorting: false,
   },
   {
     accessorKey: "teacherName",
     header: "teacher",
-    enableSorting: true,
+    enableSorting: false,
   },
   {
     accessorKey: "subject_code",
     header: "Course Code",
-    enableSorting: true,
+    enableSorting: false,
   },
   {
     accessorKey: "subject_credit",
     header: "Credits",
-    enableSorting: true,
+    enableSorting: false,
   },
   {
     accessorKey: "branch",
     header: "Branch",
-    enableSorting: true,
+    enableSorting: false,
   },
   {
     accessorKey: "year",
     header: "Year",
-    enableSorting: true,
+    enableSorting: false,
   },
   {
     accessorKey: "min_lectures",
     header: "Minimum Lectures",
-    enableSorting: true,
+    enableSorting: false,
   },
   {
     accessorKey: "activeUntil",
@@ -78,6 +78,6 @@ export const columnDef = [
       }
       return "N/A";
     },
-    enableSorting: true,
+    enableSorting: false,
   },
 ];

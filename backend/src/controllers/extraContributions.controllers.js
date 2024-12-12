@@ -59,7 +59,7 @@ const createContribution = asyncHandler(async (req, res) => {
 
   let report = null;
   if (files.report) {
-    const result = await uploadToGCS(files.report[0].path, "pdf-report");
+    const result = await uploadToGCS(files.report[0].path, "pdf-reports");
     if (!result) {
       throw new ApiError(500, "Failed to upload the report. Please try again.");
     }

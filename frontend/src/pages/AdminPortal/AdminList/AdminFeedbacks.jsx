@@ -71,8 +71,8 @@ export default function ReleaseFeedbacks() {
       const isAllSelected = selectedCourses.length === courseData.length;
 
       const endpoint = isAllSelected
-        ? "https://facultyappraisal.software/api/v1/admins/subjects/release-feedback"
-        : "https://facultyappraisal.software/api/v1/admins/teachers/release-feedback";
+        ? "http://localhost:6005/api/v1/admins/subjects/release-feedback"
+        : "http://localhost:6005/api/v1/admins/teachers/release-feedback";
 
       const activeUntil = new Date();
       activeUntil.setDate(activeUntil.getDate() + 2);

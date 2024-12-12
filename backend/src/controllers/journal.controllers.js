@@ -78,7 +78,7 @@ const updateJournal = asyncHandler(async (req, res) => {
   ) {
     throw new ApiError(400, "Please provide all mandatory fields");
   }
-  
+
   const updatedJournal = await Journal.findByIdAndUpdate(
     id,
     {
@@ -123,7 +123,8 @@ const deleteJournal = asyncHandler(async (req, res) => {
 });
 
 const getAllJournals = asyncHandler(async (req, res) => {
-  const owner = req.teacher._id;
+  const { id } = req.params;
+  const owner = id;
   const journals = await Journal.find({ owner }).sort({ createdAt: -1 });
 
   return res

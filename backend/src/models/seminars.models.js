@@ -76,8 +76,7 @@ seminarSchema.methods.allocateFeedbackPoints = async function () {
     if (feedbacks.length > 0) {
       // Calculate average feedback rating
       const averageRating =
-        feedbacks.reduce((sum, feedback) => sum + feedback.rating, 0) /
-        feedbacks.length;
+        feedbacks.reduce((sum, feedback) => sum + feedback.rating, 0) / feedbacks.length;
 
       // Find the original seminar point document
       const seminarPoint = await Point.findOne({

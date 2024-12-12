@@ -27,7 +27,7 @@ const AddLecMarkAttendance = () => {
       try {
         const token = sessionStorage.getItem("teacherAccessToken");
         const response = await axios.get(
-          `https://facultyappraisal.software/api/v1/allocated-subjects/subjects/${id}`,
+          `http://localhost:6005/api/v1/allocated-subjects/subjects/${id}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -48,7 +48,7 @@ const AddLecMarkAttendance = () => {
         const token = sessionStorage.getItem("teacherAccessToken");
         try {
           const response = await axios.get(
-            `https://facultyappraisal.software/api/v1/lecture/${selectedSubject?._id}/students`,
+            `http://localhost:6005/api/v1/lecture/${selectedSubject?._id}/students`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }
@@ -73,7 +73,7 @@ const AddLecMarkAttendance = () => {
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
       const response = await axios.post(
-        `https://facultyappraisal.software/api/v1/lecture/${selectedSubject?._id}/${id}/lectures`,
+        `http://localhost:6005/api/v1/lecture/${selectedSubject?._id}/${id}/lectures`,
         lectureDetails,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -99,7 +99,7 @@ const AddLecMarkAttendance = () => {
         selectedSubject;
 
       const response = await axios.post(
-        `https://facultyappraisal.software/api/v1/lecture/${lectureId}/attendance`,
+        `http://localhost:6005/api/v1/lecture/${lectureId}/attendance`,
         {
           studentIds: selectedStudents,
           subject_name,

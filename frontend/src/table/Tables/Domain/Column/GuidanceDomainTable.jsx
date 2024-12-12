@@ -14,7 +14,7 @@ export default function GuidanceDomainTable() {
       try {
         const token = sessionStorage.getItem("adminAccessToken");
 
-        const response = await axios.get(`https://facultyappraisal.software/api/v1/domain-points/admin/student-guidance`, {
+        const response = await axios.get(`http://localhost:6005/api/v1/domain-points/admin/student-guidance`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -38,7 +38,7 @@ export default function GuidanceDomainTable() {
       const token = sessionStorage.getItem("adminAccessToken");
 
       const response = await axios.put(
-        `https://facultyappraisal.software/api/v1/domain-points/admin/points/${id}`,
+        `http://localhost:6005/api/v1/domain-points/admin/points/${id}`,
         { points: newPoints },
         {
           headers: {
@@ -123,7 +123,7 @@ export default function GuidanceDomainTable() {
 
   return (
     <div className="container mx-auto p-4">
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">Publication Points Table</h2>
+      <h2 className="text-2xl font-bold text-gray-800 mb-4">Guidance & Mentorship Points Table</h2>
       <div className="overflow-x-auto rounded-lg shadow-md bg-white">
         <table className="min-w-full border border-gray-200">
           <thead className="bg-gray-100 border-b-2 border-gray-200">

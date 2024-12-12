@@ -1,25 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Star } from 'lucide-react';
+import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { X } from 'lucide-react';
+import { X } from "lucide-react";
 import FeedbackSubmitterTable from "./UpcomingSeminars/feedbackSubmitterTable";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
-export default function FacultyFeedbackView({ feedback, onClose, isOpen }) {
+import { DetailedFeedbackView } from "./UpcomingSeminars/DetailedFeedbackView";
+
+export default function FacultyFeedbackView({ feedback, onClose, isOpen, subjectId }) {
   if (!isOpen) return null;
   const { id } = useParams();
   const [data, setData] = useState([]);
   const [averageRating, setAverageRating] = useState(4.2);
+
+  const [selectedFeedback, setSelectedFeedback] = useState(null);
 
   useEffect(() => {
     const updatePost = async () => {
       try {
         const teacherAccessToken = sessionStorage.getItem("teacherAccessToken");
         const response = await axios.post(
-          `https://facultyappraisal.software/api/v1/lec-feedback/cards`,
+          `http://localhost:6005/api/v1/lec-feedback/cards`,
           {
             subject_name: feedback.subject_name,
             subject_code: feedback.subject_code,
@@ -50,39 +55,24 @@ export default function FacultyFeedbackView({ feedback, onClose, isOpen }) {
   }, [feedback]);
 
   const [isSubmittersModalOpen, setIsSubmittersModalOpen] = useState(false);
-
-  // Mock data - replace with actual data from the feedback prop
-  const feedbackData = [
-    {
-      studentName: "Anonymous Student",
-      rating: 4,
-      comment:
-        "Excellent teaching methodology and very helpful in clearing doubts.",
-      date: "2024-01-15",
-    },
-    {
-      studentName: "Anonymous Student",
-      rating: 5,
-      comment: "The professor made complex topics easy to understand.",
-      date: "2024-01-14",
-    },
-    // Add more feedback items as needed
-  ];
+  const [isDetailedFeedbackModalOpen, setIsDetailedFeedbackModalOpen] =
+    useState(false);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center mt-40">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl h-[80vh] overflow-hidden relative">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[900px] max-h-[90vh] p-0 overflow-hidden">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
+          className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
         >
-          <X className="h-5 w-5 text-gray-700" />
+          <span className="sr-only">Close</span>
         </button>
+
         <Button
           onClick={() => setIsSubmittersModalOpen(true)}
           className="absolute top-4 right-16 bg-blue-500 hover:bg-blue-600 text-white"
         >
-          View Submitters
+          Submitters Count
         </Button>
         <div className="flex h-full">
           {/* Left Side - Rating Overview */}
@@ -145,45 +135,65 @@ export default function FacultyFeedbackView({ feedback, onClose, isOpen }) {
                           ))}
                         </div>
                         <span className="text-sm text-gray-500">
-                          {new Date(feedback.submissionTime).toLocaleDateString()}
+                          {new Date(
+                            feedback.submissionTime
+                          ).toLocaleDateString()}
                         </span>
                       </div>
                       <p className="text-gray-700 mt-2">{feedback.comment}</p>
                       <p className="text-sm text-gray-500 mt-2">
                         {feedback.studentName}
                       </p>
+                      <Button
+                        onClick={() => setSelectedFeedback(feedback)}
+                        className="bg-[rgb(37,99,235)] text-white hover:bg-[rgb(29,78,216)] transition-colors mt-2"
+                      >
+                        View Detailed Rating
+                      </Button>
                     </Card>
                   ))}
                 </div>
               ) : (
-                <p className="text-center text-gray-500 mt-4">No feedback received</p>
+                <p className="text-center text-gray-500 mt-4">
+                  No feedback received
+                </p>
               )}
             </ScrollArea>
           </div>
         </div>
-      </div>
-      {isSubmittersModalOpen && (
-        <div className="fixed inset-0 z-60 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl h-[70vh] overflow-hidden relative">
-            <button
-              onClick={() => setIsSubmittersModalOpen(false)}
-              className="absolute top-4 right-4 p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
-            >
-              <X className="h-5 w-5 text-gray-700" />
-            </button>
-            <div className="p-6">
-              <h2 className="text-2xl font-bold text-blue-900 mb-4">
-                Feedback Submitters
-              </h2>
-              <FeedbackSubmitterTable feedback={feedback} />
-              <p className="text-gray-600">
-                Submitters table will be displayed here.
-              </p>
+
+        {isSubmittersModalOpen && (
+          <div className="fixed inset-0 z-60 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl h-[70vh] overflow-hidden relative">
+              <button
+                onClick={() => setIsSubmittersModalOpen(false)}
+                className="absolute top-4 right-4 p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
+              >
+                <X className="h-5 w-5 text-gray-700" />
+              </button>
+              <div className="p-6">
+                <h2 className="text-2xl font-bold text-blue-900 mb-4">
+                  Feexdback Submitters
+                </h2>
+                <FeedbackSubmitterTable feedback={feedback} subjectId = {subjectId} />
+              </div>
             </div>
           </div>
+        )}
+        <DetailedFeedbackView
+          isOpen={!!selectedFeedback}
+          onClose={() => setSelectedFeedback(null)}
+          feedback={selectedFeedback}
+        />
+        <div className="sticky bottom-0 w-full p-4 bg-white border-t border-gray-200 flex justify-end">
+          <Button
+            onClick={onClose}
+            className="bg-[rgb(37,99,235)] text-white hover:bg-[rgb(29,78,216)] transition-colors"
+          >
+            Close
+          </Button>
         </div>
-      )}
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
-

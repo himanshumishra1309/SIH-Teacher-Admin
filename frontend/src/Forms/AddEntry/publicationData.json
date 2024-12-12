@@ -1,0 +1,504 @@
+// export const publicationData = [
+//     {
+//       "name": "Nature",
+//       "h5Index": 488,
+//       "h5Median": 745
+//     },
+//     {
+//       "name": "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+//       "h5Index": 440,
+//       "h5Median": 689
+//     },
+//     {
+//       "name": "The New England Journal of Medicine",
+//       "h5Index": 434,
+//       "h5Median": 897
+//     },
+//     {
+//       "name": "Science",
+//       "h5Index": 409,
+//       "h5Median": 633
+//     },
+//     {
+//       "name": "Nature Communications",
+//       "h5Index": 375,
+//       "h5Median": 492
+//     },
+//     {
+//       "name": "The Lancet",
+//       "h5Index": 368,
+//       "h5Median": 678
+//     },
+//     {
+//       "name": "Neural Information Processing Systems",
+//       "h5Index": 337,
+//       "h5Median": 614
+//     },
+//     {
+//       "name": "Advanced Materials",
+//       "h5Index": 327,
+//       "h5Median": 420
+//     },
+//     {
+//       "name": "Cell",
+//       "h5Index": 320,
+//       "h5Median": 482
+//     },
+//     {
+//       "name": "International Conference on Learning Representations",
+//       "h5Index": 304,
+//       "h5Median": 584
+//     },
+//     {
+//       "name": "JAMA",
+//       "h5Index": 298,
+//       "h5Median": 498
+//     },
+//     {
+//       "name": "Science of The Total Environment",
+//       "h5Index": 297,
+//       "h5Median": 436
+//     },
+//     {
+//       "name": "IEEE/CVF International Conference on Computer Vision",
+//       "h5Index": 291,
+//       "h5Median": 484
+//     },
+//     {
+//       "name": "Angewandte Chemie International Edition",
+//       "h5Index": 281,
+//       "h5Median": 361
+//     },
+//     {
+//       "name": "Nature Medicine",
+//       "h5Index": 274,
+//       "h5Median": 474
+//     },
+//     {
+//       "name": "Journal of Cleaner Production",
+//       "h5Index": 272,
+//       "h5Median": 359
+//     },
+//     {
+//       "name": "International Conference on Machine Learning",
+//       "h5Index": 268,
+//       "h5Median": 424
+//     },
+//     {
+//       "name": "Chemical Reviews",
+//       "h5Index": 267,
+//       "h5Median": 461
+//     },
+//     {
+//       "name": "Proceedings of the National Academy of Sciences",
+//       "h5Index": 267,
+//       "h5Median": 405
+//     },
+//     {
+//       "name": "IEEE Access",
+//       "h5Index": 266,
+//       "h5Median": 364
+//     },
+//     {
+//       "name": "Chemical Society Reviews",
+//       "h5Index": 254,
+//       "h5Median": 398
+//     },
+//     {
+//       "name": "International Journal of Molecular Sciences",
+//       "h5Index": 244,
+//       "h5Median": 346
+//     },
+//     {
+//       "name": "Advanced Functional Materials",
+//       "h5Index": 244,
+//       "h5Median": 318
+//     },
+//     {
+//       "name": "Advanced Energy Materials",
+//       "h5Index": 234,
+//       "h5Median": 306
+//     },
+//     {
+//       "name": "Journal of the American Chemical Society",
+//       "h5Index": 234,
+//       "h5Median": 306
+//     },
+//     {
+//       "name": "Nucleic Acids Research",
+//       "h5Index": 233,
+//       "h5Median": 606
+//     },
+//     {
+//       "name": "Chemical engineering journal",
+//       "h5Index": 232,
+//       "h5Median": 287
+//     },
+//     {
+//       "name": "International Journal of Environmental Research and Public Health",
+//       "h5Index": 229,
+//       "h5Median": 328
+//     },
+//     {
+//       "name": "PLOS ONE",
+//       "h5Index": 225,
+//       "h5Median": 322
+//     },
+//     {
+//       "name": "BMJ",
+//       "h5Index": 224,
+//       "h5Median": 388
+//     },
+//     {
+//       "name": "Science Advances",
+//       "h5Index": 223,
+//       "h5Median": 318
+//     },
+//     {
+//       "name": "Sustainability",
+//       "h5Index": 223,
+//       "h5Median": 294
+//     },
+//     {
+//       "name": "ACS Nano",
+//       "h5Index": 221,
+//       "h5Median": 299
+//     },
+//     {
+//       "name": "Scientific Reports",
+//       "h5Index": 221,
+//       "h5Median": 291
+//     },
+//     {
+//       "name": "AAAI Conference on Artificial Intelligence",
+//       "h5Index": 220,
+//       "h5Median": 341
+//     },
+//     {
+//       "name": "Meeting of the Association for Computational Linguistics (ACL)",
+//       "h5Index": 215,
+//       "h5Median": 362
+//     },
+//     {
+//       "name": "Frontiers in Immunology",
+//       "h5Index": 213,
+//       "h5Median": 306
+//     },
+//     {
+//       "name": "Journal of Clinical Oncology",
+//       "h5Index": 212,
+//       "h5Median": 308
+//     },
+//     {
+//       "name": "Energy & Environmental Science",
+//       "h5Index": 211,
+//       "h5Median": 307
+//     },
+//     {
+//       "name": "Physical Review Letters",
+//       "h5Index": 210,
+//       "h5Median": 282
+//     },
+//     {
+//       "name": "Applied Catalysis B: Environmental",
+//       "h5Index": 210,
+//       "h5Median": 271
+//     },
+//     {
+//       "name": "Circulation",
+//       "h5Index": 209,
+//       "h5Median": 335
+//     },
+//     {
+//       "name": "Journal of Business Research",
+//       "h5Index": 209,
+//       "h5Median": 330
+//     },
+//     {
+//       "name": "Nutrients",
+//       "h5Index": 207,
+//       "h5Median": 302
+//     },
+//     {
+//       "name": "Renewable and Sustainable Energy Reviews",
+//       "h5Index": 207,
+//       "h5Median": 283
+//     },
+//     {
+//       "name": "European Conference on Computer Vision",
+//       "h5Index": 206,
+//       "h5Median": 306
+//     },
+//     {
+//       "name": "The Lancet Oncology",
+//       "h5Index": 202,
+//       "h5Median": 347
+//     },
+//     {
+//       "name": "Journal of Hazardous Materials",
+//       "h5Index": 197,
+//       "h5Median": 258
+//     },
+//     {
+//       "name": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+//       "h5Index": 196,
+//       "h5Median": 348
+//     },
+//     {
+//       "name": "Morbidity and Mortality Weekly Report",
+//       "h5Index": 193,
+//       "h5Median": 326
+//     },
+//     {
+//       "name": "Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+//       "h5Index": 193,
+//       "h5Median": 310
+//     },
+//     {
+//       "name": "Nature Biotechnology",
+//       "h5Index": 191,
+//       "h5Median": 323
+//     },
+//     {
+//       "name": "Journal of the American College of Cardiology",
+//       "h5Index": 191,
+//       "h5Median": 293
+//     },
+//     {
+//       "name": "Sensors",
+//       "h5Index": 191,
+//       "h5Median": 250
+//     },
+//     {
+//       "name": "Nature Materials",
+//       "h5Index": 190,
+//       "h5Median": 312
+//     },
+//     {
+//       "name": "Applied Energy",
+//       "h5Index": 189,
+//       "h5Median": 258
+//     },
+//     {
+//       "name": "Nano Energy",
+//       "h5Index": 187,
+//       "h5Median": 247
+//     },
+//     {
+//       "name": "Nature Genetics",
+//       "h5Index": 186,
+//       "h5Median": 294
+//     },
+//     {
+//       "name": "Joule",
+//       "h5Index": 186,
+//       "h5Median": 274
+//     },
+//     {
+//       "name": "Technological Forecasting and Social Change",
+//       "h5Index": 186,
+//       "h5Median": 267
+//     },
+//     {
+//       "name": "IEEE Internet of Things Journal",
+//       "h5Index": 186,
+//       "h5Median": 261
+//     },
+//     {
+//       "name": "Frontiers in Psychology",
+//       "h5Index": 185,
+//       "h5Median": 271
+//     },
+//     {
+//       "name": "Molecules",
+//       "h5Index": 184,
+//       "h5Median": 254
+//     },
+//     {
+//       "name": "Journal of Materials Chemistry A",
+//       "h5Index": 184,
+//       "h5Median": 228
+//     },
+//     {
+//       "name": "Environmental Science & Technology",
+//       "h5Index": 178,
+//       "h5Median": 245
+//     },
+//     {
+//       "name": "Chemosphere",
+//       "h5Index": 178,
+//       "h5Median": 234
+//     },
+//     {
+//       "name": "The Lancet Infectious Diseases",
+//       "h5Index": 177,
+//       "h5Median": 334
+//     },
+//     {
+//       "name": "JAMA Network Open",
+//       "h5Index": 177,
+//       "h5Median": 267
+//     },
+//     {
+//       "name": "ACS Applied Materials & Interfaces",
+//       "h5Index": 177,
+//       "h5Median": 225
+//     },
+//     {
+//       "name": "Clinical Infectious Diseases",
+//       "h5Index": 176,
+//       "h5Median": 319
+//     },
+//     {
+//       "name": "Nature Energy",
+//       "h5Index": 174,
+//       "h5Median": 357
+//     },
+//     {
+//       "name": "Gastroenterology",
+//       "h5Index": 174,
+//       "h5Median": 279
+//     },
+//     {
+//       "name": "ACS Catalysis",
+//       "h5Index": 172,
+//       "h5Median": 242
+//     },
+//     {
+//       "name": "Advanced Science",
+//       "h5Index": 172,
+//       "h5Median": 233
+//     },
+//     {
+//       "name": "Nature Nanotechnology",
+//       "h5Index": 171,
+//       "h5Median": 294
+//     },
+//     {
+//       "name": "Annals of Oncology",
+//       "h5Index": 171,
+//       "h5Median": 278
+//     },
+//     {
+//       "name": "Gut",
+//       "h5Index": 171,
+//       "h5Median": 263
+//     },
+//     {
+//       "name": "Journal of Environmental Management",
+//       "h5Index": 171,
+//       "h5Median": 233
+//     },
+//     {
+//       "name": "Molecular Cancer",
+//       "h5Index": 170,
+//       "h5Median": 278
+//     },
+//     {
+//       "name": "European Heart Journal",
+//       "h5Index": 169,
+//       "h5Median": 299
+//     },
+//     {
+//       "name": "Physical Review D",
+//       "h5Index": 169,
+//       "h5Median": 216
+//     },
+//     {
+//       "name": "Nature Methods",
+//       "h5Index": 167,
+//       "h5Median": 308
+//     },
+//     {
+//       "name": "Environmental Pollution",
+//       "h5Index": 167,
+//       "h5Median": 241
+//     },
+//     {
+//       "name": "The Astrophysical Journal",
+//       "h5Index": 167,
+//       "h5Median": 239
+//     },
+//     {
+//       "name": "IEEE Transactions on Industrial Informatics",
+//       "h5Index": 167,
+//       "h5Median": 224
+//     },
+//     {
+//       "name": "ACS Energy Letters",
+//       "h5Index": 167,
+//       "h5Median": 220
+//     },
+//     {
+//       "name": "Immunity",
+//       "h5Index": 166,
+//       "h5Median": 283
+//     },
+//     {
+//       "name": "International Journal of Information Management",
+//       "h5Index": 165,
+//       "h5Median": 298
+//     },
+//     {
+//       "name": "Cells",
+//       "h5Index": 165,
+//       "h5Median": 233
+//     },
+//     {
+//       "name": "Expert Systems with Applications",
+//       "h5Index": 165,
+//       "h5Median": 228
+//     },
+//     {
+//       "name": "Water Research",
+//       "h5Index": 165,
+//       "h5Median": 227
+//     },
+//     {
+//       "name": "Applied Sciences",
+//       "h5Index": 165,
+//       "h5Median": 216
+//     },
+//     {
+//       "name": "Energy",
+//       "h5Index": 165,
+//       "h5Median": 215
+//     },
+//     {
+//       "name": "Small",
+//       "h5Index": 164,
+//       "h5Median": 232
+//     },
+//     {
+//       "name": "Environmental Science and Pollution Research",
+//       "h5Index": 164,
+//       "h5Median": 220
+//     },
+//     {
+//       "name": "Renewable Energy",
+//       "h5Index": 164,
+//       "h5Median": 212
+//     },
+//     {
+//       "name": "Bioresource Technology",
+//       "h5Index": 162,
+//       "h5Median": 217
+//     },
+//     {
+//       "name": "Nature Reviews Immunology",
+//       "h5Index": 161,
+//       "h5Median": 320
+//     },
+//     {
+//       "name": "Energy Storage Materials",
+//       "h5Index": 161,
+//       "h5Median": 225
+//     },
+//     {
+//       "name": "Coordination Chemistry Reviews",
+//       "h5Index": 161,
+//       "h5Median": 222
+//     }
+//   ];
+  
+  

@@ -20,7 +20,7 @@ export default function EventsDomainTable() {
         const token = sessionStorage.getItem("adminAccessToken");
 
         const response = await axios.get(
-          `https://facultyappraisal.software/api/v1/domain-points/admin/all-event-points`,
+          `http://localhost:6005/api/v1/domain-points/admin/all-event-points`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -51,7 +51,7 @@ export default function EventsDomainTable() {
       const token = sessionStorage.getItem("adminAccessToken");
 
       const response = await axios.put(
-        `https://facultyappraisal.software/api/v1/domain-points/admin/points/${id}`,
+        `http://localhost:6005/api/v1/domain-points/admin/points/${id}`,
         { points: points },
         {
           headers: {
@@ -151,7 +151,7 @@ export default function EventsDomainTable() {
   return (
     <div className="container mx-auto p-4">
       <h2 className="text-2xl font-bold text-gray-800 mb-4">
-        Publication Points Table
+        Events Points Table
       </h2>
       <div className="overflow-x-auto rounded-lg shadow-md bg-white">
         <table className="min-w-full border border-gray-200">

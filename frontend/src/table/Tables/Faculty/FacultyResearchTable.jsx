@@ -38,8 +38,11 @@ import { JournalColumnDef } from "../Columns/PublicationsColumn/JournalColumn.js
 import { conferenceColumnDef } from "../Columns/PublicationsColumn/ConferenceColumn.jsx";
 import { chapterColumnDef } from "../Columns/PublicationsColumn/ChapterColumn.jsx";
 import { ResearchInstructionMessage } from "@/components/ResearchInstructionMessage.jsx";
+import FacultyPublicationsChart from "./FacultyPublicationsChart.jsx";
+import { useParams } from "react-router-dom";
 
 export default function FacultyResearchTable() {
+  const { id } = useParams();
   const [data, setData] = useState([]);
   const [data2, setData2] = useState([]);
   const [expanded, setExpanded] = useState({});
@@ -55,6 +58,7 @@ export default function FacultyResearchTable() {
   const [rowToDelete, setRowToDelete] = useState(null);
   const [typeFilter, setTypeFilter] = useState("");
   const [columnVisibility, setColumnVisibility] = useState({});
+  const [count, setCount] = useState(0);
 
   const [colu, setColu] = useState(PatentcolumnDef);
 
@@ -69,12 +73,12 @@ export default function FacultyResearchTable() {
     }
 
     const endpointMap = {
-      Book: "/api/v1/book/book/",
-      BOOK: "/api/v1/book/book/",
-      "Book Chapter": "/api/v1/chapter/chapter/",
-      "Journal Article": "/api/v1/journals/journal/",
-      Patent: "/api/v1/patents/patent/get",
-      "Conference Paper": "/api/v1/conferences/conference/get",
+      Book: `/api/v1/book2/book/${id}`,
+      BOOK: `/api/v1/book2/book/${id}`,
+      "Book Chapter": `/api/v1/chapter2/chapter/${id}`,
+      "Journal Article": `/api/v1/journals2/journal/${id}`,
+      Patent: `/api/v1/patents2/patent/get/${id}`,
+      "Conference Paper": `/api/v1/conferences2/conference/get/${id}`,
     };
 
     const publicationType = mapPublicationType(typeFilter);
@@ -82,14 +86,32 @@ export default function FacultyResearchTable() {
     const endpoint = endpointMap[publicationType];
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
-      const response = await axios.get(`https://facultyappraisal.software${endpoint}`, {
+      const response = await axios.get(`http://localhost:6005${endpoint}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
       console.log(response.data.data);
+
+      const response2 = await axios.get(
+        `http://localhost:6005/api/v1/publication/all`
+      );
+      console.log(response2.data.data);
+
+      response.data.data.forEach((item) => {
+        const publication = response2.data.data.find(
+          (pub) => pub._id === item.publication
+        );
+        item.publication = publication;
+      });
+      // if (typeFilter === "Book Chapter") {
+      //   response.data.data.forEach((item) => {
+      //     item.publication = item.publication.name;
+      //   });
+      // }
       setData2(response.data.data);
+      console.log(data2);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -146,6 +168,18 @@ export default function FacultyResearchTable() {
             </div>
           ),
         };
+      } else if (
+        col.accessorKey === "publication" &&
+        (typeFilter === "Book" ||
+          typeFilter === "Patent" ||
+          typeFilter === "Conference Paper" ||
+          typeFilter === "Journal Article" ||
+          typeFilter === "Book Chapter")
+      ) {
+        return {
+          ...col,
+          cell: ({ row }) => <span>{row.original.publication?.name}</span>,
+        };
       }
       return col;
     });
@@ -169,21 +203,36 @@ export default function FacultyResearchTable() {
   });
 
   const handleAddEntry = async (formData) => {
+    formData.append("owner", id);
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
       const type = typeFilter;
       const publicationType = mapPublicationType(type);
       const endpointMap = {
-        Book: "/api/v1/book/book/add",
-        BOOK: "/api/v1/book/book/add",
-        "Book Chapter": "/api/v1/chapter/chapter/add",
-        "Journal Article": "/api/v1/journals/journal/add",
-        Patent: "/api/v1/patents/patent/add",
-        "Conference Paper": "/api/v1/conferences/conference/add",
+        Book: "/api/v1/book2/book/add",
+        BOOK: "/api/v1/book2/book/add",
+        "Book Chapter": "/api/v1/chapter2/chapter/add",
+        "Journal Article": "/api/v1/journals2/journal/add",
+        Patent: "/api/v1/patents2/patent/add",
+        "Conference Paper": `/api/v1/conferences2/conference/add/${id}`,
       };
+      const response2 = await axios.get(
+        `http://localhost:6005/api/v1/publication/all`
+      );
+      console.log(response2.data.data);
+      const publication = response2.data.data.find(
+        (pub) => pub.name === formData.get("publication")
+      );
+      // console.log(formData.get("publication"));
+
+      // console.log(publication);
+
+      formData.delete("publication");
+
+      formData.append("publication", publication._id);
       const endpoint = endpointMap[publicationType];
       const response = await axios.post(
-        `https://facultyappraisal.software${endpoint}`,
+        `http://localhost:6005${endpoint}`,
         formData,
         {
           headers: {
@@ -192,6 +241,8 @@ export default function FacultyResearchTable() {
           },
         }
       );
+
+      // console.log(response);
       setData2((prevData) => [...prevData, response.data.data]);
       setDrawerOpen(false);
     } catch (error) {
@@ -205,19 +256,30 @@ export default function FacultyResearchTable() {
       const type = typeFilter;
       const publicationType = mapPublicationType(type);
       const endpointMap = {
-        Book: "/api/v1/book/book/edit",
-        "Book Chapter": "/api/v1/chapter/chapter/edit",
-        "Journal Article": "/api/v1/journals/journal/edit",
-        Patent: "/api/v1/patents/patent/edit",
-        "Conference Paper": "/api/v1/conferences/conference/edit",
+        Book: "/api/v1/book2/book",
+        "Book Chapter": "/api/v1/chapter2/chapter",
+        "Journal Article": "/api/v1/journals2/journal",
+        Patent: "/api/v1/patents2/patent",
+        "Conference Paper": "/api/v1/conferences2/conference",
       };
       const endpoint = endpointMap[publicationType];
       if (!endpoint) {
         console.error("Unsupported publication type");
         return;
       }
+      // console.log(rowToEdit._id);
+      const response2 = await axios.get(
+        `http://localhost:6005/api/v1/publication/all`
+      );
+      // console.log(response2.data.data);
+      const publication = response2.data.data.find(
+        (pub) => pub.name === formData.get("publication")
+      );
+      formData.delete("publication");
+
+      formData.append("publication", publication._id);
       const response = await axios.patch(
-        `https://facultyappraisal.software${endpoint}/${rowToEdit._id}`,
+        `http://localhost:6005${endpoint}/${rowToEdit._id}`,
         formData,
         {
           headers: {
@@ -226,7 +288,6 @@ export default function FacultyResearchTable() {
           },
         }
       );
-      console.log(response);
       setData2((prevData) =>
         prevData.map((item) =>
           item._id === response.data.data._id ? response.data.data : item
@@ -244,11 +305,11 @@ export default function FacultyResearchTable() {
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
       const endpointMap = {
-        Book: "/api/v1/book/book/delete",
-        "Book Chapter": "/api/v1/chapter/chapter/delete",
-        "Journal Article": "/api/v1/journals/journal/delete",
-        Patent: "/api/v1/patents/patent/delete",
-        "Conference Paper": "/api/v1/conferences/conference/delete",
+        Book: "/api/v1/book2/book/delete",
+        "Book Chapter": "/api/v1/chapter2/chapter",
+        "Journal Article": "/api/v1/journals2/journal",
+        Patent: "/api/v1/patents2/patent",
+        "Conference Paper": "/api/v1/conferences2/conference",
       };
       const publicationType = mapPublicationType(typeFilter);
       const endpoint = endpointMap[publicationType];
@@ -256,13 +317,13 @@ export default function FacultyResearchTable() {
         console.error("Unsupported publication type");
         return;
       }
-      const deleteUrl = `https://facultyappraisal.software${endpoint}/${rowToDelete._id}`;
+      const deleteUrl = `http://localhost:6005${endpoint}/${rowToDelete._id}`;
       const response = await axios.delete(deleteUrl, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response);
+      // console.log(response);
       setData2((prevData) =>
         prevData.filter((item) => item._id !== rowToDelete._id)
       );
@@ -319,19 +380,20 @@ export default function FacultyResearchTable() {
           >
             <Plus className="h-4 w-4 mr-2" /> Add Entry
           </Button>
-          <CSVLink
+          {/* <CSVLink
             data={csvData}
             filename={"research_papers.csv"}
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded inline-flex items-center"
           >
             <Download className="h-4 w-4 mr-2" /> Export CSV
-          </CSVLink>
+          </CSVLink> */}
         </div>
       </div>
 
       {data2.length === 0 ? (
         <ResearchInstructionMessage />
       ) : (
+        // <FacultyPublicationsChart />
         <div className="table-container">
           <table className="w-full">
             <thead>
@@ -366,9 +428,8 @@ export default function FacultyResearchTable() {
             </tbody>
           </table>
         </div>
-        
       )}
-            <div className="flex items-center justify-end mt-4 gap-2">
+      <div className="flex items-center justify-end mt-4 gap-2">
         <Button
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
@@ -406,14 +467,13 @@ export default function FacultyResearchTable() {
             table.setPageSize(Number(e.target.value));
           }}
         >
-          {[5,10, 20, 30, 40, 50].map((pageSize) => (
+          {[5, 10, 20, 30, 40, 50].map((pageSize) => (
             <option key={pageSize} value={pageSize}>
               Show {pageSize}
             </option>
           ))}
         </select>
       </div>
-
 
       <DrawerComponent
         isOpen={isDrawerOpen}

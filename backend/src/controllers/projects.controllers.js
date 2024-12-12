@@ -33,7 +33,7 @@ const uploadProject = asyncHandler(async (req, res) => {
   }
 
   // const uploadResponse = await uploadOnCloudinary(file.path);
-  const uploadResponse = await uploadToGCS(file.path, "pdf-report");
+  const uploadResponse = await uploadToGCS(file.path, "pdf-reports");
 
   if (!uploadResponse) {
     throw new ApiError(500, "error in uploading file to Google Cloud");

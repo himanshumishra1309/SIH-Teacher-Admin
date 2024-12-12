@@ -43,7 +43,7 @@ export default function AdminSeminarsAttendedTable() {
   //       const token = sessionStorage.getItem("adminAccessToken"); // Adjust this if using cookies
 
   //       const response = await axios.get(
-  //         `https://facultyappraisal.software/api/v1/admins/teachers/${id}`, // Adjust URL to your API endpoint
+  //         `http://localhost:6005/api/v1/admins/teachers/${id}`, // Adjust URL to your API endpoint
   //         {
   //           headers: {
   //             Authorization: `Bearer ${token}`, // Set the Authorization header
@@ -68,7 +68,7 @@ export default function AdminSeminarsAttendedTable() {
         const token = sessionStorage.getItem("adminAccessToken");
 
         const response = await axios.get(
-          `https://facultyappraisal.software/api/v1/admins/teachers/${id}/seminars/conducted`,
+          `http://localhost:6005/api/v1/admins/teachers/${id}/seminars/conducted`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -159,7 +159,7 @@ export default function AdminSeminarsAttendedTable() {
       const token = sessionStorage.getItem("teacherAccessToken");
 
       await axios.delete(
-        `https://facultyappraisal.software/api/v1/seminars/seminars/attended/${rowToDelete._id}`,
+        `http://localhost:6005/api/v1/seminars/seminars/attended/${rowToDelete._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -282,7 +282,7 @@ export default function AdminSeminarsAttendedTable() {
             if (rowToEdit) {
               console.log("editing  the data", formData);
               const response = await axios.put(
-                `https://facultyappraisal.software/api/v1/seminars/seminars/attended/${rowToEdit._id}`,
+                `http://localhost:6005/api/v1/seminars/seminars/attended/${rowToEdit._id}`,
                 formData,
                 {
                   headers: {
@@ -297,7 +297,7 @@ export default function AdminSeminarsAttendedTable() {
               // Add (POST Request)
               console.log("posting the data", formData);
               const response = await axios.post(
-                `https://facultyappraisal.software/api/v1/seminars/seminars/attended`,
+                `http://localhost:6005/api/v1/seminars/seminars/attended`,
                 formData,
                 {
                   headers: {
@@ -382,7 +382,7 @@ export default function AdminSeminarsAttendedTable() {
 //       const token = sessionStorage.getItem("adminAccessToken");
 
 //       const response = await axios.get(
-//         `https://facultyappraisal.software/api/v1/admins/teachers/${id}/seminars/conducted`,
+//         `http://localhost:6005/api/v1/admins/teachers/${id}/seminars/conducted`,
 //         {
 //           headers: {
 //             Authorization: `Bearer ${token}`,

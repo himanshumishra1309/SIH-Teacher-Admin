@@ -17,9 +17,9 @@ export const columnDef = [
     header: "Highest Points",
     enableSorting: true,
   },
-  {
-    accessorKey: "rank",
-    header: "Rank",
-    enableSorting: true,
-  },
+  // {
+  //   accessorKey: "rank",
+  //   header: "Rank",
+  //   enableSorting: true,
+  // },
 ];

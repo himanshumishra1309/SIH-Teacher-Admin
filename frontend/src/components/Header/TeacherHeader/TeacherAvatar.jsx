@@ -20,7 +20,7 @@ export default function TeacherAvatar() {
 
     try {
       await axios.post(
-        "https://facultyappraisal.software/api/v1/teachers/logout",
+        "http://localhost:6005/api/v1/teachers/logout",
         {},
         {
           headers: {

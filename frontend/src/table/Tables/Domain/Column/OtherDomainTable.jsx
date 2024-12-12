@@ -19,16 +19,32 @@ export default function OtherDomainTable() {
       try {
         const token = sessionStorage.getItem("adminAccessToken");
 
-        const response = await axios.get(
-          `https://facultyappraisal.software/api/v1/domain-points/admin/sttp`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
 
-        setData(response.data.data);
+        const [response1, response2, response3] = await Promise.all([
+          axios.get(
+            `http://localhost:6005/api/v1/domain-points/admin/seminar-attended`,
+            { headers }
+          ),
+          axios.get(
+            `http://localhost:6005/api/v1/domain-points/admin/theory-course`,
+            { headers }
+          ),
+          axios.get(
+            `http://localhost:6005/api/v1/domain-points/admin/practical-course`,
+            { headers }
+          ),
+        ]);
+
+        const mergedData = [
+          ...response1.data.data,
+          ...response2.data.data,
+          ...response3.data.data,
+        ];
+        // console.log(mergedData);
+        setData(mergedData);
       } catch (error) {
         console.error("Failed to fetch publications:", error);
       } finally {
@@ -44,7 +60,7 @@ export default function OtherDomainTable() {
       const token = sessionStorage.getItem("adminAccessToken");
 
       const response = await axios.put(
-        `https://facultyappraisal.software/api/v1/domain-points/admin/points/${id}`,
+        `http://localhost:6005/api/v1/domain-points/admin/points/${id}`,
         { points: newPoints },
         {
           headers: {
@@ -142,9 +158,9 @@ export default function OtherDomainTable() {
 
   return (
     <div className="container mx-auto p-4">
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">
+      {/* <h2 className="text-2xl font-bold text-gray-800 mb-4">
         Publication Points Table
-      </h2>
+      </h2> */}
       <div className="overflow-x-auto rounded-lg shadow-md bg-white">
         <table className="min-w-full border border-gray-200">
           <thead className="bg-gray-100 border-b-2 border-gray-200">
