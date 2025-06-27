@@ -31,7 +31,7 @@ export default function Component() {
       try {
         setIsLoading(true)
         const token = sessionStorage.getItem("adminAccessToken")
-        const response = await axios.get("http://localhost:6005/api/v1/admins/teachers", {
+        const response = await axios.get("https://facultyappraisal.software/api/v1/admins/teachers", {
           headers: { Authorization: `Bearer ${token}` },
         })
         setFacultyData(response.data.data.teachers)
@@ -131,7 +131,7 @@ export default function Component() {
                       <span className="font-medium">Email:</span>
                       <span className="ml-2 truncate">{faculty.email}</span>
                     </div>
-                    <Link to={`/admin-info/${faculty._id}`} className="mt-4 block">
+                    <Link to={`/admin-info/${faculty._id}/admin-teacher-appraisal`} className="mt-4 block">
                       <Button className="w-full bg-blue-500 text-white hover:bg-blue-600">
                         View Profile
                       </Button>

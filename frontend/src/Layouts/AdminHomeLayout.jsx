@@ -19,18 +19,18 @@ const AdminHomeLayout = () => {
   //   const location = useLocation();
   //   const navigation = useNavigation();
 
-  //   useEffect(() => {
-  //     const fetchProfileData = async () => {
-  //       try {
-  //         const accessToken = sessionStorage.getItem("teacherAccessToken");
-  //         const headers = {
-  //           Authorization: `Bearer ${accessToken}`,
-  //         };
-  //         const response = await axios.get(
-  //           "http://localhost:6005/api/v1/teachers/me",
-  //           { headers }
-  //         );
-  //         console.log("Faculty data fetched:", response.data);
+//   useEffect(() => {
+//     const fetchProfileData = async () => {
+//       try {
+//         const accessToken = sessionStorage.getItem("teacherAccessToken");
+//         const headers = {
+//           Authorization: `Bearer ${accessToken}`,
+//         };
+//         const response = await axios.get(
+//           "https://facultyappraisal.software/api/v1/teachers/me",
+//           { headers }
+//         );
+//         console.log("Faculty data fetched:", response.data);
 
   //         const data = response.data.data;
   //         setFacultyData({

@@ -29,7 +29,7 @@ const AdminAllocateSubjectToStudent = () => {
       try {
         const token = sessionStorage.getItem("adminAccessToken");
         const response = await axios.get(
-          `http://localhost:6005/api/v1/admins/branches`,
+          `https://facultyappraisal.software/api/v1/admins/branches`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setBranches(response.data.data || []);
@@ -46,7 +46,7 @@ const AdminAllocateSubjectToStudent = () => {
     try {
       const token = sessionStorage.getItem("adminAccessToken");
       const response = await axios.get(
-        `http://localhost:6005/api/v1/admins/branches/${branchName}/students`,
+        `https://facultyappraisal.software/api/v1/admins/branches/${branchName}/students`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setStudents(response.data.data || []);
@@ -61,7 +61,7 @@ const AdminAllocateSubjectToStudent = () => {
       try {
         const token = sessionStorage.getItem("adminAccessToken");
         const response = await axios.get(
-          `http://localhost:6005/api/v1/admins/subjects/allSubjects`,
+          `https://facultyappraisal.software/api/v1/admins/subjects/allSubjects`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setSubjects(response.data.data || []);
@@ -90,31 +90,26 @@ const AdminAllocateSubjectToStudent = () => {
       // console.log(selectedStudents);
       console.log(selectedSubject);
 
-
       const payload = {
         subject_name: selectedSubject.subject_name,
         subject_code: selectedSubject.subject_code,
         subject_credit: selectedSubject.subject_credit,
         subject_type: selectedSubject.type,
         teacherId: selectedSubject.teacher,
-        selectedStudents: selectedStudents.map(
-          (student) => student._id
-        ),
+        selectedStudents: selectedStudents.map((student) => student._id),
       };
 
       console.log("HELLOE");
-      
 
       console.log(payload);
 
       const response = await axios.post(
-        `http://localhost:6005/api/v1/admins/subjects/student-allocate`,
+        `https://facultyappraisal.software/api/v1/admins/subjects/student-allocate`,
         payload,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       console.log(response);
-      
 
       toast.success(
         response.data.message || "Subjects allocated successfully!"
@@ -165,26 +160,28 @@ const AdminAllocateSubjectToStudent = () => {
             setSelectedStudents={setSelectedStudents}
           />
           <h3 className="text-lg font-semibold mt-6 mb-4">Subjects</h3>
-          <Card className="p-4 bg-gradient-to-r from-green-500 via-green-400 to-green-300">
+          <Card className="p-6 rounded-lg shadow-lg bg-gray-50">
             <Select
               onValueChange={(value) => handleSubjectSelect(JSON.parse(value))}
             >
-              <SelectTrigger className="bg-white">
+              <SelectTrigger className="bg-white text-gray-700 font-medium border border-gray-300 rounded-md py-2 px-4 shadow-sm hover:border-gray-500 focus:border-gray-500 transition-all">
                 <SelectValue placeholder="Select a subject" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white shadow-md border border-gray-200 rounded-md mt-2">
                 {subjects.map((subject) => (
                   <SelectItem
                     key={subject.subject_code}
                     value={JSON.stringify(subject)}
+                    className="hover:bg-gray-100 px-4 py-2 text-gray-800"
                   >
-                    {subject.subject_name} ({subject.subject_type} {" "}
+                    {subject.subject_name} ({subject.subject_type}{" "}
                     {subject.subject_credit} credits)
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </Card>
+
           <Button
             className="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors duration-300"
             onClick={handleSubmit}

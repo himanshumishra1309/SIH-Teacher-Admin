@@ -40,6 +40,7 @@ import { conferenceColumnDef } from "../Columns/PublicationsColumn/ConferenceCol
 import { chapterColumnDef } from "../Columns/PublicationsColumn/ChapterColumn.jsx";
 import { useParams } from "react-router-dom";
 import { ResearchInstructionMessage } from "@/components/ResearchInstructionMessage.jsx";
+import TeacherPublicationsChart from "./TeacherPublicationsChart.jsx";
 
 function ExpandedRowContent({ data2 }) {
   const fieldLabels = {
@@ -105,13 +106,18 @@ export default function AdminResearchTable() {
   }, [typeFilter]);
 
   const fetchData = async () => {
+    if (typeFilter === "") {
+      setData2([]);
+      return;
+    }
+
     const endpointMap = {
-      Book: `/api/v1/admins/book/${id}`,
-      // BOOK: "/api/v1/book/book/",
-      "Book Chapter": `/api/v1/admins/chapter/${id}`,
-      "Journal Article": `/api/v1/admins/journal/${id}`,
-      Patent: `/api/v1/admins/patent/${id}`,
-      "Conference Paper": `/api/v1/admins/conference/${id}`,
+      Book: `/api/v1/book2/book/${id}`,
+      BOOK: `/api/v1/book2/book/${id}`,
+      "Book Chapter": `/api/v1/chapter2/chapter/${id}`,
+      "Journal Article": "/api/v1/journals2/journal/",
+      Patent: "/api/v1/patents2/patent/get",
+      "Conference Paper": "/api/v1/conferences2/conference/get",
     };
 
     const publicationType = mapPublicationType(typeFilter);
@@ -119,80 +125,36 @@ export default function AdminResearchTable() {
     const endpoint = endpointMap[publicationType];
     try {
       const token = sessionStorage.getItem("adminAccessToken");
-      const response = await axios.get(`http://localhost:6005${endpoint}`, {
+      const response = await axios.get(`https://facultyappraisal.software${endpoint}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      // console.log(response);
+
+      console.log(response.data.data);
+
+      const response2 = await axios.get(
+        `https://facultyappraisal.software/api/v1/publication/all`
+      );
+      console.log(response2.data.data);
+
+      response.data.data.forEach((item) => {
+        const publication = response2.data.data.find(
+          (pub) => pub._id === item.publication
+        );
+        item.publication = publication;
+      });
+      // if (typeFilter === "Book Chapter") {
+      //   response.data.data.forEach((item) => {
+      //     item.publication = item.publication.name;
+      //   });
+      // }
       setData2(response.data.data);
-      // console.log(data2);
+      console.log(data2);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
-
-  // const handleRefManUpload = (event) => {
-  //   const file = event.target.files?.[0];
-  //   if (file) {
-  //     setUploadedFileName(file.name);
-  //     const reader = new FileReader();
-  //     reader.onload = (e) => {
-  //       try {
-  //         const content = e.target.result;
-  //         const parsedData = parseRefMan(content);
-  //         console.log("Parsed Data:", parsedData); // For debugging
-  //         setData(parsedData);
-  //       } catch (error) {
-  //         console.error("Error parsing RefMan file:", error);
-  //         alert("Error parsing the RefMan file. Please check the file format.");
-  //       }
-  //     };
-  //     reader.readAsText(file);
-  //   }
-  // };
-
-  // const parseRefMan = (content) => {
-  //   const entries = content.split("ER  - ").filter((entry) => entry.trim());
-
-  //   return entries
-  //     .map((entry) => {
-  //       const fields = {};
-  //       const lines = entry.split("\n");
-
-  //       lines.forEach((line) => {
-  //         const [key, ...valueParts] = line.split("  - ");
-  //         if (key && valueParts.length > 0) {
-  //           const value = valueParts.join("  - ").trim();
-  //           if (value) {
-  //             if (fields[key.trim()]) {
-  //               if (Array.isArray(fields[key.trim()])) {
-  //                 fields[key.trim()].push(value);
-  //               } else {
-  //                 fields[key.trim()] = [fields[key.trim()], value];
-  //               }
-  //             } else {
-  //               fields[key.trim()] = value;
-  //             }
-  //           }
-  //         }
-  //       });
-
-  //       const authors = fields.A1
-  //         ? (Array.isArray(fields.A1) ? fields.A1 : [fields.A1]).join(", ")
-  //         : "N/A";
-
-  //       return {
-  //         title: fields.T1 || "N/A",
-  //         authors: authors,
-  //         year: fields.Y1 || "N/A",
-  //         type: mapPublicationType(fields.TY || ""),
-  //         viewUrl: fields.UR || "",
-  //         allFields: fields,
-  //       };
-  //     })
-  //     .filter((entry) => entry.title !== "N/A" || entry.authors !== "N/A");
-  // };
 
   const mapPublicationType = (type) => {
     const typeMap = {
@@ -307,7 +269,6 @@ export default function AdminResearchTable() {
     fetchData();
   }, [typeFilter]); // Re-fetch data whenever typeFilter changes
 
-  // Dynamic table rendering
   const columns = useMemo(() => {
     return colu.map((col) => {
       if (col.accessorKey === "actions") {
@@ -336,10 +297,22 @@ export default function AdminResearchTable() {
             </div>
           ),
         };
+      } else if (
+        col.accessorKey === "publication" &&
+        (typeFilter === "Book" ||
+          typeFilter === "Patent" ||
+          typeFilter === "Conference Paper" ||
+          typeFilter === "Journal Article" ||
+          typeFilter === "Book Chapter")
+      ) {
+        return {
+          ...col,
+          cell: ({ row }) => <span>{row.original.publication.name}</span>,
+        };
       }
       return col;
     });
-  }, [colu]); // Recompute columns whenever colu changes
+  }, [colu]);
 
   // Table configuration
   const table = useReactTable({
@@ -368,7 +341,7 @@ export default function AdminResearchTable() {
 
   const handleAddEntry = async (formData) => {
     try {
-      const token = sessionStorage.getItem("teacherAccessToken");
+      const token = sessionStorage.getItem("adminAccessToken");
 
       const type = typeFilter;
       // console.log(type);
@@ -389,7 +362,7 @@ export default function AdminResearchTable() {
 
       // Send the API request to the determined endpoint
       const response = await axios.post(
-        `http://localhost:6005${endpoint}`,
+        `https://facultyappraisal.software${endpoint}`,
         formData,
         {
           headers: {
@@ -407,9 +380,9 @@ export default function AdminResearchTable() {
 
   const handleEditEntry = async (formData) => {
     try {
-      const token = sessionStorage.getItem("teacherAccessToken");
+      const token = sessionStorage.getItem("adminAccessToken");
       const response = await axios.patch(
-        `http://localhost:6005/api/v1/research-paper/update/${rowToEdit._id}`,
+        `https://facultyappraisal.software/api/v1/research-paper/update/${rowToEdit._id}`,
         formData,
         {
           headers: {
@@ -432,9 +405,9 @@ export default function AdminResearchTable() {
 
   const handleDeleteEntry = async () => {
     try {
-      const token = sessionStorage.getItem("teacherAccessToken");
+      const token = sessionStorage.getItem("adminAccessToken");
       await axios.delete(
-        `http://localhost:6005/api/v1/research-paper/delete/${rowToDelete._id}`,
+        `https://facultyappraisal.software/api/v1/research-paper/delete/${rowToDelete._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -485,9 +458,9 @@ export default function AdminResearchTable() {
               <SelectItem value="all">All Types</SelectItem>
               <SelectItem value="Book">Book</SelectItem>
               <SelectItem value="Book Chapter">Book Chapter</SelectItem>
-              <SelectItem value="Journal Article">Journal Article</SelectItem>
+              {/* <SelectItem value="Journal Article">Journal Article</SelectItem> */}
               <SelectItem value="Patent">Patent</SelectItem>
-              <SelectItem value="Conference Paper">Conference Paper</SelectItem>
+              {/* <SelectItem value="Conference Paper">Conference Paper</SelectItem> */}
             </SelectContent>
           </Select>
         </div>
@@ -643,7 +616,8 @@ export default function AdminResearchTable() {
       )} */}
 
       {data2.length === 0 ? (
-        <ResearchInstructionMessage />
+        // <ResearchInstructionMessage />
+        <TeacherPublicationsChart id={id} />
       ) : (
         <div className="table-container">
           <table className="w-full">

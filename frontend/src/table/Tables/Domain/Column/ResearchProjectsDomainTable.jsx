@@ -20,7 +20,7 @@ export default function ResearchProjectsDomainTable() {
         const token = sessionStorage.getItem("adminAccessToken");
 
         const response = await axios.get(
-          `http://localhost:6005/api/v1/domain-points/admin/project`,
+          `https://facultyappraisal.software/api/v1/domain-points/admin/project`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -51,7 +51,7 @@ export default function ResearchProjectsDomainTable() {
       const token = sessionStorage.getItem("adminAccessToken");
 
       const response = await axios.put(
-        `http://localhost:6005/api/v1/domain-points/admin/points/${id}`,
+        `https://facultyappraisal.software/api/v1/domain-points/admin/points/${id}`,
         { points: points },
         {
           headers: {
@@ -151,7 +151,7 @@ export default function ResearchProjectsDomainTable() {
   return (
     <div className="container mx-auto p-4">
       <h2 className="text-2xl font-bold text-gray-800 mb-4">
-        Publication Points Table
+        Reasearch Points Table
       </h2>
       <div className="overflow-x-auto rounded-lg shadow-md bg-white">
         <table className="min-w-full border border-gray-200">

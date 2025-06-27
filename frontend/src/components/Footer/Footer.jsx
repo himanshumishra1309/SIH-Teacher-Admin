@@ -1,19 +1,19 @@
-import React from 'react'
-import { Link } from "react-router-dom"
+import React from 'react';
+import { Link } from "react-router-dom";
 
-function Footer() {
+function ResponsiveFooter() {
   return (
     <footer className='bg-blue-900 text-white py-8'>
       <div className='container mx-auto px-4'>
-        <div className='grid grid-cols-1 md:grid-cols-4 gap-8'>
-          <div className='flex flex-col items-center md:items-start'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8'>
+          <div className='flex flex-col items-center sm:items-start'>
             <img src="/assets/icons/govt-logo.svg" alt="Government Logo" className="h-16 mb-4" />
-            <p className='text-sm text-center md:text-left'>Education Department<br />Govt. of NCT of Delhi</p>
+            <p className='text-sm text-center sm:text-left'>Education Department<br />Govt. of NCT of Delhi</p>
           </div>
           <div>
             <h3 className='font-semibold text-lg mb-4'>Quick Links</h3>
             <nav className='flex flex-col space-y-2'>
-              <Link to="#" className='hover:text-blue-300 transition-colors'>Home</Link>
+              <Link to="/" className='hover:text-blue-300 transition-colors'>Home</Link>
               <Link to="#" className='hover:text-blue-300 transition-colors'>Faculty Portal</Link>
               <Link to="#" className='hover:text-blue-300 transition-colors'>Admin Dashboard</Link>
               <Link to="#" className='hover:text-blue-300 transition-colors'>Student Feedback</Link>
@@ -38,23 +38,24 @@ function Footer() {
             </address>
           </div>
         </div>
-        <div className='mt-8 pt-8 border-t border-blue-800 flex flex-col md:flex-row justify-between items-center'>
-          <p className='text-sm'>&copy; 2024 Education Department, Govt. of NCT of Delhi. All Rights Reserved.</p>
-          <div className='flex space-x-4 mt-4 md:mt-0'>
-            <a href="#" aria-label="Facebook">
+        <div className='mt-8 pt-8 border-t border-blue-800 flex flex-col sm:flex-row justify-between items-center'>
+          <p className='text-sm text-center sm:text-left mb-4 sm:mb-0'>&copy; 2024 Education Department, Govt. of NCT of Delhi. All Rights Reserved.</p>
+          <div className='flex space-x-4'>
+            <a href="#" aria-label="Facebook" className="hover:opacity-80 transition-opacity">
               <img src="/assets/icons/facebook.svg" alt="Facebook" className="h-6 w-6" />
             </a>
-            <a href="#" aria-label="Twitter">
+            <a href="#" aria-label="Twitter" className="hover:opacity-80 transition-opacity">
               <img src="/assets/icons/twitter.svg" alt="Twitter" className="h-6 w-6" />
             </a>
-            <a href="#" aria-label="LinkedIn">
+            <a href="#" aria-label="LinkedIn" className="hover:opacity-80 transition-opacity">
               <img src="/assets/icons/linkedin.svg" alt="LinkedIn" className="h-6 w-6" />
             </a>
           </div>
         </div>
       </div>
     </footer>
-  )
+  );
 }
 
-export default Footer
+export default ResponsiveFooter;
+

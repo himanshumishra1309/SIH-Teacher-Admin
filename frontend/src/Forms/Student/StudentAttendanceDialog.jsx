@@ -21,7 +21,7 @@ const StudentAttendanceDialog = ({
   lectureId,
   toast,
 }) => {
-  console.log("lectureID", lectureId);
+  // console.log("lectureID", lectureId);
 
   const { subjectId } = useParams();
   const [data, setData] = useState([]);
@@ -34,7 +34,7 @@ const StudentAttendanceDialog = ({
       try {
         const token = sessionStorage.getItem("teacherAccessToken");
         const response = await axios.get(
-          `http://localhost:6005/api/v1/lecture/${subjectId}/students`,
+          `https://facultyappraisal.software/api/v1/lecture/${subjectId}/students`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -69,7 +69,7 @@ const StudentAttendanceDialog = ({
       const selectedStudentIds = data.map((student) => student._id);
 
       const response = await axios.post(
-        `http://localhost:6005/api/v1/lecture/${lectureId}/attendance`,
+        `https://facultyappraisal.software/api/v1/lecture/${lectureId}/attendance`,
         {
           studentIds: selectedStudentIds,
           subject_name: sub.subject_name,
@@ -110,21 +110,23 @@ const StudentAttendanceDialog = ({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-4xl max-h-screen m-6">
+        <DialogContent className="max-w-4xl max-h-screen m-6 overflow-hidden">
           <DialogHeader>
             <DialogTitle>Mark Attendance</DialogTitle>
             <DialogDescription>
               Select the students who were present for the lecture.
             </DialogDescription>
           </DialogHeader>
-          <div className="mt-4">
+          {/* Content Wrapper with scroll */}
+          <div className="overflow-y-auto max-h-[70vh] mt-4">
             <StudentAttendanceTable
               students={attendanceData}
               data={data}
               setData={setData}
             />
           </div>
-          <div className="mt-2">
+          {/* Sticky footer with the button */}
+          <div className="sticky bottom-0 bg-white p-4 border-t mt-2">
             <Button
               onClick={handleMarkAttendance}
               className="w-full bg-primary text-white rounded hover:bg-primary-dark"
@@ -145,4 +147,3 @@ const StudentAttendanceDialog = ({
 };
 
 export default StudentAttendanceDialog;
-

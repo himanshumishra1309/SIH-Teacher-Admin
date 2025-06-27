@@ -21,17 +21,17 @@ import {
 } from '../controllers/points.controllers.js';
 
 const router = express.Router();
-
-router.get("/journals/:teacherId", verifyTeacherJWT, completeJournalPoints);
-router.get("/books/:teacherId", verifyTeacherJWT, completeBooksPoints);
-router.get("/patents/:teacherId", verifyTeacherJWT, completePatentPoints);
-router.get("/projects/:teacherId", verifyTeacherJWT, completeProjectsPoints);
-router.get("/conferences/:teacherId", verifyTeacherJWT, completeConferencePoints);
-router.get("/chapter/:teacherId", verifyTeacherJWT, completeChapterPoints);
-router.get("/sttp/:teacherId", verifyTeacherJWT, completeSTTPPoints);
-router.get("/events/:teacherId", verifyTeacherJWT, completeEventsConductedPoints);
-router.get("/seminar-attended/:teacherId", verifyTeacherJWT, completeSeminarAttendedPoints);
-router.get("/expert-lectures/:teacherId", verifyTeacherJWT, completeExpertLecturesPoints);
+ 
+router.get("/journals/:teacherId", verifyTeacherJWT, completeJournalPoints); // done
+router.get("/books/:teacherId", verifyTeacherJWT, completeBooksPoints); // done
+router.get("/patents/:teacherId", verifyTeacherJWT, completePatentPoints); // done
+router.get("/projects/:teacherId", verifyTeacherJWT, completeProjectsPoints); // done
+router.get("/conferences/:teacherId", verifyTeacherJWT, completeConferencePoints); // done
+router.get("/chapter/:teacherId", verifyTeacherJWT, completeChapterPoints); // done
+router.get("/sttp/:teacherId", verifyTeacherJWT, completeSTTPPoints); // done
+router.get("/events/:teacherId", verifyTeacherJWT, completeEventsConductedPoints); // done
+router.get("/seminar-attended/:teacherId", verifyTeacherJWT, completeSeminarAttendedPoints); // done
+router.get("/expert-lectures/:teacherId", verifyTeacherJWT, completeExpertLecturesPoints); 
 router.get("/seminar/:teacherId", verifyTeacherJWT, completeSeminarPoints);
 router.get("/lecture/:teacherId", verifyTeacherJWT, completeLecturePoints);
 router.get("/student-guided/:teacherId", verifyTeacherJWT, completeStudentGuidedPoints);

@@ -115,4 +115,3 @@ const LectureAttendanceDrawer = ({
 };
 
 export default LectureAttendanceDrawer;
-

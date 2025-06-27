@@ -94,7 +94,8 @@ const deletePatent = asyncHandler(async (req, res) => {
 });
 
 const getAllPatents = asyncHandler(async (req, res) => {
-  const owner = req.teacher._id;
+  const { id } = useParams();
+  const owner = id;
   const patents = await Patent.find({ owner }).sort({ createdAt: -1 });
 
   return res

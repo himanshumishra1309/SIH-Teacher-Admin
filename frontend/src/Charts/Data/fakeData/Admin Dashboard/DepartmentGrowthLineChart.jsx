@@ -41,7 +41,7 @@ function DepartmentGrowthLineChart({ id }) {
         setIsLoading(true);
 
         const response = await axios.post(
-          `http://localhost:6005/api/v1/teachers/me/graph`, // POST request
+          `https://facultyappraisal.software/api/v1/teachers/me/graph`, // POST request
           { teacherId }, // Send teacherId in the request body
           {
             headers: {

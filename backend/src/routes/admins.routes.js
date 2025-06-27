@@ -53,6 +53,7 @@ import {
   getAllChapters,
   getAllTheJournals,
   getAllseminarAttended,
+  getAllContributions,
 } from "../controllers/admins.controllers.js";
 import { verifyAdminJWT } from "../middleware/admin.auth.middleware.js";
 import { upload } from "../middleware/multer.middleware.js";
@@ -168,6 +169,11 @@ router.get(
   getSTTPConductedByTheTeacher
 );
 router.get(
+  "/post/:teacherId",
+  verifyAdminJWT,
+  getAllContributions
+);
+router.get(
   "/teachers/:teacherId/students-guided/mtech",
   verifyAdminJWT,
   getMtechStudentsGuidedByTheTeacher
@@ -187,14 +193,13 @@ router.get(
   "/teachers/:teacherId/seminars/attended",
   verifyAdminJWT,
   getAllseminarAttended
-)
+);
 
 router.get(
   "/teachers/:teacherId/seminars/conducted",
   verifyAdminJWT,
   getSeminarsConductedByTheTeacher
 );
-
 
 router.get(
   "/teachers/:teacherId/seminars/upcoming",

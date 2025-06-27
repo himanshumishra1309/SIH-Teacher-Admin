@@ -30,7 +30,7 @@ export default function AdminHome() {
           Authorization: `Bearer ${accessToken}`,
         };
         const response = await axios.get(
-          "http://localhost:6005/api/v1/admins/me",
+          "https://facultyappraisal.software/api/v1/admins/me",
           { headers }
         );
         // console.log("Admin data fetched:", response.data);
@@ -59,15 +59,22 @@ export default function AdminHome() {
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col space-y-1">
-                  <p className="font-semibold text-lg text-white">{data.name}</p>
+                  <p className="font-semibold text-lg text-white">
+                    {data.name}
+                  </p>
                   <p className="text-sm text-blue-100">{data.email}</p>
-                  <p className="text-sm text-blue-100">Employee Code: {data.employee_code}</p>
-                  <p className="text-sm text-blue-100">Department: {data.department}</p>
+                  <p className="text-sm text-blue-100">
+                    Employee Code: {data.employee_code}
+                  </p>
+                  <p className="text-sm text-blue-100">
+                    Department: {data.department}
+                  </p>
                 </div>
               </div>
             ),
             duration: 5000,
-            className: "bg-gradient-to-r from-blue-700 to-blue-900 border border-blue-300 shadow-lg rounded-lg p-6",
+            className:
+              "bg-gradient-to-r from-blue-700 to-blue-900 border border-blue-300 shadow-lg rounded-lg p-6",
             action: (
               <button
                 className="absolute top-2 right-2 text-white hover:text-gray-300"
@@ -93,10 +100,8 @@ export default function AdminHome() {
   }, [location.state, toast]);
 
   return (
- 
-      <div className="m-2">
-        {navigation.state === "loading" ? <LoadingPage /> : <FacultyCards />}
-      </div>
-   
+    <div className="m-2">
+      {navigation.state === "loading" ? <LoadingPage /> : <FacultyCards />}
+    </div>
   );
 }

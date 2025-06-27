@@ -233,7 +233,6 @@ const getChapterPoints = asyncHandler(async (req, res) => {
 
 // Edit chapter domain points
 const editChapterPoints = asyncHandler(async (req, res) => {
-  
   const { points } = req.body;
   const chapterPoints = points;
 
@@ -296,7 +295,7 @@ const getConferencePoints = asyncHandler(async (req, res) => {
 const editConferencePoints = asyncHandler(async (req, res) => {
   const { points } = req.body;
 
-  const conferencePoints = points
+  const conferencePoints = points;
 
   if (!conferencePoints || !Array.isArray(conferencePoints)) {
     throw new ApiError(400, "Invalid conference points data");
@@ -353,7 +352,7 @@ const getPatentPoints = asyncHandler(async (req, res) => {
 const editPatentPoints = asyncHandler(async (req, res) => {
   const { points } = req.body;
 
-  const patentPoints = points
+  const patentPoints = points;
 
   if (!patentPoints || !Array.isArray(patentPoints)) {
     throw new ApiError(400, "Invalid patent points data");

@@ -40,7 +40,7 @@ export default function AdminConferenceTable() {
     try {
       const token = sessionStorage.getItem("adminAccessToken");
       const response = await axios.get(
-        `http://localhost:6005/api/v1/admins/conference/${id}`,
+        `https://facultyappraisal.software/api/v1/admins/conference/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

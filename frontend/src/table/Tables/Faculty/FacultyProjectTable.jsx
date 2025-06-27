@@ -41,7 +41,7 @@ export default function FacultyProjectTable() {
         const token = sessionStorage.getItem("teacherAccessToken");
 
         const response = await axios.get(
-          `http://localhost:6005/api/v1/projects/projects`,
+          `https://facultyappraisal.software/api/v1/projects/projects`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -132,7 +132,7 @@ export default function FacultyProjectTable() {
       const token = sessionStorage.getItem("teacherAccessToken");
 
       await axios.delete(
-        `http://localhost:6005/api/v1/projects/projects/${rowToDelete._id}`,
+        `https://facultyappraisal.software/api/v1/projects/projects/${rowToDelete._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -169,7 +169,7 @@ export default function FacultyProjectTable() {
             placeholder="Search all columns..."
           />
         </div>
-        <DownloadBtn data={data} fileName="Research" />
+        {/* <DownloadBtn data={data} fileName="Research" /> */}
       </div>
 
       <div className="flex justify-end mb-4">
@@ -260,7 +260,7 @@ export default function FacultyProjectTable() {
               //   console.log(`${key}:`, value);
               // }
               const response = await axios.patch(
-                `http://localhost:6005/api/v1/projects/projects/${rowToEdit._id}`,
+                `https://facultyappraisal.software/api/v1/projects/projects/${rowToEdit._id}`,
                 formData,
                 {
                   headers: {
@@ -273,7 +273,7 @@ export default function FacultyProjectTable() {
             } else {
               console.log("posting the data", formData);
               const response = await axios.post(
-                `http://localhost:6005/api/v1/projects/projects`,
+                `https://facultyappraisal.software/api/v1/projects/projects`,
                 formData,
                 {
                   headers: {

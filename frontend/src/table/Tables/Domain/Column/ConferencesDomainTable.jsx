@@ -20,7 +20,7 @@ export default function ConferencesDomainTable() {
         const token = sessionStorage.getItem("adminAccessToken");
 
         const response = await axios.get(
-          `http://localhost:6005/api/v1/domain-points/admin/all-event-points`,
+          `https://facultyappraisal.software/api/v1/domain-points/admin/all-event-points`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -44,7 +44,7 @@ export default function ConferencesDomainTable() {
       const token = sessionStorage.getItem("teacherAccessToken");
 
       const response = await axios.patch(
-        `http://localhost:6005/api/v1/publications/${id}`,
+        `https://facultyappraisal.software/api/v1/publications/${id}`,
         { points: newPoints },
         {
           headers: {

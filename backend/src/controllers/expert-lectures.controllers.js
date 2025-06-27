@@ -3,7 +3,7 @@ import { asyncHandler } from "../utils/AsyncHandler2.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { ExpertLecture } from "../models/expert-lectures.models.js";
 import { uploadToGCS } from "../utils/googleCloud.js";
-import path from "path"
+import path from "path";
 import { Storage } from "@google-cloud/storage";
 const storage = new Storage();
 
@@ -22,7 +22,7 @@ const uploadExpertLecture = asyncHandler(async (req, res) => {
   // const uploadExpertLectureReport = await uploadOnCloudinary(report.path);
   const uploadExpertLectureReport = await uploadToGCS(
     report.path,
-    "pdf-report"
+    "pdf-reports"
   );
 
   if (!uploadExpertLectureReport) {
@@ -83,15 +83,14 @@ const updateExpertLecture = asyncHandler(async (req, res) => {
   const file = req.file;
 
   const expertLecture = await ExpertLecture.findById(id);
-  
-  if(!expertLecture){
-    throw new ApiError(400, 'No such record found in Expert Lecture');
+
+  if (!expertLecture) {
+    throw new ApiError(400, "No such record found in Expert Lecture");
   }
 
-  if(topic) expertLecture.topic = topic;
-  if(duration) expertLecture.duration = duration;
-  if(date) expertLecture.date = date;
-  
+  if (topic) expertLecture.topic = topic;
+  if (duration) expertLecture.duration = duration;
+  if (date) expertLecture.date = date;
 
   if (file) {
     // Delete the previous file from GCS if it exists
@@ -103,14 +102,14 @@ const updateExpertLecture = asyncHandler(async (req, res) => {
 
     // Detect file type and set folder
     const fileExtension = path.extname(file.originalname).toLowerCase();
-    const folder = fileExtension === '.pdf' ? 'pdf-reports' : 'images';
+    const folder = fileExtension === ".pdf" ? "pdf-reports" : "images";
 
     // Upload the new file to the appropriate folder
     const fileUrl = await uploadToGCS(file.path, folder);
 
     // Check if the upload was successful
     if (!fileUrl) {
-      throw new ApiError(500, 'Error in uploading new file to Google Cloud');
+      throw new ApiError(500, "Error in uploading new file to Google Cloud");
     }
 
     // Update the report field with the new public URL

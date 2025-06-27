@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { UserCog, ClipboardList } from 'lucide-react';
+import { Label } from "@/components/ui/label";
 
 export default function AdminSISU() {
   const navigate = useNavigate();
   const [signupData, setSignupData] = useState({
     name: "",
     email: "",
-    designation: "",
+    designation: "Admin",
     password: "",
   });
   const [loginData, setLoginData] = useState({
@@ -43,8 +44,9 @@ export default function AdminSISU() {
 
   const handleSignupChange = (e) => {
     const { id, value } = e.target;
-    setSignupData({ ...signupData, [id]: value });
-  };
+    if (id !== "designation") {
+      setSignupData({ ...signupData, [id]: value });
+    }  };
 
   const handleLoginChange = (e) => {
     const { id, value } = e.target;
@@ -73,7 +75,7 @@ export default function AdminSISU() {
 
     try {
       const response = await axios.post(
-        "http://localhost:6005/api/v1/admins/register",
+        "https://facultyappraisal.software/api/v1/admins/register",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -90,7 +92,7 @@ export default function AdminSISU() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:6005/api/v1/admins/login",
+        "https://facultyappraisal.software/api/v1/admins/login",
         loginData,
         { headers: { "Content-Type": "application/json" } }
       );
@@ -137,15 +139,14 @@ export default function AdminSISU() {
                 required
                 className="fs-input"
               />
-              <input
-                type="text"
-                id="designation"
-                placeholder="Designation"
-                value={signupData.designation}
-                onChange={handleSignupChange}
-                required
-                className="fs-input"
-              />
+             <input
+  type="text"
+  id="designation"
+  placeholder="Designation"
+  value={signupData.designation}
+  readOnly
+  className="fs-input bg-gray-100 cursor-not-allowed"
+/>
               <input
                 type="password"
                 id="password"
@@ -155,6 +156,9 @@ export default function AdminSISU() {
                 required
                 className="fs-input"
               />
+              <Label>
+                Upload Your Avatar
+              </Label>
               <input
                 type="file"
                 id="avatar"

@@ -20,10 +20,10 @@ const uploadParticipatedEvent = asyncHandler(async (req, res) => {
   console.log("Report path:", report.path);
 
   // const uploadedReport = await uploadOnCloudinary(report.path);
-  const uploadResponse = await uploadToGCS(report.path, "pdf-report");
+  const uploadResponse = await uploadToGCS(report.path, "pdf-reports");
 
   if (!uploadResponse) {
-    throw new ApiError(500, "Error in uploading report to Cloudinary");
+    throw new ApiError(500, "Error in uploading report to Google");
   }
 
   const eventParticipation = await EventParticipation.create({

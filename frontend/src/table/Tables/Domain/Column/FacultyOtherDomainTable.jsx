@@ -19,16 +19,28 @@ export default function FacultyOtherDomainTable() {
       try {
         const token = sessionStorage.getItem("teacherAccessToken");
 
-        const response = await axios.get(
-          `http://localhost:6005/api/v1/domain-points/teacher/te-sttp`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
 
-        setData(response.data.data);
+        const [response1, response2, response3] = await Promise.all([
+          axios.get(
+            `https://facultyappraisal.software/api/v1/domain-points/teacher/te-seminar-attended`,
+            { headers }
+          ),
+          axios.get(
+            `https://facultyappraisal.software/api/v1/domain-points/teacher/te-theory-course`,
+            { headers }
+          ),
+          axios.get(
+            `https://facultyappraisal.software/api/v1/domain-points/teacher/te-practical-course`,
+            { headers }
+          ),
+        ]);
+
+        const mergedData = [...response1.data.data, ...response2.data.data, ...response3.data.data];
+        // console.log(mergedData);
+        setData(mergedData);
       } catch (error) {
         console.error("Failed to fetch publications:", error);
       } finally {
@@ -44,7 +56,7 @@ export default function FacultyOtherDomainTable() {
       const token = sessionStorage.getItem("adminAccessToken");
 
       const response = await axios.put(
-        `http://localhost:6005/api/v1/domain-points/admin/points/${id}`,
+        `https://facultyappraisal.software/api/v1/domain-points/admin/points/${id}`,
         { points: newPoints },
         {
           headers: {
@@ -143,7 +155,7 @@ export default function FacultyOtherDomainTable() {
   return (
     <div className="container mx-auto p-4">
       <h2 className="text-2xl font-bold text-gray-800 mb-4">
-        Publication Points Table
+        Other Activities Points Table
       </h2>
       <div className="overflow-x-auto rounded-lg shadow-md bg-white">
         <table className="min-w-full border border-gray-200">

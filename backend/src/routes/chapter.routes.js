@@ -7,7 +7,7 @@ import { getAllChapters } from "../controllers/chapter.controllers.js";
 const router = Router();
 
 router.post("/chapter/add", verifyTeacherJWT, addChapter);
-router.get("/chapter/", verifyTeacherJWT, getAllChapters);
+router.get("/chapter/", getAllChapters);
 router.patch("/chapter/edit/:id", verifyTeacherJWT, updateChapter);
 router.delete("/chapter/delete/:id", verifyTeacherJWT, deleteChapter);
 

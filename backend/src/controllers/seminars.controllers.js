@@ -26,7 +26,7 @@ const uploadConductedSeminar = asyncHandler(async (req, res) => {
   }
 
   const reportUrl = reportPath
-    ? await uploadToGCS(reportPath, "seminar-reports")
+    ? await uploadToGCS(reportPath, "pdf-reports")
     : null;
 
   if (!reportUrl) {

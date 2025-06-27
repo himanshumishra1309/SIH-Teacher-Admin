@@ -10,7 +10,7 @@ import { StudySubject } from "../models/studySubjects.models.js";
 
 const addNewLecture = asyncHandler(async (req, res) => {
   const { subjectId, teacherId } = req.params;
-  const { topic, duration, date } = req.body;
+  const { topic, date } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(teacherId)) {
     throw new ApiError(404, "Teacher Not Found");
@@ -27,7 +27,7 @@ const addNewLecture = asyncHandler(async (req, res) => {
   const lecture = await Lecture.create({
     subject: subjectId,
     topic,
-    duration : 2,
+    duration: 2,
     date,
     owner: teacherId,
   });
@@ -300,7 +300,7 @@ const viewAttendanceOfALecture = asyncHandler(async (req, res) => {
 
   const attendance = await Attendance.findOne({ lecture: lectureId }).populate({
     path: "studentsPresent",
-    select: "name rollNumber email", // Specify the fields you want from the Student model
+    select: "name roll_no email",
   });
 
   if (!attendance) {

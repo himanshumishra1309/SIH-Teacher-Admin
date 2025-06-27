@@ -42,7 +42,7 @@ export default function AdminLectureAllocationTable() {
         const token = sessionStorage.getItem("adminAccessToken");
 
         const response = await axios.get(
-          `http://localhost:6005/api/v1/admins/teacher/${id}/allocated-subjects`,
+          `https://facultyappraisal.software/api/v1/admins/teacher/${id}/allocated-subjects`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -132,7 +132,7 @@ export default function AdminLectureAllocationTable() {
       const token = sessionStorage.getItem("teacherAccessToken");
 
       await axios.delete(
-        `http://localhost:6005/api/v1/student-guide/${rowToDelete._id}`,
+        `https://facultyappraisal.software/api/v1/student-guide/${rowToDelete._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -248,7 +248,7 @@ export default function AdminLectureAllocationTable() {
               console.log("editing  the data", formData);
 
               const response = await axios.put(
-                `http://localhost:6005/api/v1/admins/teacher/${id}/allocated-subject/${rowToEdit._id}`,
+                `https://facultyappraisal.software/api/v1/admins/teacher/${id}/allocated-subject/${rowToEdit._id}`,
                 formData,
                 {
                   headers: {
@@ -262,7 +262,7 @@ export default function AdminLectureAllocationTable() {
             } else {
               console.log("posting the data", formData);
               const response = await axios.post(
-                `http://localhost:6005/api/v1/admins/subjects/allocate/${id}`,
+                `https://facultyappraisal.software/api/v1/admins/subjects/allocate/${id}`,
                 formData,
                 {
                   headers: {

@@ -15,45 +15,60 @@ export const conferenceColumnDef = [
     enableSorting: true,
   },
   {
-    accessorKey: "conferenceType",
-    header: ({ column }) => {
-      return (
-        <div className="flex flex-col items-start">
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="px-0 font-bold"
-          >
-            Conference Type
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-          <Select
-          className="text-black"
-            onValueChange={(value) => {
-              column.setFilterValue(value === "all" ? "" : value)
-            }}
-          >
-            <SelectTrigger className="w-[150px] mt-2 bg-white text-black">
-              <SelectValue placeholder="All"/>
-            </SelectTrigger>
-            <SelectContent className="text-black">
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="International">International</SelectItem>
-              <SelectItem value="National">National</SelectItem>
-              <SelectItem value="Regional">Regional</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      )
-    },
-    cell: ({ row }) => row.getValue("conferenceType"),
+    accessorKey: "publication",
+    header: "Publication",
     enableSorting: true,
-    filterFn: (row, id, value) => {
-      return value === "" || row.getValue(id) === value
-    },
-    dropdownOptions: ["International", "National", "Regional"], // Dropdown values
-
   },
+  {
+    accessorKey: "h5_index",
+    header: "h5-index",
+    enableSorting: true,
+  },
+  {
+    accessorKey: "h5_median",
+    header: "h5-median",
+    enableSorting: true,
+  },
+  // {
+  //   accessorKey: "conferenceType",
+  //   header: ({ column }) => {
+  //     return (
+  //       <div className="flex flex-col items-start">
+  //         <Button
+  //           variant="ghost"
+  //           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+  //           className="px-0 font-bold"
+  //         >
+  //           Conference Type
+  //           <ArrowUpDown className="ml-2 h-4 w-4" />
+  //         </Button>
+  //         <Select
+  //         className="text-black"
+  //           onValueChange={(value) => {
+  //             column.setFilterValue(value === "all" ? "" : value)
+  //           }}
+  //         >
+  //           <SelectTrigger className="w-[150px] mt-2 bg-white text-black">
+  //             <SelectValue placeholder="All"/>
+  //           </SelectTrigger>
+  //           <SelectContent className="text-black">
+  //             <SelectItem value="all">All</SelectItem>
+  //             <SelectItem value="International">International</SelectItem>
+  //             <SelectItem value="National">National</SelectItem>
+  //             <SelectItem value="Regional">Regional</SelectItem>
+  //           </SelectContent>
+  //         </Select>
+  //       </div>
+  //     )
+  //   },
+  //   cell: ({ row }) => row.getValue("conferenceType"),
+  //   enableSorting: true,
+  //   filterFn: (row, id, value) => {
+  //     return value === "" || row.getValue(id) === value
+  //   },
+  //   dropdownOptions: ["International", "National", "Regional"], // Dropdown values
+
+  // },
   {
     accessorKey: "publicationDate",
     header: ({ column }) => {

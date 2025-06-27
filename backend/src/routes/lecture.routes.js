@@ -6,6 +6,7 @@ import {
   getLectureById,
   fetchAllStudents,
   markLectureAttendance,
+  viewAttendanceOfALecture,
 } from "../controllers/lectures.controllers.js";
 import { verifyTeacherJWT } from "../middleware/teacher.auth.middleware.js";
 
@@ -28,5 +29,12 @@ router.get("/:subjectId/students", verifyTeacherJWT, fetchAllStudents);
 
 // Route to mark attendance for a lecture
 router.post("/:lectureId/attendance", verifyTeacherJWT, markLectureAttendance);
+
+// Route to get the attendace of the Lecture
+router.get(
+  "/:lectureId/viewattendance",
+  verifyTeacherJWT,
+  viewAttendanceOfALecture
+);
 
 export default router;

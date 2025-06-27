@@ -10,8 +10,8 @@ import LectureAndAttendaceTable from "./LectureAttendanceTable";
 
 const LectureAndAttendance = () => {
   const { id, subjectId } = useParams(); // Teacher ID and Subject ID
-  console.log("id", id);
-  console.log("subjectId", subjectId);
+  // console.log("id", id);
+  // console.log("subjectId", subjectId);
 
   const { state } = useLocation();
   const [students, setStudents] = useState([]);
@@ -30,12 +30,12 @@ const LectureAndAttendance = () => {
       try {
         const token = sessionStorage.getItem("teacherAccessToken");
         const response = await axios.get(
-          `http://localhost:6005/api/v1/lecture/${subjectId}/students`,
+          `https://facultyappraisal.software/api/v1/lecture/${subjectId}/students`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        console.log(response.data);
+        // console.log("get lecture", response.data);
         setStudents(response.data.data.students || []);
       } catch (error) {
         console.error("Error fetching students:", error);
@@ -49,12 +49,13 @@ const LectureAndAttendance = () => {
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
       const response = await axios.post(
-        `http://localhost:6005/api/v1/lecture/${subjectId}/${id}/lectures`,
+        `https://facultyappraisal.software/api/v1/lecture/${subjectId}/${id}/lectures`,
         lectureDetails,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+      console.log({response});
       setLectureId(response.data.data._id);
       alert("Lecture added successfully!");
     } catch (error) {
@@ -70,7 +71,7 @@ const LectureAndAttendance = () => {
     try {
       const token = sessionStorage.getItem("teacherAccessToken");
       await axios.post(
-        `http://localhost:6005/api/v1/lecture/${lectureId}/attendance`,
+        `https://facultyappraisal.software/api/v1/lecture/${lectureId}/attendance`,
         {
           studentIds: selectedStudents,
           date: lectureDetails.date,
@@ -87,9 +88,7 @@ const LectureAndAttendance = () => {
 
   return (
     <div className="container mx-auto p-8 bg-white rounded-lg shadow-lg mt-10">
-      <h1 className="text-3xl font-semibold text-center text-primary mb-6">
-    
-      </h1>
+      <h1 className="text-3xl font-semibold text-center text-primary mb-6"></h1>
       <LectureAndAttendaceTable teacherId={id} subjectId={subjectId} />
     </div>
   );

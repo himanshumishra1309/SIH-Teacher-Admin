@@ -35,10 +35,10 @@ const lectureSchema = new Schema(
 // Helper function to get points for a domain
 const getPointsForDomain = async (domain) => {
   const domainPoint = await DomainPoint.findOne({ domain });
-  return domainPoint?.points || 0; 
+  return domainPoint?.points || 0;
 };
 
-// Post-save hook to allocate extra lecture points
+// Post-save hook to allocate domain points when reaching the minimum lectures
 lectureSchema.post("save", async function (doc) {
   const allocatedSubject = await AllocatedSubject.findById(doc.subject);
 
@@ -49,19 +49,31 @@ lectureSchema.post("save", async function (doc) {
 
   const { min_lectures, subject_credit, teacher, type } = allocatedSubject;
   const lectureCount = await Lecture.countDocuments({ subject: doc.subject });
+  const domainKey = `${subject_credit}-${type}`;
+  const domainPoints = await getPointsForDomain(domainKey);
 
-  if (lectureCount > min_lectures) {
-    const domainKey = `${subject_credit}-${type}`;
-    const domainPoints = await getPointsForDomain(domainKey);
+  if (!domainPoints) {
+    console.error("Domain points not found for:", domainKey);
+    return;
+  }
 
-    if (!domainPoints) {
-      console.error("Domain points not found for:", domainKey);
-      return;
+  const points = await Point.findOne({ owner: teacher, domain: domainKey });
+
+  if (lectureCount === min_lectures) {
+    // Add domain points when minimum lectures are reached
+    if (points) {
+      await Point.findByIdAndUpdate(points._id, { $inc: { points: domainPoints } });
+    } else {
+      await Point.create({
+        date: new Date(),
+        points: domainPoints,
+        domain: domainKey,
+        owner: teacher,
+      });
     }
-
-    const extraPoints = domainPoints * 0.1; // 10% points per extra lecture
-    const points = await Point.findOne({ owner: teacher, domain: domainKey });
-
+  } else if (lectureCount > min_lectures) {
+    // Add extra lecture points (10% of domain points per extra lecture)
+    const extraPoints = domainPoints * 0.1;
     if (points) {
       await Point.findByIdAndUpdate(points._id, { $inc: { points: extraPoints } });
     } else {
@@ -75,7 +87,7 @@ lectureSchema.post("save", async function (doc) {
   }
 });
 
-// Post-remove hook to deduct points when lectures are deleted
+// Post-remove hook to adjust points when lectures are deleted
 lectureSchema.post("findOneAndDelete", async function (doc) {
   if (doc) {
     const allocatedSubject = await AllocatedSubject.findById(doc.subject);
@@ -95,25 +107,21 @@ lectureSchema.post("findOneAndDelete", async function (doc) {
     }
 
     const lectureCount = await Lecture.countDocuments({ subject: doc.subject });
+    const points = await Point.findOne({ owner: teacher, domain: domainKey });
 
-    if (lectureCount >= min_lectures) {
-      const extraPoints = domainPoints * 0.1; // 10% points per extra lecture
-      const points = await Point.findOne({ owner: teacher, domain: domainKey });
-
+    if (lectureCount === min_lectures - 1) {
+      // Remove domain points if lectures go below the minimum
+      if (points) {
+        const updatedPoints = points.points - domainPoints;
+        await Point.findByIdAndUpdate(points._id, {
+          points: Math.max(updatedPoints, 0), // Ensure points don't go below 0
+        });
+      }
+    } else if (lectureCount >= min_lectures) {
+      // Deduct extra lecture points (10% of domain points per lecture)
+      const extraPoints = domainPoints * 0.1;
       if (points) {
         await Point.findByIdAndUpdate(points._id, { $inc: { points: -extraPoints } });
-      }
-    }
-
-    if (lectureCount < min_lectures) {
-      const points = await Point.findOne({ owner: teacher, domain: domainKey });
-
-      if (points) {
-        await Point.findByIdAndUpdate(points._id, { $inc: { points: -domainPoints } });
-
-        if (points.points - domainPoints <= 0) {
-          await Point.findByIdAndDelete(points._id); // Remove entry if points drop to 0
-        }
       }
     }
   }

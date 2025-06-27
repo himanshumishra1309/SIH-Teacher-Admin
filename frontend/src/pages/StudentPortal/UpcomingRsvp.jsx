@@ -56,7 +56,7 @@ export default function SeminarCards() {
 
         // Make the request with the Authorization header
         const response = await axios.get(
-          "http://localhost:6005/api/v1/seminars/seminars/upcoming",
+          "https://facultyappraisal.software/api/v1/seminars/seminars/upcoming",
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,

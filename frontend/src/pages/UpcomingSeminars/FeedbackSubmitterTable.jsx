@@ -11,20 +11,22 @@ import axios from "axios";
 
 const FeedbackSubmitterTable = ({
   feedback,
+  subjectId,
   // students = [],
   // setData = () => {},
 }) => {
-  const [rowSelection, setRowSelection] = useState({});
+  // const [rowSelection, setRowSelection] = useState({});
   const [data, setData] = useState([]);
+  const [count, setCount] = useState(null);
 
   useEffect(() => {
     const updatePost = async () => {
       try {
-        // console.log(feedback);
+        console.log(feedback);
         console.log(feedback.subject_name);
         const teacherAccessToken = sessionStorage.getItem("teacherAccessToken");
         const response = await axios.post(
-          `http://localhost:6005/api/v1/lec-feedback/submitters`,
+          `https://facultyappraisal.software/api/v1/lec-feedback/submitters`,
           {
             subject_name: feedback.subject_name,
             subject_code: feedback.subject_code,
@@ -40,7 +42,7 @@ const FeedbackSubmitterTable = ({
             },
           }
         );
-        console.log(response);
+        // console.log(response);
         setData(response.data.data);
       } catch (error) {
         console.error("Error updating the post:", error);
@@ -48,6 +50,32 @@ const FeedbackSubmitterTable = ({
     };
     updatePost();
   }, []);
+
+  useEffect(() => {
+    const updatePost = async () => {
+      try {
+        // console.log(feedback);
+        console.log(feedback.subject_name);
+        const teacherAccessToken = sessionStorage.getItem("teacherAccessToken");
+        const response = await axios.get(
+          `https://facultyappraisal.software/api/v1/lecture/${subjectId}/students`,
+          {
+            headers: {
+              Authorization: `Bearer ${teacherAccessToken}`,
+              // "Content-Type": "application/json",
+            },
+          }
+        );
+        // console.log(response.data.data.students);
+        setCount(response.data.data.students.length);
+      } catch (error) {
+        console.error("Error updating the post:", error);
+      }
+    };
+    updatePost();
+  }, []);
+
+  // :subjectId/students
 
   const table = useReactTable({
     data,
@@ -75,7 +103,7 @@ const FeedbackSubmitterTable = ({
     <div className="space-y-4">
       <div className="flex items-center justify-between"></div>
       <div className="overflow-x-auto">
-        <table className="min-w-full border-collapse">
+        {/* <table className="min-w-full border-collapse">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -103,9 +131,15 @@ const FeedbackSubmitterTable = ({
               </tr>
             ))}
           </tbody>
-        </table>
+        </table> */}
+        <div>
+          <p className="text-lg font-semibold">
+            Only {data.length} student submitted the feedback out of {count}{" "}
+            students
+          </p>
+        </div>
       </div>
-      <div className="flex items-center justify-between">
+      {/* <div className="flex items-center justify-between">
         <div>
           {Object.keys(rowSelection).length} of {data?.length || 0} row(s)
           available
@@ -157,7 +191,7 @@ const FeedbackSubmitterTable = ({
             ))}
           </select>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

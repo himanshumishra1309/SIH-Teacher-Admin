@@ -92,7 +92,7 @@ const registerAdmin = asyncHandler(async (req, res) => {
     name,
     email,
     designation,
-    avatar: avatarUrl, // Assuming `uploadToGCS` returns an object with a `url` field
+    avatar: avatar, // Assuming `uploadToGCS` returns an object with a `url` field
     password,
   });
 
@@ -212,7 +212,7 @@ const getCurrentTeacher = asyncHandler(async (req, res) => {
 
   const teacherInfo = await Teacher.findById(teacherId)
     .select(
-      "name email employee_code experience qualification department avatar"
+      "name email employee_code designation experience qualification department avatar"
     )
     .lean();
 
@@ -365,7 +365,7 @@ const allotSubjectsToTeachers = asyncHandler(async (req, res) => {
     );
   }
 
-  // Create a new allocated subject record
+  // Create a new allocated subject record+
   const allocatedSubject = await AllocatedSubject.create({
     subject_name,
     subject_code,
@@ -394,7 +394,9 @@ const viewAllAllocatedSubjectsOfTheTeacher = asyncHandler(async (req, res) => {
   }
 
   const allocatedSubjects = await AllocatedSubject.find({ teacher: teacherId })
-    .select("subject_name type min_lectures subject_code subject_credit branch year")
+    .select(
+      "subject_name type min_lectures subject_code subject_credit branch year"
+    )
     .lean();
 
   if (!allocatedSubjects || allocatedSubjects.length === 0) {
@@ -1936,7 +1938,9 @@ const getProjectsHeldByTheTeacher = asyncHandler(async (req, res) => {
   }
 
   const projects = await Project.find({ owner: teacherId })
-    .select("topic branch_name projectType daily_duration startDate endDate report")
+    .select(
+      "topic branch_name projectType daily_duration startDate endDate report"
+    )
     .lean();
 
   if (!projects || projects.length === 0) {
@@ -2158,6 +2162,8 @@ const getAllResearchWork = asyncHandler(async (req, res) => {
 
 const getAllContributions = asyncHandler(async (req, res) => {
   const { teacherId } = req.params;
+  console.log(teacherId);
+
   const contributions = await Contribution.find({ owner: teacherId });
 
   if (!contributions || contributions.length === 0) {
@@ -2173,6 +2179,18 @@ const getAllContributions = asyncHandler(async (req, res) => {
         "All contributions fetched successfully"
       )
     );
+});
+
+const fetchHODs = asyncHandler(async (req, res) => {
+  const hod = await Teacher.find({ designation: "HOD" });
+
+  if (!hod || hod.length === 0) {
+    throw new ApiError(404, "No HODs Found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, hod, "All HODs fetched successfully"));
 });
 
 export {
@@ -2231,4 +2249,5 @@ export {
   getAllseminarAttended,
   getAllResearchWork,
   getAllContributions,
+  fetchHODs,
 };

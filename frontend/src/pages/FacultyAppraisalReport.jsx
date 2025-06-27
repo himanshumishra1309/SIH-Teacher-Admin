@@ -17,10 +17,11 @@ import {
 } from "@/components/ui/chart";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import { Download } from "lucide-react";
+import { Download, FileText, Award, PenTool } from 'lucide-react';
 import axios from "axios";
 import AppraisalReportTable from "@/table/Tables/AppraisalReportTable";
 import { useParams } from "react-router-dom";
+import LoadingPage from "./LoadingPage";
 
 const FacultyAppraisalReport = ({
   facultyName,
@@ -31,15 +32,18 @@ const FacultyAppraisalReport = ({
   const [rank, setRank] = useState(null);
   const [point, setPoint] = useState(null);
   const [performance, setPerformance] = useState(null);
+  const [loading, setIsLoading] = useState(true);
 
   const reportRef = useRef(null);
   const signatureRef = useRef(null);
   const [appraisalData, setAppraisalData] = useState([]);
+
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const response = await axios.get(
-          "http://localhost:6005/api/v1/teachers/me",
+          "https://facultyappraisal.software/api/v1/teachers/me",
           {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem(
@@ -48,39 +52,38 @@ const FacultyAppraisalReport = ({
             },
           }
         );
-        // console.log(response.data.data);
         setFacultyData(response.data.data);
       } catch (error) {
         const errorMessage = error.response?.data?.message || error.message;
         console.error("Error fetching teacher data:", errorMessage);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchData();
   }, []);
+
   const id = facultyData._id;
 
   useEffect(() => {
-    if (!facultyData?._id) return; // Avoid fetching if facultyData is not ready
+    if (!facultyData?._id) return;
 
     const fetchAppraisalData = async () => {
       const id = facultyData._id;
 
       const endpoints = {
-        journals: `http://localhost:6005/api/v1/points/journals/${id}`,
-        books: `http://localhost:6005/api/v1/points/books/${id}`,
-        chapter: `http://localhost:6005/api/v1/points/chapter/${id}`,
-        patents: `http://localhost:6005/api/v1/points/patents/${id}`,
-        conferences: `http://localhost:6005/api/v1/points/conferences/${id}`,
-        projects: `http://localhost:6005/api/v1/points/projects/${id}`,
-        events: `http://localhost:6005/api/v1/points/events/${id}`,
-        sttp: `http://localhost:6005/api/v1/points/sttp/${id}`,
-        "expert-lectures": `http://localhost:6005/api/v1/points/expert-lectures/${id}`,
-        "Student-Guide": `http://localhost:6005/api/v1/points/student-guided/${id}`,
-        lecture: `http://localhost:6005/api/v1/points/lecture/${id}`,
-        // "Contribution": `http://localhost:6005/api/v1/points/contribution/${id}`,
-        // "Seminar-conducted": `http://localhost:6005/api/v1/points/contribution/${id}`,
-        // "Seminar-attented": `http://localhost:6005/api/v1/points/seminar-attended/${id}`,
+        journals: `https://facultyappraisal.software/api/v1/points/journals/${id}`,
+        books: `https://facultyappraisal.software/api/v1/points/books/${id}`,
+        chapter: `https://facultyappraisal.software/api/v1/points/chapter/${id}`,
+        patents: `https://facultyappraisal.software/api/v1/points/patents/${id}`,
+        conferences: `https://facultyappraisal.software/api/v1/points/conferences/${id}`,
+        projects: `https://facultyappraisal.software/api/v1/points/projects/${id}`,
+        events: `https://facultyappraisal.software/api/v1/points/events/${id}`,
+        sttp: `https://facultyappraisal.software/api/v1/points/sttp/${id}`,
+        "expert-lectures": `https://facultyappraisal.software/api/v1/points/expert-lectures/${id}`,
+        "Student-Guide": `https://facultyappraisal.software/api/v1/points/student-guided/${id}`,
+        lecture: `https://facultyappraisal.software/api/v1/points/lecture/${id}`,
       };
 
       try {
@@ -93,7 +96,6 @@ const FacultyAppraisalReport = ({
                 )}`,
               },
             });
-            // console.log(`${key} data:`, response.data);
             return { field: key, ...response.data.data };
           })
         );
@@ -103,10 +105,8 @@ const FacultyAppraisalReport = ({
             .replace(/([A-Z])/g, " $1")
             .replace(/^./, (str) => str.toUpperCase()),
           currentPoints: item.requestedTeacherPoints || 0,
-          highestPoints: item.highestPoints || 0,
         }));
 
-        // console.log("Formatted appraisal data:", formattedData);
         setAppraisalData(formattedData);
       } catch (error) {
         console.error("Error fetching appraisal data:", error.message);
@@ -120,7 +120,7 @@ const FacultyAppraisalReport = ({
     const fetchRank = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:6005/api/v1/points/teacher-ranks",
+          "https://facultyappraisal.software/api/v1/points/teacher-ranks",
           {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem(
@@ -131,12 +131,9 @@ const FacultyAppraisalReport = ({
         );
         console.log(response.data.data);
 
-        // console.log("Response data:", response.data);
         const matchingTeacher = response.data?.data?.find(
           (teacher) => teacher.teacherId === id
         );
-
-        // console.log(matchingTeacher);
 
         if (matchingTeacher) {
           setRank(matchingTeacher.rank);
@@ -153,6 +150,8 @@ const FacultyAppraisalReport = ({
 
     fetchRank();
   }, [id]);
+
+  
 
   const handleDownload = () => {
     const input = reportRef.current;
@@ -182,6 +181,8 @@ const FacultyAppraisalReport = ({
   useEffect(() => {
     const canvas = signatureRef.current;
     const context = canvas.getContext("2d");
+    context.strokeStyle = "#2563EB";
+    context.lineWidth = 2;
     let isDrawing = false;
     let lastX = 0;
     let lastY = 0;
@@ -212,97 +213,142 @@ const FacultyAppraisalReport = ({
   }, []);
 
   return (
-    <div className="container mx-auto p-4 relative">
-      <Button onClick={handleDownload} className="absolute top-4 right-4 z-10 text-white">
-        <Download className="mr-2 h-4 w-4 text-white" /> Download Report
-      </Button>
-      <div
-        ref={reportRef}
-        className="mt-16 border-4 border-gray-300 rounded-lg p-8 bg-white shadow-lg max-w-4xl mx-auto"
-      >
-        <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold mb-2">
-            Faculty Appraisal Final Report
-          </h1>
-          <p className="text-gray-600">Academic Year 2023-2024</p>
-          <p>Faculty Name: {facultyData.name}</p>
-          <p>Faculty Department: {facultyData.department}</p>
-          <p>Faculty Code: {facultyData.employee_code}</p>
-        </div>
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="container mx-auto px-4 relative">
+        <Button
+          onClick={handleDownload}
+          className="fixed top-4 right-4 z-10 bg-blue-600 hover:bg-blue-700 text-white mb-10"
+        >
+          <Download className="mr-2 h-4 w-4" /> Download Report
+        </Button>
+        <div
+          ref={reportRef}
+          className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden"
+        >
+          {/* Header Section */}
+          <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-8">
+            <div className="text-center">
+              <h1 className="text-4xl font-bold mb-4">
+                Faculty Appraisal Final Report
+              </h1>
+              <p className="text-blue-100 mb-6">Academic Year 2023-2024</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                <div className="p-4 bg-white/10 rounded-lg backdrop-blur-sm">
+                  <FileText className="w-6 h-6 mx-auto mb-2" />
+                  <p className="text-sm text-blue-100">Faculty Name</p>
+                  <p className="font-semibold">{facultyData.name}</p>
+                </div>
+                <div className="p-4 bg-white/10 rounded-lg backdrop-blur-sm">
+                  <Award className="w-6 h-6 mx-auto mb-2" />
+                  <p className="text-sm text-blue-100">Department</p>
+                  <p className="font-semibold">{facultyData.department}</p>
+                </div>
+                <div className="p-4 bg-white/10 rounded-lg backdrop-blur-sm">
+                  <FileText className="w-6 h-6 mx-auto mb-2" />
+                  <p className="text-sm text-blue-100">Employee Code</p>
+                  <p className="font-semibold">{facultyData.employee_code}</p>
+                </div>
+              </div>
+            </div>
+          </div>
 
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Appraisal Points Comparison</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer
-              config={{
-                currentPoints: {
-                  label: "Current Faculty Points",
-                  color: "hsl(var(--chart-1))",
-                },
-                highestPoints: {
-                  label: "Highest Points Scored",
-                  color: "hsl(var(--chart-2))",
-                },
-              }}
-              className="h-[400px]"
-            >
-              <ResponsiveContainer width="100%" height={400}>
-                <BarChart
-                  data={appraisalData}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+          <div className="p-8">
+            {/* Chart Section */}
+            <Card className="mb-8 shadow-md">
+              <CardHeader className="border-b bg-gray-50">
+                <CardTitle className="text-blue-600">
+                  Appraisal Points Distribution
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <ChartContainer
+                  config={{
+                    currentPoints: {
+                      label: "Current Faculty Points",
+                      color: "hsl(217, 91%, 60%)",
+                    },
+                  }}
+                  className="h-[400px]"
                 >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="field"
-                    angle={-45}
-                    textAnchor="end"
-                    height={80}
-                  />
-                  <YAxis />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Legend />
-                  <Bar
-                    dataKey="currentPoints"
-                    fill="var(--color-currentPoints)"
-                    name="Current Faculty"
-                  />
-                  <Bar
-                    dataKey="highestPoints"
-                    fill="var(--color-highestPoints)"
-                    name="Highest Score"
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-          </CardContent>
-        </Card>
+                  <ResponsiveContainer width="100%" height={400}>
+                    <BarChart
+                      data={appraisalData}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis
+                        dataKey="field"
+                        angle={-45}
+                        textAnchor="end"
+                        height={80}
+                        tick={{ fill: "#4B5563" }}
+                      />
+                      <YAxis tick={{ fill: "#4B5563" }} />
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <Legend />
+                      <Bar
+                        dataKey="currentPoints"
+                        fill="#2563EB"
+                        name="Current Faculty"
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              </CardContent>
+            </Card>
 
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Detailed Appraisal Data</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {/* Your custom component will go here */}
-            <AppraisalReportTable />
-          </CardContent>
-        </Card>
+            {/* Detailed Data Section */}
+            <Card className="mb-8 shadow-md">
+              <CardHeader className="border-b bg-gray-50">
+                <CardTitle className="text-blue-600">Detailed Appraisal Data</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <AppraisalReportTable />
+              </CardContent>
+            </Card>
 
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Appraisal Rank</CardTitle>
-          </CardHeader>
-          <CardContent className="text-center">
-            <p className="text-4xl font-bold mb-2">Rank : {rank}</p>
-            <p className="text-xl text-gray-600">Performance : {performance}</p>
-            <p className="text-xl text-gray-700 font-semibold">
-            Points out of 100: {point != null ? point.toFixed(2) : "0"}
+            {/* Rank Section
+            <Card className="mb-8 shadow-md">
+              <CardHeader className="border-b bg-gray-50">
+                <CardTitle className="text-blue-600">Performance Summary</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center py-6">
+                  <div className="p-6 bg-blue-50 rounded-xl">
+                    <p className="text-sm text-blue-600 mb-2">Current Rank</p>
+                    <p className="text-3xl font-bold text-blue-700">{rank || "N/A"}</p>
+                  </div>
+                  <div className="p-6 bg-blue-50 rounded-xl">
+                    <p className="text-sm text-blue-600 mb-2">Performance Level</p>
+                    <p className="text-3xl font-bold text-blue-700">{performance || "N/A"}</p>
+                  </div>
+                  <div className="p-6 bg-blue-50 rounded-xl">
+                    <p className="text-sm text-blue-600 mb-2">Total Points</p>
+                    <p className="text-3xl font-bold text-blue-700">
+                      {point != null ? point.toFixed(2) : "0"}/100
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card> */}
 
-</p>
-          </CardContent>
-        </Card>
-        <div>
+            {/* Signature Section */}
+            {/* <div className="mb-8">
+              <p className="text-sm text-gray-600 mb-2">Faculty Signature:</p>
+              <div className="border border-gray-200 rounded-lg p-4">
+                <canvas
+                  ref={signatureRef}
+                  width="800"
+                  height="80"
+                  className="border border-gray-300 rounded-md w-full touch-none"
+                />
+                <p className="text-xs text-gray-500 mt-2">
+                  Please sign above using your mouse or touch device
+                </p>
+              </div>
+            </div> */}
+            <div>
           <canvas
             ref={signatureRef}
             width="300"
@@ -310,11 +356,20 @@ const FacultyAppraisalReport = ({
             style={{ border: "1px solid black" }}
           />
         </div>
-        <div className="mt-8 text-center text-sm text-gray-500">
-          <p>
-            This report is generated automatically and is valid as of{" "}
-            {new Date().toLocaleDateString()}.
-          </p>
+
+
+            {/* Footer */}
+            <div className="text-center text-sm text-gray-500 border-t pt-6">
+              <p>
+                This report was generated automatically on{" "}
+                {new Date().toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -322,3 +377,4 @@ const FacultyAppraisalReport = ({
 };
 
 export default FacultyAppraisalReport;
+
