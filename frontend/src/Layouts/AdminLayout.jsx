@@ -27,11 +27,11 @@ const FacultyLayout = () => {
   return (
     <>
       <div className="flex flex-col min-h-screen">
-        <AdminHeader/>
-        
+        <AdminHeader />
+
         <div className="flex flex-1 overflow-hidden">
-        <aside className="w-68 overflow-y-auto ">
-            <AdminNavigation/>
+          <aside className="w-68 overflow-y-auto ">
+            <AdminNavigation />
           </aside>
           <main className="flex-1 flex flex-col overflow-hidden min-h-screen">
             <h1 className="text-xl font-bold text-center p-4">Admin Portal</h1>

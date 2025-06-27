@@ -15,7 +15,8 @@ const generateAccessAndRefreshToken = async (userId) => {
 
     student.refreshToken = studentRefreshToken;
 
-    await student.save({ validateBeforeSave: false }); // this is inbuilt in mongoDB to save the info, but there is one problem with this thing and that it will invoke the password field and to stop that we put an object and make it false the thing that we put in the object is validateBeforeSave
+    await student.save({ validateBeforeSave: false }); 
+    // this is inbuilt in mongoDB to save the info, but there is one problem with this thing and that it will invoke the password field and to stop that we put an object and make it false the thing that we put in the object is validateBeforeSave
 
     return { studentAccessToken, studentRefreshToken };
   } catch (error) {
