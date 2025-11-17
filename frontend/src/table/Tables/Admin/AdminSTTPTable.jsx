@@ -40,7 +40,7 @@ export default function AdminSTTPTable() {
   //       const token = sessionStorage.getItem("adminAccessToken"); // Adjust this if using cookies
 
   //       const response = await axios.get(
-  //         `https://facultyappraisal.software/api/v1/admins/teachers/${id}`, // Adjust URL to your API endpoint
+  //         `http://localhost:6005/api/v1/admins/teachers/${id}`, // Adjust URL to your API endpoint
   //         {
   //           headers: {
   //             Authorization: `Bearer ${token}`, // Set the Authorization header
@@ -66,7 +66,7 @@ export default function AdminSTTPTable() {
         const token = sessionStorage.getItem("adminAccessToken");
 
         const response = await axios.get(
-          `https://facultyappraisal.software/api/v1/admins/teachers/${id}/sttps`,
+          `http://localhost:6005/api/v1/admins/teachers/${id}/sttps`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

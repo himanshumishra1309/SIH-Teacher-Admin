@@ -25,15 +25,15 @@ export default function FacultyOtherDomainTable() {
 
         const [response1, response2, response3] = await Promise.all([
           axios.get(
-            `https://facultyappraisal.software/api/v1/domain-points/teacher/te-seminar-attended`,
+            `http://localhost:6005/api/v1/domain-points/teacher/te-seminar-attended`,
             { headers }
           ),
           axios.get(
-            `https://facultyappraisal.software/api/v1/domain-points/teacher/te-theory-course`,
+            `http://localhost:6005/api/v1/domain-points/teacher/te-theory-course`,
             { headers }
           ),
           axios.get(
-            `https://facultyappraisal.software/api/v1/domain-points/teacher/te-practical-course`,
+            `http://localhost:6005/api/v1/domain-points/teacher/te-practical-course`,
             { headers }
           ),
         ]);
@@ -56,7 +56,7 @@ export default function FacultyOtherDomainTable() {
       const token = sessionStorage.getItem("adminAccessToken");
 
       const response = await axios.put(
-        `https://facultyappraisal.software/api/v1/domain-points/admin/points/${id}`,
+        `http://localhost:6005/api/v1/domain-points/admin/points/${id}`,
         { points: newPoints },
         {
           headers: {

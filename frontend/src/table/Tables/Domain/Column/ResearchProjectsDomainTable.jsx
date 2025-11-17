@@ -20,7 +20,7 @@ export default function ResearchProjectsDomainTable() {
         const token = sessionStorage.getItem("adminAccessToken");
 
         const response = await axios.get(
-          `https://facultyappraisal.software/api/v1/domain-points/admin/project`,
+          `http://localhost:6005/api/v1/domain-points/admin/project`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -51,7 +51,7 @@ export default function ResearchProjectsDomainTable() {
       const token = sessionStorage.getItem("adminAccessToken");
 
       const response = await axios.put(
-        `https://facultyappraisal.software/api/v1/domain-points/admin/points/${id}`,
+        `http://localhost:6005/api/v1/domain-points/admin/points/${id}`,
         { points: points },
         {
           headers: {

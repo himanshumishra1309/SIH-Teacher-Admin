@@ -43,7 +43,7 @@ export default function StudentRegister() {
       const token = sessionStorage.getItem("adminAccessToken");
       console.log("Hellow1")
       const response = await axios.post(
-        "https://facultyappraisal.software/api/v1/admins/register-student",
+        "http://localhost:6005/api/v1/admins/register-student",
         formData,
         {
           headers: {

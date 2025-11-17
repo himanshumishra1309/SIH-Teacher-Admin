@@ -80,7 +80,7 @@ export default function FacultySISU() {
 
     try {
       const response = await axios.post(
-        "https://facultyappraisal.software/api/v1/teachers/register",
+        "http://localhost:6005/api/v1/teachers/register",
         formData
       );
       const { teacherAccessToken } = response?.data?.data;
@@ -99,7 +99,7 @@ export default function FacultySISU() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "https://facultyappraisal.software/api/v1/teachers/login",
+        "http://localhost:6005/api/v1/teachers/login",
         loginData
       );
       const { teacherAccessToken } = response?.data?.data;

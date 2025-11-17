@@ -35,7 +35,7 @@ export default function AdminEditProfile() {
           Authorization: `Bearer ${accessToken}`,
         };
         const response = await axios.get(
-          "https://facultyappraisal.software/api/v1/admins/me",
+          "http://localhost:6005/api/v1/admins/me",
           { headers }
         );
         console.log("Admin data fetched:", response.data);
@@ -77,7 +77,7 @@ export default function AdminEditProfile() {
       };
       console.log("Saving changes:", adminData);
       const response = axios.patch(
-        "https://facultyappraisal.software/api/v1/admins/me/update",
+        "http://localhost:6005/api/v1/admins/me/update",
         adminData,
         { headers }
       );
@@ -105,7 +105,7 @@ export default function AdminEditProfile() {
       };
 
       const response = await axios.put(
-        "https://facultyappraisal.software/api/v1/admins/me/avatar",
+        "http://localhost:6005/api/v1/admins/me/avatar",
         formData,
         { headers }
       );

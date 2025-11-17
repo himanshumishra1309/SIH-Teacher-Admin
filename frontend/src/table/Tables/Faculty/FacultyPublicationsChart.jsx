@@ -26,11 +26,11 @@ const FacultyPublicationsChart = () => {
   useEffect(() => {
     const fetchData = async () => {
       const endpointMap = {
-        Book: `https://facultyappraisal.software/api/v1/book/book/`,
-        "Book Chapter": `https://facultyappraisal.software/api/v1/chapter/chapter/`,
-        "Journal Article": `https://facultyappraisal.software/api/v1/journals/journal/`,
-        Patent: `https://facultyappraisal.software/api/v1/patents/patent/get`,
-        // "Conference Paper": `https://facultyappraisal.software/api/v1/conferences/conference/get`,
+        Book: `http://localhost:6005/api/v1/book/book/`,
+        "Book Chapter": `http://localhost:6005/api/v1/chapter/chapter/`,
+        "Journal Article": `http://localhost:6005/api/v1/journals/journal/`,
+        Patent: `http://localhost:6005/api/v1/patents/patent/get`,
+        // "Conference Paper": `http://localhost:6005/api/v1/conferences/conference/get`,
       };
 
       try {

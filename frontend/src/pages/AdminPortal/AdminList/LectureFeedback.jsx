@@ -86,7 +86,7 @@ export default function EnhancedLectureFeedback({
           Authorization: `Bearer ${accessToken}`,
         };
         const response = await axios.get(
-          "https://facultyappraisal.software/api/v1/students/me",
+          "http://localhost:6005/api/v1/students/me",
           { headers }
         );
         // console.log("Student data fetched:", response.data);
@@ -150,7 +150,7 @@ export default function EnhancedLectureFeedback({
 
       // Send the feedback to the backend
       const response = await axios.post(
-        "https://facultyappraisal.software/api/v1/students/fillfeedBackForm",
+        "http://localhost:6005/api/v1/students/fillfeedBackForm",
         feedbackData,
         {
           headers: {

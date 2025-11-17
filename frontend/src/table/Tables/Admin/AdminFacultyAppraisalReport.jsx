@@ -38,18 +38,18 @@ const AdminFacultyAppraisalReport = ({
   const [point, setPoint] = useState(null);
 
   const endpoints = {
-    journals: `https://facultyappraisal.software/api/v1/points2/ad-journals/${id}`,
-    books: `https://facultyappraisal.software/api/v1/points2/ad-books/${id}`,
-    chapter: `https://facultyappraisal.software/api/v1/points2/ad-chapter/${id}`,
-    patents: `https://facultyappraisal.software/api/v1/points2/ad-patents/${id}`,
-    conferences: `https://facultyappraisal.software/api/v1/points2/ad-conferences/${id}`,
-    projects: `https://facultyappraisal.software/api/v1/points2/ad-projects/${id}`,
-    events: `https://facultyappraisal.software/api/v1/points2/ad-events/${id}`,
-    sttp: `https://facultyappraisal.software/api/v1/points2/ad-sttp/${id}`,
-    "expert-lectures": `https://facultyappraisal.software/api/v1/points2/ad-expert-lectures/${id}`,
-    "Student-Guide": `https://facultyappraisal.software/api/v1/points2/ad-student-guided/${id}`,
-    lecture: `https://facultyappraisal.software/api/v1/points2/ad-lecture/${id}`,
-    // Contribution: `https://facultyappraisal.software/api/v1/points/ad-contribution/${id}`,
+    journals: `http://localhost:6005/api/v1/points2/ad-journals/${id}`,
+    books: `http://localhost:6005/api/v1/points2/ad-books/${id}`,
+    chapter: `http://localhost:6005/api/v1/points2/ad-chapter/${id}`,
+    patents: `http://localhost:6005/api/v1/points2/ad-patents/${id}`,
+    conferences: `http://localhost:6005/api/v1/points2/ad-conferences/${id}`,
+    projects: `http://localhost:6005/api/v1/points2/ad-projects/${id}`,
+    events: `http://localhost:6005/api/v1/points2/ad-events/${id}`,
+    sttp: `http://localhost:6005/api/v1/points2/ad-sttp/${id}`,
+    "expert-lectures": `http://localhost:6005/api/v1/points2/ad-expert-lectures/${id}`,
+    "Student-Guide": `http://localhost:6005/api/v1/points2/ad-student-guided/${id}`,
+    lecture: `http://localhost:6005/api/v1/points2/ad-lecture/${id}`,
+    // Contribution: `http://localhost:6005/api/v1/points/ad-contribution/${id}`,
   };
 
   const appraisalData2 = [
@@ -158,7 +158,7 @@ const AdminFacultyAppraisalReport = ({
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `https://facultyappraisal.software/api/v1/admins/teacher/${id}`,
+          `http://localhost:6005/api/v1/admins/teacher/${id}`,
           {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem(
@@ -183,7 +183,7 @@ const AdminFacultyAppraisalReport = ({
     const fetchRank = async () => {
       try {
         const response = await axios.get(
-          `https://facultyappraisal.software/api/v1/points/ad-teacher-ranks`,
+          `http://localhost:6005/api/v1/points/ad-teacher-ranks`,
           {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem(

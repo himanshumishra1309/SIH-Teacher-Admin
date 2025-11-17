@@ -41,7 +41,7 @@ export default function FacultyLecturesTable() {
         const token = sessionStorage.getItem("teacherAccessToken");
 
         const response = await axios.get(
-          `https://facultyappraisal.software/api/v1/expertLectures/lectures`,
+          `http://localhost:6005/api/v1/expertLectures/lectures`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -138,7 +138,7 @@ export default function FacultyLecturesTable() {
 
       // Make DELETE request to the server
       await axios.delete(
-        `https://facultyappraisal.software/api/v1/expertLectures/lectures/${rowToDelete._id}`,
+        `http://localhost:6005/api/v1/expertLectures/lectures/${rowToDelete._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -264,7 +264,7 @@ export default function FacultyLecturesTable() {
               // console.log("editing  the data", formData);
 
               const response = await axios.patch(
-                `https://facultyappraisal.software/api/v1/expertLectures/lectures/${rowToEdit._id}`,
+                `http://localhost:6005/api/v1/expertLectures/lectures/${rowToEdit._id}`,
                 formData,
                 {
                   headers: {
@@ -278,7 +278,7 @@ export default function FacultyLecturesTable() {
               // Add (POST Request)
               // console.log("posting the data", formData);
               const response = await axios.post(
-                `https://facultyappraisal.software/api/v1/expertLectures/lectures`,
+                `http://localhost:6005/api/v1/expertLectures/lectures`,
                 formData,
                 {
                   headers: {

@@ -47,7 +47,7 @@ export function DetailedFeedbackView({ isOpen, onClose, feedback }) {
         const feedbackId = feedback.feedbackId;
 
         const response = await axios.get(
-          `https://facultyappraisal.software/api/v1/lec-feedback/detailed/${feedbackId}`,
+          `http://localhost:6005/api/v1/lec-feedback/detailed/${feedbackId}`,
           { headers }
         );
 

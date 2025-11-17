@@ -39,7 +39,7 @@ export default function AdminProjectTable() {
   //       const token = sessionStorage.getItem("adminAccessToken");
 
   //       const response = await axios.get(
-  //         `https://facultyappraisal.software/api/v1/admins/teachers/${id}/projects`,
+  //         `http://localhost:6005/api/v1/admins/teachers/${id}/projects`,
   //         {
   //           headers: {
   //             Authorization: `Bearer ${token}`,

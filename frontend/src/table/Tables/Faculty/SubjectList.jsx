@@ -18,7 +18,7 @@ const SubjectList = () => {
         setIsLoading(true);
         const token = sessionStorage.getItem("teacherAccessToken");
         const response = await axios.get(
-          `https://facultyappraisal.software/api/v1/allocated-subjects/subjects/${id}`,
+          `http://localhost:6005/api/v1/allocated-subjects/subjects/${id}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

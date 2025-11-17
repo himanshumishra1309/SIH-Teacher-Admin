@@ -51,7 +51,7 @@ export default function EventRsvp({ seminarId }) {
           Authorization: `Bearer ${accessToken}`,
         };
         const response = await axios.get(
-          "https://facultyappraisal.software/api/v1/students/me",
+          "http://localhost:6005/api/v1/students/me",
           { headers }
         );
         console.log("Student data fetched:", response.data);
@@ -91,7 +91,7 @@ export default function EventRsvp({ seminarId }) {
       const accessToken = sessionStorage.getItem("studentAccessToken");
 
       const response = await axios.post(
-        "https://facultyappraisal.software/api/v1/seminars/seminars/rsvp",
+        "http://localhost:6005/api/v1/seminars/seminars/rsvp",
         { seminarId },
         {
           headers: {

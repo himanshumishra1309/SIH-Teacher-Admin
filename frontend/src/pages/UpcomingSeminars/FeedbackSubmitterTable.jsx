@@ -26,7 +26,7 @@ const FeedbackSubmitterTable = ({
         console.log(feedback.subject_name);
         const teacherAccessToken = sessionStorage.getItem("teacherAccessToken");
         const response = await axios.post(
-          `https://facultyappraisal.software/api/v1/lec-feedback/submitters`,
+          `http://localhost:6005/api/v1/lec-feedback/submitters`,
           {
             subject_name: feedback.subject_name,
             subject_code: feedback.subject_code,
@@ -58,7 +58,7 @@ const FeedbackSubmitterTable = ({
         console.log(feedback.subject_name);
         const teacherAccessToken = sessionStorage.getItem("teacherAccessToken");
         const response = await axios.get(
-          `https://facultyappraisal.software/api/v1/lecture/${subjectId}/students`,
+          `http://localhost:6005/api/v1/lecture/${subjectId}/students`,
           {
             headers: {
               Authorization: `Bearer ${teacherAccessToken}`,

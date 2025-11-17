@@ -20,7 +20,7 @@ export default function FacultyEventsDomainTable() {
         const token = sessionStorage.getItem("teacherAccessToken");
 
         const response = await axios.get(
-          `https://facultyappraisal.software/api/v1/domain-points/teacher/te-all-event-points`,
+          `http://localhost:6005/api/v1/domain-points/teacher/te-all-event-points`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -51,7 +51,7 @@ export default function FacultyEventsDomainTable() {
       const token = sessionStorage.getItem("adminAccessToken");
 
       const response = await axios.put(
-        `https://facultyappraisal.software/api/v1/domain-points/teacher/te-points/${id}`,
+        `http://localhost:6005/api/v1/domain-points/teacher/te-points/${id}`,
         { points: points },
         {
           headers: {
