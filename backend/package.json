@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@google-cloud/storage": "^7.14.0",
+    "@supabase/supabase-js": "^2.89.0",
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
     "cloudinary": "^2.5.1",
