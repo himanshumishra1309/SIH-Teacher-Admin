@@ -3,21 +3,21 @@ import { verifyTeacherJWT } from "../middleware/teacher.auth.middleware.js";
 import { verifyAdminJWT } from "../middleware/admin.auth.middleware.js";
 import {
     completeJournalPoints,
-  completeBooksPoints,
-  completePatentPoints,
-  completeProjectsPoints,
-  completeConferencePoints,
-  completeChapterPoints,
-  completeSTTPPoints,
-  completeEventsConductedPoints,
-  completeSeminarAttendedPoints,
-  completeExpertLecturesPoints,
-  completeSeminarPoints,
-  getComparativePointsData,
-  calculateTeacherRanks,
-  completeLecturePoints,
-  completeStudentGuidedPoints,
-  completeContributionPoints
+    completeBooksPoints,
+    completePatentPoints,
+    completeProjectsPoints,
+    completeConferencePoints,
+    completeChapterPoints,
+    completeSTTPPoints,
+    completeEventsConductedPoints,
+    completeSeminarAttendedPoints,
+    completeExpertLecturesPoints,
+    completeSeminarPoints,
+    getComparativePointsData,
+    calculateTeacherRanks,
+    completeLecturePoints,
+    completeStudentGuidedPoints,
+    completeContributionPoints
 } from '../controllers/points.controllers.js';
 
 const router = express.Router();

@@ -1,7 +1,7 @@
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler2.js";
 import { ApiError } from "../utils/ApiErrors.js";
-import { uploadToGCS } from "../utils/googleCloud.js";
+import { uploadToSupabase } from "../utils/supabase-upload.js";
 import { Admin } from "../models/admins.models.js";
 import { Teacher } from "../models/teachers.models.js";
 import { LectureFeedback } from "../models/lectureFeedbacks.models.js";
@@ -76,23 +76,23 @@ const registerAdmin = asyncHandler(async (req, res) => {
 
   console.log("request: ", req.file);
 
-  const avatarLocalPath = req.file?.path;
+  const avatarFile = req.file;
 
-  if (!avatarLocalPath) {
+  if (!avatarFile) {
     throw new ApiError(400, "Avatar is required");
   }
 
-  const avatar = await uploadToGCS(avatarLocalPath, "images"); // Pass the file path and specify a directory within the bucket
+  const avatar = await uploadToSupabase(avatarFile, "images"); // Pass the file object to upload
 
   if (!avatar) {
-    throw new ApiError(400, "Failed to upload avatar to GCS");
+    throw new ApiError(400, "Failed to upload avatar to Supabase");
   }
 
   const admin = await Admin.create({
     name,
     email,
     designation,
-    avatar: avatar, // Assuming `uploadToGCS` returns an object with a `url` field
+    avatar: avatar, // Assuming `uploadToSupabase` returns an object with a `url` field
     password,
   });
 
@@ -160,18 +160,18 @@ const registerTeacher = asyncHandler(async (req, res) => {
     throw new ApiError(400, "User with email or employee code already exists");
   }
 
-  const avatarLocalPath = req.file?.path;
+  const avatarFile = req.file;
 
   // console.log("request: ", req.file);
 
-  if (!avatarLocalPath) {
+  if (!avatarFile) {
     throw new ApiError(400, "Avatar is required");
   }
 
-  const avatar = await uploadToGCS(avatarLocalPath, "images"); // Pass the file path and specify a directory within the bucket
+  const avatar = await uploadToSupabase(avatarFile, "images"); // Pass the file object to upload
 
   if (!avatar) {
-    throw new ApiError(400, "Failed to upload avatar to GCS");
+    throw new ApiError(400, "Failed to upload avatar to Supabase");
   }
 
   // console.log(avatar);
@@ -184,7 +184,7 @@ const registerTeacher = asyncHandler(async (req, res) => {
     experience,
     qualification,
     department,
-    avatar: avatar, // Assuming `uploadToGCS` returns an object with a `url` field
+    avatar: avatar, // Assuming `uploadToSupabase` returns an object with a `url` field
     password,
   });
 
@@ -521,13 +521,13 @@ const registerStudent = asyncHandler(async (req, res) => {
   }
   console.log("request(student): ", req.file);
 
-  const avatarLocalPath = req.file?.path;
+  const avatarFile = req.file;
 
-  if (!avatarLocalPath) {
+  if (!avatarFile) {
     throw new ApiError(400, "Avatar is required");
   }
 
-  const avatar = await uploadToGCS(avatarLocalPath, "images"); // Pass the file path and specify a directory within the bucket
+  const avatar = await uploadToSupabase(avatarFile, "images"); // Pass the file object to upload
 
   if (!avatar) {
     throw new ApiError(400, "No avatar file found");

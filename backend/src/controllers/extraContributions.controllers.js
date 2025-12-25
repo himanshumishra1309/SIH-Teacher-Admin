@@ -2,7 +2,7 @@ import { asyncHandler } from "../utils/AsyncHandler2.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { Contribution } from "../models/extraContributions.models.js";
-import { uploadToGCS, deleteFromGCS } from "../utils/googleCloud.js";
+import { uploadToSupabase, deleteFromSupabase } from "../utils/supabase-upload.js";
 import path from "path";
 
 const getAllContribution = asyncHandler(async (req, res) => {
@@ -46,7 +46,7 @@ const createContribution = asyncHandler(async (req, res) => {
   const images = [];
   if (files.images) {
     for (const file of files.images) {
-      const result = await uploadToGCS(file.path, "images");
+      const result = await uploadToSupabase(file, "images");
       if (!result) {
         throw new ApiError(
           500,
@@ -59,7 +59,7 @@ const createContribution = asyncHandler(async (req, res) => {
 
   let report = null;
   if (files.report) {
-    const result = await uploadToGCS(files.report[0].path, "pdf-reports");
+    const result = await uploadToSupabase(files.report[0], "pdf-reports");
     if (!result) {
       throw new ApiError(500, "Failed to upload the report. Please try again.");
     }
@@ -114,7 +114,7 @@ const editContribution = asyncHandler(async (req, res) => {
   if (deleteImages.length) {
     for (const imageUrl of deleteImages) {
       const fileName = path.basename(imageUrl);
-      await deleteFromGCS(fileName, "images");
+      await deleteFromSupabase(fileName, "images");
     }
     contribution.images = contribution.images.filter(
       (img) => !deleteImages.includes(img)
@@ -124,7 +124,7 @@ const editContribution = asyncHandler(async (req, res) => {
   // Handle new image uploads
   if (files.images) {
     for (const file of files.images) {
-      const result = await uploadToGCS(file.path, "images");
+      const result = await uploadToSupabase(file, "images");
       if (!result) {
         throw new ApiError(
           500,
@@ -138,12 +138,12 @@ const editContribution = asyncHandler(async (req, res) => {
   // Handle report deletion and upload
   if (deleteReport && contribution.report) {
     const reportFileName = path.basename(contribution.report);
-    await deleteFromGCS(reportFileName, "pdf-report");
+    await deleteFromSupabase(reportFileName, "pdf-report");
     contribution.report = null;
   }
 
   if (files.report) {
-    const result = await uploadToGCS(files.report[0].path, "pdf-report");
+    const result = await uploadToSupabase(files.report[0], "pdf-report");
     if (!result) {
       throw new ApiError(500, "Failed to upload the report. Please try again.");
     }

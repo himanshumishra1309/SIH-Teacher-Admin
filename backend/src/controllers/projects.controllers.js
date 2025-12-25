@@ -2,10 +2,8 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler2.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { Project } from "../models/projects.models.js";
-import { uploadToGCS } from "../utils/googleCloud.js";
+import { uploadToSupabase } from "../utils/supabase-upload.js";
 import path from "path";
-import { Storage } from "@google-cloud/storage";
-const storage = new Storage();
 
 // All the routes are done including update and delete also :)
 
@@ -33,10 +31,10 @@ const uploadProject = asyncHandler(async (req, res) => {
   }
 
   // const uploadResponse = await uploadOnCloudinary(file.path);
-  const uploadResponse = await uploadToGCS(file.path, "pdf-reports");
+  const uploadResponse = await uploadToSupabase(file, "pdf-reports");
 
   if (!uploadResponse) {
-    throw new ApiError(500, "error in uploading file to Google Cloud");
+    throw new ApiError(500, "error in uploading file to Supabase");
   }
 
   const project = await Project.create({
@@ -113,11 +111,11 @@ const updateProject = asyncHandler(async (req, res) => {
     const folder = fileExtension === ".pdf" ? "pdf-reports" : "images";
 
     // Upload the new file to the appropriate folder
-    const fileUrl = await uploadToGCS(file.path, folder);
+    const fileUrl = await uploadToSupabase(file, folder);
 
     // Check if the upload was successful
     if (!fileUrl) {
-      throw new ApiError(500, "Error in uploading new file to Google Cloud");
+      throw new ApiError(500, "Error in uploading new file to Supabase");
     }
 
     // Update the report field with the new public URL

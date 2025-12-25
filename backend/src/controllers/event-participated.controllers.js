@@ -4,7 +4,7 @@ import { ApiError } from "../utils/ApiErrors.js";
 import { EventParticipation } from "../models/events-participated.models.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { v2 as cloudinary } from "cloudinary";
-import { uploadToGCS } from "../utils/googleCloud.js";
+import { uploadToSupabase } from "../utils/supabase-upload.js";
 
 // All routes checked, including delete and update
 
@@ -17,13 +17,13 @@ const uploadParticipatedEvent = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Please fill all fields");
   }
 
-  console.log("Report path:", report.path);
+  console.log("Report file:", report);
 
   // const uploadedReport = await uploadOnCloudinary(report.path);
-  const uploadResponse = await uploadToGCS(report.path, "pdf-reports");
+  const uploadResponse = await uploadToSupabase(report, "pdf-reports");
 
   if (!uploadResponse) {
-    throw new ApiError(500, "Error in uploading report to Google");
+    throw new ApiError(500, "Error in uploading report to Supabase");
   }
 
   const eventParticipation = await EventParticipation.create({

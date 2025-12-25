@@ -6,10 +6,8 @@ import { SeminarFeedback } from "../models/feedback-seminars.models.js";
 import { SAttendance } from "../models/seminarAttendance.models.js";
 import { Student } from "../models/students.models.js";
 import { SeminarAttended } from "../models/seminarAttended.models.js";
-import { uploadToGCS } from "../utils/googleCloud.js";
+import { uploadToSupabase } from "../utils/supabase-upload.js";
 import path from "path";
-import { Storage } from "@google-cloud/storage";
-const storage = new Storage();
 
 const uploadConductedSeminar = asyncHandler(async (req, res) => {
   const { topic, duration, date } = req.body;
@@ -19,15 +17,13 @@ const uploadConductedSeminar = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields (topic, duration, date) are required.");
   }
 
-  const reportPath = req.file?.path;
+  const reportFile = req.file;
 
-  if (!reportPath) {
+  if (!reportFile) {
     throw new ApiError(400, "Report is required.");
   }
 
-  const reportUrl = reportPath
-    ? await uploadToGCS(reportPath, "pdf-reports")
-    : null;
+  const reportUrl = await uploadToSupabase(reportFile, "pdf-reports");
 
   if (!reportUrl) {
     throw new ApiError(500, "Failed to upload");
@@ -86,11 +82,11 @@ const editUploadedSeminar = asyncHandler(async (req, res) => {
     const folder = fileExtension === ".pdf" ? "pdf-reports" : "images";
 
     // Upload the new file to the appropriate folder
-    const fileUrl = await uploadToGCS(file.path, folder);
+    const fileUrl = await uploadToSupabase(file, folder);
 
     // Check if the upload was successful
     if (!fileUrl) {
-      throw new ApiError(500, "Error in uploading new file to Google Cloud");
+      throw new ApiError(500, "Error in uploading new file to Supabase");
     }
 
     // Update the report field with the new public URL
@@ -344,7 +340,7 @@ const addSeminarAttended = asyncHandler(async (req, res) => {
   const images = [];
   if (files.images) {
     for (const file of files.images) {
-      const result = await uploadToGCS(file.path, "images");
+      const result = await uploadToSupabase(file, "images");
       if (!result) {
         throw new ApiError(
           500,
@@ -357,7 +353,7 @@ const addSeminarAttended = asyncHandler(async (req, res) => {
 
   let report = null;
   if (files.report) {
-    const result = await uploadToGCS(files.report[0].path, "pdf-report");
+    const result = await uploadToSupabase(files.report[0], "pdf-report");
     if (!result) {
       throw new ApiError(500, "Failed to upload the report. Please try again.");
     }
@@ -401,7 +397,7 @@ const editSeminarAttended = asyncHandler(async (req, res) => {
 
   if (files.images) {
     for (const file of files.images) {
-      const result = await uploadToGCS(file.path, "images");
+      const result = await uploadToSupabase(file.path, "images");
       if (!result) {
         throw new ApiError(
           500,
@@ -413,7 +409,7 @@ const editSeminarAttended = asyncHandler(async (req, res) => {
   }
 
   if (files.report) {
-    const result = await uploadToGCS(files.report[0].path, "pdf-report");
+    const result = await uploadToSupabase(files.report[0].path, "pdf-report");
     if (!result) {
       throw new ApiError(500, "Failed to upload the report. Please try again.");
     }

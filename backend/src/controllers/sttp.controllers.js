@@ -2,10 +2,8 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler2.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { STTP } from "../models/sttp.models.js";
-import { uploadToGCS } from "../utils/googleCloud.js";
+import { uploadToSupabase } from "../utils/supabase-upload.js";
 import path from "path";
-import { Storage } from "@google-cloud/storage";
-const storage = new Storage();
 
 const uploadEvent = asyncHandler(async (req, res) => {
   const { topic, dailyDuration, startDate, endDate, venue } = req.body;
@@ -28,10 +26,10 @@ const uploadEvent = asyncHandler(async (req, res) => {
   const folder = fileExtension === '.pdf' ? 'pdf-report' : 'images';
 
   // Upload file to the appropriate folder
-  const fileUrl = await uploadToGCS(file.path, folder);
+  const fileUrl = await uploadToSupabase(file, folder);
 
   if (!fileUrl) {
-    throw new ApiError(500, 'Error in uploading file to Google Cloud');
+    throw new ApiError(500, 'Error in uploading file to Supabase');
   }
 
   const sttp = await STTP.create({
@@ -108,11 +106,11 @@ const updateEvent = asyncHandler(async (req, res) => {
     const folder = fileExtension === '.pdf' ? 'pdf-reports' : 'images';
 
     // Upload the new file to the appropriate folder
-    const fileUrl = await uploadToGCS(file.path, folder);
+    const fileUrl = await uploadToSupabase(file, folder);
 
     // Check if the upload was successful
     if (!fileUrl) {
-      throw new ApiError(500, 'Error in uploading new file to Google Cloud');
+      throw new ApiError(500, 'Error in uploading new file to Supabase');
     }
 
     // Update the report field with the new public URL
